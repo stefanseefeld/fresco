@@ -30,6 +30,7 @@
 #include <Berlin/RegionImpl.hh>
 #include <Berlin/ImplVar.hh>
 #include <Berlin/Color.hh>
+#include <Berlin/Logger.hh>
 #include <Figure/FigureImpl.hh>
 
 using namespace Geometry;
@@ -40,6 +41,8 @@ TransformFigure::TransformFigure()
   tx->_obj_is_ready(CORBA::BOA::getBOA());
   ext = new RegionImpl;
   ext->_obj_is_ready(CORBA::BOA::getBOA());
+  fg.red = fg.green = fg.blue = 0., fg.alpha = 1.;
+  bg.red = bg.green = bg.blue = 0., bg.alpha = 1.;
 }
 
 TransformFigure::~TransformFigure()
@@ -51,10 +54,10 @@ TransformFigure::~TransformFigure()
 Transform_ptr TransformFigure::transformation() { return Transform::_duplicate(tx);}
 void TransformFigure::request(Requisition &r)
 {
+  SectionLog section(Logger::layout, "TransformFigure::request");
   Allocation::Info info;
   Impl_var<RegionImpl> region(new RegionImpl);
   extension(info, region);
-  needRedrawRegion(region);
   if (region->valid)
     {
       Coord x_lead = -region->lower.x, x_trail = region->upper.x;
@@ -73,6 +76,7 @@ void TransformFigure::request(Requisition &r)
 
 void TransformFigure::extension(const Allocation::Info &info, Region_ptr region)
 {
+  SectionLog section(Logger::layout, "TransformFigure::extension");
   if (ext->valid)
     {
       Impl_var<RegionImpl> tmp(new RegionImpl(ext, Transform_var(Transform::_nil())));
@@ -93,6 +97,7 @@ void TransformFigure::pick(PickTraversal_ptr traversal)
 
 void TransformFigure::needRedraw()
 {
+  SectionLog section(Logger::layout, "TransformFigure::needRedraw");
   Allocation::Info info;
   Impl_var<RegionImpl> region(new RegionImpl);
   extension(info, region);
@@ -143,6 +148,7 @@ void FigureImpl::addPoint(Coord x, Coord y)
 
 void FigureImpl::extension(const Allocation::Info &info, Region_ptr region)
 {
+  SectionLog section(Logger::layout, "FigureImpl::extension");
   if (path->length() > 0)
     {
       Impl_var<RegionImpl> tmp(new RegionImpl(ext, Transform_var(Transform::_nil())));
@@ -151,7 +157,7 @@ void FigureImpl::extension(const Allocation::Info &info, Region_ptr region)
       if (!CORBA::is_nil(info.transformation)) transformation->copy(info.transformation);
       transformation->premultiply(tx);
       tmp->applyTransform(transformation);
-      if (mode |= Figure::stroke)
+      if (mode &= Figure::stroke)
 	{
 	  Coord w = 1.;
 // 	  if (is_not_nil(style_))
@@ -174,10 +180,12 @@ void FigureImpl::extension(const Allocation::Info &info, Region_ptr region)
 
 void FigureImpl::draw(DrawTraversal_ptr traversal)
 {
+  SectionLog section(Logger::drawing, "FigureImpl::draw");
   if (path->length() > 0)
     {
       // bounding box culling, use extension(...) to add brush effect into extension.
       Allocation::Info info;
+      info.transformation = traversal->transformation();
       Impl_var<RegionImpl> region(new RegionImpl);
       extension(info, region);
       if (traversal->intersectsRegion(region))
@@ -189,7 +197,7 @@ void FigureImpl::draw(DrawTraversal_ptr traversal)
 	  Transform_var transformation = traversal->transformation();
 	  for (CORBA::ULong i = 0; i != n; i++) transformation->transformVertex(p.p[i]);
 	  Style::Spec style;
-	  if (mode == stroke | fill)
+	  if (mode == (stroke | fill))
 	    {
 	      style.length(2);
 	      style[0].a = Style::linecolor, style[0].val <<= fg;
@@ -208,7 +216,6 @@ void FigureImpl::draw(DrawTraversal_ptr traversal)
 	  DrawingKit_var drawing = traversal->kit();
 	  Pencil_var pencil = drawing->getPencil(style);
 	  pencil->drawPath(p);
-	  cout << "draw figure (" << n << " points) in color " << fg << endl;
 	}
     }
 }

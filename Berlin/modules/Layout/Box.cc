@@ -62,6 +62,7 @@ void Box::request(Requisition &r)
 
 void Box::extension(const Allocation::Info &info, Region_ptr region)
 {
+  SectionLog section(Logger::layout, "Box::extension");  
   long n = numChildren();
   if (n > 0)
     {
@@ -159,6 +160,7 @@ void Box::allocate(Tag tag, const Allocation::Info &info)
  */
 RegionImpl **Box::childrenAllocations(Region_ptr allocation)
 {
+  SectionLog section(Logger::traversal, "Box::childrenAllocations");
   CORBA::Long children = numChildren();
   Graphic::Requisition *childrenRequisitions = childrenRequests(); // first defined  in PolyGraphic.cc
     
@@ -185,6 +187,7 @@ RegionImpl **Box::childrenAllocations(Region_ptr allocation)
 
 void Box::traverseWithAllocation(Traversal_ptr t, Region_ptr r)
 {
+  SectionLog section(Logger::traversal, "Box::traverseWithAllocation");
   RegionImpl **result = childrenAllocations(r);
   CORBA::Long size = numChildren();
   CORBA::Long begin, end, incr;
@@ -220,6 +223,7 @@ void Box::traverseWithAllocation(Traversal_ptr t, Region_ptr r)
 
 void Box::traverseWithoutAllocation(Traversal_ptr t)
 {
+  SectionLog section(Logger::traversal, "Box::traverseWithoutAllocation");
   if (t->direction() == Traversal::up)
     for (clist_t::iterator i = children.begin(); i != children.end(); i++)
       {

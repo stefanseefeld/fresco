@@ -32,6 +32,7 @@
 #include "Berlin/TransformImpl.hh"
 #include "Berlin/AllocationImpl.hh"
 #include "Berlin/RegionImpl.hh"
+#include "Berlin/ImplVar.hh"
 #include "Berlin/Logger.hh"
 
 Allocator::Allocator()
@@ -67,17 +68,14 @@ void Allocator::traverse(Traversal_ptr traversal)
 
 void Allocator::needResize()
 {
-  AllocationImpl *allocation = new AllocationImpl;
-  allocation->_obj_is_ready(_boa());
+  Impl_var<AllocationImpl> allocation(new AllocationImpl);
   allocations(Allocation_var(allocation->_this()));
-  RegionImpl *region = new RegionImpl;
-  region->_obj_is_ready(_boa());
+  Impl_var<RegionImpl> region(new RegionImpl);
   if (extension->valid) region->copy(Region_var(extension->_this()));
   requested = false;
   updateRequisition();
   if (extension->valid) region->mergeUnion(Region_var(extension->_this()));
   if (region->valid) needDamage(region, allocation);
-  allocation->_dispose();
 }
 
 void Allocator::allocate(Tag, const Allocation::Info &i)
@@ -128,11 +126,9 @@ void Allocator::updateRequisition()
     }
 }
 
-void Allocator::needDamage(RegionImpl *e, Allocation_ptr a)
+void Allocator::needDamage(RegionImpl *e, Allocation_ptr allocation)
 {
-  Allocation_var allocation = a;
-  RegionImpl *region = new RegionImpl;
-  region->_obj_is_ready(_boa());
+  Impl_var<RegionImpl> region(new RegionImpl);
   for (long i = 0; i < allocation->size(); i++)
     {
       Allocation::Info_var info = allocation->get(i);
@@ -170,30 +166,25 @@ void TransformAllocator::request(Requisition &r)
 void TransformAllocator::allocate(Tag t, const Allocation::Info &i)
 {
   Vertex lower, upper, delta;
-  TransformImpl *tx = new TransformImpl;
-  tx->_obj_is_ready(_boa());
-
+  Impl_var<TransformImpl> tx(new TransformImpl);
   Allocator::allocate(t, i);
   i.allocation->bounds(lower, upper);
   computeDelta(lower, upper, delta);
   tx->translate(delta);
   i.transformation->premultiply(Transform_var(tx->_this()));
   i.allocation->copy(natural);
-  tx->_dispose();
 }
 
 void TransformAllocator::traverse(Traversal_ptr t)
 {
   Traversal_var traversal = t;
-  TransformImpl *tx = new TransformImpl;
-  tx->_obj_is_ready(_boa());
+  Impl_var<TransformImpl> tx(new TransformImpl);
   updateRequisition();
   Vertex lower, upper, v;
   traversal->bounds(lower, upper, v);
   computeDelta(lower, upper, v);
   tx->translate(v);
   traversal->traverseChild(Graphic_var(body()), 0, Region_var(natural->_this()), Transform_var(tx->_this()));
-  tx->_dispose();
 }
 
 void TransformAllocator::computeDelta(const Vertex &lower, const Vertex &upper, Vertex &delta)
