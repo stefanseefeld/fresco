@@ -32,6 +32,7 @@
 #include "Drawing/PostScript/PSDrawingKit.hh"
 #include <strstream>
 #include <iostream>
+#include <fstream>
 
 using namespace Prague;
 using namespace Warsaw;
@@ -39,7 +40,10 @@ using namespace Warsaw;
 PSDrawingKit::PSDrawingKit(const std::string &id, const Warsaw::Kit::PropertySeq &p)
   : KitImpl(id, p)
 {
-  _os.rdbuf(cout.rdbuf());
+//   _os.rdbuf(cout.rdbuf());
+  std::filebuf *fbuf = new std::filebuf();
+  fbuf->open("berlin-output.ps", std::ios::out);
+  _os.rdbuf(fbuf);
   _os.precision(5);
 }
 
@@ -54,21 +58,21 @@ KitImpl *PSDrawingKit::clone(const Warsaw::Kit::PropertySeq &p)
   return kit;
 }
 
-void PSDrawingKit::init()
+void PSDrawingKit::start_traversal()
 {
   _os << "%!PS-Adobe-3.0 EPSF-3.0" << std::endl;
   _os << "%%BoundingBox: 0 "
       << 0-(int)(Console::instance()->drawable()->width()/resolution(yaxis)+1.) << ' '
       << (int)(Console::instance()->drawable()->height()/resolution(xaxis)+1.) << " 0" << std::endl;
   _os << "%%LanguageLevel: 2" << std::endl;
-  _os << "%%Creator: Berlin Consortium" << std::endl;
+  _os << "%%Creator: Fresco" << std::endl;
   _os << "/Times-Roman findfont 12 scalefont setfont" << std::endl;
   _os << "0 0 0 setrgbcolor" << std::endl;
   _os << resolution(xaxis) << " " << -resolution(yaxis) << " scale" << std::endl;
   _os << std::endl;
 }
 
-void PSDrawingKit::finish()
+void PSDrawingKit::finish_traversal()
 {
   _os << "%%EOF" << std::endl;
 }

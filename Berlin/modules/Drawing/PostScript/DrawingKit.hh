@@ -38,8 +38,6 @@ public:
   PSDrawingKit(const std::string &, const Warsaw::Kit::PropertySeq &);
   virtual ~PSDrawingKit();
   virtual KitImpl *clone(const Warsaw::Kit::PropertySeq &);
-  virtual void init();
-  virtual void finish();
 
   virtual void transformation(Warsaw::Transform_ptr t) { DrawingKitBase::transformation(t);}
   virtual Warsaw::Transform_ptr transformation() { return Warsaw::Transform::_duplicate(_tr);}
@@ -95,8 +93,8 @@ public:
   virtual void draw_text(const Warsaw::Unistring &);
   virtual void copy_drawable(Warsaw::Drawable_ptr, Warsaw::PixelCoord, Warsaw::PixelCoord, Warsaw::PixelCoord, Warsaw::PixelCoord);
 
-  virtual void start_traversal() { }
-  virtual void finish_traversal() { }
+  virtual void start_traversal();
+  virtual void finish_traversal();
 
   virtual void flush() {}
 private:
