@@ -110,7 +110,7 @@ maintainer-clean: distclean
 
 $(SYN): $(CXX_TESTS)
 	@echo generating $(@F)
-	$(SYNOPSIS) -pC++ -I$(hdir) -I`$(FRESCO_TEST_CONFIG) --include-dir` -o $@ $<
+	$(SYNOPSIS) -pCxx -I$(hdir) -I`$(FRESCO_TEST_CONFIG) --include-dir` -o $@ $<
 
 $(HARNESS): $(SYN)
 	@echo generating test harness for $(@F)
