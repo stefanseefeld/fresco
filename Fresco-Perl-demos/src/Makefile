@@ -68,7 +68,7 @@ Warsaw/build-stamp: Warsaw.idl
 	touch Warsaw/build-stamp
 
 Warsaw.idl: gen-warsaw-idl.pl $(wildcard $(top)/include/Warsaw/*.idl)
-	gen-warsaw-idl.pl $(top)/include/Warsaw/*.idl
+	./gen-warsaw-idl.pl $(top)/include/Warsaw/*.idl
 
 ldlibpath = LD_LIBRARY_PATH=$(lpath)
 
