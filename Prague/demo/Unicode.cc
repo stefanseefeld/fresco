@@ -13,16 +13,12 @@ int main (int argc, char **argv) {
 	 << Except.ErrorFilename << ": "
 	 << Except.ErrorMessage << "\n";
   }
-  catch (Unicode::UndefinedUnichar &Except ) {
-    cout << "ERROR: " << hex << setfill('0') << setw(4)
-	 << Except.ErrorUC << " undefined!\n";
-  }
-  catch (Unicode::UndefinedUnicharProperty &Except) {
+  catch (Unicode::UndefinedProperty &Except) {
     cout << "ERROR: " << hex << setfill('0') << setw(4)
 	 << Except.ErrorUC << " has undefined Property ("
 	 << Except.ErrorProp << ").\n";
   }
-  catch (Unicode::UnicodeBlockError &Except) {
+  catch (Unicode::BlockError &Except) {
     cout << "ERROR: Unicodeblock (" << hex << setfill('0') << setw(4)
 	 << Except.BlockStart << "-"
 	 << setfill('0') << setw(4) << Except.BlockEnd << "): "
@@ -38,16 +34,12 @@ int main (int argc, char **argv) {
 	 << Except.ErrorFilename << ": "
 	 << Except.ErrorMessage << "\n";
   }
-  catch (Unicode::UndefinedUnichar &Except ) {
-    cout << "ERROR: " << hex << setfill('0') << setw(4)
-	 << Except.ErrorUC << " undefined!\n";
-  }
-  catch (Unicode::UndefinedUnicharProperty &Except) {
+  catch (Unicode::UndefinedProperty &Except) {
     cout << "ERROR: " << hex << setfill('0') << setw(4)
 	 << Except.ErrorUC << " has undefined Property ("
 	 << Except.ErrorProp << ").\n";
   }
-  catch (Unicode::UnicodeBlockError &Except) {
+  catch (Unicode::BlockError &Except) {
     cout << "ERROR: Unicodeblock (" << hex << setfill('0') << setw(4)
 	 << Except.BlockStart << "-"
 	 << setfill('0') << setw(4) << Except.BlockEnd << "): "
