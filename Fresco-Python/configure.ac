@@ -46,6 +46,14 @@ if test ".$python_program" == "." ; then
   AC_MSG_ERROR([can't install Python bindings without interpreter])
 fi
 
+AC_MSG_CHECKING([for distutils module])
+if `$python_program -c "import distutils" 2>/dev/null`; then
+  AC_MSG_RESULT([yes])
+else
+  AC_MSG_RESULT([no])
+  AC_MSG_ERROR([need distutils])
+fi
+
 dnl ------------------------------------------------------------------
 dnl Output substitution
 dnl ------------------------------------------------------------------
