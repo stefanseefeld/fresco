@@ -14,7 +14,8 @@ class Config(Base):
 	    preprocessor = 'gcc'
 	    extract_tails = 1
 	    include_path = ['../include', top_srcdir + '/include']
-	    basename = top_srcdir + '/include/'
+	    basename = top_srcdir
+	    syntax_prefix = 'sxr_data/'
 	
 	modules = {'Prague' : CXX}
 
@@ -42,13 +43,12 @@ class Config(Base):
 	    toc_out = 'sxrPrague.toc'
 	    file_layout = 'Synopsis.Formatter.HTML.FileLayout.NestedFileLayout'
 	    default_toc = 'XRefPages'
-	    start_dir = ''
-	    base_dir = '.'
 	    class XRefPages:
             	xref_file = 'Prague.xref'
-            #	link_to_scopepages = 1
-	    #class FilePages (Base.Formatter.HTML.FilePages):
-            #	toc_from = 'XRefPages'
+	    class FilePages (Base.Formatter.HTML.FilePages):
+            	toc_from = 'XRefPages'
+		file_path = top_srcdir+'/%s'
+		links_path = 'sxr_data/%s'
 
 	# Here we extend the base modules, so you can still use DUMP, ASCII etc
 	modules = Base.Formatter.modules
