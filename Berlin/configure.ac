@@ -73,11 +73,12 @@ else
 fi
 
 CPPFLAGS="$CPPFLAGS $PNG_CPPFLAGS"
-LDFLAGS="$LD_FLAGS $PNG_LDFLAGS"
+LDFLAGS="$LD_FLAGS $PNG_LDFLAGS -lz -lm"
 
 AC_CHECK_HEADERS(png.h)
 AC_CHECK_LIB(png, png_read_info,,
-             [AC_MSG_ERROR([can't compile libBerlin without libpng])])  
+	AC_CHECK_LIB(png12, png_read_info,,
+             [AC_MSG_ERROR([can't compile libBerlin without libpng])]))  
 
 dnl ------------------------------------------------------------------
 dnl Graphics environment
