@@ -22,6 +22,7 @@
 
 #include "Drawing/openGL/GLUnifont.hh"
 #include <Prague/Sys/MMap.hh>
+#include <Berlin/RCManager.hh>
 
 #include <GL/gl.h>
 #include <string>
@@ -44,13 +45,8 @@ GLUnifont::GLUnifont()
     _fullname(),
     _style(Unicode::toCORBA(Unicode::String("monospace")))
 {
-  char *env = getenv("BERLIN_ROOT");
-  if (!env)
-    {
-      cerr << "Please set environment variable BERLIN_ROOT first" << endl;
-      exit(-1);
-    }
-  string glyphDB = string(env) + "/etc/glyph.dat";
+  Prague::Path path = RCManager::get_path ("unifontpath");
+  string glyphDB = path.lookup_file ("glyph.dat");
   glyphmap = new MMap(glyphDB, -1, MMap::read, MMap::shared, 0, 0);
 }
 
