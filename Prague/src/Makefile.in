@@ -33,7 +33,7 @@ include $(cdir)/local.mk
 CXXFLAGS	+= $(SO_CXXFLAGS)
 LDFLAGS		+= $(SO_LDFLAGS)
 
-SRC		:= logbuf.cc Tracer.cc regex.cc User.cc Stopwatch.cc Profiler.cc Time.cc \
+SRC		:= logbuf.cc Tracer.cc regex.cc User.cc Stopwatch.cc Time.cc \
 	  	   File.cc Directory.cc Path.cc GetOpt.cc DataTypeManager.cc \
 	  	   DLL.cc MMap.cc SHM.cc Thread.cc Timer.cc Signal.cc Fork.cc \
 		   Env.cc

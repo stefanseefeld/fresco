@@ -21,7 +21,6 @@
  */
 
 #include <Prague/Sys/Tracer.hh>
-#include <Prague/Sys/Profiler.hh>
 #include <Fresco/config.hh>
 #include <Fresco/IO.hh>
 #include "Berlin/PositionalFocus.hh"

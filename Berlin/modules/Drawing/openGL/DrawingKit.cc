@@ -21,7 +21,6 @@
  * MA 02139, USA.
  */
 
-#include <Prague/Sys/Profiler.hh>
 #include <Fresco/config.hh>
 #include <Fresco/Transform.hh>
 #include <Fresco/IO.hh>
@@ -450,7 +449,6 @@ void openGL::DrawingKit::draw_ellipse(const Vertex &lower, const Vertex &upper)
 
 void openGL::DrawingKit::draw_image(Raster_ptr raster)
 {
-  Profiler prf("openGL::DrawingKit::draw_image");
   Image *image = _images.lookup(Fresco::Raster::_duplicate(raster));
   Fresco::Path path;
   path.nodes.length(4);

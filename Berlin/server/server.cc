@@ -23,7 +23,6 @@
 
 #include <Prague/Sys/Tracer.hh>
 #include <Prague/Sys/Signal.hh>
-#include <Prague/Sys/Profiler.hh>
 #include <Prague/Sys/Path.hh>
 #include <Prague/Sys/Fork.hh>
 #include <Prague/Sys/GetOpt.hh>
@@ -114,7 +113,7 @@ namespace
               }
               return;
             case Signal::interrupt: break;
-            case Signal::hangup: Profiler::dump(std::cerr); break;
+            case Signal::hangup:
             case Signal::abort:
             case Signal::segfault:
               {

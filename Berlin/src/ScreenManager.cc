@@ -22,8 +22,6 @@
 
 #include <Prague/Sys/FdSet.hh>
 #include <Prague/Sys/Time.hh>
-#include <Prague/Sys/Profiler.hh>
-/* #include <Fresco/config.hh> */
 #include <Fresco/IO.hh>
 #include "Berlin/ScreenImpl.hh"
 #include "Berlin/RegionImpl.hh"
@@ -68,7 +66,6 @@ void ScreenManager::repair()
   Trace trace("ScreenManager::repair");
   Tracer::reset_clock();
   clock_t start = traverse_clock = myclock(), mid, mid2, mid3, end;
-  // Profiler prf("ScreenManager::repair");
   _mutex.lock();
   _tmpDamage->copy(Region_var(_theDamage->_this()));
   _theDamage->clear();

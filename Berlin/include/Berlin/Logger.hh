@@ -26,7 +26,6 @@
 #include "Prague/Sys/logstream.hh"
 #include "Prague/Sys/Time.hh"
 #include "Prague/Sys/Thread.hh"
-#include "Prague/Sys/Profiler.hh"
 #include "Fresco/config.hh"
 
 class Logger
@@ -74,12 +73,11 @@ protected:
 private:
   struct streamlock
   {
-    streamlock(group gg) : owner(true), g(gg), prf("logger") { Logger::mutex.lock();}
-    streamlock(const streamlock &sl) : owner(true), g(sl.g), prf("logger") { sl.owner = false;}
+    streamlock(group gg) : owner(true), g(gg) { Logger::mutex.lock();}
+    streamlock(const streamlock &sl) : owner(true), g(sl.g) { sl.owner = false;}
     ~streamlock() { if (owner) Logger::mutex.unlock();}
     mutable bool owner;
     group g;
-    Prague::Profiler prf;
   };
   friend const streamlock &operator << (const streamlock &sl, std::ostream & (func)(std::ostream &))
     { Logger::write(sl.g, func); return sl;}

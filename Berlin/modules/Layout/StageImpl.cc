@@ -21,7 +21,6 @@
  */
 
 #include <Prague/Sys/Tracer.hh>
-#include <Prague/Sys/Profiler.hh>
 #include <Fresco/config.hh>
 #include <Fresco/Screen.hh>
 #include <Berlin/Provider.hh>
@@ -592,7 +591,6 @@ void StageImpl::traverse(Traversal_ptr traversal)
 {
     Trace trace(this, "StageImpl::traverse");
     Prague::Guard<Mutex> guard(_mutex);
-    // Profiler prf("StageImpl::traverse");
     RegionImpl region(Region_var(traversal->current_allocation()));
     Geometry::Rectangle<Coord> rectangle;
     rectangle.l = region.lower.x;
@@ -776,7 +774,6 @@ void StageImpl::remove(StageHandle_ptr h)
 void StageImpl::move(StageHandleImpl *handle, const Vertex &p)
 {
     Trace trace(this, "StageImpl::move");
-    // Prague::Profiler prf("StageImpl::move");
     Prague::Guard<Mutex> guard(_mutex);
     _tree->remove(handle);
 
