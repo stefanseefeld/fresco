@@ -22,6 +22,7 @@
 SHELL	= /bin/sh
 
 subdirs	= openGL
+#subdirs = libArt
 
 all:
 	@for dir in ${subdirs}; do \

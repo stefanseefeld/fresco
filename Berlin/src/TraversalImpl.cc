@@ -132,7 +132,5 @@ void TraversalImpl::update()
       (*parent).graphic->allocate((*child).tag, info);
       (*child).allocation->copy(info.allocation);
       (*child).transformation->copy(info.transformation);
-//       (*child).transformation->copy((*parent).transformation);
-//       (*child).transformation->premultiply(info.transformation);
     }
 }

@@ -66,7 +66,7 @@ void Placement::traverse(Traversal_ptr traversal)
       RegionImpl *tmp = result.get();
       layout->allocate(1, &r, allocation, &tmp);
       Impl_var<TransformImpl> tx(new TransformImpl);
-      result->normalize(tx);
+      result->normalize(Transform_var(tx->_this()));
       traversal->traverseChild(child, 0, Region_var(result->_this()), Transform_var(tx->_this()));
     }
   else MonoGraphic::traverse(traversal);
@@ -81,7 +81,7 @@ void Placement::allocate(Tag, const Allocation::Info &a)
   layout->allocate(1, &r, a.allocation, &region);
 
   Impl_var<TransformImpl> tx(new TransformImpl);
-  region->normalize(tx);
+  region->normalize(Transform_var(tx->_this()));
   a.transformation->premultiply(Transform_var(tx->_this()));
   a.allocation->copy(Region_var(region->_this()));
 }

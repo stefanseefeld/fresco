@@ -2,7 +2,7 @@
  *
  * This source file is a part of the Berlin Project.
  * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.ca> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -301,6 +301,11 @@ Controller_ptr WidgetKitImpl::slider(const Color &color, BoundedValue_ptr value)
   s->body(Graphic_var(inset(Graphic_var(lk->glueRequisition(req)), color, true)));
   graphics.push_back(s);
   return s->_this();
+}
+
+Controller_ptr WidgetKitImpl::panner(const Color &, BoundedRange_ptr, BoundedRange_ptr)
+{
+  return Controller::_nil();
 }
 
 EXPORT_PLUGIN(WidgetKitImpl,interface(WidgetKit))

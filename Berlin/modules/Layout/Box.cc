@@ -142,7 +142,7 @@ void Box::allocate(Tag tag, const Allocation::Info &info)
    * copy transformation and region into allocation
    */
   CORBA::Long idx = index(tag);
-  result[idx]->normalize(tx);
+  result[idx]->normalize(Transform_var(tx->_this()));
   info.transformation->premultiply(Transform_var(tx->_this()));
   info.allocation->copy(Region_var(result[idx]->_this()));
   CORBA::Long children = numChildren();
@@ -235,7 +235,7 @@ void Box::traverseWithoutAllocation(Traversal_ptr t)
       {
 	t->traverseChild((*i).first, (*i).second, Region_var(Region::_nil()), Transform_var(Transform::_nil()));
 	if (!t->ok()) break;
-      }    
+      }
 }
 
 BoxAlignElements::BoxAlignElements(LayoutManager *layout, Axis a, Alignment align)

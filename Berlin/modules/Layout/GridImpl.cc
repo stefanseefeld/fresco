@@ -394,7 +394,7 @@ void GridImpl::allocate(Tag tag, const Allocation::Info &info)
   Impl_var<TransformImpl> tx(new TransformImpl);
   allocateCell(info.allocation, tag2index(tag), info.allocation);
   Impl_var<RegionImpl> region(new RegionImpl(info.allocation));
-  region->normalize(tx);
+  region->normalize(Transform_var(tx->_this()));
   info.allocation->copy(Region_var(region->_this()));
   info.transformation->premultiply(Transform_var(tx->_this()));
 }
@@ -468,7 +468,7 @@ void GridImpl::traverseWithAllocation(Traversal_ptr t, Region_ptr given, const G
 	tx->loadIdentity();
 	spansToRegion(xspans[i.col], yspans[i.row], region);
 	offsetRegion(region, dx, dy);
-	region->normalize(tx);
+	region->normalize(Transform_var(tx->_this()));
 	t->traverseChild(d.children[i.row][i.col], index2tag(i), Region_var(region->_this()), Transform_var(tx->_this()));
       }
   delete [] xspans;

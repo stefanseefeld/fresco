@@ -62,7 +62,7 @@ public:
 
 public:
   void normalize(Vertex &);
-  void normalize(TransformImpl *);
+  void normalize(Transform_ptr);
   bool valid;
   Vertex lower, upper;
   Alignment xalign, yalign, zalign;
@@ -112,11 +112,11 @@ inline void RegionImpl::normalize(Vertex &o)
   upper -= o;
 }
 
-inline void RegionImpl::normalize(TransformImpl *t)
+inline void RegionImpl::normalize(Transform_ptr t)
 {
   Vertex o;
   normalize(o);
-  t->translate(o);
+  if (!CORBA::is_nil(t)) t->translate(o);
 }
 
 inline ostream &operator << (ostream &os, const RegionImpl &region)

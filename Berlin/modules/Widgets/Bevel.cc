@@ -76,10 +76,10 @@ void Bevel::traverse(Traversal_ptr traversal)
     {
       if (hmargin || vmargin)
 	{
-	  Allocation::Info info;
 	  Impl_var<RegionImpl> allocation(new RegionImpl(Region_var(traversal->allocation())));
-	  info.allocation = allocation->_this();
 	  Impl_var<TransformImpl> tx(new TransformImpl);
+	  Allocation::Info info;
+	  info.allocation = allocation->_this();
 	  info.transformation = tx->_this();
 	  allocate(0, info);
 	  traversal->traverseChild(child, 0, info.allocation, info.transformation);

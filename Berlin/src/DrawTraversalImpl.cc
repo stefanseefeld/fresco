@@ -26,6 +26,7 @@
 #include "Warsaw/DrawingKit.hh"
 #include "Warsaw/Region.hh"
 #include "Berlin/Logger.hh"
+#include "Berlin/GGI.hh"
 
 DrawTraversalImpl::DrawTraversalImpl(Graphic_ptr g, Region_ptr r, Transform_ptr t, DrawingKit_ptr kit)
   : TraversalImpl(g, r, t),
@@ -95,8 +96,8 @@ void DrawTraversalImpl::traverseChild(Graphic_ptr child, Tag tag, Region_ptr reg
 //   drawable->clipping(region, Transform_var(tx->_this()));
   push(child, tag, region, cumulative.release());
   child->traverse(Traversal_var(_this()));
-  pop();
   drawing->restoreState();
+  pop();
 };
 
 void DrawTraversalImpl::visit(Graphic_ptr g) { g->draw(DrawTraversal_var(_this()));}

@@ -48,7 +48,7 @@ void ScreenManager::damage(Region_ptr r)
 void ScreenManager::repair()
 {
   mutex.lock();
-  tmpDamage->copy(theDamage);
+  tmpDamage->copy(Region_var(theDamage->_this()));
   theDamage->clear();
   mutex.unlock();
   emanager->restore(Region_var(tmpDamage->_this()));

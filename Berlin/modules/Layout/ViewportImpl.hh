@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -37,6 +37,7 @@ class ViewportImpl : implements(Viewport), public MonoGraphic
   ~ViewportImpl();
   void attachAdjustments();
   virtual void body(Graphic_ptr);
+  virtual Graphic_ptr body() { return MonoGraphic::body();}
 
   virtual Transform_ptr transformation();
   virtual void request(Requisition &);
@@ -50,21 +51,21 @@ class ViewportImpl : implements(Viewport), public MonoGraphic
   virtual void update(Subject_ptr, const CORBA::Any &);
 
   void scrollTo(Axis, Coord);
-  Coord lower(Axis);
-  Coord length(Axis);
-  Coord offset(Axis);
-  Coord visible(Axis);
+//   Coord lower(Axis);
+//   Coord length(Axis);
+//   Coord offset(Axis);
+//   Coord visible(Axis);
 protected:
   void allocateChild(Allocation::Info &);
   void cacheRequisition();
-  void checkAllocation(Region_ptr);
+  void cacheAllocation(Region_ptr);
   RegionImpl *bodyAllocation(Region_ptr);
   void scrollTransform(Transform_ptr);
 
-  Coord       of[2];
-  Coord       vi[2];
+  Coord       lv[2];
+  Coord       uv[2];
   Coord       lo[2]; 
-  Coord       le[2];
+  Coord       up[2];
 
   Adjustment *xadjustment;
   Adjustment *yadjustment;

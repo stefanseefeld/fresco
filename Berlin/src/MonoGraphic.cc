@@ -85,11 +85,11 @@ void MonoGraphic::extension(const Allocation::Info &info, Region_ptr region)
   Graphic_var child = body();
   if (!CORBA::is_nil(child))
     {
-      Allocation::Info i;
       Impl_var<RegionImpl> tmp(new RegionImpl);
+      Impl_var<TransformImpl> transform(new TransformImpl);
+      Allocation::Info i;
       i.allocation = tmp->_this();
       i.allocation->copy(info.allocation);
-      Impl_var<TransformImpl> transform(new TransformImpl);
       i.transformation = transform->_this();
       i.transformation->copy(info.transformation);
       allocate(0, i);
@@ -107,5 +107,6 @@ void MonoGraphic::traverse(Traversal_ptr traversal)
 {
   SectionLog section("MonoGraphic::traverse");
   Graphic_var child = body();
-  if (!CORBA::is_nil(child)) traversal->traverseChild(child, 0, Region::_nil(), Transform::_nil());
+  if (!CORBA::is_nil(child))
+    traversal->traverseChild(child, 0, Region_var(Region::_nil()), Transform_var(Transform::_nil()));
 }

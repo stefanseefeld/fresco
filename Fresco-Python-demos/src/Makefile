@@ -21,32 +21,13 @@
 
 SHELL	= /bin/sh
 
-subdirs	= include/Warsaw src test clients
-# doc
-
-.PHONY:	config test
-
-world:	all
-
-config::
-	@cd config; ./configure $$CONFIGURE_OPTS; cd ../src/Prague/config; \
-	./configure $$CONFIGURE_OPTS
-# Added shell env var $$CONFIGURE_OPTS
+subdirs	= Warsaw
 
 all:
-	@if [ -f include/Warsaw/config.hh ]; then \
-	  for dir in ${subdirs}; do \
-	    (cd $$dir && $(MAKE)) \
-	    || case "$(MFLAGS)" in *k*) fail=yes;; *) exit 1;; esac; \
-	  done && test -z "$$fail"; \
-	else \
-	  echo -e "Please run \"make config\" first!\n" \
-	  "\nIf you need to provide arguments to the configure scripts use:"\
-	  "\n    cd config"\
-	  "\n    ./configure --whatever-you-need"\
-	  "\n    cd .."\
-	  "\nThen run make again."; \
-	fi
+	@for dir in ${subdirs}; do \
+	  (cd $$dir && $(MAKE)) \
+	  || case "$(MFLAGS)" in *k*) fail=yes;; *) exit 1;; esac; \
+	done && test -z "$$fail"
 
 clean:
 	/bin/rm -f *~
@@ -56,16 +37,12 @@ clean:
 	done && test -z "$$fail"
 
 distclean:
-	/bin/rm -f $(cpath)/config.cache $(cpath)/config.log
 	@for dir in ${subdirs}; do \
 	  (cd $$dir && $(MAKE) distclean) \
 	  || case "$(MFLAGS)" in *k*) fail=yes;; *) exit 1;; esac; \
 	done && test -z "$$fail"
 
-install: all
+install:
 	@for dir in ${subdirs}; do \
 	  (cd $$dir && $(MAKE) install); \
 	done
-
-debs:
-	dpkg-buildpackage -rfakeroot -uc -us
