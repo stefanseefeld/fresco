@@ -30,11 +30,15 @@ intdir		:= $(top_srcdir)/share/idl
 
 distdir		:= @PACKAGE_NAME@-@PACKAGE_VERSION@
 
-SYNOPSIS		:= synopsis
+SYNOPSIS	:= synopsis
 INSTALL		:= @INSTALL@
 
-INT			:= $(wildcard $(intdir)/Fresco/*.idl)
-SYN			:= $(patsubst $(intdir)/Fresco/%.idl, %.syn, $(INT))
+INT		:= $(wildcard $(intdir)/Fresco/*.idl)
+SYN		:= $(patsubst $(intdir)/Fresco/%.idl, %.syn, $(INT))
+SYN		:= $(patsubst %.idl, %.syn, $(notdir $(INT)))
+XREF		:= $(patsubst %.idl, %.xref, $(notdir $(INT)))
+
+MANUAL		:= share/doc/Fresco-IDL/html
 
 vpath %.idl $(intdir)/Fresco
 
@@ -46,11 +50,20 @@ all:
 
 depend:
 
-doc: share/doc/Fresco-IDL/html
+xref:	lib/Fresco-IDL.xref lib/Fresco-IDL.syn
 
-share/doc/Fresco-IDL/html:	$(SYN)
+doc:	$(MANUAL)
+
+lib/Fresco-IDL.xref:	$(XREF)
+	compile-xref -o $@ $^
+
+lib/Fresco-IDL.syn:	$(SSYN) $(SYN)
+	@echo linking synopsis files together
+	@$(SYNOPSIS) -o $@ $^
+
+$(MANUAL):	$(SYN)
 	@echo formatting $(@F)
-	$(SYNOPSIS) -c config/synopsis.py -Wc,formatter=HTML -o $@ $(SYN)
+	@$(SYNOPSIS) -c config/synopsis.py -Wc,formatter=HTML -o $@ $(SYN)
 	touch $@
 
 install:
@@ -71,6 +84,7 @@ $(distdir).tar.gz:
 	-rm -rf $(distdir)
 	cp -pr $(srcdir) $(distdir)
 	-chmod -R a+r $(distdir)
+	cp config/Fresco-IDL.spec $(distdir)/config/
 	tar czhf $(distdir).tar.gz \
        --exclude CVS \
        --exclude .cvsignore \
@@ -78,7 +92,7 @@ $(distdir).tar.gz:
        --exclude '*.m4' \
        --exclude '*.ac' \
        --exclude '*~' \
-       $(distdir) config/Fresco-IDL.spec
+       $(distdir)
 	-rm -rf $(distdir)
 
 uninstall:

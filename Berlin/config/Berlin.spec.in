@@ -47,9 +47,8 @@ fi
 %install
 rm -rf $RPM_BUILD_ROOT
 
-install -d $RPM_BUILD_ROOT%{_mandir}/man1
-install -d $RPM_BUILD_ROOT%{_mandir}/man4
-make prefix=$RPM_BUILD_ROOT%{prefix} mandir=$RPM_BUILD_ROOT%{_mandir} install
+make prefix=$RPM_BUILD_ROOT%{prefix} install
+make prefix=$RPM_BUILD_ROOT%{prefix} install-doc
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -72,5 +71,6 @@ rm -rf $RPM_BUILD_ROOT
 
 %{prefix}/include/*
 %{prefix}/bin/Berlin-config
+%{prefix}/share/doc
 
 %changelog

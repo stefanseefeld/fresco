@@ -45,6 +45,7 @@ $(subdirs):
 depend:
 	$(MAKE) action="depend"
 
+xref: #do nothing
 doc: #do nothing
 
 install:

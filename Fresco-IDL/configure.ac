@@ -48,4 +48,6 @@ if test "$srcdir" != .; then
   AC_CONFIG_LINKS([share/idl:share/idl])
 fi
 
+mkdir -p lib
+
 AC_OUTPUT

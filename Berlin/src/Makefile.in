@@ -21,10 +21,10 @@
 
 SHELL	:= /bin/sh
 
-top_srcdir	:= @top_srcdir@
+abs_top_srcdir	:= @abs_top_srcdir@
 srcdir		:= @srcdir@
 cdir		:= @top_builddir@/config
-hdir		:= $(top_srcdir)/include/Berlin
+hdir		:= $(abs_top_srcdir)/include/Berlin
 
 include $(cdir)/local.mk
 
@@ -55,13 +55,17 @@ HDR	:= Console.hh Color.hh Event.hh GapBuffer.hh Geometry.hh \
 	   PositionalFocus.hh NonPositionalFocus.hh FilterImpl.hh \
 	   SubjectImpl.hh KitImpl.hh RCManager.hh DefaultPOA.hh \
 	   ObserverImpl.hh config.hh
-CHDR	+= DirectBuffer.hh Renderer.hh GLContext.hh SHMDrawableFactory.hh GGIDrawableFactory.hh
+CHDR	:= DirectBuffer.hh Renderer.hh GLContext.hh SHMDrawableFactory.hh GGIDrawableFactory.hh
 OBJ	:= $(patsubst %.cc, %.o, $(SRC))
-SYN	:= $(patsubst %.hh, %.syn, $(HDR) $(CHDR))
+HSYN	:= $(patsubst %, %.syn, $(HDR) $(CHDR))
+SSYN	:= $(patsubst %, %.syn, $(SRC))
+XREF	:= $(patsubst %, %.xref, $(HDR) $(CHDR))
+XREF	+= $(patsubst %, %.xref, $(SRC))
 
 LIBS	+= -lpng
 
 TARGET	:= ../lib/libBerlin.so
+MANUAL	:= ../share/doc/Berlin/html
 
 vpath %.hh  $(hdir):$(hdir)/Console
 vpath %.cc  $(srcdir)
@@ -76,11 +80,20 @@ $(TARGET):	$(OBJ)
 
 depend: $(DEP)
 
-doc:	../share/doc/Berlin/html
+xref:	../lib/Prague.xref ../lib/Prague.syn
 
-../share/doc/Berlin/html:	$(SYN)
+doc:	$(MANUAL)
+
+../lib/Berlin.xref:	$(XREF)
+	compile-xref -o $@ $^
+
+../lib/Berlin.syn:	$(SSYN) $(HSYN)
+	@echo linking synopsis files together
+	@$(SYNOPSIS) -o $@ $^
+
+$(MANUAL):	$(HSYN)
 	@echo formatting $(@F)
-	$(SYNOPSIS) -c ../config/synopsis.py -Wc,formatter=HTML -o $@ $(SYN)
+	$(SYNOPSIS) -c ../config/synopsis.py -Wc,formatter=HTML -o $@ $(HSYN)
 	touch $@
 
 install:	all
@@ -130,9 +143,13 @@ maintainer-clean: distclean
 	@echo compiling $(@F)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(OPTFLAGS) $(SOFLAGS) -c $< -o $@
 
-%.syn:	%.hh
+%.hh.syn %.hh.xref:	%.hh
 	@echo parsing $(^F)
-	$(SYNOPSIS) -c ../config/synopsis.py $(patsubst -I%, -I%, $(CPPFLAGS)) -Wp,-b,$(hdir) -Wc,parser=Berlin,linker=Berlin $(SFLAGS) -o $@ $?
+	$(SYNOPSIS) -c ../config/synopsis.py -Wc,parser=Fresco,linker=Fresco $(patsubst -I%, -I%, $(CPPFLAGS)) -Wp,-x,$(<F).xref -o $*.hh.syn $?
+
+%.cc.syn %.cc.xref:	%.cc
+	@echo parsing $(^F)
+	$(SYNOPSIS) -c ../config/synopsis.py -Wc,parser=Fresco,linker=Fresco $(patsubst -I%, -I%, $(CPPFLAGS)) -Wp,-x,$(<F).xref -o $*.cc.syn $?
 
 ifneq (,$(findstring depend, $(MAKECMDGOALS)))
 $(DEP): %.d:	.FORCE

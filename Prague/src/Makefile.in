@@ -84,8 +84,6 @@ $(TARGET):	$(OBJ)
 depend: $(DEP)
 
 xref:	../lib/Prague.xref ../lib/Prague.syn
-#	don't do more, as the sxr stuff is too specific to be hardcoded here...
-#	$(SYNOPSIS) -c ../config/synopsis.py -Wc,formatter=SXR -o sxr ../lib/Prague.syn
 
 doc:	$(MANUAL)
 
@@ -156,11 +154,11 @@ DataTypeManager.o:	DataTypeManager.cc
 
 %.hh.syn %.hh.xref:	%.hh
 	@echo parsing $(^F)
-	$(SYNOPSIS) -c ../config/synopsis.py -Wc,parser=Prague,linker=Prague -Wp,-x,$(<F).xref $(SFLAGS) -o $*.hh.syn $?
+	$(SYNOPSIS) -c ../config/synopsis.py -Wc,parser=Fresco,linker=Fresco -Wp,-x,$(<F).xref -o $*.hh.syn $?
 
 %.cc.syn %.cc.xref:	%.cc
 	@echo parsing $(^F)
-	$(SYNOPSIS) -c ../config/synopsis.py -Wc,parser=Prague,linker=Prague -Wp,-x,$(<F).xref $(SFLAGS) -o $*.cc.syn $?
+	$(SYNOPSIS) -c ../config/synopsis.py -Wc,parser=Fresco,linker=Fresco -Wp,-x,$(<F).xref -o $*.cc.syn $?
 
 ifneq (,$(findstring depend, $(MAKECMDGOALS)))
 $(DEP): %.d:	.FORCE

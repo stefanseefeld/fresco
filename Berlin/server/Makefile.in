@@ -58,6 +58,7 @@ endif
 
 depend: $(DEP)
 
+xref: #do nothing
 doc: #do nothing
 
 ifeq ($(JPROF),yes)

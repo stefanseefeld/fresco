@@ -1,5 +1,3 @@
-# Synopsis configuration file for Prague
-
 from Synopsis.Config import Base
 
 top_srcdir = '@top_srcdir@'
@@ -17,7 +15,7 @@ class Config(Base):
 	    basename = top_srcdir
 	    syntax_prefix = 'sxr_data/'
 	
-	modules = {'Prague' : CXX}
+	modules = {'Fresco' : CXX}
 
     class Linker (Base.Linker):
 
@@ -25,7 +23,7 @@ class Config(Base):
 	    "Fresco style linker - override the comment stuff"
 	    comment_processors = ['ssd', 'prev', 'group']
 	
-	modules = {'Prague' : Fresco}
+	modules = {'Fresco' : Fresco}
 
     class Formatter(Base.Formatter):
 
@@ -37,24 +35,5 @@ class Config(Base):
 	    tree_formatter = 'TreeFormatterJS.TreeFormatterJS'
 	    toc_out = '../share/doc/Prague/html/Prague.toc'
 	
-	class SXR(Base.Formatter.HTML):
-	    stylesheet = 'manual.css'
-	    pages=['DirBrowse', 'FilePages', 'XRefPages']
-	    toc_out = 'sxrPrague.toc'
-	    file_layout = 'Synopsis.Formatter.HTML.FileLayout.NestedFileLayout'
-	    default_toc = 'XRefPages'
-	    base_dir = top_srcdir
-	    start_dir = top_srcdir
-	    exclude_globs = ['CVS']
-	    class XRefPages:
-            	xref_file = 'Prague.xref'
-	    class FilePages (Base.Formatter.HTML.FilePages):
-            	toc_from = 'XRefPages'
-		file_path = top_srcdir+'/%s'
-		links_path = 'sxr_data/%s'
-
-	# Here we extend the base modules, so you can still use DUMP, ASCII etc
-	modules = Base.Formatter.modules
-	modules['HTML'] = HTML
-	modules['SXR'] = SXR
+	modules = {'HTML' : HTML}
 

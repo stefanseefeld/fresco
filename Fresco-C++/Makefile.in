@@ -49,6 +49,7 @@ $(subdirs):
 depend:
 	$(MAKE) action="depend"
 
+xref: #do nothing
 doc:
 	$(MAKE) action="doc"
 

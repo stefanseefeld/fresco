@@ -1,9 +1,9 @@
-# Synopsis configuration file for Berlin
-
 from Synopsis.Config import Base
 
-top_srcdir = '@abs_top_srcdir@'
-top_builddir = '@abs_top_builddir@'
+top_srcdir = '@top_srcdir@'
+abs_top_srcdir = '@abs_top_srcdir@'
+top_builddir = '@top_builddir@'
+abs_top_builddir = '@abs_top_builddir@'
 
 class Config(Base):
 
@@ -14,9 +14,11 @@ class Config(Base):
 	    main_file = 1
 	    preprocessor = 'gcc'
 	    extract_tails = 1
-	    include_path = [top_builddir + '/include', top_srcdir + '/include']
+	    include_path = [top_builddir + '/include', abs_top_srcdir + '/include']
+	    basename = abs_top_srcdir
+	    syntax_prefix = 'sxr_data/'
 	
-        modules = {'Berlin' : CXX}
+	modules = {'Fresco' : CXX}
 
     class Linker (Base.Linker):
 
@@ -25,14 +27,14 @@ class Config(Base):
 	    comment_processors = ['ssd', 'prev', 'group']
 	    mappers = ['C++toIDL']
 
-	modules = {'Berlin' : Fresco}
+	modules = {'Fresco' : Fresco}
 
     class Formatter(Base.Formatter):
 
 	class HTML(Base.Formatter.HTML):
 	    "Set some local options common to all manuals"
 	    stylesheet = 'manual.css'
-	    stylesheet_file = top_srcdir + '/config/manual.css'
+	    stylesheet_file = abs_top_srcdir + '/config/manual.css'
 	    file_layout = 'Synopsis.Formatter.HTML.FileLayout.NestedFileLayout'
 	    tree_formatter = 'TreeFormatterJS.TreeFormatterJS'
 	
@@ -50,10 +52,7 @@ class Config(Base):
 		'@Prague_prefix@/share/doc/Prague/html/Prague.toc|../../Prague',
 		'@Babylon_prefix@/share/doc/Babylon/html/Babylon.toc|../../Babylon',
 		'@Fresco_IDL_prefix@/share/doc/Fresco-IDL/html/Fresco-IDL.toc|../../Fresco-IDL',
-		top_builddir + '/share/doc/Berlin/html/Berlin.toc|../../Berlin',
+		abs_top_builddir + '/share/doc/Berlin/html/Berlin.toc|../../Berlin',
 	    ]
 
-	# Here we extend the base modules, so you can still use DUMP, ASCII etc
-	modules = Base.Formatter.modules
-	modules['HTML'] = Berlin
-	modules['KitHTML'] = Kit
+	modules = {'HTML' : Berlin, 'KitHTML' : Kit}

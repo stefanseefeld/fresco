@@ -35,13 +35,13 @@ AC_PROG_MAKE_SET
 AC_PROG_INSTALL
 
 dnl ------------------------------------------------------------------
-dnl Environment (this needs to go before AC_LANG_CPLUSPLUS)
+dnl Environment (this needs to go before AC_LANG(C++)
 dnl ------------------------------------------------------------------
 
 AC_HEADER_STDC
 AC_CHECK_FUNCS(getenv putenv setenv unsetenv)
 
-AC_LANG_CPLUSPLUS
+AC_LANG(C++)
 
 dnl ------------------------------------------------------------------
 dnl General flags
@@ -74,7 +74,9 @@ dnl ------------------------------------------------------------------
 AC_MSG_NOTICE([Dynamic Loading Implementation])
 AC_CHECK_HEADERS(dlfcn.h dl.h)
 AC_CHECK_LIB(dl, dlopen)
+AC_LANG(C)
 AC_CHECK_FUNCS(dlopen dlsym dlclose shl_load)
+AC_LANG(C++)
 
 AC_MSG_NOTICE([plugin method :])
 
@@ -91,7 +93,9 @@ AC_MSG_NOTICE([IPC Implementation])
 FRESCO_LIB_SOCKET
 AC_CHECK_LIB(util, login, LIBS="$LIBS -lutil")
 AC_CHECK_HEADERS([pty.h sys/stropts.h])
+AC_LANG(C)
 AC_CHECK_FUNCS([openpty _getpty])
+AC_LANG(C++)
 
 dnl won't work without AC_CANONICAL_HOST
 dnl 

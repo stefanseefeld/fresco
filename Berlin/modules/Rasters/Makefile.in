@@ -21,9 +21,9 @@
 
 SHELL		:= /bin/sh
 
-top_srcdir	:= @top_srcdir@
+abs_top_srcdir	:= @abs_top_srcdir@
 top_builddir	:= @top_builddir@
-srcdir		:= $(top_srcdir)/modules/Images
+srcdir		:= $(abs_top_srcdir)/modules/Images
 cdir		:= $(top_builddir)/config
 
 include $(cdir)/local.mk

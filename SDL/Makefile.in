@@ -50,6 +50,7 @@ config: #do nothing
 depend:
 	$(MAKE) action="depend"
 
+xref: #do nothing
 doc: #do nothing
 
 install:

@@ -52,6 +52,9 @@ depend:
 doc:
 	$(MAKE) action="doc"
 
+xref:
+	$(MAKE) action="xref"
+
 install:
 	$(MAKE) action="install"
 
@@ -68,6 +71,7 @@ $(distdir).tar.gz:
 	-rm -rf $(distdir)
 	cp -pr $(srcdir) $(distdir)
 	-chmod -R a+r $(distdir)
+	cp config/Prague.spec $(distdir)/config/
 	tar czhf $(distdir).tar.gz \
        --exclude CVS \
        --exclude .cvsignore \
@@ -75,7 +79,7 @@ $(distdir).tar.gz:
        --exclude '*.m4' \
        --exclude '*.ac' \
        --exclude '*~' \
-       $(distdir) config/Prague.spec
+       $(distdir)
 	-rm -rf $(distdir)
 
 uninstall:

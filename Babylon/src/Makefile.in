@@ -37,9 +37,13 @@ SRC		:= traits.cc String.cc Char.cc Dictionary.cc utils.cc \
 HDR		:= $(patsubst $(hdir)/%, %, $(wildcard $(hdir)/*.hh))
 DEP		:= $(patsubst %.cc, %.d, $(SRC))
 OBJ		:= $(patsubst %.cc, %.o, $(SRC))
-SYN		:= $(patsubst %.hh, %.syn, $(HDR))
+HSYN		:= $(patsubst %, %.syn, $(HDR))
+SSYN		:= $(patsubst %, %.syn, $(SRC))
+XREF		:= $(patsubst %, %.xref, $(HDR))
+XREF		+= $(patsubst %, %.xref, $(SRC))
 
 TARGET		:= ../lib/libBabylon.so
+MANUAL		:= ../share/doc/Babylon/html
 
 vpath %.hh  $(hdir)
 vpath %.cc  $(srcdir)
@@ -56,11 +60,20 @@ $(TARGET):	$(OBJ)
 
 depend: $(DEP)
 
-doc:	../share/doc/Babylon/html
+xref:	../lib/Babylon.xref ../lib/Babylon.syn
 
-../share/doc/Babylon/html:	$(SYN)
+doc:	$(MANUAL)
+
+../lib/Babylon.xref:	$(XREF)
+	compile-xref -o $@ $^
+
+../lib/Babylon.syn:	$(SSYN) $(HSYN)
+	@echo linking synopsis files together
+	@$(SYNOPSIS) -o $@ $^
+
+$(MANUAL):	$(HSYN)
 	@echo formatting $(@F)
-	$(SYNOPSIS) -c ../config/synopsis.py -Wc,formatter=HTML -o $@ $(SYN)
+	$(SYNOPSIS) -c ../config/synopsis.py -Wc,formatter=HTML -o $@ $(HSYN)
 	touch $@
 
 install:	all
@@ -104,9 +117,13 @@ maintainer-clean: distclean
 	@echo compiling $(@F)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
-%.syn:	%.hh
+%.hh.syn %.hh.xref:	%.hh
 	@echo parsing $(^F)
-	$(SYNOPSIS) -c ../config/synopsis.py $(patsubst -I%, -I%, $(CPPFLAGS)) -Wc,parser=Babylon,linker=Babylon $(SFLAGS) -o $@ $?
+	$(SYNOPSIS) -c ../config/synopsis.py -Wc,parser=Fresco,linker=Fresco $(patsubst -I%, -I%, $(CPPFLAGS)) -Wp,-x,$(<F).xref -o $*.hh.syn $?
+
+%.cc.syn %.cc.xref:	%.cc
+	@echo parsing $(^F)
+	$(SYNOPSIS) -c ../config/synopsis.py -Wc,parser=Fresco,linker=Fresco $(patsubst -I%, -I%, $(CPPFLAGS)) -Wp,-x,$(<F).xref -o $*.cc.syn $?
 
 ifneq (,$(findstring depend, $(MAKECMDGOALS)))
 $(DEP): %.d:	.FORCE

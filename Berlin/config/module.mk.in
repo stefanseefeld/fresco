@@ -36,7 +36,7 @@
 #
 #
 
-docdir	:= $(patsubst $(top_srcdir)/%,%, $(srcdir))
+docdir	:= $(patsubst $(abs_top_srcdir)/%,%, $(srcdir))
 
 # Compilation and linking flags.
 CXXFLAGS+= $(SO_CXXFLAGS)
@@ -51,9 +51,12 @@ CPPFLAGS+= $(EXTRA_CPPFLAGS)
 DEP	:= $(patsubst %.cc, %.d, $(SRC))
 OBJ	:= $(patsubst %.cc, %.o, $(SRC))
 HDR	?= $(patsubst $(srcdir)/%, %, $(wildcard $(srcdir)/*.hh))
-SYN	:= $(patsubst %.hh, %.syn, $(HDR))
+HSYN	:= $(patsubst %, %.syn, $(HDR))
+SSYN	:= $(patsubst %, %.syn, $(SRC))
+XREF	:= $(patsubst %, %.xref, $(HDR) $(SRC))
 
 TARGET	:= $(MODULE).so
+MANUAL	:= $(abs_top_builddir)/share/doc/Berlin/$(docdir)/html
 
 vpath %.hh  $(srcdir)
 vpath %.cc  $(srcdir)
@@ -66,11 +69,20 @@ $(TARGET):	$(DEP) $(OBJ)
 
 depend: $(DEP)
 
-doc:	$(abs_top_builddir)/share/doc/Berlin/$(docdir)/html
+xref:	$(abs_top_builddir)/modules/$(MODULE).xref $(abs_top_builddir)/modules/$(MODULE).syn
 
-$(abs_top_builddir)/share/doc/Berlin/$(docdir)/html:	$(SYN)
+doc:	$(MANUAL)
+
+$(abs_top_builddir)/modules/$(MODULE).xref:	$(XREF)
+	compile-xref -o $@ $^
+
+$(abs_top_builddir)/modules/$(MODULE).syn:	$(SSYN) $(HSYN)
+	@echo linking synopsis files together
+	@$(SYNOPSIS) -o $@ $^
+
+$(MANUAL):	$(HSYN)
 	@echo formatting $(@F)
-	$(SYNOPSIS) -c $(cdir)/synopsis.py -Wc,formatter=KitHTML -o $@ $(SYN)
+	$(SYNOPSIS) -c $(cdir)/synopsis.py -Wc,formatter=KitHTML -o $@ $(HSYN)
 	touch $@
 
 install:	all
@@ -98,9 +110,13 @@ maintainer-clean: distclean
 	@echo compiling $(@F)
 	$(CXX) -I$(top_builddir)/include $(CPPFLAGS) $(CXXFLAGS) $(SO_CXXFLAGS) -c $< -o $@
 
-%.syn:	%.hh
+%.hh.syn %.hh.xref:	%.hh
 	@echo parsing $(^F)
-	$(SYNOPSIS) -c $(cdir)/synopsis.py -I$(top_builddir)/include $(patsubst -I%, -I%, $(CPPFLAGS)) -Wp,-b,$(srcdir) -Wc,parser=Berlin,linker=Berlin $(SFLAGS) -o $@ $?
+	$(SYNOPSIS) -c $(cdir)/synopsis.py -Wc,parser=Fresco,linker=Fresco -I$(top_builddir)/include $(patsubst -I%, -I%, $(CPPFLAGS)) -Wp,-x,$(<F).xref -o $*.hh.syn $?
+
+%.cc.syn %.cc.xref:	%.cc
+	@echo parsing $(^F)
+	$(SYNOPSIS) -c $(cdir)/synopsis.py -Wc,parser=Fresco,linker=Fresco -I$(top_builddir)/include $(patsubst -I%, -I%, $(CPPFLAGS)) -Wp,-x,$(<F).xref -o $*.cc.syn $?
 
 ifneq (,$(findstring depend, $(MAKECMDGOALS)))
 $(DEP): %.d:	.FORCE
