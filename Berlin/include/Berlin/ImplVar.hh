@@ -59,11 +59,11 @@ class Impl_var
 //. -stefan
 {
 public:
-  explicit Impl_var(T *tt = 0) : t(tt) { activate(t);}
+  explicit Impl_var(T *tt = 0) : t(tt) { if (t) activate(t);}
   Impl_var(Impl_var &i) : t(i._retn()) {}
   Impl_var &operator = (Impl_var &i) { if (&i != this) { if (t) deactivate(t); t = i._retn();} return *this;}
   ~Impl_var() { if (t) deactivate(t);}
-  Impl_var &operator = (T *tt) { if (t) deactivate(t); t = tt; activate(t); return *this;}
+  Impl_var &operator = (T *tt) { if (t) deactivate(t); t = tt; if (t) activate(t); return *this;}
   T *get() const { return t;}
   T &operator *() const { return *t;}
   T *operator->() const { return  t;}

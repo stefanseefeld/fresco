@@ -31,20 +31,21 @@ class Object_var
   typedef typename T::_ptr_type T_ptr;
 public:
   explicit Object_var(T_ptr tt = 0) : t(tt) {}
-  Object_var(const Object_var &o) : t(T::_duplicate(o.t)) { t->increment();}
+  Object_var(const Object_var &o) : t(T::_duplicate(o.t)) { if (!CORBA::_is_nil(t)) t->increment();}
   Object_var &operator = (Object_var &o)
     {
       if (&o != this)
         {
-          if (t) t->decrement(), CORBA::release(t);
-          t = T::_duplicate(o.t), t->increase();
+          if (!CORBA::_is_nil(t)) t->decrement(), CORBA::release(t);
+          t = T::_duplicate(o.t);
+	  if (!CORBA::_is_nil(t)) t->increase();
         }
       return *this;
     }
-  ~Object_var() { if (t) t->decrement(), CORBA::release(t);}
+  ~Object_var() { if (!CORBA::_is_nil(t)) t->decrement(), CORBA::release(t);}
   Object_var &operator = (T_ptr tt)
     {
-      if (t) t->decrement(), CORBA::release(t);
+      if (!CORBA::_is_nil(t)) t->decrement(), CORBA::release(t);
       t = tt;
       return *this;
     }

@@ -62,6 +62,8 @@ public:
   void setup_size(FT_Face &f);
   bool load_glyph(Unichar c, FT_Face &f);
   void matrix(FT_Matrix &m) {m = matrix_;}
+
+  double getScale() const { return scale;} 
   
 protected:
 
@@ -106,7 +108,7 @@ protected:
     FT_Library *lib_;
   public:
     GlyphMetricsFactory(LibArtFTFont *f, FT_Library *l) : font_(f), lib_(l) {}
-    DrawingKit::GlyphMetrics produce(const GlyphSpec &cs);
+    DrawingKit::GlyphMetrics produce(const TGlyphSpec &cs);
     void recycle(DrawingKit::GlyphMetrics) {};
   };
  
@@ -139,9 +141,11 @@ protected:
   map<FamStyle,FT_Face> myFaceMap;
 
   // caches!
-  LRUCache<TGlyphSpec,ArtPixBuf *, GlyphFactory, map<TGlyphSpec,ArtPixBuf *,TGlyphSpec_cmp> > myGlyphCache;
+  LRUCache<TGlyphSpec,ArtPixBuf *, GlyphFactory, 
+    map<TGlyphSpec,ArtPixBuf *,TGlyphSpec_cmp> > myGlyphCache;
   LRUCache<FaceSpec,DrawingKit::FontMetrics, FaceMetricsFactory> myFaceMetricsCache;
-  LRUCache<GlyphSpec,DrawingKit::GlyphMetrics, GlyphMetricsFactory> myGlyphMetricsCache;   
+  LRUCache<TGlyphSpec,DrawingKit::GlyphMetrics, GlyphMetricsFactory, 
+    map<TGlyphSpec,DrawingKit::GlyphMetrics,TGlyphSpec_cmp> > myGlyphMetricsCache;   
 
 private:
   bool chooseFaceInteractively(const map<FamStyle,FT_Face> &, const char *, Unicode::String &, Unicode::String &);

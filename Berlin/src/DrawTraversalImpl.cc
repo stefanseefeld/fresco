@@ -107,7 +107,7 @@ void DrawTraversalImpl::traverseChild(Graphic_ptr child, Tag tag, Region_ptr reg
   if (!CORBA::is_nil(transform)) cumulative->premultiply(transform);
   drawing->transformation(Transform_var(cumulative->_this()));
   //   drawable->clipping(region, Transform_var(tx->_this()));
-  push(child, tag, region, cumulative.release());
+  push(child, tag, region, cumulative._retn());
   child->traverse(Traversal_var(_this()));
   pop();
 };

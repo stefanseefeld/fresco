@@ -80,26 +80,30 @@ public:
   };
   
 
-  Lease(Lease<T> &i) : t(i.release()), p(i.p) {}
-  explicit Lease(T *tt = 0, Provider<T> *pp  = 0) : t(tt), p(pp) { activate(t);}
+  Lease(Lease<T> &i) : t(i._retn()), p(i.p) {}
+  explicit Lease(T *tt = 0, Provider<T> *pp  = 0) : t(tt), p(pp) { if (t) activate(t);}
+  Lease &operator = (T *tt)
+  {
+    if (t) p->adopt(t);
+    t = tt;
+    if (t) activate(t);
+  }
   Lease &operator = (Lease<T> &i)
   {
     if (&i != this)
       {
 	p = i.p;
 	if (t) p->adopt(t);
-	t = i.release();
+	t = i._retn();
       }
     return *this;
-  }
-  
+  }  
   ~Lease() { if (t) p->adopt(t);}
   T *get() const { return t;}
   T &operator *() const { return *t;}
   T *operator->() const { return  t;}
   operator T *() const { return  t;}
-  T *release() { T *tmp = t; t = 0; return tmp;}
-  void reset(T *tt = 0) { if (t) p->adopt(t); t = tt;}
+  T *_retn() { T *tmp = t; t = 0; return tmp;}
 private:
   T *t;
   Provider<T> *p;

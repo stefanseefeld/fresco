@@ -126,6 +126,7 @@ LibArtFTFont::LibArtFTFont(GGI::Drawable *drawable) :
       Logger::log(Logger::text) << "completed scaning font directories" << endl;
       char *env = getenv("BERLIN_FONT_CHOOSER");
       Unicode::String tmpFam, tmpStyle;
+      cout << "font chooser: [" << env << "]" << endl;
       if (env && chooseFaceInteractively(myFaceMap, env, tmpFam, tmpStyle))
 	{
 	  myFamStr = tmpFam;
@@ -190,7 +191,7 @@ DrawingKit::FontMetrics LibArtFTFont::metrics()
 DrawingKit::GlyphMetrics LibArtFTFont::metrics(Unichar &uc)
 {
   DrawingKit::GlyphMetrics gm;
-  GlyphSpec key(uc,FaceSpec(mySize,FamStyle(myFam,myStyle)));
+  TGlyphSpec key(matrix_, GlyphSpec(uc,FaceSpec(mySize,FamStyle(myFam,myStyle))));
   myGlyphMetricsCache.get(key,gm);
   return gm;
 }
@@ -211,10 +212,13 @@ void LibArtFTFont::setup_face(FT_Face &f)
 void LibArtFTFont::setup_size(FT_Face &f) {
   FT_Set_Char_Size
      ( f,                // handle to face object           
-      ((PtSize)(mySize * scale)) << 6,     // char_width in 1/64th of points  
-      ((PtSize)(mySize * scale)) << 6,     // char_height in 1/64th of points 
-      (unsigned int)xdpi,   // horizontal device resolution    
-      (unsigned int)ydpi ); // vertical device resolution      
+      ((PtSize)(mySize * scale * 64)),     // char_width in 1/64th of points  
+      ((PtSize)(mySize * scale * 64)),     // char_height in 1/64th of points 
+      (unsigned int)0,   // horizontal device resolution    
+      (unsigned int)0 ); // vertical device resolution      
+
+//       (unsigned int)xdpi,   // horizontal device resolution    
+//       (unsigned int)ydpi ); // vertical device resolution      
 }
 
  bool LibArtFTFont::load_glyph(Unichar c, FT_Face &f) {
@@ -266,10 +270,11 @@ Unicode::String &u) {
 
 void LibArtFTFont::allocateChar(Unichar ch, Graphic::Requisition &r) {
   DrawingKit::GlyphMetrics gm = metrics(ch);
-  r.x.natural = r.x.minimum = r.x.maximum = ((double)(gm.horiAdvance >> 6)) / xres; 
+  r.x.natural = r.x.minimum = r.x.maximum = gm.horiAdvance / (xres * 64.0);
   r.x.defined = true;
-  r.x.align = 0.;
-  r.y.natural = r.y.minimum = r.y.maximum = ((double)(gm.height >> 6)) / yres;
+  r.x.align = (gm.width == 0) ? 0. : 
+    ((double)gm.horiBearingX)/((double)gm.width); ;
+  r.y.natural = r.y.minimum = r.y.maximum = gm.height / (yres * 64.0); 
   r.y.defined = true;
   r.y.align = (gm.height == 0) ? 0. : 
     ((double)gm.horiBearingY)/((double)gm.height); 
@@ -332,23 +337,24 @@ LibArtFTFont::FaceMetricsFactory::produce(const LibArtFTFont::FaceSpec &cs)
 
 
 DrawingKit::GlyphMetrics 
-LibArtFTFont::GlyphMetricsFactory::produce(const LibArtFTFont::GlyphSpec &cs) 
+LibArtFTFont::GlyphMetricsFactory::produce(const LibArtFTFont::TGlyphSpec &cs) 
 {
+  double scale = font_->getScale();
   DrawingKit::GlyphMetrics gm;
   FT_Face face;
   font_->setup_face(face);
   font_->setup_size(face);
-  Unichar ch = cs.first;
+  Unichar ch = cs.second.first;
   if (!font_->load_glyph(ch, face)) return gm;
   FT_GlyphSlot glyph = face->glyph;
-  gm.width = glyph->metrics.width;
-  gm.height = glyph->metrics.height;
-  gm.horiBearingX = glyph->metrics.horiBearingX;
-  gm.horiBearingY = glyph->metrics.horiBearingY;
-  gm.horiAdvance =  glyph->metrics.horiAdvance;
-  gm.vertBearingX = glyph->metrics.vertBearingX;
-  gm.vertBearingY = glyph->metrics.vertBearingY;
-  gm.vertAdvance = glyph->metrics.vertAdvance;
+  gm.width = glyph->metrics.width / scale;
+  gm.height = glyph->metrics.height / scale;
+  gm.horiBearingX = glyph->metrics.horiBearingX / scale;
+  gm.horiBearingY = glyph->metrics.horiBearingY / scale;
+  gm.horiAdvance =  glyph->metrics.horiAdvance / scale;
+  gm.vertBearingX = glyph->metrics.vertBearingX / scale;
+  gm.vertBearingY = glyph->metrics.vertBearingY / scale;
+  gm.vertAdvance = glyph->metrics.vertAdvance / scale;
   return gm;
 }
 

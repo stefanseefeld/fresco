@@ -34,12 +34,13 @@
 
 using namespace Prague;
 
+// Moooooo!!! 
 TraversalImpl::TraversalImpl(Graphic_ptr g, Region_ptr r, Transform_ptr t)
 {
   Lease<TransformImpl> transform;
   Providers::trafo.provide(transform);  
   transform->copy(t);
-  push(g, 0, r, transform.release());
+  push(g, 0, r, transform._retn());
 }
 
 TraversalImpl::TraversalImpl(const TraversalImpl &t)
@@ -53,7 +54,7 @@ TraversalImpl::TraversalImpl(const TraversalImpl &t)
       state.allocation = Region::_duplicate((*i).allocation);
       Lease<TransformImpl> tmp;
       Providers::trafo.provide(tmp);
-      state.transformation = tmp.release();
+      state.transformation = tmp._retn();
       state.transformation->copy(Transform_var((*i).transformation->_this()));
       stack.push_back(state);
     }
@@ -99,7 +100,7 @@ void TraversalImpl::traverseChild(Graphic_ptr child, Tag tag,
   Providers::trafo.provide(cumulative);  
   cumulative->copy(transformation());
   if (!CORBA::is_nil(transform)) cumulative->premultiply(transform);
-  push(child, tag, region, cumulative.release());
+  push(child, tag, region, cumulative._retn());
   child->traverse(Traversal_var(_this()));
   pop();
 }
