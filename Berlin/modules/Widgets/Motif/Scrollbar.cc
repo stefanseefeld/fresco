@@ -28,7 +28,7 @@
 
 using namespace Prague;
 using namespace Fresco;
-using namespace Motif;
+using namespace Berlin::WidgetKit::Motif;
 
 Scrollbar::Scrollbar(BoundedRange_ptr v, Axis a, const Fresco::Graphic::Requisition &r)
   : _requisition(r),

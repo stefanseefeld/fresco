@@ -27,8 +27,9 @@
 #include <Berlin/RefCountVar.hh>
 #include "Adjustable.hh"
 
-namespace Motif
-{
+namespace Berlin {
+namespace WidgetKit {
+namespace Motif {
 
 class Scrollbar : public Adjustable
 {
@@ -58,6 +59,8 @@ private:
   double _scale;
 };
 
-};
+} // namespace
+} // namespace
+} // namespace
 
 #endif

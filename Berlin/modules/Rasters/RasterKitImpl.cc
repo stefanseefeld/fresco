@@ -30,6 +30,8 @@
 using namespace Prague;
 using namespace Fresco;
 
+using namespace Berlin::ImageKit;
+
 ImageKitImpl::ImageKitImpl(const std::string &id, const Fresco::Kit::PropertySeq &p)
   : KitImpl(id, p) {}
 ImageKitImpl::~ImageKitImpl() {}

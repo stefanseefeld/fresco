@@ -29,6 +29,8 @@
 using namespace Prague;
 using namespace Fresco;
 
+using namespace Berlin::DesktopKit;
+
 void Mover::execute(const CORBA::Any &any)
 {
   OriginatedDelta *od;

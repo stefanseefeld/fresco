@@ -29,8 +29,9 @@
 #include <Berlin/GraphicImpl.hh>
 #include <Berlin/RefCountVar.hh>
 
-namespace Motif
-{
+namespace Berlin {
+namespace WidgetKit {
+namespace Motif {
 
 class Gauge : public virtual ViewImpl,
 	      public GraphicImpl
@@ -48,6 +49,8 @@ private:
   Fresco::Coord width, height;
 };
 
-};
+} // namespace
+} // namespace
+} // namespace
 
 #endif

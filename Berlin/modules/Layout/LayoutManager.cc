@@ -29,6 +29,8 @@
 
 using namespace Fresco;
 
+using namespace Berlin::LayoutKit;
+
 namespace
 {
   //. names axes

@@ -29,6 +29,9 @@
 #include <Fresco/UnidrawKit.hh>
 #include <Berlin/RefCountBaseImpl.hh>
 
+namespace Berlin {
+namespace UnidrawKit {
+
 class SelectTool : public virtual POA_Unidraw::Tool,
 		   public RefCountBaseImpl
 {
@@ -46,5 +49,8 @@ private:
   Fresco::Vertex              _begin;
   Fresco::Vertex              _end;
 };
+
+} // namespace
+} // namespace
 
 #endif

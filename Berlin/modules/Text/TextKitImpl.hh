@@ -33,7 +33,9 @@
 #include <Berlin/RefCountVar.hh>       // for the RefCount_var
 #include "TextChunk.hh"                // for our chunks
 #include <map>                         // for the cache
-#include <vector>                      // for the gc
+
+namespace Berlin {
+namespace TextKit {
 
 class Compositor;
 class Strut;
@@ -70,5 +72,8 @@ class TextKitImpl : public virtual POA_Fresco::TextKit,
   Compositor           *_lineCompositor;
   Compositor           *_pageCompositor;
 };
+
+} // namespace
+} // namespace
 
 #endif

@@ -30,9 +30,14 @@
 
 using namespace Fresco;
 
-PrimitiveKitImpl::PrimitiveKitImpl(const std::string &id, const Fresco::Kit::PropertySeq &p)
+using namespace Berlin::PrimitiveKit;
+
+PrimitiveKitImpl::PrimitiveKitImpl(const std::string &id,
+		                   const Fresco::Kit::PropertySeq &p)
   : KitImpl(id, p) {}
+
 PrimitiveKitImpl::~PrimitiveKitImpl() {}
+
 Graphic_ptr PrimitiveKitImpl::root(Graphic_ptr child)
 {
   GraphicImpl *g = new Root(Alignment(0.5), Alignment(0.5), Alignment(0.5), 

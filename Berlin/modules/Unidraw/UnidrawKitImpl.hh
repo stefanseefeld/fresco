@@ -29,7 +29,9 @@
 #include <Fresco/UnidrawKit.hh>
 #include <Berlin/KitImpl.hh>
 #include <Berlin/RefCountVar.hh>
-#include <vector>
+
+namespace Berlin {
+namespace UnidrawKit {
 
 class UnidrawKitImpl : public virtual POA_Unidraw::UnidrawKit,
 		       public KitImpl
@@ -50,5 +52,8 @@ private:
   RefCount_var<Fresco::ToolKit>   _tools;
   RefCount_var<Fresco::WidgetKit> _widgets;
 };
+
+} // namespace
+} // namespace
 
 #endif

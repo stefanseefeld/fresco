@@ -30,6 +30,9 @@
 #include <Berlin/KitImpl.hh>
 #include <vector>
 
+namespace Berlin {
+namespace FigureKit {
+
 class FigureKitImpl : public virtual POA_Fresco::FigureKit,
 		      public KitImpl
 {
@@ -57,5 +60,8 @@ class FigureKitImpl : public virtual POA_Fresco::FigureKit,
   Fresco::Graphic_ptr texture(Fresco::Graphic_ptr, Fresco::Raster_ptr);
   Fresco::Graphic_ptr transformer(Fresco::Graphic_ptr);
 };
+
+} // namespace
+} // namespace
 
 #endif

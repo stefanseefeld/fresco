@@ -29,6 +29,8 @@
 
 using namespace Fresco;
 
+using namespace Berlin::PrimitiveKit;
+
 Light::Light(const Color &color, double intensity) : _color(color), _intensity(intensity) {}
 Light::~Light() {}
 

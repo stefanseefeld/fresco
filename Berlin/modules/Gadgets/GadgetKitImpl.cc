@@ -36,6 +36,8 @@
 
 using namespace Fresco;
 
+using namespace Berlin::GadgetKit;
+
 // class AlphaAdjuster : public virtual POA_View, public MonoGraphic
 // {
 //  public:

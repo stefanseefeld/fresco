@@ -29,6 +29,9 @@
 #include <Berlin/CommandImpl.hh>
 #include <Berlin/RefCountVar.hh>
 
+namespace Berlin {
+namespace DesktopKit {
+
 class Manipulator : public CommandImpl
 {
 public:
@@ -84,5 +87,8 @@ public:
   Unmapper(Fresco::Window_ptr window) : Manipulator(window) {}
   virtual void execute(const CORBA::Any &);
 };
+
+} // namespace
+} // namespace
 
 #endif

@@ -35,6 +35,9 @@
 #include <Berlin/KitImpl.hh>
 #include <Berlin/RefCountVar.hh>
 
+namespace Berlin {
+namespace DesktopKit {
+
 class WindowImpl;
 class DesktopImpl;
 
@@ -66,5 +69,8 @@ class DesktopKitImpl : public virtual POA_Fresco::DesktopKit,
   RefCount_var<Fresco::FigureKit>  _figure;
   Fresco::Command_var              _exit;
 };
+
+} // namespace
+} // namespace
 
 #endif

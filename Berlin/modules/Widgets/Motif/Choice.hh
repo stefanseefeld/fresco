@@ -31,10 +31,10 @@
 #include <Fresco/WidgetKit.hh>
 #include <Berlin/ImplVar.hh>
 #include <Berlin/ControllerImpl.hh>
-#include <vector>
 
-namespace Motif
-{
+namespace Berlin {
+namespace WidgetKit {
+namespace Motif {
 
 class Choice : public virtual POA_Widget::Choice,
 	       public ControllerImpl
@@ -97,5 +97,8 @@ public:
 private:
 };
 
-};
+} // namespace
+} // namespace
+} // namespace
+
 #endif

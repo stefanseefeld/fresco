@@ -27,6 +27,9 @@
 #include <Fresco/DrawingKit3D.hh>
 #include <Berlin/Allocator.hh>
 
+namespace Berlin {
+namespace PrimitiveKit {
+
 //. Root is supposed to be the root node in a 3D scene graph hierarchy.
 //. It therefor switches on all the necessary flags in the DrawingKit
 //. that are necessary only when rendering 3D
@@ -38,5 +41,8 @@ public:
   virtual void draw(Fresco::DrawTraversal_ptr);
   virtual void pick(Fresco::PickTraversal_ptr);
 };
+
+} // namespace
+} // namespace
 
 #endif

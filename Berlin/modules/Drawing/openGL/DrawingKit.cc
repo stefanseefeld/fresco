@@ -34,6 +34,7 @@
 
 using namespace Prague;
 using namespace Fresco;
+using namespace Berlin::DrawingKit;
 
 class openGL::DrawingKit::Light::Init : public virtual GLContext::Callback {
 public:

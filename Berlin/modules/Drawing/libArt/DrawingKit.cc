@@ -44,11 +44,12 @@
 #include <memory>
 
 using namespace Fresco;
-using namespace libArt;
+using namespace Berlin::DrawingKit;
 
 libArt::DrawingKit::~DrawingKit() {}
 
-libArt::DrawingKit::DrawingKit(const std::string &id, const Fresco::Kit::PropertySeq &p)
+libArt::DrawingKit::DrawingKit(const std::string &id,
+                               const Fresco::Kit::PropertySeq &p)
   : KitImpl(id, p),
     _drawable(0),
     _xres(1.),
@@ -241,7 +242,7 @@ void libArt::DrawingKit::draw_path(const Path &p)
   art_svp_free(svp2);
 }
 
-//void libArt::DrawingKit::drawPatch(const Patch &);
+//void libArt;;DrawingKit::drawPatch(const Patch &);
 
 void libArt::DrawingKit::draw_rectangle(const Vertex &bot, const Vertex &top) 
 {
@@ -302,7 +303,8 @@ void libArt::DrawingKit::draw_rectangle(const Vertex &bot, const Vertex &top)
     }
 }
 
-void libArt::DrawingKit::draw_quadric(const Fresco::DrawingKit::Quadric, Fresco::Coord, Fresco::Coord)
+void libArt::DrawingKit::draw_quadric(const Fresco::DrawingKit::Quadric,
+		                      Fresco::Coord, Fresco::Coord)
 {
 }
 
@@ -526,12 +528,15 @@ void libArt::DrawingKit::allocate_char(Unichar c, Graphic::Requisition & req)
 }
 
 
-void libArt::DrawingKit::allocate_text(const Unistring & s, Graphic::Requisition & req)
+void libArt::DrawingKit::allocate_text(const Unistring & s,
+		                       Graphic::Requisition & req)
 {
   //   font->allocate(s,req);
 }
 
-void libArt::DrawingKit::copy_drawable(Drawable_ptr d, PixelCoord x, PixelCoord y, PixelCoord w, PixelCoord h)
+void libArt::DrawingKit::copy_drawable(Drawable_ptr d,
+		                       PixelCoord x, PixelCoord y,
+				       PixelCoord w, PixelCoord h)
 {
   CORBA::Double x2 = _affine[4] * _buffer->resolution(xaxis);
   CORBA::Double y2 = _affine[5] * _buffer->resolution(yaxis);

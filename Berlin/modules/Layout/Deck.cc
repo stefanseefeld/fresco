@@ -27,6 +27,8 @@
 
 using namespace Fresco;
 
+using namespace Berlin::LayoutKit;
+
 Deck::Deck() : _requested(false) {}
 Deck::~Deck() {}
 

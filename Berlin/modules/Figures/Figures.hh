@@ -24,6 +24,9 @@
 
 #include "FigureImpl.hh"
 
+namespace Berlin {
+namespace FigureKit {
+
 class PointImpl : public virtual POA_Figure::Point,
                   public FigureImpl
 {
@@ -119,5 +122,8 @@ private:
   Fresco::Path_var _handles;
   bool             _closed;
 };
+
+} // namespace
+} // namespace
 
 #endif

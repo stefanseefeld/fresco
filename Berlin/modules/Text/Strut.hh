@@ -24,6 +24,9 @@
 
 #include <Berlin/GraphicImpl.hh>
 
+namespace Berlin {
+namespace TextKit {
+
 class Strut : public GraphicImpl
 {
 public:
@@ -32,5 +35,8 @@ public:
 private:
   Fresco::Graphic::Requisition requisition;
 };
+
+} // namespace
+} // namespace
 
 #endif

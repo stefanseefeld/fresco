@@ -36,6 +36,8 @@
 using namespace Prague;
 using namespace Fresco;
 
+using namespace Berlin::TextKit;
+
 Composition::Composition(DrawingKit_ptr dk, Compositor *c)
   : canonicalDK(DrawingKit::_duplicate(dk)),
     compositor(c),

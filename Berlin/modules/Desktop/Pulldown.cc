@@ -27,6 +27,8 @@
 using namespace Prague;
 using namespace Fresco;
 
+using namespace Berlin::DesktopKit;
+
 CORBA::Boolean Pulldown::receive_focus(Fresco::Focus_ptr focus)
 {
   Trace trace("Pulldown::receive_focus");

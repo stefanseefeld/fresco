@@ -45,6 +45,7 @@
 
 using namespace Prague;
 using namespace Fresco;
+using namespace Berlin::DrawingKit;
 
 openGL::FTFont::FTFont(GLContext *glcontext)
   : _family(Unicode::to_CORBA(Babylon::String("GNU Unifont"))),
@@ -70,9 +71,9 @@ Unistring *openGL::FTFont::subfamily() { return new Unistring(_subfamily);}
 Unistring *openGL::FTFont::fullname() { return new Unistring(_fullname);}
 Unistring *openGL::FTFont::style() { return new Unistring(_style);}
 
-DrawingKit::FontMetrics openGL::FTFont::metrics()
+Fresco::DrawingKit::FontMetrics openGL::FTFont::metrics()
 {
-  DrawingKit::FontMetrics fm;
+  Fresco::DrawingKit::FontMetrics fm;
 
   if (!FT_IS_SCALABLE(my_face)) { // XXX
     // GNU Unifont . the bdf reader returns all 0s through size->metrics.
@@ -90,9 +91,9 @@ DrawingKit::FontMetrics openGL::FTFont::metrics()
   return fm;
 }
 
-DrawingKit::GlyphMetrics openGL::FTFont::metrics(Unichar uc)
+Fresco::DrawingKit::GlyphMetrics openGL::FTFont::metrics(Unichar uc)
 {
-  DrawingKit::GlyphMetrics gm;
+  Fresco::DrawingKit::GlyphMetrics gm;
 
   FT_Load_Glyph(my_face, FT_Get_Char_Index(my_face, (FT_ULong)uc),
 		FT_LOAD_DEFAULT);
@@ -302,7 +303,7 @@ void openGL::FTFont::allocate_char(Unichar uc, Graphic::Requisition &r)
 {
   FT_Load_Glyph(my_face, FT_Get_Char_Index(my_face, (FT_ULong)uc), FT_LOAD_DEFAULT);
 
-  DrawingKit::GlyphMetrics gm = metrics(uc);
+  Fresco::DrawingKit::GlyphMetrics gm = metrics(uc);
   r.x.natural = r.x.minimum = r.x.maximum = (gm.horiAdvance*10) >> 6;
   r.x.defined = true;
   r.x.align = gm.width == 0 ? 0. : ((double)gm.horiBearingX)/((double)gm.horiAdvance);

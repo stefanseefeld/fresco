@@ -33,6 +33,9 @@
 #include "UnidrawKitImpl.hh"
 #include <map>
 
+namespace Berlin {
+namespace UnidrawKit {
+
 class EditorImpl : public virtual POA_Unidraw::Editor,
 		   public RefCountBaseImpl
 {
@@ -54,5 +57,8 @@ private:
   tdict_t                 _tools;
   Impl_var<Observer>      _tool_setter;
 };
+
+} // namespace
+} // namespace
 
 #endif

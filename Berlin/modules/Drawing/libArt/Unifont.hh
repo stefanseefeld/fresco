@@ -30,8 +30,10 @@
 #include "Font.hh"
 #include <map>
 
-namespace libArt
-{
+namespace Berlin {
+namespace DrawingKit {
+namespace libArt {
+
 //. This is a default font, just in case -- a character cell bitmapped unicode
 //. font which is generated "on the fly" from the GNU unifont, which we're
 //. storing in a packed binary array we mmap() in. this is so that, even if all
@@ -65,6 +67,8 @@ private:
   Prague::MMap *_glyphmap;
 };
 
-}
+} // namespace
+} // namespace
+} // namespace
 
 #endif

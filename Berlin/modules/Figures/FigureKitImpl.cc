@@ -32,6 +32,8 @@
 
 using namespace Fresco;
 
+using namespace Berlin::FigureKit;
+
 FigureKitImpl::FigureKitImpl(const std::string &id, const Fresco::Kit::PropertySeq &p)
   : KitImpl(id, p) {}
 FigureKitImpl::~FigureKitImpl() {}

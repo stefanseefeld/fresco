@@ -28,7 +28,8 @@
 #include "Gauge.hh"
 
 using namespace Fresco;
-using namespace Motif;
+
+using namespace Berlin::WidgetKit::Motif;
 
 void Gauge::request(Fresco::Graphic::Requisition &requisition)
 {

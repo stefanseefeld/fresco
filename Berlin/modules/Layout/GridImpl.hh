@@ -27,7 +27,8 @@
 #include <Berlin/GraphicImpl.hh>
 #include <vector>
 
-class GridImpl;
+namespace Berlin {
+namespace LayoutKit {
 
 class GridImpl : public virtual POA_Layout::Grid,
 		 public GraphicImpl
@@ -107,5 +108,8 @@ private:
   Layout::Grid_var _child;
   Layout::Grid::Range _range;
 };
+
+} // namespace
+} // namespace
 
 #endif

@@ -32,8 +32,9 @@
 #include <freetype/freetype.h>
 #include <map>
 
-namespace libArt
-{
+namespace Berlin {
+namespace DrawingKit {
+namespace libArt {
 
 //. this is a simple Freetype font, which doesn't support
 //. ligatures or complex layout features
@@ -160,6 +161,8 @@ private:
   bool chooseFaceInteractively(const std::map<FamStyle, FT_Face> &, const char *, Babylon::String &, Babylon::String &);
 };
 
-}
+} // namespace
+} // namespace
+} // namespace
 
 #endif

@@ -29,6 +29,9 @@
 
 class RegionImpl;
 
+namespace Berlin {
+namespace TextKit {
+
 class Compositor
 //. this is a strategy object for adjusting text layouts to compensate for font
 //. misses or hinting. It plays a very similar role to a LayoutManager.
@@ -66,5 +69,8 @@ public:
 private:
   Fresco::Graphic::Requisition requisition;
 };
+
+} // namespace
+} // namespace
 
 #endif

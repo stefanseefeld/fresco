@@ -41,8 +41,9 @@
 
 #include <GL/glu.h>
 
-namespace openGL
-{
+namespace Berlin {
+namespace DrawingKit {
+namespace openGL {
 
 class DrawingKit : public virtual POA_Fresco::DrawingKit3D,
 		   public DrawingKitBase, public KitImpl
@@ -203,6 +204,8 @@ private:
   ObjectCache<Fresco::Raster_var, Image>   _images;
 };
 
-}
+} // namespace
+} // namespace
+} // namespace
 
 #endif 

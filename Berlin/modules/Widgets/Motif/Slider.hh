@@ -29,8 +29,9 @@
 #include <Berlin/TransformImpl.hh>
 #include "Adjustable.hh"
 
-namespace Motif
-{
+namespace Berlin {
+namespace WidgetKit {
+namespace Motif {
 
 class Slider : public Adjustable
 {
@@ -56,6 +57,8 @@ private:
   double _length;
 };
 
-};
+} // namespace
+} // namespace
+} // namespace
 
 #endif

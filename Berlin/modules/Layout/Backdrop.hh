@@ -24,6 +24,9 @@
 
 #include <Berlin/MonoGraphic.hh>
 
+namespace Berlin {
+namespace LayoutKit {
+
 class Backdrop : public MonoGraphic
 {
 public:
@@ -34,5 +37,8 @@ public:
   virtual void traverse(Traversal_ptr);
   virtual void draw(DrawTraversal_ptr);
 };
+
+} // namespace
+} // namespace
 
 #endif

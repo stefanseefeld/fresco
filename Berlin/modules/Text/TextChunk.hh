@@ -27,6 +27,9 @@
 #include <Fresco/Unicode.hh>
 #include <Berlin/GraphicImpl.hh>
 
+namespace Berlin {
+namespace TextKit {
+
 //. A text chunk is constructed with a "canonical size", which is essentially its
 //. requisition within the font it was constructed for, on the drawable it was
 //. intended to be drawn on. This might not actually be the font it winds up
@@ -52,5 +55,8 @@ protected:
   Fresco::Unichar   _char;
   const char       *_obj_name;
 };
+
+} // namespace
+} // namespace
 
 #endif

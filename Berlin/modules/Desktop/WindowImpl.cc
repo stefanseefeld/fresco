@@ -29,6 +29,8 @@ using namespace Prague;
 using namespace Fresco;
 using namespace Layout;
 
+using namespace Berlin::DesktopKit;
+
 class WindowImpl::UnmappedStageHandle : public virtual POA_Layout::StageHandle,
 		                        public virtual ServantBase
 {

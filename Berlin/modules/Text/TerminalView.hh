@@ -27,8 +27,10 @@
 #include <Fresco/TextKit.hh>
 #include <Berlin/ViewImpl.hh>
 #include "Composition.hh"
-#include <map>
 #include <vector>
+
+namespace Berlin {
+namespace TextKit {
 
 class TerminalView : public virtual ViewImpl,
 		     public Composition
@@ -50,5 +52,8 @@ class TerminalView : public virtual ViewImpl,
   lines_t                  _lines;
   bool                     _locked;
 };
+
+} // namespace
+} // namespace
 
 #endif

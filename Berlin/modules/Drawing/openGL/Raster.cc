@@ -31,6 +31,8 @@
 using namespace Prague;
 using namespace Fresco;
 
+using namespace Berlin::DrawingKit;
+
 template <class T>
 T ceiling(T a, T b) { return a % b == 0 ? a/b : a/b + 1;}
 

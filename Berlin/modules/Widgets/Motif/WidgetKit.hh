@@ -32,12 +32,12 @@
 #include <Berlin/KitImpl.hh>
 #include <Berlin/RefCountBaseImpl.hh>
 #include <Berlin/RefCountVar.hh>
-#include <vector>
 
 class GraphicImpl;
 
-namespace Motif
-{
+namespace Berlin {
+namespace WidgetKit {
+namespace Motif {
 
 class WidgetKit : public virtual POA_Fresco::WidgetKit,
 		  public KitImpl
@@ -80,6 +80,8 @@ class WidgetKit : public virtual POA_Fresco::WidgetKit,
   Fresco::Graphic_var              my_right_out_triangle;
 };
 
-};
+} // namespace
+} // namespace
+} // namespace
 
 #endif

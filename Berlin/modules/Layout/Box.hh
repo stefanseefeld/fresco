@@ -25,6 +25,9 @@
 #include <Berlin/PolyGraphic.hh>
 #include "LayoutManager.hh"
 
+namespace Berlin {
+namespace LayoutKit {
+
 class Box : public PolyGraphic
 {
 public:
@@ -119,5 +122,8 @@ class Overlay : public Box
 public:
   Overlay() : Box(new LayoutSuperpose(new LayoutAlign(Fresco::xaxis), new LayoutAlign(Fresco::yaxis))) {}
 };
+
+} // namespace
+} // namespace
 
 #endif

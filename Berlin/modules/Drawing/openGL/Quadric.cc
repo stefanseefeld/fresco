@@ -30,6 +30,7 @@
 #include <cstdlib>
 
 using namespace Fresco;
+using namespace Berlin::DrawingKit;
 
 /*
  * Convert degrees to radians:
@@ -84,10 +85,10 @@ void openGL::Quadric::cylinder(double baseRadius, double topRadius, double heigh
 // 	}
 //       glEnd();
 //     }
-  if (style == DrawingKit::outlined)// || DrawStyle == GLU_SILHOUETTE)
+  if (style == Fresco::DrawingKit::outlined)// || DrawStyle == GLU_SILHOUETTE)
     {
 //       /* Draw rings */
-//       if (style == DrawingKit::outlined)
+//       if (style == Fresco::DrawingKit::outlined)
 // 	{
 // 	  z = 0.0;
 // 	  r = baseRadius;
@@ -170,19 +171,23 @@ void openGL::Quadric::cylinder(double baseRadius, double topRadius, double heigh
 	      if (nsign == 1.0)
 		{
 		  normal3d(x*nsign, y*nsign, nz*nsign);
-		  if (style == DrawingKit::textured) glTexCoord2f(s, t);
+		  if (style == Fresco::DrawingKit::textured)
+	              glTexCoord2f(s, t);
 		  glVertex3d(x * r, y * r, z);
 		  normal3d(x*nsign, y*nsign, nz*nsign);
-		  if (style == DrawingKit::textured) glTexCoord2f(s, t + dt);
+		  if (style == Fresco::DrawingKit::textured)
+	              glTexCoord2f(s, t + dt);
 		  glVertex3d( x * (r + dr), y * (r + dr), z + dz);
 		}
 	      else
 		{
 		  normal3d(x*nsign, y*nsign, nz*nsign);
-		  if (style == DrawingKit::textured) glTexCoord2f(s, t);
+		  if (style == Fresco::DrawingKit::textured)
+		      glTexCoord2f(s, t);
 		  glVertex3d(x * r, y * r, z);
 		  normal3d(x*nsign, y*nsign, nz*nsign);
-		  if (style == DrawingKit::textured) glTexCoord2f(s, t + dt);
+		  if (style == Fresco::DrawingKit::textured)
+		      glTexCoord2f(s, t + dt);
 		  glVertex3d(x * (r + dr), y * (r + dr), z + dz);
 		}
 	      s += ds;
@@ -205,9 +210,9 @@ void openGL::Quadric::sphere(double radius, int slices, int stacks)
   /* t goes from -1.0/+1.0 at z = -radius/+radius (linear along longitudes) */
   /* cannot use triangle fan on texturing (s coord. at top/bottom tip varies) */
 
-  if (style != DrawingKit::outlined)
+  if (style != Fresco::DrawingKit::outlined)
     {
-      if (style != DrawingKit::textured)
+      if (style != Fresco::DrawingKit::textured)
 	{
 	  /* draw +Z end as a triangle fan */
 	  glBegin(GL_TRIANGLE_FAN);
@@ -227,8 +232,8 @@ void openGL::Quadric::sphere(double radius, int slices, int stacks)
       double ds = 1.0 / slices;
       double dt = 1.0 / stacks;
       double t = 1.0;  /* because loop now runs from 0 */
-      int imin = style == DrawingKit::textured ? 0 : 1;
-      int imax = style == DrawingKit::textured ? stacks : stacks - 1;
+      int imin = style == Fresco::DrawingKit::textured ? 0 : 1;
+      int imax = style == Fresco::DrawingKit::textured ? stacks : stacks - 1;
       /* draw intermediate stacks as quad strips */
       for (int i = imin; i < imax; i++)
 	{
@@ -242,13 +247,14 @@ void openGL::Quadric::sphere(double radius, int slices, int stacks)
 	      double y = cos(theta) * sin(rho);
 	      double z = nsign * cos(rho);
 	      if (norm)  glNormal3d(x*nsign, y*nsign, z*nsign);
-	      if (style == DrawingKit::textured) glTexCoord2f(s, t);
+	      if (style == Fresco::DrawingKit::textured) glTexCoord2f(s, t);
 	      glVertex3d(x*radius, y*radius, z*radius);
 	      x = -sin(theta) * sin(rho+drho);
 	      y = cos(theta) * sin(rho+drho);
 	      z = nsign * cos(rho+drho);
 	      if (norm)  glNormal3d(x*nsign, y*nsign, z*nsign);
-	      if (style == DrawingKit::textured) glTexCoord2f(s, t - dt);
+	      if (style == Fresco::DrawingKit::textured)
+		  glTexCoord2f(s, t - dt);
 	      s += ds;
 	      glVertex3d(x*radius, y*radius, z*radius);
 	    }
@@ -256,7 +262,7 @@ void openGL::Quadric::sphere(double radius, int slices, int stacks)
 	  t -= dt;
 	}
 
-      if (style != DrawingKit::textured)
+      if (style != Fresco::DrawingKit::textured)
 	{
 	  /* draw -Z end as a triangle fan */
 	  glBegin(GL_TRIANGLE_FAN);
@@ -272,14 +278,14 @@ void openGL::Quadric::sphere(double radius, int slices, int stacks)
 	      double y = cos(theta) * sin(rho);
 	      double z = nsign * cos(rho);
 	      if (norm) glNormal3d(x*nsign, y*nsign, z*nsign);
-	      if (style == DrawingKit::textured) glTexCoord2f(s, t);
+	      if (style == Fresco::DrawingKit::textured) glTexCoord2f(s, t);
 	      s -= ds;
 	      glVertex3d(x*radius, y*radius, z*radius);
 	    }
 	  glEnd();
 	}
     }
-  else if (style == DrawingKit::outlined)
+  else if (style == Fresco::DrawingKit::outlined)
     {
       /* draw stack lines */
       for (int i = 1; i < stacks; i++)
@@ -355,8 +361,8 @@ void openGL::Quadric::disk(double innerRadius, double outerRadius, int slices, i
 
   switch (style)
     {
-    case DrawingKit::solid:
-    case DrawingKit::textured:
+    case Fresco::DrawingKit::solid:
+    case Fresco::DrawingKit::textured:
       {
 	/* texture of a disk is a cut out of the texture unit square
 	 * x, y in [-outerRadius, +outerRadius]; s, t in [0, 1]
@@ -388,9 +394,11 @@ void openGL::Quadric::disk(double innerRadius, double outerRadius, int slices, i
 		  {
 		    double a = s == slices ? 0.0 : s * da;
 		    double sa = sin(a), ca = cos(a);
-		    if (style == DrawingKit::textured) glTexCoord2f(0.5 - sa * r2 / dtc, 0.5 + ca * r2 / dtc);
+		    if (style == Fresco::DrawingKit::textured)
+			glTexCoord2f(0.5 - sa * r2 / dtc, 0.5 + ca * r2 / dtc);
 		    glVertex2f( r2*sa, r2*ca);
-		    if (style == DrawingKit::textured) glTexCoord2f(0.5 - sa * r1 / dtc, 0.5 + ca * r1 / dtc);
+		    if (style == Fresco::DrawingKit::textured)
+			glTexCoord2f(0.5 - sa * r1 / dtc, 0.5 + ca * r1 / dtc);
 		    glVertex2f( r1*sa, r1*ca);
 		  }
 		glEnd();
@@ -399,7 +407,7 @@ void openGL::Quadric::disk(double innerRadius, double outerRadius, int slices, i
 	  }
 	break;
       }
-//     case DrawingKit::outlined:
+//     case Fresco::DrawingKit::outlined:
 //       {
 // 	/* draw loops */
 // 	for (int l = 0; l <= loops; l++)
@@ -448,7 +456,7 @@ void openGL::Quadric::disk(double innerRadius, double outerRadius, int slices, i
 // 	glEnd();
 // 	break;
 //       }
-    case DrawingKit::outlined:
+    case Fresco::DrawingKit::outlined:
       {
 	if (innerRadius != 0.0)
 	  {
@@ -541,7 +549,7 @@ void openGL::Quadric::partialDisk(double innerRadius, double outerRadius, int sl
 // 	  angle += delta_angle;
 // 	}
 //     }
-  if (style == DrawingKit::outlined)
+  if (style == Fresco::DrawingKit::outlined)
     {
       double da = deg_to_rad(sweepAngle / slices);
       /* draw outer ring */

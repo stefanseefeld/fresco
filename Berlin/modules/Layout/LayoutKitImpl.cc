@@ -38,6 +38,8 @@ using namespace Prague;
 using namespace Fresco;
 using namespace Layout;
 
+using namespace Berlin::LayoutKit;
+
 LayoutKitImpl::LayoutKitImpl(const std::string &id, const Fresco::Kit::PropertySeq &p)
   : KitImpl(id, p), _fill(GraphicImpl::infinity) { }
 

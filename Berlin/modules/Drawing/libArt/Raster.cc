@@ -23,7 +23,7 @@
 #include "Raster.hh"
 
 using namespace Fresco;
-using namespace libArt;
+using namespace Berlin::DrawingKit;
 
 libArt::Raster::Raster(Raster_var r)
   : remote(Fresco::Raster::_duplicate(r)) 

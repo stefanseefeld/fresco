@@ -38,6 +38,8 @@ using namespace Geometry;
 using namespace Prague;
 using namespace Fresco;
 
+using namespace Berlin::FigureKit;
+
 TransformFigure::TransformFigure()
   : _mode(Figure::outline),
     _tx(new TransformImpl),

@@ -26,6 +26,9 @@
 #include <Fresco/UnidrawKit.hh>
 #include <Berlin/ControllerImpl.hh>
 
+namespace Berlin {
+namespace UnidrawKit {
+
 class UViewImpl : public virtual POA_Unidraw::View,
 		  public ControllerImpl
 {
@@ -40,5 +43,8 @@ public:
 private:
   Unidraw::Model_var _model;
 };
+
+} // namespace
+} // namespace
 
 #endif

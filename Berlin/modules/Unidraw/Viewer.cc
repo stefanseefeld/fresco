@@ -33,6 +33,8 @@ using namespace Prague;
 using namespace Fresco;
 using namespace Unidraw;
 
+using namespace Berlin::UnidrawKit;
+
 Viewer::Viewer() : ControllerImpl(false) {}
 Viewer::~Viewer() {}
 

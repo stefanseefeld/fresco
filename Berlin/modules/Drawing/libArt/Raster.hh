@@ -27,8 +27,9 @@
 #include <libart_lgpl/art_misc.h>
 #include <libart_lgpl/art_pixbuf.h>
 
-namespace libArt
-{
+namespace Berlin {
+namespace DrawingKit {
+namespace libArt {
 
 struct Raster
 {
@@ -40,6 +41,8 @@ public:
   ArtPixBuf *pixbuf;
 };
 
-}
+} // namespace
+} // namespace
+} // namespace
 
 #endif 

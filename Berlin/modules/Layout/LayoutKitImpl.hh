@@ -29,6 +29,9 @@
 
 class GraphicImpl;
 
+namespace Berlin {
+namespace LayoutKit {
+
 class LayoutKitImpl : public virtual POA_Fresco::LayoutKit,
 		      public KitImpl
 {
@@ -125,5 +128,8 @@ private:
 
   Fresco::Coord _fill;
 };
+
+} // namespace
+} // namespace
 
 #endif

@@ -26,7 +26,7 @@
 
 using namespace Prague;
 using namespace Fresco;
-using namespace Motif;
+using namespace Berlin::WidgetKit::Motif;
 
 void Terminal::Input::update(const CORBA::Any &)
 {

@@ -32,12 +32,14 @@
 #include <Berlin/Math.hh>
 #include "StageImpl.hh"
 
+#include <list>
+
 using namespace Geometry;
 using namespace Prague;
 using namespace Fresco;
 using namespace Layout;
 
-
+using namespace Berlin::LayoutKit;
 
 class StageImpl::Sequence : public std::vector<StageHandleImpl *>
 {

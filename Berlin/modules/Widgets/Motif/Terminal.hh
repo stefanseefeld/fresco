@@ -30,10 +30,10 @@
 #include <Berlin/ControllerImpl.hh>
 #include <Berlin/RefCountVar.hh>
 #include <Prague/IPC/TTYAgent.hh>
-#include <vector>
 
-namespace Motif
-{
+namespace Berlin {
+namespace WidgetKit {
+namespace Motif {
 
 class Terminal : public MonoGraphic
 {
@@ -67,5 +67,8 @@ class Terminal : public MonoGraphic
   RefCount_var<Fresco::StreamBuffer> obuf;
 };
 
-};
+} // namespace
+} // namespace
+} // namespace
+
 #endif

@@ -27,8 +27,12 @@
 #include <Berlin/RegionImpl.hh>
 #include <Berlin/TransformImpl.hh>
 
-class LayoutManager;
 class RegionImpl;
+
+namespace Berlin {
+namespace LayoutKit {
+
+class LayoutManager;
 
 class Placement : public MonoGraphic
 {
@@ -63,5 +67,8 @@ private:
   Fresco::Graphic_var _under;
   Fresco::Graphic_var _over;
 };
+
+} // namespace
+} // namespace
 
 #endif

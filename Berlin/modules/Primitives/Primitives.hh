@@ -24,6 +24,9 @@
 
 #include "PrimitiveImpl.hh"
 
+namespace Berlin {
+namespace PrimitiveKit {
+
 // class PointImpl : public virtual POA_Figure::Point,
 //                   public FigureImpl
 // {
@@ -118,5 +121,8 @@ public:
   virtual Fresco::Mesh *mesh();
   virtual void mesh(const Fresco::Mesh &);
 };
+
+} // namespace
+} // namespace
 
 #endif

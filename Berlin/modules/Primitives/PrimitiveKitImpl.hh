@@ -27,7 +27,9 @@
 #include <Fresco/PrimitiveKit.hh>
 #include <Fresco/Primitive.hh>
 #include <Berlin/KitImpl.hh>
-#include <vector>
+
+namespace Berlin {
+namespace PrimitiveKit {
 
 class PrimitiveKitImpl : public virtual POA_Fresco::PrimitiveKit,
 			 public KitImpl
@@ -49,5 +51,8 @@ public:
   Fresco::Graphic_ptr spot_light(Fresco::Graphic_ptr, const Fresco::Color &, CORBA::Float, const Fresco::Vertex &, const Fresco::Vertex &,
 				 CORBA::Float, CORBA::Float);
 };
+
+} // namespace
+} // namespace
 
 #endif

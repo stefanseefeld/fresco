@@ -37,8 +37,9 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-namespace openGL
-{
+namespace Berlin {
+namespace DrawingKit {
+namespace openGL {
 
 class FTFont
 //. This is a Freetype font.
@@ -75,6 +76,8 @@ private:
   GLContext *my_glcontext;
 };
 
-}
+} // namespace
+} // namespace
+} // namespace
 
 #endif

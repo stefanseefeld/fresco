@@ -33,6 +33,8 @@ using namespace Prague;
 using namespace Fresco;
 using namespace Unidraw;
 
+using namespace Berlin::UnidrawKit;
+
 class SelectTraversal : public PickTraversalImpl
 {
 public:

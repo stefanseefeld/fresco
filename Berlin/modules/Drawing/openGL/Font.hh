@@ -30,8 +30,9 @@
 #include <string>
 #include <GL/gl.h>
 
-namespace openGL
-{
+namespace Berlin {
+namespace DrawingKit {
+namespace openGL {
 
 class Font
 {
@@ -52,7 +53,9 @@ public:
   virtual void allocate_char(Fresco::Unichar, Fresco::Graphic::Requisition &) = 0;
 };
 
-}
+} // namespace
+} // namespace
+} // namespace
 
 #endif
 

@@ -28,7 +28,7 @@
 
 using namespace Prague;
 using namespace Fresco;
-using namespace Motif;
+using namespace Berlin::WidgetKit::Motif;
 
 Panner::Panner(BoundedRange_ptr xx, BoundedRange_ptr yy)
   : _xvalue(RefCount_var<BoundedRange>::increment(xx)),

@@ -40,6 +40,8 @@
 using namespace Prague;
 using namespace Fresco;
 
+using namespace Berlin::DesktopKit;
+
 DesktopKitImpl::DesktopKitImpl(const std::string &id, const Fresco::Kit::PropertySeq &p)
   : KitImpl(id, p) {}
 DesktopKitImpl::~DesktopKitImpl() {}

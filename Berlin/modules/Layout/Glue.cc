@@ -23,6 +23,8 @@
 
 using namespace Fresco;
 
+using namespace Berlin::LayoutKit;
+
 Glue::Glue(Axis a, Coord natural, Coord stretch, Coord shrink, Alignment align)
 {
   GraphicImpl::init_requisition(_requisition);

@@ -35,6 +35,8 @@ using namespace Prague;
 using namespace Fresco;
 using namespace Layout;
 
+using namespace Berlin::LayoutKit;
+
 std::ostream &operator << (std::ostream &os, const GridImpl::Span &span)
 { return os << '(' << span.lower << ',' << span.upper << '@' << span.align << ')';}
 

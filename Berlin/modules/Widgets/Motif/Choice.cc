@@ -27,14 +27,11 @@
 #include <Berlin/SubjectImpl.hh>
 #include <Berlin/RefCountVar.hh>
 #include "Choice.hh"
-#include <functional>
-#include <algorithm>
 
 using namespace Prague;
 using namespace Fresco;
 
-namespace Motif
-{
+using namespace Berlin::WidgetKit::Motif;
 
 Choice::Choice(Selection_ptr s, LayoutKit_ptr l, ToolKit_ptr t)
   : ControllerImpl(false),
@@ -68,7 +65,7 @@ ToggleChoice::ToggleChoice(Selection_ptr s,
 			   Graphic_ptr outbox,
 			   LayoutKit_ptr l,
 			   ToolKit_ptr t)
-  : ::Motif::Choice(s, l, t),
+  : Choice(s, l, t),
     my_in_box(Fresco::Graphic::_duplicate(inbox)),
     my_out_box(Fresco::Graphic::_duplicate(outbox))
 {}
@@ -128,7 +125,7 @@ CheckboxChoice::CheckboxChoice(Selection_ptr s,
 			       Graphic_ptr outbox,
 			       LayoutKit_ptr l,
 			       ToolKit_ptr t)
-  : ::Motif::Choice(s, l, t),
+  : Choice(s, l, t),
     my_in_box(Fresco::Graphic::_duplicate(inbox)),
     my_out_box(Fresco::Graphic::_duplicate(outbox))
 {}
@@ -185,7 +182,7 @@ void CheckboxChoice::remove_item(Tag t)
 }
 
 ToolChoice::ToolChoice(Selection_ptr s, LayoutKit_ptr l, ToolKit_ptr t)
-  : ::Motif::Choice(s, l, t)
+  : Choice(s, l, t)
 {}
 
 Tag ToolChoice::append_item(Graphic_ptr g)
@@ -237,5 +234,3 @@ void ToolChoice::remove_item(Tag t)
   Graphic_var box = body();
   box->remove_graphic(t);
 }
-
-};

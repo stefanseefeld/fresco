@@ -25,6 +25,8 @@
 // using namespace Geometry;
 using namespace Fresco;
 
+using namespace Berlin::FigureKit;
+
 PointImpl::PointImpl() { add_point(0., 0.);}
 PointImpl::PointImpl (const Vertex &v) { add_point(v.x, v.y);}
 PointImpl::PointImpl (const PointImpl &f) { copy(f);}

@@ -22,6 +22,8 @@
 #include <Berlin/RegionImpl.hh>
 #include "Backdrop.hh"
 
+using namespace Berlin::LayoutKit;
+
 static const Coord epsilon = 0.01;
 
 Backdrop::Backdrop() { }

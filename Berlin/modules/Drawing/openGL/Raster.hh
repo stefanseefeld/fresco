@@ -29,8 +29,9 @@
 #include <vector>
 #include <GL/gl.h>
 
-namespace openGL
-{
+namespace Berlin {
+namespace DrawingKit {
+namespace openGL {
 
 class Texture
 {
@@ -76,6 +77,8 @@ private:
   std::vector<unsigned char> data;
 };
 
-}
+} // namespace
+} // namespace
+} // namespace
 
 #endif 

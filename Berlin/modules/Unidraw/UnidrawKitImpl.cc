@@ -29,7 +29,8 @@
 
 using namespace Prague;
 using namespace Fresco;
-// using namespace Unidraw;
+
+using namespace Berlin::UnidrawKit;
 
 UnidrawKitImpl::UnidrawKitImpl(const std::string &id, const Fresco::Kit::PropertySeq &p)
   : KitImpl(id, p) {}

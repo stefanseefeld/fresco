@@ -26,15 +26,17 @@
 #include <Fresco/StreamBuffer.hh>
 #include <Fresco/DrawingKit.hh>
 #include "TerminalView.hh"
-#include <algorithm>
 
 using namespace Prague;
 using namespace Fresco;
 
-TerminalView::TerminalView(StreamBuffer_ptr s, TextKit_ptr tk, DrawingKit_ptr dk, Compositor *l, Compositor *p)
+using namespace Berlin::TextKit;
+
+TerminalView::TerminalView(StreamBuffer_ptr s, TextKit_ptr tk,
+	                   DrawingKit_ptr dk, Compositor *l, Compositor *p)
   : Composition(dk, p),
     _stream(StreamBuffer::_duplicate(s)),
-    _kit(TextKit::_duplicate(tk)),
+    _kit(Fresco::TextKit::_duplicate(tk)),
     _canonicalDK(DrawingKit::_duplicate(dk)),
     _compositor(l),
     _locked(false)

@@ -30,6 +30,9 @@
 #include <Berlin/TransformImpl.hh>
 #include <Berlin/ImplVar.hh>
 
+namespace Berlin {
+namespace UnidrawKit {
+
 class Viewer : public ControllerImpl
 {
 public:
@@ -52,5 +55,8 @@ private:
   Unidraw::Tool_var        _active;
   Fresco::Graphic_var      _root;
 };
+
+} // namespace
+} // namespace
 
 #endif

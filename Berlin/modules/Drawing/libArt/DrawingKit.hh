@@ -46,8 +46,9 @@
 #include <string>
 #include <vector>
 
-namespace libArt
-{
+namespace Berlin {
+namespace DrawingKit {
+namespace libArt {
 
 class DrawingKit : public DrawingKitBase, public KitImpl
 {
@@ -155,6 +156,8 @@ public:
   ObjectCache<Fresco::Raster_var, libArt::Raster> _rasters;
 };
 
-}
+} // namespace
+} // namespace
+} // namespace
 
 #endif 

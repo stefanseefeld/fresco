@@ -28,8 +28,9 @@
 #include <Berlin/TransformImpl.hh>
 #include "Adjustable.hh"
 
-namespace Motif
-{
+namespace Berlin {
+namespace WidgetKit {
+namespace Motif {
 
 class Panner : public Adjustable
 {
@@ -58,6 +59,8 @@ private:
   Fresco::Vertex _scale;
 };
 
-};
+} // namespace
+} // namespace
+} // namespace
 
 #endif

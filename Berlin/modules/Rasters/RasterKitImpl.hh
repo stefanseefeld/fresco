@@ -33,6 +33,9 @@
 
 class RasterImpl;
 
+namespace Berlin {
+namespace ImageKit {
+
 class ImageKitImpl : public virtual POA_Fresco::ImageKit,
 		     public KitImpl
 {
@@ -45,5 +48,8 @@ public:
   Fresco::Raster_ptr create(const char *file);
 protected:
 };
+
+} // namespace
+} // namespace
 
 #endif

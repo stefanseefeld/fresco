@@ -28,8 +28,9 @@
 #include <Berlin/ImplVar.hh>
 #include <Berlin/ControllerImpl.hh>
 
-namespace Motif
-{
+namespace Berlin {
+namespace WidgetKit {
+namespace Motif {
 
 class Adjustable : public ControllerImpl
 {
@@ -56,6 +57,8 @@ private:
   Impl_var<Observer> _translate;
 };
 
-};
+} // namespace
+} // namespace
+} // namespace
 
 #endif

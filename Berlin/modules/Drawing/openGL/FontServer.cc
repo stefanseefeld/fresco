@@ -25,11 +25,9 @@
 #include <Drawing/openGL/GLPixmapFont.hh>
 
 using namespace Prague;
+using namespace Berlin::DrawingKit;
 
-namespace GL
-{
-
-FontServer::FontServer()
+openGL::FontServer::FontServer()
 {
   _size = 16;
   _weight = 100;
@@ -49,12 +47,14 @@ FontServer::FontServer()
 //   fonts[key(16, 100, Unicode::toCORBA(Unicode::String("Helvetica")))] = _font;
 }
 
-FontServer::~FontServer()
+openGL::FontServer::~FontServer()
 {
-  for (fmap_t::iterator i = fonts.begin(); i != fonts.end(); i++) delete (*i).second;
+    for (fmap_t::iterator i = fonts.begin(); i != fonts.end(); i++)
+        delete (*i).second;
 }
 
-void FontServer::lookup(unsigned long, unsigned long, const Unistring &)
+void
+openGL::FontServer::lookup(unsigned long, unsigned long, const Unistring &)
 {
 }
 

@@ -31,8 +31,9 @@
 #include <libart_lgpl/art_misc.h>
 #include <libart_lgpl/art_pixbuf.h>
 
-namespace libArt
-{
+namespace Berlin {
+namespace DrawingKit {
+namespace libArt {
 
 class Font
 {
@@ -56,7 +57,9 @@ public:
   virtual void buffer(Fresco::Unichar ch, ArtPixBuf *&) = 0;
 };
 
-}
+} // namespace
+} // namespace
+} // namespace
 
 #endif
 

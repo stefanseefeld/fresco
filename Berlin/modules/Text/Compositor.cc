@@ -30,7 +30,10 @@
 
 using namespace Fresco;
 
-void Compositor::set_span(RegionImpl *r, Axis a, Coord origin, Coord length, Alignment align)
+using namespace Berlin::TextKit;
+
+void Compositor::set_span(RegionImpl *r, Axis a,
+	                  Coord origin, Coord length, Alignment align)
 {
   Coord begin = origin - length * align;
   Coord end = begin + length;

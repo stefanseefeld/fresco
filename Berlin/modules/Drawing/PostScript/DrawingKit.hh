@@ -31,8 +31,10 @@
 #include <string>
 #include <iostream>
 
-namespace PostScript
-{
+namespace Berlin {
+namespace DrawingKit {
+namespace PostScript {
+
 class DrawingKit : public DrawingKitBase, public KitImpl
 {
 public:
@@ -113,6 +115,9 @@ private:
   Fresco::DrawingKit::Fillstyle _fs;
   std::ostream                  _os;
 };
-}
+
+} // namespace
+} // namespace
+} // namespace
 
 #endif

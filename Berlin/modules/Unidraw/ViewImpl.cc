@@ -24,7 +24,8 @@
 
 using namespace Prague;
 using namespace Fresco;
-using namespace Unidraw;
+
+using namespace Berlin::UnidrawKit;
 
 UViewImpl::UViewImpl(Unidraw::Model_ptr model) : ControllerImpl(false), _model(Unidraw::Model::_duplicate(model)) {}
 UViewImpl::~UViewImpl() {}

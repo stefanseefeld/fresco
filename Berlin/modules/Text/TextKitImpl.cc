@@ -43,6 +43,8 @@
 using namespace Prague;
 using namespace Fresco;
 
+using namespace Berlin::TextKit;
+
 TextKitImpl::TextKitImpl(const std::string &id, const Fresco::Kit::PropertySeq &p)
   : KitImpl(id, p),  _strut(0),
     _lineCompositor(new LRCompositor()), 

@@ -34,6 +34,8 @@
 using namespace Prague;
 using namespace Fresco;
 
+using namespace Berlin::LayoutKit;
+
 Box::Box(LayoutManager *l)
   : _layout(l),
     _requested(false),

@@ -28,6 +28,9 @@
 #include <Berlin/Allocator.hh>
 #include <Berlin/ImplVar.hh>
 
+namespace Berlin {
+namespace PrimitiveKit {
+
 class Transformer : public Allocator
 {
  public:
@@ -51,5 +54,8 @@ public:
 protected:
   unsigned depth;
 };
+
+} // namespace
+} // namespace
 
 #endif

@@ -24,6 +24,9 @@
 
 #include <Berlin/GraphicImpl.hh>
 
+namespace Berlin {
+namespace LayoutKit {
+
 class Glue : public GraphicImpl
 {
 public:
@@ -37,5 +40,8 @@ public:
 private:
   Fresco::Graphic::Requisition _requisition;
 };
+
+} // namespace
+} // namespace
 
 #endif

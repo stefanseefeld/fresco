@@ -25,8 +25,9 @@
 #include <Fresco/config.hh>
 #include <Fresco/DrawingKit.hh>
 
-namespace openGL
-{
+namespace Berlin {
+namespace DrawingKit {
+namespace openGL {
 
 class Quadric
 {
@@ -45,6 +46,8 @@ private:
   normals norm;
 };
 
-}
+} // namespace
+} // namespace
+} // namespace
 
 #endif 

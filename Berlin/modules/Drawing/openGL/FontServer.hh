@@ -26,8 +26,9 @@
 #include <Drawing/FT/Face.hh>
 #include <map>
 
-namespace GL
-{
+namespace Berlin {
+namespace DrawingKit {
+namespace openGL {
 
 inline bool operator == (const Unistring &us1, const Unistring &us2)
 {
@@ -96,6 +97,8 @@ private:
   faces_t   faces;
 };
 
-};
+} // namespace
+} // namespace
+} // namespace
 
 #endif /* _GL_FontServer_hh */

@@ -29,7 +29,8 @@
 #include "Slider.hh"
 
 using namespace Fresco;
-using namespace Motif;
+
+using namespace Berlin::WidgetKit::Motif;
 
 Slider::Slider(BoundedValue_ptr v, Axis a, const Fresco::Graphic::Requisition &r)
   : _requisition(r),

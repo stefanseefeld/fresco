@@ -30,10 +30,12 @@
 using namespace Prague;
 using namespace Fresco;
 
+using namespace Berlin::TextKit;
+
 TextViewer::TextViewer(TextBuffer_ptr txt, TextKit_ptr tk, DrawingKit_ptr dk, Compositor *c)
   : Composition(dk, c),
-    _kit(TextKit::_duplicate(tk)),
-    _buffer(TextBuffer::_duplicate(txt))
+    _kit(Fresco::TextKit::_duplicate(tk)),
+    _buffer(Fresco::TextBuffer::_duplicate(txt))
 {
   Trace trace("TextViewer::TextViewer");
 }

@@ -29,6 +29,9 @@
 
 class RegionImpl;
 
+namespace Berlin {
+namespace LayoutKit {
+
 class LayoutManager
 {
 public:
@@ -258,5 +261,8 @@ private:
   Fresco::Axis                 _axis;
   Fresco::Graphic::Requisition _requisition;
 };
+
+} // namespace
+} // namespace
 
 #endif

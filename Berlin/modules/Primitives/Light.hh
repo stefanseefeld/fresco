@@ -26,6 +26,9 @@
 #include <Fresco/DrawingKit3D.hh>
 #include <Berlin/MonoGraphic.hh>
 
+namespace Berlin {
+namespace PrimitiveKit {
+
 //. Abstract base light source node
 class Light : public MonoGraphic
 {
@@ -75,5 +78,8 @@ protected:
   double         _dropoffrate;
   double         _cutoffangle;
 };
+
+} // namespace
+} // namespace
 
 #endif

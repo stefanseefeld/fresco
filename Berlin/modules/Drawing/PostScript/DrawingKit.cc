@@ -38,6 +38,8 @@
 using namespace Prague;
 using namespace Fresco;
 
+using namespace Berlin::DrawingKit;
+
 PostScript::DrawingKit::DrawingKit(const std::string &id, const Fresco::Kit::PropertySeq &p)
   : KitImpl(id, p),
     _os(new std::filebuf())

@@ -31,6 +31,9 @@
 #include <Prague/Sys/Thread.hh>
 #include <vector>
 
+namespace Berlin {
+namespace DesktopKit {
+
 class WindowImpl : public virtual POA_Fresco::Window,
 		   public ControllerImpl
 {
@@ -55,5 +58,8 @@ private:
   Prague::Mutex                       _mutex;
   std::vector<Fresco::Controller_var> _focus;
 };
+
+} // namespace
+} // namespace
 
 #endif

@@ -29,6 +29,8 @@
 using namespace Fresco;
 using namespace Prague;
 
+using namespace Berlin::LayoutKit;
+
 Placement::Placement(LayoutManager *l)
   : _layout(l),
     _region(new RegionImpl())

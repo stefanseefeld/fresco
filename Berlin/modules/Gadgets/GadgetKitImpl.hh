@@ -31,6 +31,9 @@
 
 class GraphicImpl;
 
+namespace Berlin {
+namespace GadgetKit {
+
 class GadgetKitImpl : public virtual POA_Fresco::GadgetKit,
 		      public KitImpl
 {
@@ -48,5 +51,8 @@ class GadgetKitImpl : public virtual POA_Fresco::GadgetKit,
   Fresco::CommandKit_var _command;
   Fresco::FigureKit_var  _figure;
 };
+
+} // namespace
+} // namespace
 
 #endif

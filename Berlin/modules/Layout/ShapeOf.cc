@@ -23,6 +23,8 @@
 
 using namespace Fresco;
 
+using namespace Berlin::LayoutKit;
+
 ShapeOf::ShapeOf(Graphic_ptr xx, Graphic_ptr yy, Graphic_ptr zz)
   : x(Fresco::Graphic::_duplicate(xx)),
     y(Fresco::Graphic::_duplicate(yy)),

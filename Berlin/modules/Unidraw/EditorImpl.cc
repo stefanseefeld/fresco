@@ -31,6 +31,8 @@ using namespace Prague;
 using namespace Fresco;
 using namespace Unidraw;
 
+using namespace Berlin::UnidrawKit;
+
 class EditorImpl::Observer : public ObserverImpl
 {
 public:

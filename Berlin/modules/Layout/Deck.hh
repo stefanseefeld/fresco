@@ -24,6 +24,9 @@
 
 #include <Berlin/PolyGraphic.hh>
 
+namespace Berlin {
+namespace LayoutKit {
+
 class Deck : public PolyGraphic
 {
 public:
@@ -39,5 +42,8 @@ protected:
   bool _requested;
   Fresco::Graphic::Requisition _requisition;
 };
+
+} // namespace
+} // namespace
 
 #endif

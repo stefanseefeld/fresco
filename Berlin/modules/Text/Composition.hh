@@ -27,7 +27,9 @@
 #include <Fresco/View.hh>
 #include <Fresco/TextKit.hh>
 #include <Berlin/PolyGraphic.hh>
-#include <map>
+
+namespace Berlin {
+namespace TextKit {
 
 class Compositor;
 
@@ -49,5 +51,8 @@ class Composition : public PolyGraphic
   bool requested;
   Fresco::Graphic::Requisition requisition;
 };
+
+} // namespace
+} // namespace
 
 #endif

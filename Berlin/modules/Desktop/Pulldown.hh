@@ -24,6 +24,9 @@
 
 #include "WindowImpl.hh"
 
+namespace Berlin {
+namespace DesktopKit {
+
 class Pulldown : public WindowImpl
 {
 public:
@@ -31,5 +34,8 @@ public:
   virtual void lose_focus(Fresco::Input::Device);
   virtual void mapped(CORBA::Boolean);
 };
+
+} // namespace
+} // namespace
 
 #endif

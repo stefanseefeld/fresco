@@ -24,6 +24,9 @@
 
 #include <Berlin/GraphicImpl.hh>
 
+namespace Berlin {
+namespace LayoutKit {
+
 class ShapeOf : public GraphicImpl
 {
 public:
@@ -36,5 +39,8 @@ private:
   Fresco::Graphic_var y;
   Fresco::Graphic_var z;
 };
+
+} // namespace
+} // namespace
 
 #endif

@@ -30,6 +30,9 @@
 class TransformImpl;
 class RegionImpl;
 
+namespace Berlin {
+namespace FigureKit {
+
 class TransformFigure : public virtual POA_Figure::FigureBase,
 			public GraphicImpl
 {
@@ -77,5 +80,8 @@ public:
 protected:
   Fresco::Path_var _path;
 };
+
+} // namespace
+} // namespace
 
 #endif

@@ -28,6 +28,7 @@
 #include "Root.hh"
 
 using namespace Fresco;
+using namespace Berlin::PrimitiveKit;
 
 Root::Root(Alignment xp, Alignment yp, Alignment zp,
 	   Alignment xc, Alignment yc, Alignment zc)

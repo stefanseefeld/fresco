@@ -30,7 +30,9 @@
 #include <Berlin/GraphicImpl.hh>
 #include <Berlin/RegionImpl.hh>
 #include <Berlin/Geometry.hh>
-#include <list>
+
+namespace Berlin {
+namespace LayoutKit {
 
 class StageHandleImpl;
 
@@ -129,5 +131,8 @@ class StageHandleImpl : public virtual POA_Layout::StageHandle
   //. A mutex for thread safety.
   Prague::Mutex                      _mutex;
 };
+
+} // namespace
+} // namespace
 
 #endif

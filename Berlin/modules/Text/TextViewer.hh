@@ -29,7 +29,9 @@
 #include <Fresco/TextKit.hh>
 #include <Berlin/ViewImpl.hh>
 #include "Composition.hh"
-#include <map>
+
+namespace Berlin {
+namespace TextKit {
 
 class TextViewer : public virtual ViewImpl,
 		   public Composition
@@ -43,5 +45,8 @@ class TextViewer : public virtual ViewImpl,
   Fresco::TextKit_var _kit;
   Fresco::TextBuffer_var _buffer;
 };
+
+} // namespace
+} // namespace
 
 #endif

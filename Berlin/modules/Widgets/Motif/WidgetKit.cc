@@ -43,8 +43,11 @@
 using namespace Fresco;
 using namespace Widget;
 
-namespace Motif
-{
+using namespace Berlin::WidgetKit;
+
+namespace Berlin {
+namespace WidgetKit {
+namespace Motif {
 
 class Forward : public CommandImpl
 {
@@ -76,8 +79,10 @@ private:
 //   Method method;
 // };
 
-WidgetKit::WidgetKit(const std::string &id, const Fresco::Kit::PropertySeq &p)
+WidgetKit::WidgetKit(const std::string &id,
+                     const Fresco::Kit::PropertySeq &p)
   : KitImpl(id, p) {}
+
 WidgetKit::~WidgetKit() {}
 
 void WidgetKit::bind(ServerContext_ptr context)
@@ -395,10 +400,12 @@ Controller_ptr WidgetKit::scrollable(Graphic_ptr g)
   return group._retn();
 }
 
-};
+} // namespace
+} // namespace
+} // namespace
 
 extern "C" KitImpl *load()
 {
   static std::string properties[] = {"implementation", "Motif::WidgetKit", "style", "Motif"};
-  return create_kit<Motif::WidgetKit> ("IDL:fresco.org/Fresco/WidgetKit:1.0", properties, 4);
+  return create_kit<Berlin::WidgetKit::Motif::WidgetKit> ("IDL:fresco.org/Fresco/WidgetKit:1.0", properties, 4);
 }

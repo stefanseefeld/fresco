@@ -28,7 +28,8 @@
 
 using namespace Prague;
 using namespace Fresco;
-using namespace Motif;
+
+using namespace Berlin::WidgetKit::Motif;
 
 class Adjustable::Adjust : public CommandImpl
 {

@@ -32,6 +32,8 @@
 
 using namespace Fresco;
 
+using namespace Berlin::TextKit;
+
 TextChunk::TextChunk(Unichar u, const Fresco::Graphic::Requisition &r)
   : _width(r.x.natural), _height(r.y.natural), _xalign(r.x.align), _yalign(r.y.align), _char(u), _obj_name(0)
 {
