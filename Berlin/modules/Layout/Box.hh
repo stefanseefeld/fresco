@@ -41,7 +41,7 @@ public:
   virtual void allocate(Tag, const Allocation::Info &);
 
 protected:
-  Lease<RegionImpl> *childrenAllocations(Region_ptr);
+  void childrenAllocations(Region_ptr, Lease<RegionImpl> *);
   void traverseWithAllocation(Traversal_ptr, Region_ptr);
   void traverseWithoutAllocation(Traversal_ptr);
 private:

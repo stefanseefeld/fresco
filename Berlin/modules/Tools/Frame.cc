@@ -74,7 +74,7 @@ void Frame::traverse(Traversal_ptr traversal)
     {
       Lease<RegionImpl> allocation;
       Providers::region.provide(allocation);
-      allocation->copy(traversal->allocation());
+      allocation->copy(Region_var(traversal->allocation()));
 
       Lease<TransformImpl> tx;
       Providers::trafo.provide(tx);

@@ -126,7 +126,7 @@ void Slider::traverseThumb(Traversal_ptr traversal)
   if (CORBA::is_nil(child)) return;
   Lease<RegionImpl> allocation;
   Providers::region.provide(allocation);
-  allocation->copy(traversal->allocation());
+  allocation->copy(Region_var(traversal->allocation()));
   Lease<TransformImpl> tx;
   Providers::trafo.provide(tx);
   tx->loadIdentity();

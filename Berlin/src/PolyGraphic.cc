@@ -104,7 +104,7 @@ CORBA::Long PolyGraphic::index(Tag tag)
 
 Graphic::Requisition *PolyGraphic::childrenRequests()
 {
-  Trace trace("PolyGraphic::childrenRequests");
+//   Trace trace("PolyGraphic::childrenRequests");
   MutexGuard guard(childMutex);
   Graphic::Requisition *requisitions = pool.allocate(children.size());
   Graphic::Requisition *r = requisitions;

@@ -76,8 +76,8 @@ void Box::extension(const Allocation::Info &info, Region_ptr region)
       
       child.transformation = child_tx->_this();
       child.transformation->copy(info.transformation);
-      Lease<RegionImpl> *result = childrenAllocations(info.allocation);
-
+      Lease<RegionImpl> result[numChildren()];
+      childrenAllocations(info.allocation,result);
       for (long i = 0; i < n; i++)
 	{
 	  result[i]->normalize(origin);
@@ -89,7 +89,6 @@ void Box::extension(const Allocation::Info &info, Region_ptr region)
 	  childExtension(i, child, region);
 	  previous = origin;
 	}
-      delete [] result;
     }
 }
 
@@ -136,8 +135,8 @@ void Box::allocate(Tag tag, const Allocation::Info &info)
   /*
    * fetch requested (presumably allocated) child regions
    */
-  Lease<RegionImpl> *result = childrenAllocations(info.allocation);
-
+  Lease<RegionImpl> result[numChildren()];
+  childrenAllocations(info.allocation,result);
   Lease<TransformImpl> tx;
   Providers::trafo.provide(tx);  
   tx->loadIdentity();
@@ -150,7 +149,6 @@ void Box::allocate(Tag tag, const Allocation::Info &info)
   info.transformation->premultiply(Transform_var(tx->_this()));
   info.allocation->copy(Region_var(result[idx]->_this()));
   CORBA::Long children = numChildren();
-  delete [] result;
 }
 
 
@@ -161,7 +159,7 @@ void Box::allocate(Tag tag, const Allocation::Info &info)
  * the children's requests so that the real layout (at draw time) will happen
  * faster. 
  */
-Lease<RegionImpl> *Box::childrenAllocations(Region_ptr allocation)
+void Box::childrenAllocations(Region_ptr allocation, Lease<RegionImpl> *childrenRegions)
 {
 //   Trace trace("Box::childrenAllocations");
   CORBA::Long children = numChildren();
@@ -175,7 +173,6 @@ Lease<RegionImpl> *Box::childrenAllocations(Region_ptr allocation)
       requested = true;
     }
   // build region array for children
-  Lease<RegionImpl> *childrenRegions = new Lease<RegionImpl> [children];
   RegionImpl *pointerArray[children]; 
 
   for (CORBA::Long i = 0; i < children; i++)
@@ -187,13 +184,13 @@ Lease<RegionImpl> *Box::childrenAllocations(Region_ptr allocation)
   // fill in children regions which are reasonable matches for the given requesitions
   layout->allocate(children, childrenRequisitions, allocation, pointerArray);
   deallocateRequisitions(childrenRequisitions);
-  return childrenRegions;
 }
 
 void Box::traverseWithAllocation(Traversal_ptr t, Region_ptr r)
 {
 //   Trace trace("Box::traverseWithAllocation");
-  Lease<RegionImpl> *result = childrenAllocations(r);
+  Lease<RegionImpl> result[numChildren()];
+  childrenAllocations(r,result);
   CORBA::Long size = numChildren();
   CORBA::Long begin, end, incr;
 
@@ -227,7 +224,6 @@ void Box::traverseWithAllocation(Traversal_ptr t, Region_ptr r)
       t->traverseChild(children[i].parent, children[i].id, Region_var(result[i]->_this()), Transform_var(tx->_this()));
       if (!t->ok()) break;
     }
-  delete [] result;
 }
 
 void Box::traverseWithoutAllocation(Traversal_ptr t)

@@ -131,7 +131,7 @@ public:
   Endstyle       es;
   Fillstyle      fs;
   LibArtFont   *font;
-
+  art_u8 alphabank[256][256];
   ArtAlphaGamma *agam;
   art_u32        art_fg;
   ArtIRect screen, clip;

@@ -75,6 +75,10 @@ LibArtDrawingKit::LibArtDrawingKit(KitFactory *f, const PropertySeq &p)
   int stride = buf->buffer.plb.stride;
   pb = art_pixbuf_new_const_rgb ((art_u8 *)buf->write, drawable->width(), drawable->height(), stride);
   bbox.x0 = bbox.y0 = bbox.x1 = bbox.y1 = 0;    
+  double step = 1. / 256.;
+  for (int i = 0; i < 256; ++i)
+    for (int j = 0; j < 256; ++j) 
+      alphabank[i][j] = (art_u8)(i * (j * step));
 }
 
 static inline art_u32 artColor(Color &c) {
@@ -227,72 +231,69 @@ void LibArtDrawingKit::drawPath(const Path &p)
 
 void LibArtDrawingKit::drawRect(const Vertex &bot, const Vertex &top) 
 {
-  Path path;
-  /**
-  // fast path (not presently working)
+  // fast path opaque non-transformed rectangles
   if (fg.alpha == 1. &&
       affine[0] == 1 &&
       affine[1] == 0 &&
       affine[2] == 0 &&
-      affine[3] == 1
+      affine[3] == 1 &&
+      fs == solid
       ) {
 
-#define MIN(a,b)  (a<b?a:b)
-#define MAX(a,b) (a<b?b:a)
-#define TRUNC(a) (a<0?0:a)
     ArtIRect rect;
-    rect.x0 = (int)(bot.x * xres);
-    rect.x1 = (int)(top.x * xres);
-    rect.y0 = (int)(bot.y * yres);
-    rect.y1 = (int)(top.y * yres);
+    rect.x0 = (int)((bot.x + affine[4]) * xres);
+    rect.x1 = (int)((top.x  + affine[4])* xres);
+    rect.y0 = (int)((bot.y + affine[5]) * yres);
+    rect.y1 = (int)((top.y + affine[5]) * yres);
     art_irect_intersect(&rect,&rect,&clip);
-    int offset = (int)((affine[4] * xres) + (((int)(affine[5] * yres)) * pb->rowstride));
-    int width = 1 + (rect.x1 - rect.x0);
-    int height = 1 + (rect.y1 - rect.y0);
-    int skip = pb->rowstride - width;
-    int last = width - 1;
-    int sz = height * width;
-    unsigned char *writer = (unsigned char *)(pb->pixels);
-    writer += offset;
-    if (fs == outlined) {
-//       for (int i = 0; i < sz; ++i, writer += 3) {
-// 	if ((i % width == 0) ||
-// 	    (i % width == last) ||
-// 	    (i < width) ||
-// 	    (i > (sz - width)))
-// 	  *writer = art_fg;
-// 	if (i % width == last) writer += skip;      
-//       }
-    } else {
-      cerr << "fastpath " << sz << " pixels " << bot.x << " " << bot.y << " " << top.x << " " << top.y << " :" 
-	   << rect.x0 << " " << rect.y0 << " " << rect.x1 << " " << rect.y1 << endl;
-      for (int i = 0; i < sz; ++i, writer += 3) {
-// 	cerr << i << endl;	   
-	*writer = art_fg;
-	if (i % width == last) writer += skip;      
-      }
+    int pix = ((pb->n_channels * pb->bits_per_sample + 7) >> 3);
+    int width = (rect.x1 - rect.x0);
+    int height = (rect.y1 - rect.y0);
+    if ((height * width) < 1) return;
+    int skip = pb->rowstride - (width * pix);
+    unsigned char *buf_end = pb->pixels + ((pb->height - 1) * pb->rowstride + pb->width * pix);
+    unsigned char *writer = pb->pixels;
+    writer += (rect.x0 * pix) + (rect.y0 * pb->rowstride);
+    art_u8 r = (art_u8)((art_fg & 0xff000000) >> 24);
+    art_u8 g = (art_u8)((art_fg & 0x00ff0000) >> 16);
+    art_u8 b = (art_u8)((art_fg & 0x0000ff00) >> 8);
+    
+    // write first row
+    unsigned char *first = writer;
+    unsigned char *line_end = writer + (width * pix);
+    if (line_end > buf_end) line_end = buf_end;
+    while (writer < line_end) {
+      *writer++ = r; *writer++ = g; *writer++ = b;
     }
+    writer += skip;
+    // memcpy the remaining rows
+    for (int i = 1; i < (height) && 
+	   // in case of rounding errors
+	   (writer + (width*pix)) < buf_end; 
+	 ++i, writer += pb->rowstride) 
+      memcpy(writer,first,(width*pix));      
+    art_irect_union (&bbox,&bbox,&rect);
     return;
-  }
 
-  cerr << "affine" << affine[0] << affine[1] << affine[2] << affine[3] << affine[4] << affine[5] << endl;
-  */
-  if (fs == outlined) {
-    path.length(4);
-    path[0].x = bot.x, path[0].y = bot.y;
-    path[1].x = top.x, path[1].y = bot.y;
-    path[2].x = top.x, path[2].y = top.y;
-    path[3].x = bot.x, path[2].y = top.y;
+    // non-degenerate rectangles
   } else {
-    path.length(5);
-    path[0].x = bot.x, path[0].y = bot.y;
-    path[1].x = top.x, path[1].y = bot.y;
-    path[2].x = top.x, path[2].y = top.y;
-    path[3].x = bot.x, path[3].y = top.y;
-    path[4].x = bot.x, path[4].y = bot.y;
+    Path path;
+    if (fs == outlined) {
+      path.length(4);
+      path[0].x = bot.x, path[0].y = bot.y;
+      path[1].x = top.x, path[1].y = bot.y;
+      path[2].x = top.x, path[2].y = top.y;
+      path[3].x = bot.x, path[2].y = top.y;
+    } else {
+      path.length(5);
+      path[0].x = bot.x, path[0].y = bot.y;
+      path[1].x = top.x, path[1].y = bot.y;
+      path[2].x = top.x, path[2].y = top.y;
+      path[3].x = bot.x, path[3].y = top.y;
+      path[4].x = bot.x, path[4].y = bot.y;
+    }
+    this->drawPath(static_cast<const Path>(path));
   }
-  this->drawPath(static_cast<const Path>(path));
-
 }
 
 void LibArtDrawingKit::drawEllipse(const Vertex &, const Vertex &) {}
@@ -317,20 +318,21 @@ void LibArtDrawingKit::rasterizePixbuf(ArtPixBuf *pixbuf) {
   ArtIRect tsloci; 
   int width = pixbuf->width;
   int pix = ((pixbuf->n_channels * pixbuf->bits_per_sample + 7) >> 3); 
-  int row = width * pix;
+  int row = (width) * pix;
   int size = (fg.alpha == 1. ? 0 : (pixbuf->height - 1) * pixbuf->rowstride + width * pix);      
-  unsigned char tmp[size];
-  unsigned char *save = pixbuf->pixels;
+  art_u8 tmp[size];
+  art_u8 *save = pixbuf->pixels;
 
   // alpha-correct the image
   if (fg.alpha != 1.) {
-    int skip = pixbuf->rowstride - row;
-    int last = width - 1;
-    unsigned char *writer = tmp;
-    unsigned char *reader = pixbuf->pixels;
-    for (int i = 0; i < size; ++i, ++reader, ++writer) {
-      *writer = (unsigned char)((*reader) * fg.alpha);
-      if (i % width == last) reader += skip;	
+    int skip = (pixbuf->rowstride - row);
+    art_u8 *end_write = tmp + (size - 1);
+    art_u8 *reader = pixbuf->pixels;
+    art_u8 *tab = alphabank[(art_u8)(art_fg & 0x000000ff)];
+    art_u8 *eol;
+    for (art_u8 *writer = tmp; writer < end_write; reader += skip, writer += skip) {
+      eol = writer + row;
+      while (writer < eol) *writer++ = *(tab + *reader++);      
     }
     pixbuf->pixels = tmp;
   }
