@@ -22,17 +22,18 @@
 #include "Berlin/SubjectImpl.hh"
 #include "Berlin/Logger.hh"
 
-SubjectImpl::SubjectImpl()
-{}
+SubjectImpl::SubjectImpl() : blocked(false) {}
 
 void SubjectImpl::attach(Observer_ptr o)
 {
+  SectionLog section(Logger::subject, "SubjectImpl::attach");
   MutexGuard guard(observerMutex);
   observers.push_back(Observer::_duplicate(o));
 }
 
 void SubjectImpl::detach(Observer_ptr o)
 {
+  SectionLog section(Logger::subject, "SubjectImpl::detach");
   MutexGuard guard(observerMutex);
   observers.remove(o);
 }

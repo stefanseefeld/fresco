@@ -75,7 +75,7 @@ void DynamicFrame::attach(Telltale_ptr subject)
 {
   if (!CORBA::is_nil(telltale)) telltale->detach(View_var(_this()));
   telltale = Telltale::_duplicate(subject);
-  telltale->attach(_this());
+  telltale->attach(View_var(_this()));
 }
 
 void DynamicFrame::update(Subject_ptr, const CORBA::Any &)

@@ -26,7 +26,7 @@ subdirs	= include/Warsaw src test
 
 .PHONY:	config test
 
-world:	config all
+world:	all
 
 config::
 	@cd config; ./configure $$CONFIGURE_OPTS; cd ../src/Prague/config; \

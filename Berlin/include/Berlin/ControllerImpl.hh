@@ -32,7 +32,7 @@
 #include <Berlin/Thread.hh>
 #include <vector>
 
-class ControllerImpl : implements(Controller), implements(Telltale), public MonoGraphic, public SubjectImpl
+class ControllerImpl : implements(Controller), public MonoGraphic, public SubjectImpl
 {
   typedef vector<Controller_var> clist_t;
  public:
