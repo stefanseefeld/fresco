@@ -1,21 +1,13 @@
-DIR_CPPFLAGS = #-D__x86__ -D__linux__ -D__OSVERSION__=2 -D__OMNIORB2__ -D_MIT_POSIX_THREADS -D_REENTRANT
-DIR_CXXFLAGS = -c -ggdb -Wall -Wno-unused
-DIR_INCLUDES =  -I../../include -I../../include/Warsaw -I/data1/seefelds/omniORB_2.7.0/include
-DIR_LDFLAGS  =  -L. -L$(TOPDIR)/lib
-LIBS	     =  -lomniORB2 -lomnithread -lpthread -ltcpwrapGK -lomniLC
-SRC	=	LayoutManager.cc Placement.cc Box.cc GridImpl.cc Glue.cc Deck.cc ShapeOf.cc LayoutKitImpl.cc #Backdrop.cc
-OBJ	=	$(patsubst %.cc, %.o, $(SRC))
-
-libLayout.so:	$(OBJ)
-	$(CXX) -shared $(DIR_LDFLAGS) $(OBJ) -o $@ $(LIBS)
-	cp $@ $(LPATH)
-
-
-%.o:	%.cc
-	$(CXX) $(DIR_CPPFLAGS) $(DIR_CXXFLAGS) $(DIR_INCLUDES) -c $? -o $@
-
-clean:	
-	rm -f $(OBJ) *~ ../../include/Layout/*~
-
-distclean:	clean
-	rm -f libLayout.so
+TOPDIR=../..
+OS_ARCH='Linux'
+DIR_CXXFLAGS = -c -O3 -Wall -Wno-unused -fno-rtti 
+DIR_INCLUDES =  -I../../include -I../../include/Warsaw 
+DIR_LDFLAGS  =  -L. -L$(TOPDIR)/lib -lomniORB2 -lomnithread -lpthread -ltcpwrapGK -lomniLC
+DIR_CPPFLAGS = 
+CXXSRCS = LayoutManager.cc Placement.cc Box.cc GridImpl.cc Glue.cc Deck.cc ShapeOf.cc LayoutKitImpl.cc #Backdrop.cc
+SO_TARGET = libLayout.so
+SO_MAJOR_libLayout.so = 0
+SO_MINOR_libLayout.so = 0
+SO_PATCH_libLayout.so = 1
+SO_OBJS_libLayout.so = $(CXXSRCS:.cc=.o)
+include $(TOPDIR)/config/rules.mk

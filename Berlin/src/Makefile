@@ -1,24 +1,20 @@
-DIR_CPPFLAGS = #-D__x86__ -D__linux__ -D__OSVERSION__=2 -D__OMNIORB2__ -D_MIT_POSIX_THREADS -D_REENTRANT
-DIR_CXXFLAGS = -c -ggdb -Wall -Wno-unused
+TOPDIR=../..
+OS_ARCH='Linux'
+DIR_CPPFLAGS = 
+DIR_CXXFLAGS = -c -ggdb -Wall -Wno-unused -fno-rtti
 DIR_INCLUDES =  -I../../include -I../../include/Warsaw 
-DIR_LDFLAGS  =  -L. -L$(TOPDIR)/lib
-LIBS	     =  -lomniORB2 -lomnithread -lpthread -ltcpwrapGK -lomniLC
-SRC	=	Debug.cc GenericFactoryImpl.cc FactoryFinderImpl.cc CloneableImpl.cc \
+DIR_LDFLAGS  =  -L. -L$(TOPDIR)/lib -lomniORB2 -lomnithread -lpthread -ltcpwrapGK -lomniLC
+CXXSRCS =	Debug.cc GenericFactoryImpl.cc FactoryFinderImpl.cc CloneableImpl.cc \
 		RegionImpl.cc TransformImpl.cc TraversalImpl.cc DamageImpl.cc CollectorImpl.cc GraphicImpl.cc \
 		ScreenImpl.cc MonoGraphic.cc PolyGraphic.cc Allocator.cc Requestor.cc DebugGraphic.cc \
-		DrawTraversalImpl.cc PickTraversalImpl.cc ScreenManager.cc \
+		DrawTraversalImpl.cc PickTraversalImpl.cc ScreenManager.cc NameUtil.cc \
 		SubjectImpl.cc ServerContextImpl.cc ClientContextImpl.cc ServerContextManagerImpl.cc
-OBJ	=	$(patsubst %.cc, %.o, $(SRC))
 
-libBerlin.so:	$(OBJ)
-	$(CXX) -shared $(DIR_LDFLAGS) $(OBJ) -o $@ $(LIBS)
-	cp $@ $(LPATH)
+SO_TARGET := libBerlin.so
+SO_MAJOR_libBerlin.so := 0
+SO_MINOR_libBerlin.so := 0
+SO_PATCH_libBerlin.so := 1
+SO_OBJS_libBerlin.so := $(CXXSRCS:.cc=.o)
 
-%.o:	%.cc
-	$(CXX) $(DIR_CPPFLAGS) $(DIR_CXXFLAGS) $(DIR_INCLUDES) -c $? -o $@
+include $(TOPDIR)/config/rules.mk
 
-clean:	
-	rm -f $(OBJ) *~ ../../include/Berlin/*~
-
-distclean:	clean
-	rm -f libBerlin.so

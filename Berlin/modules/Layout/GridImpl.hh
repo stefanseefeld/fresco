@@ -30,10 +30,11 @@
 #include <Warsaw/config.hh>
 #include <Warsaw/Grid.hh>
 #include <Berlin/GraphicImpl.hh>
+#include <Berlin/CloneableImpl.hh>
 
 class GridImpl;
 
-class GridOffset : implements(GraphicOffset)
+class GridOffset : implements(GraphicOffset), public virtual CloneableImpl
 {
 public:
   GridOffset(GridImpl *parent, Graphic_ptr child, Grid::Index index);
@@ -123,7 +124,7 @@ private:
 
 class SubGridImpl;
 
-class SubGridOffset : implements(GraphicOffset)
+class SubGridOffset : implements(GraphicOffset), public virtual CloneableImpl
 {
 public:
   SubGridOffset(SubGridImpl *, Grid_ptr, const Grid::Range &);

@@ -32,7 +32,6 @@
 
 interface Graphic;
 interface GraphicOffset;
-// interface Widget;
 interface DrawingKit;
 interface Transform;
 
@@ -61,7 +60,7 @@ interface DrawTraversal : Traversal
 
 interface PickTraversal : Traversal
 {
-//   void pick(in Widget w);
+   void pick(in Graphic g);
 };
 
 #endif /* _Traversal_idl */

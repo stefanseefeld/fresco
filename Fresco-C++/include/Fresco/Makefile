@@ -21,7 +21,7 @@ TOPDIR=../..
 OS_ARCH='Linux'
 
 DIR_CPPFLAGS := -D_MIT_POSIX_THREADS -D_REENTRANT -D__OSVERSION__=2 -D__OMNIORB2__
-DIR_CXXFLAGS := -fsquangle -fno-rtti -fno-default-inline -fomit-frame-pointer -fnonnull-objects -pthread 
+DIR_CXXFLAGS := -fno-rtti -fno-default-inline -fomit-frame-pointer -fnonnull-objects -pthread 
 DIR_INCLUDES :=  -I.  
 DIR_LDFLAGS  :=  -L. -L$(TOPDIR)/lib \
 		-lomniORB2 -lomnithread -lpthread -ltcpwrapGK -lomniLC -lstdc++ 
@@ -34,14 +34,14 @@ ALL_SUBTARGETS := 	BoundedValue.idl   Damage.idl	   LayoutKit.idl  Pencil.idl   
 			Event.idl		
 
 IDLSRCS := Naming.idl $(ALL_SUBTARGETS) 
-SO_TARGET := libwarsaw.so 
-SO_MAJOR_libwarsaw.so := 0
-SO_MINOR_libwarsaw.so := 0
-SO_PATCH_libwarsaw.so := 1
+SO_TARGET := libWarsaw.so 
+SO_MAJOR_libWarsaw.so := 0
+SO_MINOR_libWarsaw.so := 0
+SO_PATCH_libWarsaw.so := 1
 
 CXXSRCS := $(ALL_SUBTARGETS:.idl=SK.cc) 
 CXXSRCS += $(ALL_SUBTARGETS:.idl=DynSK.cc)
-SO_OBJS_libwarsaw.so := $(CXXSRCS:.cc=.o) 
+SO_OBJS_libWarsaw.so := $(CXXSRCS:.cc=.o) 
 
 include $(TOPDIR)/config/rules.mk
 
