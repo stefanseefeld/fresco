@@ -82,9 +82,9 @@ LibArtDrawingKit::LibArtDrawingKit(KitFactory *f, const PropertySeq &p)
 }
 
 static inline art_u32 artColor(Color &c) {
-  return (((art_u8)(c.blue * 0xff) << 24) + 
-	  ((art_u8)(c.green * 0xff) << 16) + 
-	  ((art_u8)(c.red * 0xff) << 8) + 
+  return (((art_u8)(c.blue * 0xff) << 24) | 
+	  ((art_u8)(c.green * 0xff) << 16) | 
+	  ((art_u8)(c.red * 0xff) << 8) | 
 	  ((art_u8)(c.alpha * 0xff)));
 }
 
@@ -315,6 +315,52 @@ void LibArtDrawingKit::drawImage(Raster_ptr remote) {
   rasterizePixbuf(rasters.lookup(Raster::_duplicate(remote))->pixbuf);
 }
 
+void LibArtDrawingKit::identityPixbuf(ArtPixBuf *pixbuf) {
+  // fast path for non-transformed grey-scale glyph images
+  ArtIRect rect;
+  rect.x0 = (int)(affine[4] * xres);
+  rect.x1 = rect.x0 + pixbuf->width;
+  rect.y0 = (int)(affine[5] * yres);
+  rect.y1 = rect.y0 + pixbuf->height;
+
+  // work out offset within source image
+  int dx = clip.x0 - rect.x0;
+  int dy = clip.y0 - rect.y0;
+  if (dx < 0) dx = 0;
+  if (dy < 0) dy = 0;
+
+  art_irect_intersect(&rect,&rect,&clip);
+  if (((rect.y1 - rect.y0) * (rect.x1 - rect.x0)) < 1) return;
+  art_u8 *dst = pb->pixels + rect.y0 * pb->rowstride + rect.x0 * 3;
+  art_u8 *src = pixbuf->pixels + dy * pixbuf->rowstride + dx * 4 + 3;
+  int width = (rect.x1 - rect.x0);
+  int height = (rect.y1 - rect.y0);  
+  art_u8 *atab = alphabank[(art_u8)(art_fg & 0xff)];
+  art_u8 *rtab = alphabank[(art_u8)((art_fg >> 24) & 0xff)];
+  art_u8 *gtab = alphabank[(art_u8)((art_fg >> 16) & 0xff)];
+  art_u8 *btab = alphabank[(art_u8)((art_fg >> 8) & 0xff)];
+
+  int t;
+  int dst_skip = pb->rowstride - width * 3;
+  int src_skip = pixbuf->rowstride - width * 4;
+  art_u8 *ptab;
+
+  for (int row = 0; row < height; ++row, dst += dst_skip, src += src_skip) {
+    for (int col = 0; col < width; ++col, dst += 3, src += 4) {            
+      ptab = alphabank[*src];
+      dst[0]=t=dst[0] + atab[rtab[*src]] - atab[ptab[dst[0]]]; 
+      t&=0x100; t>>=8; t-=1; t=~t; dst[0] |= (t & 0xff);
+      dst[1]=t=dst[1] + atab[gtab[*src]] - atab[ptab[dst[1]]]; 
+      t&=0x100; t>>=8; t-=1; t=~t; dst[1] |= (t & 0xff);
+      dst[2]=t=dst[2] + atab[btab[*src]] - atab[ptab[dst[2]]]; 
+      t&=0x100; t>>=8; t-=1; t=~t; dst[2] |= (t & 0xff);
+    }
+  }	
+  art_irect_union (&bbox,&bbox,&rect);
+  return;    
+}
+
+
 void LibArtDrawingKit::rasterizePixbuf(ArtPixBuf *pixbuf) {
 
   // NOTE: this entire routine takes place "in device space"
@@ -329,16 +375,18 @@ void LibArtDrawingKit::rasterizePixbuf(ArtPixBuf *pixbuf) {
   ArtDRect slocd = {0,0,(double)(pixbuf->width),(double)(pixbuf->height)};
   ArtDRect tslocd; 
   ArtIRect tsloci; 
+
   int width = pixbuf->width;
   int pix = ((pixbuf->n_channels * pixbuf->bits_per_sample + 7) >> 3); 
   int row = (width) * pix;
+  int skip = (pixbuf->rowstride - row);
   int size = (fg.alpha == 1. ? 0 : (pixbuf->height - 1) * pixbuf->rowstride + width * pix);      
+
   art_u8 tmp[size];
   art_u8 *save = pixbuf->pixels;
 
   // alpha-correct the image
   if (fg.alpha != 1.) {
-    int skip = (pixbuf->rowstride - row);
     art_u8 *end_write = tmp + (size - 1);
     art_u8 *reader = pixbuf->pixels;
     art_u8 *tab = alphabank[(art_u8)(art_fg & 0x000000ff)];
@@ -398,7 +446,6 @@ void LibArtDrawingKit::drawChar(Unichar c)
     {
       font->allocateChar(c,r);
       GlyphMetrics gm = font->metrics(c);
-//       font->getMetrics(c,metrics);
       width = (int) (gm.width >> 6);
       height = (int) (gm.height >> 6);
     }
@@ -425,7 +472,14 @@ void LibArtDrawingKit::drawChar(Unichar c)
   ArtPixBuf *pb = art_pixbuf_new_const_rgba (pixels, width, height, row);  
   if (c > 127) unifont->getPixBuf(c,*pb);
   else         font->getPixBuf(c,*pb);
-  rasterizePixbuf(pb);
+  if (affine[0] == 1 &&
+      affine[1] == 0 &&
+      affine[2] == 0 &&
+      affine[3] == 1) {
+    identityPixbuf(pb);
+  } else {   
+    rasterizePixbuf(pb);
+  }
   art_pixbuf_free(pb);
   affine[4] = x0;
   affine[5] = y0;

@@ -111,6 +111,7 @@ public:
 
  private:
   void rasterizePixbuf(ArtPixBuf *pixbuf);
+  void identityPixbuf(ArtPixBuf *pixbuf);
 
   ggi_visual_t memvis;
   ArtPixBuf *pb;
