@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Wed, 10 Jan 2001 16:56:31 +0100.
+ * ftp.unicode.org on Fri, 30 Mar 2001 17:47:42 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -37,7 +37,7 @@ namespace Babylon {
     Hangul_Jamo1100() {
       m_first_letter = 0x1100;
       m_last_letter  = 0x11FF;
-      // m_version="3.0.1" // Not yet supported!
+      // m_version="3.1" // Not yet supported!
 
     }
 
@@ -45,11 +45,11 @@ namespace Babylon {
     ~Hangul_Jamo1100() {
     }
 
-    UCS4 firstLetter() {
+    UCS4 first_letter() const {
       return m_first_letter;
     }
 
-    UCS4 lastLetter() {
+    UCS4 last_letter() const {
       return m_last_letter;
     }
 
@@ -59,7 +59,7 @@ namespace Babylon {
 
     // query functions:
 
-    string blockname(const UCS4 uc) const {
+    std::string blockname(const UCS4 uc) const {
       return "Hangul Jamo";
     }
 
@@ -124,7 +124,7 @@ namespace Babylon {
     Char_Decomp decomp_type(const UCS4 uc) const {
       if (!is_defined(uc))
         return DECOMP_MAX;
-      return Babylon::Char_Decomp(DECOMP_NO_DECOMP);
+      return Babylon::Char_Decomp(DECOMP_CANONICAL);
     }
 
     UTF32_string decompose(const UCS4 uc) const {
@@ -157,23 +157,11 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Non_break(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Format_Control(const UCS4 uc) const {
-      return 0;
-    }
-
     bool is_Bidi_Control(const UCS4 uc) const {
       return 0;
     }
 
     bool is_Join_Control(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Other_Format_Control(const UCS4 uc) const {
       return 0;
     }
 
@@ -193,11 +181,7 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Math(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Composite(const UCS4 uc) const {
+    bool is_Other_Math(const UCS4 uc) const {
       return 0;
     }
 
@@ -205,8 +189,12 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Alphabetic(const UCS4 uc) const {
-      return m_Alphabetic.test(uc - m_first_letter);
+    bool is_Other_Alphabetic(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Ideographic(const UCS4 uc) const {
+      return 0;
     }
 
     bool is_Diacritic(const UCS4 uc) const {
@@ -217,39 +205,15 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Identifier_Part_Not_Cf(const UCS4 uc) const {
-      return m_Identifier_Part_Not_Cf.test(uc - m_first_letter);
+    bool is_Other_Lowercase(const UCS4 uc) const {
+      return 0;
     }
 
     bool is_Other_Uppercase(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Other_Lowercase(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Ideographic(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Private_Use(const UCS4 uc) const {
-      return 0;
-    }
-
     bool is_Noncharacter_Code_Point(const UCS4 uc) const {
-      return ((uc & 0xFFFE) == 0xFFFE);
-    }
-
-    bool is_Private_Use_High_Surrogate(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Low_Surrogate(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_High_Surrogate(const UCS4 uc) const {
       return 0;
     }
 
@@ -261,15 +225,13 @@ namespace Babylon {
     Babylon::UCS4 m_first_letter;
     Babylon::UCS4 m_last_letter;
     // Babylon::UCS4_string m_version;
-    static const bitset<256> m_is_defined;
+    static const std::bitset<256> m_is_defined;
     static const unsigned char m_lb[256];
     static const unsigned char m_ea[256];
-    static const bitset<256> m_Alphabetic;
-    static const bitset<256> m_Identifier_Part_Not_Cf;
 
   }; // class Hangul_Jamo1100
 
-    const bitset<256> Hangul_Jamo1100::m_is_defined(string("0000001111111111111111111111111111111111111111111111111111111111111111111111111111111111000001111111111111111111111111111111111111111111111111111111111111111111100000111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"));
+    const std::bitset<256> Hangul_Jamo1100::m_is_defined(std::string("0000001111111111111111111111111111111111111111111111111111111111111111111111111111111111000001111111111111111111111111111111111111111111111111111111111111111111100000111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"));
 
   const unsigned char Hangul_Jamo1100::m_lb[] = {
     LB_ID, LB_ID, LB_ID, LB_ID, LB_ID, LB_ID, LB_ID, LB_ID, 
@@ -340,10 +302,6 @@ namespace Babylon {
     EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, 
     EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W
   };
-
-    const bitset<256> Hangul_Jamo1100::m_Alphabetic(string("0000001111111111111111111111111111111111111111111111111111111111111111111111111111111111000001111111111111111111111111111111111111111111111111111111111111111111100000111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"));
-
-    const bitset<256> Hangul_Jamo1100::m_Identifier_Part_Not_Cf(string("0000001111111111111111111111111111111111111111111111111111111111111111111111111111111111000001111111111111111111111111111111111111111111111111111111111111111111100000111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"));
 
 }; // namespace Babylon
 

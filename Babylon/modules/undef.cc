@@ -43,11 +43,11 @@ namespace Babylon {
     ~undef0() {
     }
 
-    UCS4 firstLetter() {
+    UCS4 first_letter() const {
       return _first_letter;
     }
 
-    UCS4 lastLetter() {
+    UCS4 last_letter() const {
       return _last_letter;
     }
 
@@ -69,24 +69,13 @@ namespace Babylon {
       return uc;
     }
 
-    bool is_Uppercase(const UCS4 uc) const {
-      return 0;
-    }
-
     UCS4 lowercase(const UCS4 uc) const {
       return uc;
     }
 
-    bool is_Lowercase(const UCS4 uc) const {
-      return 0;
-    }
 
     UCS4 titlecase(const UCS4 uc) const {
       return uc;
-    }
-
-    bool is_Titlecase(const UCS4 uc) const {
-      return 0;
     }
 
     int dec_digit_value(const UCS4 uc) const {
@@ -155,23 +144,11 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Non_break(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Format_Control(const UCS4 uc) const {
-      return 0;
-    }
-
     bool is_Bidi_Control(const UCS4 uc) const {
       return 0;
     }
 
     bool is_Join_Control(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Other_Format_Control(const UCS4 uc) const {
       return 0;
     }
 
@@ -191,11 +168,7 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Math(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Composite(const UCS4 uc) const {
+    bool is_Other_Math(const UCS4 uc) const {
       return 0;
     }
 
@@ -203,7 +176,7 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Alphabetic(const UCS4 uc) const {
+    bool is_Other_Alphabetic(const UCS4 uc) const {
       return 0;
     }
 
@@ -212,10 +185,6 @@ namespace Babylon {
     }
 
     bool is_Extender(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Identifier_Part_Not_Cf(const UCS4 uc) const {
       return 0;
     }
 
@@ -231,23 +200,11 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Private_Use(const UCS4 uc) const {
-      return 0;
-    }
-
     bool is_Noncharacter_Code_Point(const UCS4 uc) const {
       return 0;
     }
 
     bool is_Private_Use_High_Surrogate(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Low_Surrogate(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_High_Surrogate(const UCS4 uc) const {
       return 0;
     }
 

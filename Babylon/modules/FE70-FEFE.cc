@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Wed, 10 Jan 2001 17:05:27 +0100.
+ * ftp.unicode.org on Fri, 30 Mar 2001 18:05:11 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -37,7 +37,7 @@ namespace Babylon {
     Arabic_Presentation_FormsBFE70() {
       m_first_letter = 0xFE70;
       m_last_letter  = 0xFEFE;
-      // m_version="3.0.1" // Not yet supported!
+      // m_version="3.1" // Not yet supported!
 
     }
 
@@ -45,11 +45,11 @@ namespace Babylon {
     ~Arabic_Presentation_FormsBFE70() {
     }
 
-    UCS4 firstLetter() {
+    UCS4 first_letter() const {
       return m_first_letter;
     }
 
-    UCS4 lastLetter() {
+    UCS4 last_letter() const {
       return m_last_letter;
     }
 
@@ -59,7 +59,7 @@ namespace Babylon {
 
     // query functions:
 
-    string blockname(const UCS4 uc) const {
+    std::string blockname(const UCS4 uc) const {
       return "Arabic Presentation Forms-B";
     }
 
@@ -163,23 +163,11 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Non_break(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Format_Control(const UCS4 uc) const {
-      return 0;
-    }
-
     bool is_Bidi_Control(const UCS4 uc) const {
       return 0;
     }
 
     bool is_Join_Control(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Other_Format_Control(const UCS4 uc) const {
       return 0;
     }
 
@@ -199,20 +187,20 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Math(const UCS4 uc) const {
+    bool is_Other_Math(const UCS4 uc) const {
       return 0;
-    }
-
-    bool is_Composite(const UCS4 uc) const {
-      return m_Composite.test(uc - m_first_letter);
     }
 
     bool is_Hex_Digit(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Alphabetic(const UCS4 uc) const {
-      return m_Alphabetic.test(uc - m_first_letter);
+    bool is_Other_Alphabetic(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Ideographic(const UCS4 uc) const {
+      return 0;
     }
 
     bool is_Diacritic(const UCS4 uc) const {
@@ -223,39 +211,15 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Identifier_Part_Not_Cf(const UCS4 uc) const {
-      return m_Identifier_Part_Not_Cf.test(uc - m_first_letter);
+    bool is_Other_Lowercase(const UCS4 uc) const {
+      return 0;
     }
 
     bool is_Other_Uppercase(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Other_Lowercase(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Ideographic(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Private_Use(const UCS4 uc) const {
-      return 0;
-    }
-
     bool is_Noncharacter_Code_Point(const UCS4 uc) const {
-      return ((uc & 0xFFFE) == 0xFFFE);
-    }
-
-    bool is_Private_Use_High_Surrogate(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Low_Surrogate(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_High_Surrogate(const UCS4 uc) const {
       return 0;
     }
 
@@ -267,19 +231,16 @@ namespace Babylon {
     Babylon::UCS4 m_first_letter;
     Babylon::UCS4 m_last_letter;
     // Babylon::UCS4_string m_version;
-    static const bitset<143> m_is_defined;
+    static const std::bitset<143> m_is_defined;
     static const unsigned char _decomp[143];
     static const UCS4 m_decompStr[143][2];
-    static const bitset<143> m_Composite;
-    static const bitset<143> m_Alphabetic;
-    static const bitset<143> m_Identifier_Part_Not_Cf;
 
   }; // class Arabic_Presentation_FormsBFE70
 
-    const bitset<143> Arabic_Presentation_FormsBFE70::m_is_defined(string("00111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111010111"));
+    const std::bitset<143> Arabic_Presentation_FormsBFE70::m_is_defined(std::string("00111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111010111"));
 
   const unsigned char Arabic_Presentation_FormsBFE70::_decomp[] = {
-    DECOMP_ISOLATED, DECOMP_MEDIAL, DECOMP_ISOLATED, DECOMP_NO_DECOMP, DECOMP_ISOLATED, DECOMP_NO_DECOMP, DECOMP_ISOLATED, DECOMP_MEDIAL, 
+    DECOMP_ISOLATED, DECOMP_MEDIAL, DECOMP_ISOLATED, DECOMP_CANONICAL, DECOMP_ISOLATED, DECOMP_CANONICAL, DECOMP_ISOLATED, DECOMP_MEDIAL, 
     DECOMP_ISOLATED, DECOMP_MEDIAL, DECOMP_ISOLATED, DECOMP_MEDIAL, DECOMP_ISOLATED, DECOMP_MEDIAL, DECOMP_ISOLATED, DECOMP_MEDIAL, 
     DECOMP_ISOLATED, DECOMP_ISOLATED, DECOMP_FINAL, DECOMP_ISOLATED, DECOMP_FINAL, DECOMP_ISOLATED, DECOMP_FINAL, DECOMP_ISOLATED, 
     DECOMP_FINAL, DECOMP_ISOLATED, DECOMP_FINAL, DECOMP_INITIAL, DECOMP_MEDIAL, DECOMP_ISOLATED, DECOMP_FINAL, DECOMP_ISOLATED, 
@@ -296,7 +257,7 @@ namespace Babylon {
     DECOMP_MEDIAL, DECOMP_ISOLATED, DECOMP_FINAL, DECOMP_INITIAL, DECOMP_MEDIAL, DECOMP_ISOLATED, DECOMP_FINAL, DECOMP_INITIAL, 
     DECOMP_MEDIAL, DECOMP_ISOLATED, DECOMP_FINAL, DECOMP_INITIAL, DECOMP_MEDIAL, DECOMP_ISOLATED, DECOMP_FINAL, DECOMP_ISOLATED, 
     DECOMP_FINAL, DECOMP_ISOLATED, DECOMP_FINAL, DECOMP_INITIAL, DECOMP_MEDIAL, DECOMP_ISOLATED, DECOMP_FINAL, DECOMP_ISOLATED, 
-    DECOMP_FINAL, DECOMP_ISOLATED, DECOMP_FINAL, DECOMP_ISOLATED, DECOMP_FINAL, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP
+    DECOMP_FINAL, DECOMP_ISOLATED, DECOMP_FINAL, DECOMP_ISOLATED, DECOMP_FINAL, DECOMP_CANONICAL, DECOMP_CANONICAL
   };
 
   const UCS4 Arabic_Presentation_FormsBFE70::m_decompStr[][2] = {
@@ -337,12 +298,6 @@ namespace Babylon {
     { 0x0644u, 0x0623u }, { 0x0644u, 0x0625u }, { 0x0644u, 0x0625u }, { 0x0644u, 0x0627u }, 
     { 0x0644u, 0x0627u }, { 0xFEFDu, 0x0000u }, { 0xFEFEu, 0x0000u }
   };
-
-    const bitset<143> Arabic_Presentation_FormsBFE70::m_Composite(string("00111111110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011111111111100000000000000000"));
-
-    const bitset<143> Arabic_Presentation_FormsBFE70::m_Alphabetic(string("00111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111000111"));
-
-    const bitset<143> Arabic_Presentation_FormsBFE70::m_Identifier_Part_Not_Cf(string("00111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111000111"));
 
 }; // namespace Babylon
 

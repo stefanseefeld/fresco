@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Wed, 10 Jan 2001 16:57:45 +0100.
+ * ftp.unicode.org on Fri, 30 Mar 2001 17:50:04 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -37,7 +37,7 @@ namespace Babylon {
     CJK_Compatibility3300() {
       m_first_letter = 0x3300;
       m_last_letter  = 0x33FF;
-      // m_version="3.0.1" // Not yet supported!
+      // m_version="3.1" // Not yet supported!
 
     }
 
@@ -45,11 +45,11 @@ namespace Babylon {
     ~CJK_Compatibility3300() {
     }
 
-    UCS4 firstLetter() {
+    UCS4 first_letter() const {
       return m_first_letter;
     }
 
-    UCS4 lastLetter() {
+    UCS4 last_letter() const {
       return m_last_letter;
     }
 
@@ -59,7 +59,7 @@ namespace Babylon {
 
     // query functions:
 
-    string blockname(const UCS4 uc) const {
+    std::string blockname(const UCS4 uc) const {
       return "CJK Compatibility";
     }
 
@@ -939,23 +939,11 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Non_break(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Format_Control(const UCS4 uc) const {
-      return 0;
-    }
-
     bool is_Bidi_Control(const UCS4 uc) const {
       return 0;
     }
 
     bool is_Join_Control(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Other_Format_Control(const UCS4 uc) const {
       return 0;
     }
 
@@ -975,19 +963,19 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Math(const UCS4 uc) const {
+    bool is_Other_Math(const UCS4 uc) const {
       return 0;
-    }
-
-    bool is_Composite(const UCS4 uc) const {
-      return m_Composite.test(uc - m_first_letter);
     }
 
     bool is_Hex_Digit(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Alphabetic(const UCS4 uc) const {
+    bool is_Other_Alphabetic(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Ideographic(const UCS4 uc) const {
       return 0;
     }
 
@@ -999,7 +987,7 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Identifier_Part_Not_Cf(const UCS4 uc) const {
+    bool is_Other_Lowercase(const UCS4 uc) const {
       return 0;
     }
 
@@ -1007,31 +995,7 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Other_Lowercase(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Ideographic(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Private_Use(const UCS4 uc) const {
-      return 0;
-    }
-
     bool is_Noncharacter_Code_Point(const UCS4 uc) const {
-      return ((uc & 0xFFFE) == 0xFFFE);
-    }
-
-    bool is_Private_Use_High_Surrogate(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Low_Surrogate(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_High_Surrogate(const UCS4 uc) const {
       return 0;
     }
 
@@ -1043,14 +1007,13 @@ namespace Babylon {
     Babylon::UCS4 m_first_letter;
     Babylon::UCS4 m_last_letter;
     // Babylon::UCS4_string m_version;
-    static const bitset<256> m_is_defined;
+    static const std::bitset<256> m_is_defined;
     static const unsigned char _decomp[256];
     static const UCS4 m_decompStr[256][2];
-    static const bitset<256> m_Composite;
 
   }; // class CJK_Compatibility3300
 
-    const bitset<256> CJK_Compatibility3300::m_is_defined(string("0111111111111111111111111111111100111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111000011111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"));
+    const std::bitset<256> CJK_Compatibility3300::m_is_defined(std::string("0111111111111111111111111111111100111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111000011111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"));
 
   const unsigned char CJK_Compatibility3300::_decomp[] = {
     DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, 
@@ -1067,8 +1030,8 @@ namespace Babylon {
     DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
     DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
     DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
-    DECOMP_COMPAT, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_NO_DECOMP, 
-    DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, 
+    DECOMP_COMPAT, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_CANONICAL, 
+    DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, 
     DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, 
     DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, 
     DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, 
@@ -1080,11 +1043,11 @@ namespace Babylon {
     DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, 
     DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, 
     DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, 
-    DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, 
+    DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_SQUARE, DECOMP_CANONICAL, DECOMP_CANONICAL, 
     DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
     DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
     DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
-    DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_NO_DECOMP
+    DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_CANONICAL
   };
 
   const UCS4 CJK_Compatibility3300::m_decompStr[][2] = {
@@ -1153,8 +1116,6 @@ namespace Babylon {
     { 0x0032u, 0x0035u }, { 0x0032u, 0x0036u }, { 0x0032u, 0x0037u }, { 0x0032u, 0x0038u }, 
     { 0x0032u, 0x0039u }, { 0x0033u, 0x0030u }, { 0x0033u, 0x0031u }, { 0x33FFu, 0x0000u }
   };
-
-    const bitset<256> CJK_Compatibility3300::m_Composite(string("0111111111111111111111111111111100111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111000011111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"));
 
 }; // namespace Babylon
 

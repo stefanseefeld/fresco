@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Wed, 10 Jan 2001 16:55:52 +0100.
+ * ftp.unicode.org on Fri, 30 Mar 2001 17:46:22 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -38,7 +38,7 @@ namespace Babylon {
     Cyrillic400() {
       m_first_letter = 0x400;
       m_last_letter  = 0x4FF;
-      // m_version="3.0.1" // Not yet supported!
+      // m_version="3.1" // Not yet supported!
       m_composeMap[make_pair(0x00000406, 0x00000308)] = 0x0407;
       m_composeMap[make_pair(0x00000410, 0x00000306)] = 0x04D0;
       m_composeMap[make_pair(0x00000410, 0x00000308)] = 0x04D2;
@@ -98,11 +98,11 @@ namespace Babylon {
     ~Cyrillic400() {
     }
 
-    UCS4 firstLetter() {
+    UCS4 first_letter() const {
       return m_first_letter;
     }
 
-    UCS4 lastLetter() {
+    UCS4 last_letter() const {
       return m_last_letter;
     }
 
@@ -112,7 +112,7 @@ namespace Babylon {
 
     // query functions:
 
-    string blockname(const UCS4 uc) const {
+    std::string blockname(const UCS4 uc) const {
       return "Cyrillic";
     }
 
@@ -177,7 +177,7 @@ namespace Babylon {
     Char_Decomp decomp_type(const UCS4 uc) const {
       if (!is_defined(uc))
         return DECOMP_MAX;
-      return Babylon::Char_Decomp(DECOMP_NO_DECOMP);
+      return Babylon::Char_Decomp(DECOMP_CANONICAL);
     }
 
     UTF32_string decompose(const UCS4 uc) const {
@@ -216,23 +216,11 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Non_break(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Format_Control(const UCS4 uc) const {
-      return 0;
-    }
-
     bool is_Bidi_Control(const UCS4 uc) const {
       return 0;
     }
 
     bool is_Join_Control(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Other_Format_Control(const UCS4 uc) const {
       return 0;
     }
 
@@ -252,20 +240,20 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Math(const UCS4 uc) const {
+    bool is_Other_Math(const UCS4 uc) const {
       return 0;
-    }
-
-    bool is_Composite(const UCS4 uc) const {
-      return m_Composite.test(uc - m_first_letter);
     }
 
     bool is_Hex_Digit(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Alphabetic(const UCS4 uc) const {
-      return m_Alphabetic.test(uc - m_first_letter);
+    bool is_Other_Alphabetic(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Ideographic(const UCS4 uc) const {
+      return 0;
     }
 
     bool is_Diacritic(const UCS4 uc) const {
@@ -276,39 +264,15 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Identifier_Part_Not_Cf(const UCS4 uc) const {
-      return m_Identifier_Part_Not_Cf.test(uc - m_first_letter);
+    bool is_Other_Lowercase(const UCS4 uc) const {
+      return 0;
     }
 
     bool is_Other_Uppercase(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Other_Lowercase(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Ideographic(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Private_Use(const UCS4 uc) const {
-      return 0;
-    }
-
     bool is_Noncharacter_Code_Point(const UCS4 uc) const {
-      return ((uc & 0xFFFE) == 0xFFFE);
-    }
-
-    bool is_Private_Use_High_Surrogate(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Low_Surrogate(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_High_Surrogate(const UCS4 uc) const {
       return 0;
     }
 
@@ -320,7 +284,7 @@ namespace Babylon {
     Babylon::UCS4 m_first_letter;
     Babylon::UCS4 m_last_letter;
     // Babylon::UCS4_string m_version;
-    static const bitset<256> m_is_defined;
+    static const std::bitset<256> m_is_defined;
     static const UCS4 m_upper[256];
     static const UCS4 m_lower[256];
     static const UCS4 m_title[256];
@@ -330,15 +294,12 @@ namespace Babylon {
     static const UCS2 m_decompStr[256][2];
     static const unsigned char m_lb[256];
     static const unsigned char m_ea[256];
-    map<pair<UCS4, UCS4>, UCS4> m_composeMap;
-    static const bitset<256> m_Composite;
-    static const bitset<256> m_Alphabetic;
-    static const bitset<256> m_Diacritic;
-    static const bitset<256> m_Identifier_Part_Not_Cf;
+    std::map<pair<UCS4, UCS4>, UCS4> m_composeMap;
+    static const std::bitset<256> m_Diacritic;
 
   }; // class Cyrillic400
 
-    const bitset<256> Cyrillic400::m_is_defined(string("0000001100111111111111111111111111111111111111110001100110011111111111111111111111111111111111111111111111111111111100110111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"));
+    const std::bitset<256> Cyrillic400::m_is_defined(std::string("0000001100111111111111111111111111111111111111110001100110011111111111111111111111111111111111111111111111111111111100110111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"));
 
   const UCS4 Cyrillic400::m_upper[] = {
     0x0400, 0x0401, 0x0402, 0x0403, 0x0404, 0x0405, 0x0406, 0x0407, 
@@ -687,13 +648,7 @@ namespace Babylon {
     EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N
   };
 
-    const bitset<256> Cyrillic400::m_Composite(string("0000001100111111111111001111110011111100110011110000000000000110000000000000000000000000000000000000000000000000000000000000000000000000110000000000000000000000011100000000001100000000000000000000000000000000000000000000000000000000000000000111000000000011"));
-
-    const bitset<256> Cyrillic400::m_Alphabetic(string("0000001100111111111111111111111111111111111111110001100110011111111111111111111111111111111111111111111111111111111100000000001111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"));
-
-    const bitset<256> Cyrillic400::m_Diacritic(string("0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000111100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"));
-
-    const bitset<256> Cyrillic400::m_Identifier_Part_Not_Cf(string("0000001100111111111111111111111111111111111111110001100110011111111111111111111111111111111111111111111111111111111100000111101111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"));
+    const std::bitset<256> Cyrillic400::m_Diacritic(std::string("0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000111100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"));
 
 }; // namespace Babylon
 

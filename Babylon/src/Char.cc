@@ -178,6 +178,40 @@ Babylon::Char::utf32(const Babylon::UTF32_string & s,
     return ++it;
 }
 
+bool Babylon::Char::is_Alphabetic() const throw (Block_Error) {
+    Gen_Cat cat = Dictionary::instance()->category(m_value);
+    return (cat == CAT_Ll ||
+	    cat == CAT_Lu ||
+	    cat == CAT_Lt ||
+	    cat == CAT_Lm ||
+	    cat == CAT_Lo ||
+	    Dictionary::instance()->is_Other_Alphabetic(m_value));
+}
+
+bool Babylon::Char::is_ID_Start() const throw (Block_Error) {
+    Gen_Cat cat = Dictionary::instance()->category(m_value);
+    return (cat == CAT_Ll ||
+	    cat == CAT_Lu ||
+	    cat == CAT_Lt ||
+	    cat == CAT_Lm ||
+	    cat == CAT_Lo ||
+	    cat == CAT_Nl);
+}
+
+bool Babylon::Char::is_ID_Continue() const throw (Block_Error) {
+    Gen_Cat cat = Dictionary::instance()->category(m_value);
+    return (cat == CAT_Ll ||
+	    cat == CAT_Lu ||
+	    cat == CAT_Lt ||
+	    cat == CAT_Lm ||
+	    cat == CAT_Lo ||
+	    cat == CAT_Nl ||
+	    cat == CAT_Mn ||
+	    cat == CAT_Mc ||
+	    cat == CAT_Nd ||
+	    cat == CAT_Pc);
+}
+
 // TRANSFORMATIONS:
 void Babylon::Char::to_lower()
     throw (Block_Error) {

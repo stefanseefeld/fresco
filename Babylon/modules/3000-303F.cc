@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Wed, 10 Jan 2001 16:57:36 +0100.
+ * ftp.unicode.org on Fri, 30 Mar 2001 17:49:45 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -37,7 +37,7 @@ namespace Babylon {
     CJK_Symbols_and_Punctuation3000() {
       m_first_letter = 0x3000;
       m_last_letter  = 0x303F;
-      // m_version="3.0.1" // Not yet supported!
+      // m_version="3.1" // Not yet supported!
 
     }
 
@@ -45,11 +45,11 @@ namespace Babylon {
     ~CJK_Symbols_and_Punctuation3000() {
     }
 
-    UCS4 firstLetter() {
+    UCS4 first_letter() const {
       return m_first_letter;
     }
 
-    UCS4 lastLetter() {
+    UCS4 last_letter() const {
       return m_last_letter;
     }
 
@@ -59,7 +59,7 @@ namespace Babylon {
 
     // query functions:
 
-    string blockname(const UCS4 uc) const {
+    std::string blockname(const UCS4 uc) const {
       return "CJK Symbols and Punctuation";
     }
 
@@ -219,23 +219,11 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Non_break(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Format_Control(const UCS4 uc) const {
-      return 0;
-    }
-
     bool is_Bidi_Control(const UCS4 uc) const {
       return 0;
     }
 
     bool is_Join_Control(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Other_Format_Control(const UCS4 uc) const {
       return 0;
     }
 
@@ -255,11 +243,7 @@ namespace Babylon {
       return m_Terminal_Punctuation.test(uc - m_first_letter);
     }
 
-    bool is_Math(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Composite(const UCS4 uc) const {
+    bool is_Other_Math(const UCS4 uc) const {
       return 0;
     }
 
@@ -267,8 +251,12 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Alphabetic(const UCS4 uc) const {
+    bool is_Other_Alphabetic(const UCS4 uc) const {
       return 0;
+    }
+
+    bool is_Ideographic(const UCS4 uc) const {
+      return m_Ideographic.test(uc - m_first_letter);
     }
 
     bool is_Diacritic(const UCS4 uc) const {
@@ -279,41 +267,15 @@ namespace Babylon {
       return m_Extender.test(uc - m_first_letter);
     }
 
-    bool is_Identifier_Part_Not_Cf(const UCS4 uc) const {
-      return m_Identifier_Part_Not_Cf.test(uc - m_first_letter);
+    bool is_Other_Lowercase(const UCS4 uc) const {
+      return 0;
     }
 
     bool is_Other_Uppercase(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Other_Lowercase(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Ideographic(const UCS4 uc) const {
-      return ((uc >= 0x3006 && uc <= 0x3007) ||
-              (uc >= 0x3021 && uc <= 0x3029) ||
-              (uc >= 0x3038 && uc <= 0x303A));
-    }
-
-    bool is_Private_Use(const UCS4 uc) const {
-      return 0;
-    }
-
     bool is_Noncharacter_Code_Point(const UCS4 uc) const {
-      return ((uc & 0xFFFE) == 0xFFFE);
-    }
-
-    bool is_Private_Use_High_Surrogate(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Low_Surrogate(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_High_Surrogate(const UCS4 uc) const {
       return 0;
     }
 
@@ -325,24 +287,24 @@ namespace Babylon {
     Babylon::UCS4 m_first_letter;
     Babylon::UCS4 m_last_letter;
     // Babylon::UCS4_string m_version;
-    static const bitset<64> m_is_defined;
+    static const std::bitset<64> m_is_defined;
     static const unsigned char _cat[64];
     static const unsigned char _comb_cl[64];
     static const unsigned char m_bidir[64];
     static const unsigned char _decomp[64];
     static const UCS4 m_decompStr[64];
-    static const bitset<64> m_mirror;
+    static const std::bitset<64> m_mirror;
     static const unsigned char m_lb[64];
     static const unsigned char m_ea[64];
-    static const bitset<64> m_Quotation_Mark;
-    static const bitset<64> m_Terminal_Punctuation;
-    static const bitset<64> m_Diacritic;
-    static const bitset<64> m_Extender;
-    static const bitset<64> m_Identifier_Part_Not_Cf;
+    static const std::bitset<64> m_Quotation_Mark;
+    static const std::bitset<64> m_Terminal_Punctuation;
+    static const std::bitset<64> m_Ideographic;
+    static const std::bitset<64> m_Diacritic;
+    static const std::bitset<64> m_Extender;
 
   }; // class CJK_Symbols_and_Punctuation3000
 
-    const bitset<64> CJK_Symbols_and_Punctuation3000::m_is_defined(string("1100011111111111111111111111111111111111111111111111111111111111"));
+    const std::bitset<64> CJK_Symbols_and_Punctuation3000::m_is_defined(std::string("1100011111111111111111111111111111111111111111111111111111111111"));
 
   const unsigned char CJK_Symbols_and_Punctuation3000::_cat[] = {
     CAT_Zs, CAT_Po, CAT_Po, CAT_Po, CAT_So, CAT_Lm, CAT_Lo, CAT_Nl, 
@@ -378,14 +340,14 @@ namespace Babylon {
   };
 
   const unsigned char CJK_Symbols_and_Punctuation3000::_decomp[] = {
-    DECOMP_WIDE, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, 
-    DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, 
-    DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, 
-    DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, 
-    DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, 
-    DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, 
-    DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_COMPAT, DECOMP_NO_DECOMP, 
-    DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP
+    DECOMP_WIDE, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, 
+    DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, 
+    DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, 
+    DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, 
+    DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, 
+    DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, 
+    DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_COMPAT, DECOMP_CANONICAL, 
+    DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL
   };
 
   const UCS4 CJK_Symbols_and_Punctuation3000::m_decompStr[] = {
@@ -407,7 +369,7 @@ namespace Babylon {
     0x303Cu, 0x303Du, 0x303Eu, 0x303Fu
   };
 
-  const bitset<64> CJK_Symbols_and_Punctuation3000::m_mirror(string("0000000000000000000000000000000000001111111100111111111100000000"));
+  const std::bitset<64> CJK_Symbols_and_Punctuation3000::m_mirror(std::string("0000000000000000000000000000000000001111111100111111111100000000"));
 
   const unsigned char CJK_Symbols_and_Punctuation3000::m_lb[] = {
     LB_ID, LB_CL, LB_CL, LB_ID, LB_ID, LB_NS, LB_ID, LB_ID, 
@@ -422,24 +384,24 @@ namespace Babylon {
 
   const unsigned char CJK_Symbols_and_Punctuation3000::m_ea[] = {
     EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, 
-    EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, 
-    EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, 
-    EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, 
+    EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, 
+    EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_W, EA_WIDTH_W, 
+    EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, 
     EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, 
     EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, 
     EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, 
     EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_W, EA_WIDTH_N
   };
 
-    const bitset<64> CJK_Symbols_and_Punctuation3000::m_Quotation_Mark(string("0000000000000000000000000000000011000000000000000000000000000000"));
+    const std::bitset<64> CJK_Symbols_and_Punctuation3000::m_Quotation_Mark(std::string("0000000000000000000000000000000011000000000000000000000000000000"));
 
-    const bitset<64> CJK_Symbols_and_Punctuation3000::m_Terminal_Punctuation(string("0000000000000000000000000000000000000000000000000000000000000110"));
+    const std::bitset<64> CJK_Symbols_and_Punctuation3000::m_Terminal_Punctuation(std::string("0000000000000000000000000000000000000000000000000000000000000110"));
 
-    const bitset<64> CJK_Symbols_and_Punctuation3000::m_Diacritic(string("0000000000000000111111000000000000000000000000000000000000000000"));
+    const std::bitset<64> CJK_Symbols_and_Punctuation3000::m_Ideographic(std::string("0000011100000000000000111111111000000000000000000000000000000000"));
 
-    const bitset<64> CJK_Symbols_and_Punctuation3000::m_Extender(string("0000000000111110000000000000000000000000000000000000000000000000"));
+    const std::bitset<64> CJK_Symbols_and_Punctuation3000::m_Diacritic(std::string("0000000000000000111111000000000000000000000000000000000000000000"));
 
-    const bitset<64> CJK_Symbols_and_Punctuation3000::m_Identifier_Part_Not_Cf(string("0000011100111110111111111111111000000000000000000000000000000000"));
+    const std::bitset<64> CJK_Symbols_and_Punctuation3000::m_Extender(std::string("0000000000111110000000000000000000000000000000000000000000000000"));
 
 }; // namespace Babylon
 

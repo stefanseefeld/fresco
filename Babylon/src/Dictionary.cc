@@ -216,21 +216,13 @@ Line_Break Dictionary::linebreak(const UCS4 uc)
     return result;
 }
 
+// Properties:
 
 bool Dictionary::is_White_space(const UCS4 uc) 
     throw (Block_Error)  {
     bool result;
     Guard<RWLock> guard(m_rw_lock);
     result = find_char(uc)->is_White_space(uc);
-    return result;
-}
-
-
-bool Dictionary::is_Non_break(const UCS4 uc) 
-    throw (Block_Error) {
-    bool result;
-    Guard<RWLock> guard(m_rw_lock);
-    result = find_char(uc)->is_Non_break(uc);
     return result;
 }
 
@@ -249,24 +241,6 @@ bool Dictionary::is_Join_Control(const UCS4 uc)
     bool result;
     Guard<RWLock> guard(m_rw_lock);
     result = find_char(uc)->is_Join_Control(uc);
-    return result;
-}
-
-
-bool Dictionary::is_Format_Control(const UCS4 uc) 
-    throw (Block_Error) {
-    bool result;
-    Guard<RWLock> guard(m_rw_lock);
-    result = find_char(uc)->is_Format_Control(uc);
-    return result;
-}
-
-
-bool Dictionary::is_Other_Format_Control(const UCS4 uc) 
-    throw (Block_Error) {
-    bool result;
-    Guard<RWLock> guard(m_rw_lock);
-    result = find_char(uc)->is_Format_Control(uc);
     return result;
 }
 
@@ -307,20 +281,11 @@ bool Dictionary::is_Terminal_Punctuation(const UCS4 uc)
 }
 
 
-bool Dictionary::is_Math(const UCS4 uc) 
+bool Dictionary::is_Other_Math(const UCS4 uc) 
     throw (Block_Error) {
     bool result;
     Guard<RWLock> guard(m_rw_lock);
-    result = find_char(uc)->is_Math(uc);
-    return result;
-}
-
-
-bool Dictionary::is_Composite(const UCS4 uc) 
-    throw (Block_Error) {
-    bool result;
-    Guard<RWLock> guard(m_rw_lock);
-    result = find_char(uc)->is_Composite(uc);
+    result = find_char(uc)->is_Other_Math(uc);
     return result;
 }
 
@@ -334,11 +299,11 @@ bool Dictionary::is_Hex_Digit(const UCS4 uc)
 }
 
 
-bool Dictionary::is_Alphabetic(const UCS4 uc) 
+bool Dictionary::is_Other_Alphabetic(const UCS4 uc) 
     throw (Block_Error) {
     bool result;
     Guard<RWLock> guard(m_rw_lock);
-    result = find_char(uc)->is_Alphabetic(uc);
+    result = find_char(uc)->is_Other_Alphabetic(uc);
     return result;
 }
 
@@ -370,24 +335,6 @@ bool Dictionary::is_Extender(const UCS4 uc)
 }
 
 
-bool Dictionary::is_Identifier_Part_Not_Cf(const UCS4 uc) 
-    throw (Block_Error) {
-    bool result;
-    Guard<RWLock> guard(m_rw_lock);
-    result = find_char(uc)->is_Identifier_Part_Not_Cf(uc);
-    return result;
-}
-
-
-bool Dictionary::is_Private_Use(const UCS4 uc) 
-    throw (Block_Error) {
-    bool result;
-    Guard<RWLock> guard(m_rw_lock);
-    result = find_char(uc)->is_Private_Use(uc);
-    return result;
-}
-
-
 bool Dictionary::is_Other_Uppercase(const UCS4 uc) 
     throw (Block_Error) {
     bool result;
@@ -402,33 +349,6 @@ bool Dictionary::is_Other_Lowercase(const UCS4 uc)
     bool result;
     Guard<RWLock> guard(m_rw_lock);
     result = find_char(uc)->is_Other_Lowercase(uc);
-    return result;
-}
-
-
-bool Dictionary::is_Low_Surrogate(const UCS4 uc) 
-    throw (Block_Error) {
-    bool result;
-    Guard<RWLock> guard(m_rw_lock);
-    result = find_char(uc)->is_Low_Surrogate(uc);
-    return result;
-}
-
-
-bool Dictionary::is_High_Surrogate(const UCS4 uc) 
-    throw (Block_Error) {
-    bool result;
-    Guard<RWLock> guard(m_rw_lock);
-    result = find_char(uc)->is_High_Surrogate(uc);
-    return result;
-}
-
-
-bool Dictionary::is_Private_Use_High_Surrogate(const UCS4 uc) 
-    throw (Block_Error) {
-    bool result;
-    Guard<RWLock> guard(m_rw_lock);
-    result = find_char(uc)->is_Private_Use_High_Surrogate(uc);
     return result;
 }
 
@@ -582,8 +502,8 @@ void Dictionary::update(const std::string & scanDir) {
 	if (*block == 0)
 	    continue;
 	
-	UCS4 start = (*block)->firstLetter();
-	UCS4 end   = (*block)->lastLetter();
+	UCS4 start = (*block)->first_letter();
+	UCS4 end   = (*block)->last_letter();
 
 	if ((*block)->is_undef_block()) {
 	    if(m_undef_block == 0) {

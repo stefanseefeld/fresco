@@ -28,7 +28,7 @@ sub new {
       $tmp =~ tr/a-z/A-Z/;
       $dType = "DECOMP_".$tmp;
     } else {
-      $dType = "DECOMP_NO_DECOMP";
+      $dType = "DECOMP_CANONICAL";
     }
 
     $self->{hex($list[0])} = $dType;

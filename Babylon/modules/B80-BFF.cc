@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Wed, 10 Jan 2001 16:56:12 +0100.
+ * ftp.unicode.org on Fri, 30 Mar 2001 17:47:04 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -38,7 +38,7 @@ namespace Babylon {
     TamilB80() {
       m_first_letter = 0xB80;
       m_last_letter  = 0xBFF;
-      // m_version="3.0.1" // Not yet supported!
+      // m_version="3.1" // Not yet supported!
       m_composeMap[make_pair(0x00000B92, 0x00000BD7)] = 0x0B94;
       m_composeMap[make_pair(0x00000BC6, 0x00000BBE)] = 0x0BCA;
       m_composeMap[make_pair(0x00000BC6, 0x00000BD7)] = 0x0BCC;
@@ -50,11 +50,11 @@ namespace Babylon {
     ~TamilB80() {
     }
 
-    UCS4 firstLetter() {
+    UCS4 first_letter() const {
       return m_first_letter;
     }
 
-    UCS4 lastLetter() {
+    UCS4 last_letter() const {
       return m_last_letter;
     }
 
@@ -64,7 +64,7 @@ namespace Babylon {
 
     // query functions:
 
-    string blockname(const UCS4 uc) const {
+    std::string blockname(const UCS4 uc) const {
       return "Tamil";
     }
 
@@ -276,7 +276,7 @@ namespace Babylon {
     Char_Decomp decomp_type(const UCS4 uc) const {
       if (!is_defined(uc))
         return DECOMP_MAX;
-      return Babylon::Char_Decomp(DECOMP_NO_DECOMP);
+      return Babylon::Char_Decomp(DECOMP_CANONICAL);
     }
 
     UTF32_string decompose(const UCS4 uc) const {
@@ -315,23 +315,11 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Non_break(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Format_Control(const UCS4 uc) const {
-      return 0;
-    }
-
     bool is_Bidi_Control(const UCS4 uc) const {
       return 0;
     }
 
     bool is_Join_Control(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Other_Format_Control(const UCS4 uc) const {
       return 0;
     }
 
@@ -351,20 +339,20 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Math(const UCS4 uc) const {
+    bool is_Other_Math(const UCS4 uc) const {
       return 0;
-    }
-
-    bool is_Composite(const UCS4 uc) const {
-      return m_Composite.test(uc - m_first_letter);
     }
 
     bool is_Hex_Digit(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Alphabetic(const UCS4 uc) const {
-      return m_Alphabetic.test(uc - m_first_letter);
+    bool is_Other_Alphabetic(const UCS4 uc) const {
+      return m_Other_Alphabetic.test(uc - m_first_letter);
+    }
+
+    bool is_Ideographic(const UCS4 uc) const {
+      return 0;
     }
 
     bool is_Diacritic(const UCS4 uc) const {
@@ -375,39 +363,15 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Identifier_Part_Not_Cf(const UCS4 uc) const {
-      return m_Identifier_Part_Not_Cf.test(uc - m_first_letter);
+    bool is_Other_Lowercase(const UCS4 uc) const {
+      return 0;
     }
 
     bool is_Other_Uppercase(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Other_Lowercase(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Ideographic(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Private_Use(const UCS4 uc) const {
-      return 0;
-    }
-
     bool is_Noncharacter_Code_Point(const UCS4 uc) const {
-      return ((uc & 0xFFFE) == 0xFFFE);
-    }
-
-    bool is_Private_Use_High_Surrogate(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Low_Surrogate(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_High_Surrogate(const UCS4 uc) const {
       return 0;
     }
 
@@ -419,20 +383,18 @@ namespace Babylon {
     Babylon::UCS4 m_first_letter;
     Babylon::UCS4 m_last_letter;
     // Babylon::UCS4_string m_version;
-    static const bitset<128> m_is_defined;
+    static const std::bitset<128> m_is_defined;
     static const unsigned char _cat[128];
     static const unsigned char _comb_cl[128];
     static const unsigned char m_bidir[128];
     static const UCS2 m_decompStr[128][2];
     static const unsigned char m_lb[128];
-    map<pair<UCS4, UCS4>, UCS4> m_composeMap;
-    static const bitset<128> m_Composite;
-    static const bitset<128> m_Alphabetic;
-    static const bitset<128> m_Identifier_Part_Not_Cf;
+    std::map<pair<UCS4, UCS4>, UCS4> m_composeMap;
+    static const std::bitset<128> m_Other_Alphabetic;
 
   }; // class TamilB80
 
-    const bitset<128> TamilB80::m_is_defined(string("00000000000001111111111110000000000000001000000000111101110001111100001110111111110001110001100011010110001111011100011111101100"));
+    const std::bitset<128> TamilB80::m_is_defined(std::string("00000000000001111111111110000000000000001000000000111101110001111100001110111111110001110001100011010110001111011100011111101100"));
 
   const unsigned char TamilB80::_cat[] = {
     CAT_Mn, CAT_Mn, CAT_Mn, CAT_Mc, CAT_Mn, CAT_Lo, CAT_Lo, CAT_Lo, 
@@ -545,11 +507,7 @@ namespace Babylon {
     LB_CM, LB_CM, LB_CM, LB_CM, LB_CM, LB_CM, LB_CM, LB_CM
   };
 
-    const bitset<128> TamilB80::m_Composite(string("00000000000000000000000000000000000000000000000000011100000000000000000000000000000000000000000000000000000000000000000000000000"));
-
-    const bitset<128> TamilB80::m_Alphabetic(string("00000000000000000000000000000000000000000000000000011101110001101100001110111111110001110001100011000110001111011100011111100000"));
-
-    const bitset<128> TamilB80::m_Identifier_Part_Not_Cf(string("00000000000000001111111110000000000000000000000000011101110001101100001110111111110001110001100011000110001111011100011111100000"));
+    const std::bitset<128> TamilB80::m_Other_Alphabetic(std::string("00000000000000000000000000000000000000000000000000011101110001101100000000000000000000000000000000000000000000000000000000000000"));
 
 }; // namespace Babylon
 

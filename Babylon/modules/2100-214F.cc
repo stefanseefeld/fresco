@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Wed, 10 Jan 2001 16:57:06 +0100.
+ * ftp.unicode.org on Fri, 30 Mar 2001 17:48:45 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -37,7 +37,7 @@ namespace Babylon {
     Letterlike_Symbols2100() {
       m_first_letter = 0x2100;
       m_last_letter  = 0x214F;
-      // m_version="3.0.1" // Not yet supported!
+      // m_version="3.1" // Not yet supported!
 
     }
 
@@ -45,11 +45,11 @@ namespace Babylon {
     ~Letterlike_Symbols2100() {
     }
 
-    UCS4 firstLetter() {
+    UCS4 first_letter() const {
       return m_first_letter;
     }
 
-    UCS4 lastLetter() {
+    UCS4 last_letter() const {
       return m_last_letter;
     }
 
@@ -59,7 +59,7 @@ namespace Babylon {
 
     // query functions:
 
-    string blockname(const UCS4 uc) const {
+    std::string blockname(const UCS4 uc) const {
       return "Letterlike Symbols";
     }
 
@@ -191,23 +191,11 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Non_break(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Format_Control(const UCS4 uc) const {
-      return 0;
-    }
-
     bool is_Bidi_Control(const UCS4 uc) const {
       return 0;
     }
 
     bool is_Join_Control(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Other_Format_Control(const UCS4 uc) const {
       return 0;
     }
 
@@ -227,20 +215,20 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Math(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Composite(const UCS4 uc) const {
-      return 0;
+    bool is_Other_Math(const UCS4 uc) const {
+      return m_Other_Math.test(uc - m_first_letter);
     }
 
     bool is_Hex_Digit(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Alphabetic(const UCS4 uc) const {
-      return m_Alphabetic.test(uc - m_first_letter);
+    bool is_Other_Alphabetic(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Ideographic(const UCS4 uc) const {
+      return 0;
     }
 
     bool is_Diacritic(const UCS4 uc) const {
@@ -251,39 +239,15 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Identifier_Part_Not_Cf(const UCS4 uc) const {
-      return m_Identifier_Part_Not_Cf.test(uc - m_first_letter);
+    bool is_Other_Lowercase(const UCS4 uc) const {
+      return 0;
     }
 
     bool is_Other_Uppercase(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Other_Lowercase(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Ideographic(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Private_Use(const UCS4 uc) const {
-      return 0;
-    }
-
     bool is_Noncharacter_Code_Point(const UCS4 uc) const {
-      return ((uc & 0xFFFE) == 0xFFFE);
-    }
-
-    bool is_Private_Use_High_Surrogate(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Low_Surrogate(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_High_Surrogate(const UCS4 uc) const {
       return 0;
     }
 
@@ -295,7 +259,7 @@ namespace Babylon {
     Babylon::UCS4 m_first_letter;
     Babylon::UCS4 m_last_letter;
     // Babylon::UCS4_string m_version;
-    static const bitset<80> m_is_defined;
+    static const std::bitset<80> m_is_defined;
     static const UCS4 m_lower[80];
     static const unsigned char _cat[80];
     static const unsigned char m_bidir[80];
@@ -303,12 +267,11 @@ namespace Babylon {
     static const UCS2 m_decompStr[80][2];
     static const unsigned char m_lb[80];
     static const unsigned char m_ea[80];
-    static const bitset<80> m_Alphabetic;
-    static const bitset<80> m_Identifier_Part_Not_Cf;
+    static const std::bitset<80> m_Other_Math;
 
   }; // class Letterlike_Symbols2100
 
-    const bitset<80> Letterlike_Symbols2100::m_is_defined(string("00000000000000000000011111111111111111111111111111111111111111111111111111111111"));
+    const std::bitset<80> Letterlike_Symbols2100::m_is_defined(std::string("00000000000000000000011111111111111111111111111111111111111111111111111111111111"));
 
   const UCS4 Letterlike_Symbols2100::m_lower[] = {
     0x2100, 0x2101, 0x2102, 0x2103, 0x2104, 0x2105, 0x2106, 0x2107, 
@@ -350,16 +313,16 @@ namespace Babylon {
   };
 
   const unsigned char Letterlike_Symbols2100::_decomp[] = {
-    DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_FONT, DECOMP_COMPAT, DECOMP_NO_DECOMP, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
-    DECOMP_NO_DECOMP, DECOMP_COMPAT, DECOMP_FONT, DECOMP_FONT, DECOMP_FONT, DECOMP_FONT, DECOMP_FONT, DECOMP_FONT, 
-    DECOMP_FONT, DECOMP_FONT, DECOMP_FONT, DECOMP_FONT, DECOMP_NO_DECOMP, DECOMP_FONT, DECOMP_COMPAT, DECOMP_NO_DECOMP, 
-    DECOMP_NO_DECOMP, DECOMP_FONT, DECOMP_FONT, DECOMP_FONT, DECOMP_FONT, DECOMP_FONT, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, 
-    DECOMP_SUPER, DECOMP_COMPAT, DECOMP_SUPER, DECOMP_NO_DECOMP, DECOMP_FONT, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, 
-    DECOMP_FONT, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_FONT, DECOMP_FONT, DECOMP_NO_DECOMP, DECOMP_FONT, 
-    DECOMP_FONT, DECOMP_FONT, DECOMP_NO_DECOMP, DECOMP_FONT, DECOMP_FONT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
-    DECOMP_COMPAT, DECOMP_FONT, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, 
-    DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, 
-    DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP
+    DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_FONT, DECOMP_COMPAT, DECOMP_CANONICAL, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+    DECOMP_CANONICAL, DECOMP_COMPAT, DECOMP_FONT, DECOMP_FONT, DECOMP_FONT, DECOMP_FONT, DECOMP_FONT, DECOMP_FONT, 
+    DECOMP_FONT, DECOMP_FONT, DECOMP_FONT, DECOMP_FONT, DECOMP_CANONICAL, DECOMP_FONT, DECOMP_COMPAT, DECOMP_CANONICAL, 
+    DECOMP_CANONICAL, DECOMP_FONT, DECOMP_FONT, DECOMP_FONT, DECOMP_FONT, DECOMP_FONT, DECOMP_CANONICAL, DECOMP_CANONICAL, 
+    DECOMP_SUPER, DECOMP_COMPAT, DECOMP_SUPER, DECOMP_CANONICAL, DECOMP_FONT, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, 
+    DECOMP_FONT, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_FONT, DECOMP_FONT, DECOMP_CANONICAL, DECOMP_FONT, 
+    DECOMP_FONT, DECOMP_FONT, DECOMP_CANONICAL, DECOMP_FONT, DECOMP_FONT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
+    DECOMP_COMPAT, DECOMP_FONT, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, 
+    DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, 
+    DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL, DECOMP_CANONICAL
   };
 
   const UCS2 Letterlike_Symbols2100::m_decompStr[][2] = {
@@ -411,9 +374,7 @@ namespace Babylon {
     EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N
   };
 
-    const bitset<80> Letterlike_Symbols2100::m_Alphabetic(string("00000000000000000000000111111011101111000000000000111110000011111111110000000000"));
-
-    const bitset<80> Letterlike_Symbols2100::m_Identifier_Part_Not_Cf(string("00000000000000000000000111111011101111000000000000111110000011111111110000000000"));
+    const std::bitset<80> Letterlike_Symbols2100::m_Other_Math(std::string("00000000000000000000000111111011101100000000000000111110000011111111110000000000"));
 
 }; // namespace Babylon
 

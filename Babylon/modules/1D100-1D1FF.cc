@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Wed, 10 Jan 2001 17:05:38 +0100.
+ * ftp.unicode.org on Fri, 30 Mar 2001 18:05:33 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -38,7 +38,7 @@ namespace Babylon {
     Musical_Symbols1D100() {
       m_first_letter = 0x1D100;
       m_last_letter  = 0x1D1FF;
-      // m_version="3.0.1" // Not yet supported!
+      // m_version="3.1" // Not yet supported!
       m_composeMap[make_pair(0x0001D157, 0x0001D165)] = 0x1D15E;
       m_composeMap[make_pair(0x0001D158, 0x0001D165)] = 0x1D15F;
       m_composeMap[make_pair(0x0001D15F, 0x0001D16E)] = 0x1D160;
@@ -46,6 +46,12 @@ namespace Babylon {
       m_composeMap[make_pair(0x0001D15F, 0x0001D170)] = 0x1D162;
       m_composeMap[make_pair(0x0001D15F, 0x0001D171)] = 0x1D163;
       m_composeMap[make_pair(0x0001D15F, 0x0001D172)] = 0x1D164;
+      m_composeMap[make_pair(0x0001D1B9, 0x0001D165)] = 0x1D1BB;
+      m_composeMap[make_pair(0x0001D1BA, 0x0001D165)] = 0x1D1BC;
+      m_composeMap[make_pair(0x0001D1BB, 0x0001D16E)] = 0x1D1BD;
+      m_composeMap[make_pair(0x0001D1BB, 0x0001D16F)] = 0x1D1BF;
+      m_composeMap[make_pair(0x0001D1BC, 0x0001D16E)] = 0x1D1BE;
+      m_composeMap[make_pair(0x0001D1BC, 0x0001D16F)] = 0x1D1C0;
 
     }
 
@@ -53,11 +59,11 @@ namespace Babylon {
     ~Musical_Symbols1D100() {
     }
 
-    UCS4 firstLetter() {
+    UCS4 first_letter() const {
       return m_first_letter;
     }
 
-    UCS4 lastLetter() {
+    UCS4 last_letter() const {
       return m_last_letter;
     }
 
@@ -67,7 +73,7 @@ namespace Babylon {
 
     // query functions:
 
-    string blockname(const UCS4 uc) const {
+    std::string blockname(const UCS4 uc) const {
       return "Musical Symbols";
     }
 
@@ -132,7 +138,7 @@ namespace Babylon {
     Char_Decomp decomp_type(const UCS4 uc) const {
       if (!is_defined(uc))
         return DECOMP_MAX;
-      return Babylon::Char_Decomp(DECOMP_NO_DECOMP);
+      return Babylon::Char_Decomp(DECOMP_CANONICAL);
     }
 
     UTF32_string decompose(const UCS4 uc) const {
@@ -171,23 +177,11 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Non_break(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Format_Control(const UCS4 uc) const {
-      return 0;
-    }
-
     bool is_Bidi_Control(const UCS4 uc) const {
       return 0;
     }
 
     bool is_Join_Control(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Other_Format_Control(const UCS4 uc) const {
       return 0;
     }
 
@@ -207,11 +201,7 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Math(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Composite(const UCS4 uc) const {
+    bool is_Other_Math(const UCS4 uc) const {
       return 0;
     }
 
@@ -219,27 +209,7 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Alphabetic(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Diacritic(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Extender(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Identifier_Part_Not_Cf(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Other_Uppercase(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Other_Lowercase(const UCS4 uc) const {
+    bool is_Other_Alphabetic(const UCS4 uc) const {
       return 0;
     }
 
@@ -247,23 +217,23 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Private_Use(const UCS4 uc) const {
+    bool is_Diacritic(const UCS4 uc) const {
+      return m_Diacritic.test(uc - m_first_letter);
+    }
+
+    bool is_Extender(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Other_Lowercase(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Other_Uppercase(const UCS4 uc) const {
       return 0;
     }
 
     bool is_Noncharacter_Code_Point(const UCS4 uc) const {
-      return ((uc & 0xFFFE) == 0xFFFE);
-    }
-
-    bool is_Private_Use_High_Surrogate(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Low_Surrogate(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_High_Surrogate(const UCS4 uc) const {
       return 0;
     }
 
@@ -275,17 +245,18 @@ namespace Babylon {
     Babylon::UCS4 m_first_letter;
     Babylon::UCS4 m_last_letter;
     // Babylon::UCS4_string m_version;
-    static const bitset<256> m_is_defined;
+    static const std::bitset<256> m_is_defined;
     static const unsigned char _cat[256];
     static const unsigned char _comb_cl[256];
     static const unsigned char m_bidir[256];
     static const UCS4 m_decompStr[256][2];
     static const unsigned char m_lb[256];
-    map<pair<UCS4, UCS4>, UCS4> m_composeMap;
+    std::map<pair<UCS4, UCS4>, UCS4> m_composeMap;
+    static const std::bitset<256> m_Diacritic;
 
   }; // class Musical_Symbols1D100
 
-    const bitset<256> Musical_Symbols1D100::m_is_defined(string("0000000000000000000000000000000000111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111000111111111111111111111111111111111111111"));
+    const std::bitset<256> Musical_Symbols1D100::m_is_defined(std::string("0000000000000000000000000000000000111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111000111111111111111111111111111111111111111"));
 
   const unsigned char Musical_Symbols1D100::_cat[] = {
     CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, 
@@ -439,9 +410,9 @@ namespace Babylon {
     { 0x1D1ACu, 0x0000u }, { 0x1D1ADu, 0x0000u }, { 0x1D1AEu, 0x0000u }, { 0x1D1AFu, 0x0000u }, 
     { 0x1D1B0u, 0x0000u }, { 0x1D1B1u, 0x0000u }, { 0x1D1B2u, 0x0000u }, { 0x1D1B3u, 0x0000u }, 
     { 0x1D1B4u, 0x0000u }, { 0x1D1B5u, 0x0000u }, { 0x1D1B6u, 0x0000u }, { 0x1D1B7u, 0x0000u }, 
-    { 0x1D1B8u, 0x0000u }, { 0x1D1B9u, 0x0000u }, { 0x1D1BAu, 0x0000u }, { 0x1D1BBu, 0x0000u }, 
-    { 0x1D1BCu, 0x0000u }, { 0x1D1BDu, 0x0000u }, { 0x1D1BEu, 0x0000u }, { 0x1D1BFu, 0x0000u }, 
-    { 0x1D1C0u, 0x0000u }, { 0x1D1C1u, 0x0000u }, { 0x1D1C2u, 0x0000u }, { 0x1D1C3u, 0x0000u }, 
+    { 0x1D1B8u, 0x0000u }, { 0x1D1B9u, 0x0000u }, { 0x1D1BAu, 0x0000u }, { 0x1D1B9u, 0x1D165u }, 
+    { 0x1D1BAu, 0x1D165u }, { 0x1D1BBu, 0x1D16Eu }, { 0x1D1BCu, 0x1D16Eu }, { 0x1D1BBu, 0x1D16Fu }, 
+    { 0x1D1BCu, 0x1D16Fu }, { 0x1D1C1u, 0x0000u }, { 0x1D1C2u, 0x0000u }, { 0x1D1C3u, 0x0000u }, 
     { 0x1D1C4u, 0x0000u }, { 0x1D1C5u, 0x0000u }, { 0x1D1C6u, 0x0000u }, { 0x1D1C7u, 0x0000u }, 
     { 0x1D1C8u, 0x0000u }, { 0x1D1C9u, 0x0000u }, { 0x1D1CAu, 0x0000u }, { 0x1D1CBu, 0x0000u }, 
     { 0x1D1CCu, 0x0000u }, { 0x1D1CDu, 0x0000u }, { 0x1D1CEu, 0x0000u }, { 0x1D1CFu, 0x0000u }, 
@@ -493,6 +464,8 @@ namespace Babylon {
     LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, 
     LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL
   };
+
+    const std::bitset<256> Musical_Symbols1D100::m_Diacritic(std::string("0000000000000000000000000000000000000000000000000000000000000000000000000000000000111100000000000000000000000000000011111110011111111000000001111110001110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"));
 
 }; // namespace Babylon
 

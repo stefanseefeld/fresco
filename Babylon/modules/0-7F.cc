@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Wed, 10 Jan 2001 16:55:38 +0100.
+ * ftp.unicode.org on Fri, 30 Mar 2001 17:45:53 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -38,7 +38,7 @@ namespace Babylon {
     Basic_Latin0() {
       m_first_letter = 0x0;
       m_last_letter  = 0x7F;
-      // m_version="3.0.1" // Not yet supported!
+      // m_version="3.1" // Not yet supported!
       m_composeMap[make_pair(0x0000003C, 0x00000338)] = 0x226E;
       m_composeMap[make_pair(0x0000003D, 0x00000338)] = 0x2260;
       m_composeMap[make_pair(0x0000003E, 0x00000338)] = 0x226F;
@@ -423,11 +423,11 @@ namespace Babylon {
     ~Basic_Latin0() {
     }
 
-    UCS4 firstLetter() {
+    UCS4 first_letter() const {
       return m_first_letter;
     }
 
-    UCS4 lastLetter() {
+    UCS4 last_letter() const {
       return m_last_letter;
     }
 
@@ -437,7 +437,7 @@ namespace Babylon {
 
     // query functions:
 
-    string blockname(const UCS4 uc) const {
+    std::string blockname(const UCS4 uc) const {
       return "Basic Latin";
     }
 
@@ -649,7 +649,7 @@ namespace Babylon {
     Char_Decomp decomp_type(const UCS4 uc) const {
       if (!is_defined(uc))
         return DECOMP_MAX;
-      return Babylon::Char_Decomp(DECOMP_NO_DECOMP);
+      return Babylon::Char_Decomp(DECOMP_CANONICAL);
     }
 
     UTF32_string decompose(const UCS4 uc) const {
@@ -682,23 +682,11 @@ namespace Babylon {
       return m_White_space.test(uc - m_first_letter);
     }
 
-    bool is_Non_break(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Format_Control(const UCS4 uc) const {
-      return 0;
-    }
-
     bool is_Bidi_Control(const UCS4 uc) const {
       return 0;
     }
 
     bool is_Join_Control(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Other_Format_Control(const UCS4 uc) const {
       return 0;
     }
 
@@ -718,11 +706,7 @@ namespace Babylon {
       return m_Terminal_Punctuation.test(uc - m_first_letter);
     }
 
-    bool is_Math(const UCS4 uc) const {
-      return m_Math.test(uc - m_first_letter);
-    }
-
-    bool is_Composite(const UCS4 uc) const {
+    bool is_Other_Math(const UCS4 uc) const {
       return 0;
     }
 
@@ -730,8 +714,12 @@ namespace Babylon {
       return m_Hex_Digit.test(uc - m_first_letter);
     }
 
-    bool is_Alphabetic(const UCS4 uc) const {
-      return m_Alphabetic.test(uc - m_first_letter);
+    bool is_Other_Alphabetic(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Ideographic(const UCS4 uc) const {
+      return 0;
     }
 
     bool is_Diacritic(const UCS4 uc) const {
@@ -742,39 +730,15 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Identifier_Part_Not_Cf(const UCS4 uc) const {
-      return m_Identifier_Part_Not_Cf.test(uc - m_first_letter);
+    bool is_Other_Lowercase(const UCS4 uc) const {
+      return 0;
     }
 
     bool is_Other_Uppercase(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Other_Lowercase(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Ideographic(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Private_Use(const UCS4 uc) const {
-      return 0;
-    }
-
     bool is_Noncharacter_Code_Point(const UCS4 uc) const {
-      return ((uc & 0xFFFE) == 0xFFFE);
-    }
-
-    bool is_Private_Use_High_Surrogate(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Low_Surrogate(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_High_Surrogate(const UCS4 uc) const {
       return 0;
     }
 
@@ -791,16 +755,13 @@ namespace Babylon {
     static const UCS4 m_title[128];
     static const unsigned char _cat[128];
     static const unsigned char m_bidir[128];
-    static const bitset<128> m_mirror;
+    static const std::bitset<128> m_mirror;
     static const unsigned char m_lb[128];
     static const unsigned char m_ea[128];
-    map<pair<UCS4, UCS4>, UCS4> m_composeMap;
-    static const bitset<128> m_White_space;
-    static const bitset<128> m_Terminal_Punctuation;
-    static const bitset<128> m_Math;
-    static const bitset<128> m_Hex_Digit;
-    static const bitset<128> m_Alphabetic;
-    static const bitset<128> m_Identifier_Part_Not_Cf;
+    std::map<pair<UCS4, UCS4>, UCS4> m_composeMap;
+    static const std::bitset<128> m_White_space;
+    static const std::bitset<128> m_Terminal_Punctuation;
+    static const std::bitset<128> m_Hex_Digit;
 
   }; // class Basic_Latin0
 
@@ -899,7 +860,7 @@ namespace Babylon {
     BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_BN
   };
 
-  const bitset<128> Basic_Latin0::m_mirror(string("00101000000000000000000000000000001010000000000000000000000000000101000000000000000000110000000000000000000000000000000000000000"));
+  const std::bitset<128> Basic_Latin0::m_mirror(std::string("00101000000000000000000000000000001010000000000000000000000000000101000000000000000000110000000000000000000000000000000000000000"));
 
   const unsigned char Basic_Latin0::m_lb[] = {
     LB_CM, LB_CM, LB_CM, LB_CM, LB_CM, LB_CM, LB_CM, LB_CM, 
@@ -939,17 +900,11 @@ namespace Babylon {
     EA_WIDTH_Na, EA_WIDTH_Na, EA_WIDTH_Na, EA_WIDTH_Na, EA_WIDTH_Na, EA_WIDTH_Na, EA_WIDTH_Na, EA_WIDTH_N
   };
 
-    const bitset<128> Basic_Latin0::m_White_space(string("00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011111000000000"));
+    const std::bitset<128> Basic_Latin0::m_White_space(std::string("00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011111000000000"));
 
-    const bitset<128> Basic_Latin0::m_Terminal_Punctuation(string("00000000000000000000000000000000000000000000000000000000000000000000110000000000000000000000000000000000000000000000000000000000"));
+    const std::bitset<128> Basic_Latin0::m_Terminal_Punctuation(std::string("00000000000000000000000000000000000000000000000000000000000000000000110000000000000000000000000000000000000000000000000000000000"));
 
-    const bitset<128> Basic_Latin0::m_Math(string("00000000000000000000000000000000000000000000000000000000000000000111000000000000000000000000000000000000000000000000000000000000"));
-
-    const bitset<128> Basic_Latin0::m_Hex_Digit(string("00000000000000000000000001111110000000000000000000000000011111100000001111111111000000000000000000000000000000000000000000000000"));
-
-    const bitset<128> Basic_Latin0::m_Alphabetic(string("00000111111111111111111111111110000001111111111111111111111111100000000000000000000000000000000000000000000000000000000000000000"));
-
-    const bitset<128> Basic_Latin0::m_Identifier_Part_Not_Cf(string("00000111111111111111111111111110000001111111111111111111111111100000001111111111000000000000000000000000000000000000000000000000"));
+    const std::bitset<128> Basic_Latin0::m_Hex_Digit(std::string("00000000000000000000000001111110000000000000000000000000011111100000001111111111000000000000000000000000000000000000000000000000"));
 
 }; // namespace Babylon
 

@@ -126,7 +126,7 @@ sub var_def {
   }
 
   if ($self->{_ATTENTION_NEEDED}) {
-    my $tmp  = "    static const bitset<$bl_length> m_mirror;\n";
+    my $tmp  = "    static const std::bitset<$bl_length> m_mirror;\n";
   } else {
     return "";
   }
@@ -159,7 +159,7 @@ sub var {
   }
 
   if ($self->{_ATTENTION_NEEDED}) {
-    my $tmp  = "  const bitset<$bl_length> $bl_name\:\:m_mirror(string(\"";
+    my $tmp  = "  const std::bitset<$bl_length> $bl_name\:\:m_mirror(std::string(\"";
     my $str  = "";
     for (my $i= $bl_start; $i <= $bl_end; $i++) {
       if ($self->data($i) eq "undef") {

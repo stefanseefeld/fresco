@@ -109,7 +109,7 @@ sub var_def {
 
 
   if ($self->{_ATTENTION_NEEDED}) {
-    my $tmp  = "    static const bitset<$bl_length> m_is_defined;\n";
+    my $tmp  = "    static const std::bitset<$bl_length> m_is_defined;\n";
   } else {
     return "";
   }
@@ -137,7 +137,7 @@ sub var {
 
 
   if ($self->{_ATTENTION_NEEDED}) {
-    my $tmp  = "    const bitset<$bl_length> $bl_name\:\:m_is_defined(string(\"";
+    my $tmp  = "    const std::bitset<$bl_length> $bl_name\:\:m_is_defined(std::string(\"";
     my $str  = "";
     for (my $i= $bl_start; $i <= $bl_end; $i++) {
       $str  = $self->data($i).$str;

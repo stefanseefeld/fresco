@@ -14,7 +14,13 @@ sub new {
 
     next if ($info eq "");
 
-    my @list = split /;/, $info, 15;
+    my @list = split /;/, $info;
+
+    if ($list[0] =~ /[A-F0-9]+\.\.[A-F0-9]+/) {
+      (my $start, my $end) = split /\.\./, $list[0];
+      $self->{hex($start)} = "EA_WIDTH_".$list[1];
+      $list[0] = $end;
+    }
 
     $self->{hex($list[0])} = "EA_WIDTH_".$list[1];
   }

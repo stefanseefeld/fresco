@@ -260,7 +260,7 @@ sub var_def {
   if ($self->{_ATTENTION_NEEDED} == 1) {
     my $inlength = $self->{_INPUT_MAX_LENGTH};
     my $outlength = $self->{_RES_MAX_LENGTH};
-    my $tmp = "    map<pair<UCS4, UCS4>, UCS4> m_composeMap;\n";
+    my $tmp = "    std::map<pair<UCS4, UCS4>, UCS4> m_composeMap;\n";
     return $tmp;
   }
 

@@ -19,13 +19,13 @@ use Compositions;
 use Block;
 use Prop;
 
-$UCD_File     = "UnicodeData-3.1.0d3.beta.txt";
-$Block_File   = "Blocks-4d2.beta.txt";
-$EA_File      = "EastAsianWidth-4d2.beta.txt";
-$LB_File      = "LineBreak-6d2.beta.txt";
-$Exclude_File = "CompositionExclusions-3d2.beta.txt";
-$Prop_File    = "PropList-3.1.0d1.beta.txt";
-$Prefix       = "./Unicode/Blocks/";
+$UCD_File     = "UnicodeData.txt";
+$Block_File   = "Blocks.txt";
+$EA_File      = "EastAsianWidth.txt";
+$LB_File      = "LineBreak.txt";
+$Exclude_File = "CompositionExclusions.txt";
+$Prop_File    = "PropList.txt";
+$Prefix       = "./blocks/";
 
 ############################################################################
 
@@ -40,7 +40,10 @@ while(<BlockHandle>) {
 
   next if $info eq "";
 
-  my $tmp = Block->new(split /; /, $info);
+  (my $chars, my $name) = split /; /, $info;
+  (my $start, my $end) = split /\.\./, $chars;
+
+  my $tmp = Block->new($start, $end, $name);
 
   push @blocks, $tmp;
 }
@@ -199,7 +202,7 @@ namespace Babylon {
 ";
 
   printf PLUGIN "
-    string blockname(const UCS4 uc) const {
+    std::string blockname(const UCS4 uc) const {
       return \"%s\";
     }
 
