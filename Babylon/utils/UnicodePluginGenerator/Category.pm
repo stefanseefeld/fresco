@@ -1,4 +1,4 @@
-package Category;
+package UnicodePluginGenerator::Category;
 use strict;
 
 sub new {

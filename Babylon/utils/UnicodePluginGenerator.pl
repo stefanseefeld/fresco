@@ -1,31 +1,20 @@
-#!/usr/bin/perl -w -IUnicodePluginGenerator
+#!/usr/bin/perl -w 
 use Carp;
-use Defined;
-use Category;
-use CombClass;
-use Bidir;
-use DecompClass;
-use DecompString;
-use DecDigitVal;
-use DigitVal;
-use NumericVal;
-use Mirror;
-use Upper;
-use Lower;
-use Title;
-use Linebreak;
-use EAWidth;
-use Compositions;
-use Block;
-use Prop;
+use strict;
+use UnicodePluginGenerator qw( Defined Category CombClass Bidir DecompClass DecompString DecDigitVal
+							 DigitVal NumericVal Mirror Upper Lower Title Linebreak EAWidth Compositions
+							 Block Prop);
 
-$UCD_File     = "UnicodeData.txt";
-$Block_File   = "Blocks.txt";
-$EA_File      = "EastAsianWidth.txt";
-$LB_File      = "LineBreak.txt";
-$Exclude_File = "CompositionExclusions.txt";
-$Prop_File    = "PropList.txt";
-$Prefix       = "./blocks/";
+my $UCD_File     = "UnicodeData.txt";
+my $Block_File   = "Blocks.txt";
+my $EA_File      = "EastAsianWidth.txt";
+my $LB_File      = "LineBreak.txt";
+my $Exclude_File = "CompositionExclusions.txt";
+my $Prop_File    = "PropList.txt";
+my $Prefix       = "./blocks/";
+
+# make directory if it doesnt exist
+system ("if [ ! -d $Prefix ] ; then mkdir $Prefix ; fi");
 
 ############################################################################
 
@@ -33,6 +22,7 @@ print "Reading data...\n";
 
 print "  ...blocks\n";
 # reading blocks...
+my @blocks = ( );
 open (BlockHandle, $Block_File) or die "Can't open Blocks!\n";
 while(<BlockHandle>) {
   (my $info, my $rest) = split /#/;
@@ -43,7 +33,7 @@ while(<BlockHandle>) {
   (my $chars, my $name) = split /; /, $info;
   (my $start, my $end) = split /\.\./, $chars;
 
-  my $tmp = Block->new($start, $end, $name);
+  my $tmp = UnicodePluginGenerator::Block->new($start, $end, $name);
 
   push @blocks, $tmp;
 }
@@ -51,23 +41,23 @@ close BlockHandle;
 
 # reading data from the files...
 print "  ...compositions\n";
-my $COMP   = Compositions->new($UCD_File, $Exclude_File); print "  ...props\n";
-my $PROPS  = Props->new($Prop_File); print "  ...categories\n";
-my $CAT    = Category->new($UCD_File); print "  ...defines\n";
-my $DEF    = Defined->new($UCD_File); print "  ...combining classes\n";
-my $CCLASS = CombClass->new($UCD_File); print "  ...bidir properties\n";
-my $BIDIR  = Bidir->new($UCD_File); print "  ...decomposition types\n";
-my $DCLASS = DecompClass->new($UCD_File); print "  ...decomposition strings\n";
-my $DSTR   = DecompString->new($UCD_File); print "  ...decimal digit values\n";
-my $DDVAL  = DecDigitVal->new($UCD_File); print "  ...digit values\n";
-my $DVAL   = DigitVal->new($UCD_File); print "  ...numeric values\n";
-my $NVAL   = NumericVal->new($UCD_File); print "  ...mirroring properties\n";
-my $MIRROR = Mirror->new($UCD_File); print "  ...uppercase equivalents\n";
-my $UPPER  = Upper->new($UCD_File); print "  ...lowercase equivalents\n";
-my $LOWER  = Lower->new($UCD_File); print "  ...titlecase equivalents\n";
-my $TITLE  = Title->new($UCD_File); print "  ...linebreaking properties\n";
-my $LB     = Linebreak->new($LB_File); print "  ...EA width properties\n";
-my $EA     = EAWidth->new($EA_File);
+my $COMP   = UnicodePluginGenerator::Compositions->new($UCD_File, $Exclude_File); print "  ...props\n";
+my $PROPS  = UnicodePluginGenerator::Props->new($Prop_File); print "  ...categories\n";
+my $CAT    = UnicodePluginGenerator::Category->new($UCD_File); print "  ...defines\n";
+my $DEF    = UnicodePluginGenerator::Defined->new($UCD_File); print "  ...combining classes\n";
+my $CCLASS = UnicodePluginGenerator::CombClass->new($UCD_File); print "  ...bidir properties\n";
+my $BIDIR  = UnicodePluginGenerator::Bidir->new($UCD_File); print "  ...decomposition types\n";
+my $DCLASS = UnicodePluginGenerator::DecompClass->new($UCD_File); print "  ...decomposition strings\n";
+my $DSTR   = UnicodePluginGenerator::DecompString->new($UCD_File); print "  ...decimal digit values\n";
+my $DDVAL  = UnicodePluginGenerator::DecDigitVal->new($UCD_File); print "  ...digit values\n";
+my $DVAL   = UnicodePluginGenerator::DigitVal->new($UCD_File); print "  ...numeric values\n";
+my $NVAL   = UnicodePluginGenerator::NumericVal->new($UCD_File); print "  ...mirroring properties\n";
+my $MIRROR = UnicodePluginGenerator::Mirror->new($UCD_File); print "  ...uppercase equivalents\n";
+my $UPPER  = UnicodePluginGenerator::Upper->new($UCD_File); print "  ...lowercase equivalents\n";
+my $LOWER  = UnicodePluginGenerator::Lower->new($UCD_File); print "  ...titlecase equivalents\n";
+my $TITLE  = UnicodePluginGenerator::Title->new($UCD_File); print "  ...linebreaking properties\n";
+my $LB     = UnicodePluginGenerator::Linebreak->new($LB_File); print "  ...EA width properties\n";
+my $EA     = UnicodePluginGenerator::EAWidth->new($EA_File);
 
 print "Creating plugins...\n";
 
@@ -75,28 +65,30 @@ print "Creating plugins...\n";
 # looping over the blocks
 # ##########################################################################
 
-foreach $block (@blocks) {
-  printf "%s (%04X-%04X)\n", $block->name(), $block->start(), $block->end();
+foreach my $block (@blocks) {
+  my ($name, $filename, $start, $end, $start_string, $end_string, $classname) = 
+  	($block->name(), $block->filename(), $block->start(), $block->end(), $block->start_string(), $block->end_string(), $block->classname() );
+  printf "%s (%04X-%04X)\n", $name, $start, $end;
 
   # open output file
-  my $output = ">".$Prefix.$block->filename();
+  my $output = ">$Prefix$filename";
   open (PLUGIN, $output) or
     die "Can't open $output for output!\n";
 
-  $date = `date --rfc`; chop $date;
+  my $date = `date --rfc`; chop $date;
 
   # ########################################################################
   # print header...
   # ########################################################################
-  printf PLUGIN
-"/*\$Id: %s
+  print PLUGIN <<END;
+/*\$Id$filename
  *
  * This source file is a part of the Berlin Project
  * Copyright (C) 1999 Tobias Hunger <tobias\@berlin-consortium.org>
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on %s.
+ * ftp.unicode.org on $date.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -117,80 +109,49 @@ foreach $block (@blocks) {
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
 #include <bitset>
-", $block->filename(), $date;
 
-  print PLUGIN $DEF->include($block->start(), $block->end());
-  print PLUGIN $UPPER->include($block->start(), $block->end());
-  print PLUGIN $LOWER->include($block->start(), $block->end());
-  print PLUGIN $TITLE->include($block->start(), $block->end());
-  print PLUGIN $DDVAL->include($block->start(), $block->end());
-  print PLUGIN $DVAL->include($block->start(), $block->end());
-  print PLUGIN $NVAL->include($block->start(), $block->end());
-  print PLUGIN $CAT->include($block->start(), $block->end());
-  print PLUGIN $CCLASS->include($block->start(), $block->end());
-  print PLUGIN $BIDIR->include($block->start(), $block->end());
-  print PLUGIN $DCLASS->include($block->start(), $block->end());
-  print PLUGIN $DSTR->include($block->start(), $block->end());
-  print PLUGIN $MIRROR->include($block->start(), $block->end());
-  print PLUGIN $LB->include($block->start(), $block->end());
-  print PLUGIN $EA->include($block->start(), $block->end());
-  print PLUGIN $COMP->include($block->start(), $block->end());
-  print PLUGIN $PROPS->include($block->start(), $block->end());
+END
 
-  printf PLUGIN "
+  foreach my $obj ( $DEF, $UPPER, $LOWER, $TITLE, $DDVAL, $DVAL, $NVAL, $CAT, $CCLASS, $BIDIR, $DCLASS, $DSTR, $MIRROR, $LB, $EA, $COMP, $PROPS ) {
+  	print PLUGIN $obj->include($start, $end);
+  }
+
+  print PLUGIN <<END;
 namespace Babylon {
 
-  class %s : public Babylon::Dictionary::Block {
+  class $classname : public Babylon::Dictionary::Block {
   public:
     void clean () {
     };
-", $block->classname();
 
-  printf PLUGIN "
-    %s() {
-      m_first_letter = %s;
-      m_last_letter  = %s;
-      // m_version=\"3.0.1\" // Not yet supported!
-", $block->classname(), $block->start_string(), $block->end_string();
+    $classname() {
+      m_first_letter = $start_string;
+      m_last_letter  = $end_string;
+      // m_version=\"3.1\" // Not yet supported!
+END
 
-  print PLUGIN $DEF->init($block->start(), $block->end());
-  print PLUGIN $UPPER->init($block->start(), $block->end());
-  print PLUGIN $LOWER->init($block->start(), $block->end());
-  print PLUGIN $TITLE->init($block->start(), $block->end());
-  print PLUGIN $DDVAL->init($block->start(), $block->end());
-  print PLUGIN $DVAL->init($block->start(), $block->end());
-  print PLUGIN $NVAL->init($block->start(), $block->end());
-  print PLUGIN $CAT->init($block->start(), $block->end());
-  print PLUGIN $CCLASS->init($block->start(), $block->end());
-  print PLUGIN $BIDIR->init($block->start(), $block->end());
-  print PLUGIN $DCLASS->init($block->start(), $block->end());
-  print PLUGIN $DSTR->init($block->start(), $block->end());
-  print PLUGIN $MIRROR->init($block->start(), $block->end());
-  print PLUGIN $LB->init($block->start(), $block->end());
-  print PLUGIN $EA->init($block->start(), $block->end());
-  print PLUGIN $COMP->init($block->start(), $block->end());
-  print PLUGIN $PROPS->init($block->start(), $block->end());
+  foreach my $obj ( $DEF, $UPPER, $LOWER, $TITLE, $DDVAL, $DVAL, $NVAL, $CAT, $CCLASS, $BIDIR, $DCLASS, $DSTR, $MIRROR, $LB, $EA, $COMP, $PROPS ) {
+  	print PLUGIN $obj->init($start, $end);
+  }
 
-  print PLUGIN "
+  print PLUGIN <<END;
     }
 
-";
-
-  printf PLUGIN "
-    ~%s() {
+    ~$classname() {
     }
-", $block->classname();
+
+END
 
   # ########################################################################
   # print functions...
   # ########################################################################
 
-  print PLUGIN "
-    UCS4 firstLetter() {
+  print PLUGIN <<END;
+    UCS4 first_letter() const {
       return m_first_letter;
     }
 
-    UCS4 lastLetter() {
+    UCS4 last_letter() const {
       return m_last_letter;
     }
 
@@ -199,123 +160,56 @@ namespace Babylon {
     }
 
     // query functions:
-";
-
-  printf PLUGIN "
     std::string blockname(const UCS4 uc) const {
-      return \"%s\";
+      return \"$name\";
     }
 
-", $block->name();
+END
 
-  print PLUGIN $DEF->function($block->start(), $block->end(),
-			      $block->classname());
-  print PLUGIN $UPPER->function($block->start(), $block->end(),
-				$block->classname());
-  print PLUGIN $LOWER->function($block->start(), $block->end(),
-				$block->classname());
-  print PLUGIN $TITLE->function($block->start(), $block->end(),
-				$block->classname());
-  print PLUGIN $DDVAL->function($block->start(), $block->end(),
-				$block->classname());
-  print PLUGIN $DVAL->function($block->start(), $block->end(),
-			       $block->classname());
-  print PLUGIN $NVAL->function($block->start(), $block->end(),
-			       $block->classname());
-  print PLUGIN $CAT->function($block->start(), $block->end(),
-			      $block->classname());
-  print PLUGIN $CCLASS->function($block->start(), $block->end(),
-			      $block->classname());
-  print PLUGIN $BIDIR->function($block->start(), $block->end(),
-				$block->classname());
-  print PLUGIN $DCLASS->function($block->start(), $block->end(),
-				 $block->classname());
-  print PLUGIN $DSTR->function($block->start(), $block->end(),
-			       $block->classname());
-  print PLUGIN $MIRROR->function($block->start(), $block->end(),
-				 $block->classname());
-  print PLUGIN $LB->function($block->start(), $block->end(),
-			     $block->classname());
-  print PLUGIN $EA->function($block->start(), $block->end(),
-			     $block->classname());
-  print PLUGIN $COMP->function($block->start(), $block->end(),
-			       $block->classname());
-  print PLUGIN $PROPS->function($block->start(), $block->end(),
-				$block->classname());
+  foreach my $obj ( $DEF, $UPPER, $LOWER, $TITLE, $DDVAL, $DVAL, $NVAL, $CAT, $CCLASS, $BIDIR, $DCLASS, $DSTR, $MIRROR, $LB, $EA, $COMP, $PROPS ) {
+  	print PLUGIN $obj->function($start, $end, $classname);
+  }
 
   # ########################################################################
   # print variable defs...
   # ########################################################################
 
-  printf PLUGIN "
+  print PLUGIN <<END;
   private:
     // functions
-    %s(const %s &) {}
+    $classname(const $classname &) {}
 
     Babylon\:\:UCS4 m_first_letter;
     Babylon\:\:UCS4 m_last_letter;
     // Babylon::UCS4_string m_version;
-", $block->classname(), $block->classname();
+END
 
-  print PLUGIN $DEF->var_def($block->start(), $block->end());
-  print PLUGIN $UPPER->var_def($block->start(), $block->end());
-  print PLUGIN $LOWER->var_def($block->start(), $block->end()); 
-  print PLUGIN $TITLE->var_def($block->start(), $block->end()); 
-  print PLUGIN $CAT->var_def($block->start(), $block->end());
-  print PLUGIN $CCLASS->var_def($block->start(), $block->end());
-  print PLUGIN $BIDIR->var_def($block->start(), $block->end());
-  print PLUGIN $DCLASS->var_def($block->start(), $block->end());
-  print PLUGIN $DSTR->var_def($block->start(), $block->end());
-  print PLUGIN $MIRROR->var_def($block->start(), $block->end());
-  print PLUGIN $LB->var_def($block->start(), $block->end());
-  print PLUGIN $EA->var_def($block->start(), $block->end());
-  print PLUGIN $COMP->var_def($block->start(), $block->end());
-  print PLUGIN $PROPS->var_def($block->start(), $block->end());
+  foreach my $obj ( $DEF, $UPPER, $LOWER, $TITLE, $DDVAL, $DVAL, $NVAL, $CAT, $CCLASS, $BIDIR, $DCLASS, $DSTR, $MIRROR, $LB, $EA, $COMP, $PROPS ) {
+  	print PLUGIN $obj->var_def($start, $end);
+  }
 
   # ########################################################################
   # print variables
   # ########################################################################
 
-  printf PLUGIN "
-  }; // class %s
+  print PLUGIN <<END;
+  }; // class $classname
 
-", $block->classname(); 
+END
 
-  print PLUGIN $DEF->var($block->start(), $block->end(), $block->classname());
-  print PLUGIN $UPPER->var($block->start(), $block->end(),
-			   $block->classname());
-  print PLUGIN $LOWER->var($block->start(), $block->end(),
-			   $block->classname());
-  print PLUGIN $TITLE->var($block->start(), $block->end(),
-			   $block->classname());
-  print PLUGIN $CAT->var($block->start(), $block->end(),
-			 $block->classname());
-  print PLUGIN $CCLASS->var($block->start(), $block->end(),
-			    $block->classname());
-  print PLUGIN $BIDIR->var($block->start(), $block->end(),
-			   $block->classname());
-  print PLUGIN $DCLASS->var($block->start(), $block->end(),
-			    $block->classname());
-  print PLUGIN $DSTR->var($block->start(), $block->end(),
-			  $block->classname());
-  print PLUGIN $MIRROR->var($block->start(), $block->end(),
-			    $block->classname());
-  print PLUGIN $LB->var($block->start(), $block->end(),
-			$block->classname());
-  print PLUGIN $EA->var($block->start(), $block->end(),
-			$block->classname());
-  print PLUGIN $COMP->var($block->start(), $block->end(),
-			  $block->classname());
-  print PLUGIN $PROPS->var($block->start(), $block->end(),
-			   $block->classname());
+  foreach my $obj ( $DEF, $UPPER, $LOWER, $TITLE, $DDVAL, $DVAL, $NVAL, $CAT, $CCLASS, $BIDIR, $DCLASS, $DSTR, $MIRROR, $LB, $EA, $COMP, $PROPS ) {
+  	print PLUGIN $obj->var($start, $end, $classname);
+  }
 
   # ########################################################################
   # print footer...
   # ########################################################################
-  printf PLUGIN "}; // namespace Babylon
 
-dload(Babylon::%s);
-", $block->classname();
+  print PLUGIN <<END;
+}; // namespace Babylon
+
+dload(Babylon::$classname);
+END
 
   # close output file
   close PLUGIN;

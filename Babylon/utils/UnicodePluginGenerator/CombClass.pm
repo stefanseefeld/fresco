@@ -1,4 +1,4 @@
-package CombClass;
+package UnicodePluginGenerator::CombClass;
 use strict;
 
 sub new {

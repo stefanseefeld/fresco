@@ -1,4 +1,4 @@
-package Title;
+package UnicodePluginGenerator::Title;
 use strict;
 
 sub new {

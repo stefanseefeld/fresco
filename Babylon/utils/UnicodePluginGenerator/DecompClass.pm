@@ -1,4 +1,4 @@
-package DecompClass;
+package UnicodePluginGenerator::DecompClass;
 use strict;
 
 sub new {

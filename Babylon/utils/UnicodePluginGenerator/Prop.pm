@@ -1,4 +1,4 @@
-package Props;
+package UnicodePluginGenerator::Props;
 use strict;
 
 sub new {

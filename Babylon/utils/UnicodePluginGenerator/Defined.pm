@@ -1,4 +1,4 @@
-package Defined;
+package UnicodePluginGenerator::Defined;
 use strict;
 
 sub new {

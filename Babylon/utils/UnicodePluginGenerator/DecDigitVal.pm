@@ -1,4 +1,4 @@
-package DecDigitVal;
+package UnicodePluginGenerator::DecDigitVal;
 use strict;
 
 sub new {

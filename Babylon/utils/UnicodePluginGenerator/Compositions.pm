@@ -1,4 +1,4 @@
-package Compositions;
+package UnicodePluginGenerator::Compositions;
 use strict;
 
 sub new {

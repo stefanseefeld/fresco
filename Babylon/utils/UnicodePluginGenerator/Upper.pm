@@ -1,4 +1,4 @@
-package Upper;
+package UnicodePluginGenerator::Upper;
 use strict;
 
 sub new {

@@ -1,4 +1,4 @@
-package Bidir;
+package UnicodePluginGenerator::Bidir;
 use strict;
 
 sub new {
@@ -89,7 +89,7 @@ sub function {
 
   my $tmp = "    Bidir_Props bidir_props(const UCS4 uc) const {\n";
   $tmp   .= "      if (!is_defined(uc))\n";
-  $tmp   .= "        return BIDIR_MAX;\n";
+  $tmp   .= "        return BIDIR_INVALID;\n";
 
   if ($self->{_ATTENTION_NEEDED} == 1) {
     $tmp .= "      return Babylon::Bidir_Props($bl_name\:\:m_bidir\[uc - m_first_letter\]);\n";

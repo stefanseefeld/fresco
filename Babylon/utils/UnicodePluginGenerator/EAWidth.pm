@@ -1,4 +1,4 @@
-package EAWidth;
+package UnicodePluginGenerator::EAWidth;
 use strict;
 
 sub new {

@@ -1,4 +1,4 @@
-package DigitVal;
+package UnicodePluginGenerator::DigitVal;
 use strict;
 
 sub new {

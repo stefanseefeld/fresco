@@ -1,4 +1,4 @@
-package Lower;
+package UnicodePluginGenerator::Lower;
 use strict;
 
 sub new {

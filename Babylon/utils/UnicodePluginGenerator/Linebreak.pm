@@ -1,4 +1,4 @@
-package Linebreak;
+package UnicodePluginGenerator::Linebreak;
 use strict;
 
 sub new {

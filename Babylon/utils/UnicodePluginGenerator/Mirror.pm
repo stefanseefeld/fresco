@@ -1,4 +1,4 @@
-package Mirror;
+package UnicodePluginGenerator::Mirror;
 use strict;
 
 sub new {
