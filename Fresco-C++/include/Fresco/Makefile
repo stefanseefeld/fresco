@@ -20,7 +20,7 @@
 TOPDIR=../..
 OS_ARCH='Linux'
 
-DIR_CPPFLAGS := -D_MIT_POSIX_THREADS -D_REENTRANT -D__OSVERSION__=2 -D__OMNIORB2__
+DIR_CPPFLAGS := -D_MIT_POSIX_THREADS -D_REENTRANT -D__OSVERSION__=2 -D__OMNIORB2__ -D__x86__
 DIR_CXXFLAGS := -fno-rtti -fno-default-inline -fomit-frame-pointer -fnonnull-objects -pthread 
 DIR_INCLUDES :=  -I.  
 DIR_LDFLAGS  :=  -L. -L$(TOPDIR)/lib \
