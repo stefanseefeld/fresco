@@ -52,10 +52,10 @@ dnl
     $2_BUILD_LIBS="`$$2_LOCAL_BUILD_CONFIG --libs`"
     $2_prefix="`$$2_LOCAL_BUILD_CONFIG --prefix`"
   else
-    AC_ARG_WITH($2-prefix, AC_HELP_STRING([--with-$2-prefix],
+    AC_ARG_WITH($2-prefix, AC_HELP_STRING([--with-$2-prefix=PRF],
                                           [Prefix where $1 is installed]),
                 $2_prefix="$withval", $2_prefix="")
-    AC_ARG_WITH($2-exec-prefix, AC_HELP_STRING([--with-$2-exec-prefix],
+    AC_ARG_WITH($2-exec-prefix, AC_HELP_STRING([--with-$2-exec-prefix=PRF],
                                                [Exec prefix where $1 is installed]),
                 $2_exec_prefix="$withval", $2_exec_prefix="")
 

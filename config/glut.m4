@@ -26,8 +26,8 @@ dnl Checks if GLUT is found. If it is, $ac_cv_lib_glut is set to "yes".
 AC_DEFUN([BERLIN_GLUT_CHECK],[
 
 	AC_ARG_WITH(glut-prefix,
-		[  --with-glut-prefix=PFX   Prefix for GLUT],[
-		glut_prefix="$withval"])
+		AC_HELP_STRING([--with-glut-prefix=PFX], [Prefix for GLUT]),
+                [glut_prefix="$withval"])
 
 	dnl Check for GLUT includes
 	if test ".$glut_prefix" != . ; then

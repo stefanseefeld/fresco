@@ -27,8 +27,9 @@ dnl We want the OpenGL versions of CAVELib (not the default IrisGL)!
 AC_DEFUN([BERLIN_CAVELIB_CHECK],[
 
 	AC_ARG_WITH(cavelib-prefix,
-		[  --with-cavelib-prefix=PFX   Prefix for cavelib (console CAVELib)],[
-		cavelib_prefix="$withval"])
+                AC_HELP_STRING([--with-cavelib-prefix=PFX],
+                [Prefix for cavelib (console CAVELib)]) ,
+		[cavelib_prefix="$withval"])
 
 	dnl Check for cavelib includes
 	if test ".$cavelib_prefix" != . ; then

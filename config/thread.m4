@@ -24,10 +24,11 @@ dnl
 dnl Try to find a usable thread library.
 dnl Add the necessary stuff to LIBS and CPPFLAGS
 AC_DEFUN([FRESCO_THREAD],
-  [AC_MSG_NOTICE([Threading])
+  [AC_MSG_CHECKING([for threading implementation])
    AC_ARG_ENABLE(pthreads,
-     [  --enable-pthreads       use POSIX threads for multi-threading (default: yes)],
-     [  enable_pthreads="$enableval"])
+     AC_HELP_STRING([--enable-pthreads],
+                    [use POSIX threads for multi-threading (default: yes)]),
+     [enable_pthreads="$enableval"])
    if test ".$enable_pthreads" = . ; then
      enable_pthreads=yes
    fi

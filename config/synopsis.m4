@@ -27,7 +27,10 @@ dnl set to "yes".
 AC_DEFUN([AC_SYNOPSIS],[
 
 	synopsis_path="$PATH"
-	AC_ARG_WITH(synopsis-prefix, [  --with-synopsis-prefix  Prefix for synopsis],[ synopsis_prefix="$withval"])
+	AC_ARG_WITH(synopsis-prefix,
+           AC_HELP_STRING([--with-synopsis-prefix=PRF],
+                          [Prefix for synopsis]),
+           [ synopsis_prefix="$withval"])
 	if test ".$synopsis_prefix" != "." ; then
 		synopsis_path="$synopsis_prefix:$synopsis_path"
 	fi

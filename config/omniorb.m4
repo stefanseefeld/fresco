@@ -35,14 +35,16 @@ AC_DEFUN([FRESCO_OMNIORB],
   AC_REQUIRE([FRESCO_PTHREAD])
 
   AC_ARG_WITH(omniorb-prefix,
-    [  --with-omniorb-prefix  Prefix for omniORB],
-    [  omniorb_prefix="$withval"])
+    AC_HELP_STRING([--with-omniorb-prefix=PRF], [prefix for omniORB]),
+    [omniorb_prefix="$withval"])
   AC_ARG_WITH(omniorb-version,
-    [  --with-omniorb-version  omniORB version (3 and 4 supported)],
-    [  omniorb_version="$withval"])
+    AC_HELP_STRING([--with-omniorb-version=VRS],
+                   [omniORB version (3 and 4 supported)]),
+    [omniorb_version="$withval"])
   if test ".$omniorb_version" = ".4" ; then
     AC_ARG_WITH(colocation-optimization,
-      [  --with-colocation-optimization  switch on ORB specific optimizations],
+      AC_HELP_STRING([--with-colocation-optimization],
+                     [switch on ORB specific optimizations]),
       [  omniorb_shortcut="$withval"])
     SHORTCUT="$omniorb_shortcut"
     AC_SUBST(SHORTCUT)

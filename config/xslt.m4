@@ -26,7 +26,10 @@ dnl as of now, only check for 4xslt. Add other processors later...
 AC_DEFUN([AC_XSLT],[
 
 	xslt_path="$PATH"
-	AC_ARG_WITH(xslt-prefix, [  --with-xslt-prefix  Prefix for xslt processor],[xslt_prefix="$withval"])
+	AC_ARG_WITH(xslt-prefix,
+          AC_HELP_STRING([--with-xslt-prefix=PRF],
+                         [Prefix for xslt processor]),
+          [xslt_prefix="$withval"])
 	if test ".$xslt_prefix" != "." ; then
 		xslt_path="$xslt_prefix:$xslt_path"
 	fi

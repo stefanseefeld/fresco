@@ -26,8 +26,9 @@ dnl and $pthread_cppflags and $pthread_lib are defined
 AC_DEFUN([FRESCO_PTHREAD],[
 
     dnl This is used on Linux for glibc binary compatibility (Doh!)
-    AC_ARG_ENABLE(pthread-sem, [    --enable-pthread-sem  use pthread semaphores [default=yes]],, enable_pthread_sem=yes)
-    case "$target" in
+    AC_ARG_ENABLE(pthread-sem, AC_HELP_STRING([--enable-pthread-sem],
+        [use pthread semaphores [default=yes]]), , enable_pthread_sem=yes)
+    case "$host" in
         *-*-darwin*)
             pthread_cppflags="-D_THREAD_SAFE"
 # causes Carbon.p complaints?
