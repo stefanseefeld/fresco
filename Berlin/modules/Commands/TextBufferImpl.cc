@@ -179,12 +179,13 @@ void TextBufferImpl::remove_forward(CORBA::Long n)
   notify(any);
 }
 
-void TextBufferImpl::clear_buffer() {
+void TextBufferImpl::clear() {
     Warsaw::TextBuffer::Change ch;
     ch.type = Warsaw::TextBuffer::clear;
     {
 	Prague::Guard<Mutex> guard(mutex);
 	ch.len = buffer.size();
+	ch.pos = 0;
 	buffer.clear_buffer();
     }
     CORBA::Any any;

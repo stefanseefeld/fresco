@@ -47,7 +47,7 @@ class TextBufferImpl : public virtual POA_Warsaw::TextBuffer,
   virtual void insert_string(const Warsaw::Unistring &);
   virtual void remove_backward(CORBA::Long);
   virtual void remove_forward(CORBA::Long);
-  virtual void clear_buffer();
+  virtual void clear();
  private:
   GapBuffer<Warsaw::Unichar, 32> buffer;
   Prague::Mutex mutex;

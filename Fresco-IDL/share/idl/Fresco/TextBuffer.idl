@@ -31,7 +31,7 @@ module Warsaw
   interface TextBuffer : Subject
     {
       
-      enum ChangeType {insert, remove, cursor, clear};
+      enum ChangeType {insert, remove, cursor};
       
       struct Change
       {
@@ -52,7 +52,7 @@ module Warsaw
       void remove_backward(in long d);
       void remove_forward(in long d);
 
-      void clear_buffer();
+      void clear();
     };
 };
 
