@@ -12,102 +12,13 @@
 import sys, string
 from omniORB import CORBA
 
+# Import Berlin module
+import berlin
+from berlin import Label, Callback, nullAny
+
 # Import the Warsaw stubs
 import Warsaw, Unidraw
 import Warsaw__POA
-
-# Define an implementation of the ClientContext interface
-class ClientContextImpl (Warsaw__POA.ClientContext):
-    def userName(self): return US("joe")
-    def ping(self): return
-
-def US(s):
-    "Convert the given python string to a Unistring"
-    return map(lambda x:ord(x), s)
-
-# The default kits available. More can be added using kits.add_kit()
-# TODO: include version and property information in the tuple
-_defaultKitNames = {
-    'tool'    : ('Warsaw',  'ToolKit'),
-    'image'   : ('Warsaw',  'ImageKit'),
-    'figure'  : ('Warsaw',  'FigureKit'),
-    'desktop' : ('Warsaw',  'DesktopKit'),
-    'layout'  : ('Warsaw',  'LayoutKit'),
-    'text'    : ('Warsaw',  'TextKit'),
-    'widget'  : ('Warsaw',  'WidgetKit'),
-    'unidraw' : ('Unidraw', 'UnidrawKit'),
-}
-
-# An empty Any object for sending to Commands
-nullAny = CORBA.Any(CORBA.TC_null, None)
-    
-class Kits:
-    """This class resolves kits upon request, and caches the resolved kit
-    objects. It loads _defaultKitNames as the default set of kits, but more
-    can be added using the add_kit method."""
-    def __init__(self):
-	"""Initialise the Kits singleton, and insert it into the global
-	(module) namespace"""
-	global kits
-	kits = self
-	self._kitNames = {}
-	self._kitNames.update(_defaultKitNames)
-	self._kitObjects = {}
-
-    def add_kit(name, module, kit):
-	self._kitNames[name] = (module, kit)
-
-    def __getattr__(self, kit):
-	# Check cache
-	if self._kitObjects.has_key(kit):
-	    return self._kitObjects[kit]
-	# Try and resolve
-	if self._kitNames.has_key(kit):
-	    # Find and resolve the kit
-	    module, name = self._kitNames[kit]
-	    idl = "IDL:%s/%s:1.0"%self._kitNames[kit]
-	    obj = connection.context.resolve(idl, [])
-	    cls = globals()[module].__dict__[name]
-	    obj = obj._narrow(cls)
-	    if obj is not None:
-		self._kitObjects[kit] = obj
-		return obj
-	# FIXME -- what happens here to signal bad attr?
-
-class Connection:
-    """Connection wrapper that does all the CORBA stuff"""
-    def __init__(self, clientContext=None):
-	"""Initialises the singleton, inserts it into the global (module)
-	namespace, and finds the Berlin server. You may pass your own
-	ClientContext object (not CORBA var!), else a ClientContextImpl will
-	be used."""
-	global connection
-	connection = self
-	# Import the CORBA module
-	import CosNaming
-	# Initialise the ORB
-	self.orb = CORBA.ORB_init(sys.argv, CORBA.ORB_ID)
-
-	# Find the POA
-	self.poa = self.orb.resolve_initial_references("RootPOA")
-	# Activate the POA
-	self.poaManager = self.poa._get_the_POAManager()
-	self.poaManager.activate()
-
-	# Create an ClientContext
-	if clientContext is None: clientContext = ClientContextImpl()
-	# Create an object reference, and implicitly activate the object
-	self.clientContext = clientContext._this()
-
-	# get a server context
-	object = self.orb.resolve_initial_references("NameService")
-	context = object._narrow(CosNaming.NamingContext)
-	name = [CosNaming.NameComponent("IDL:Warsaw/Server:1.0", "Object")]
-	object = context.resolve(name)
-	self.server = object._narrow(Warsaw.Server)
-	print "Got Server var =",self.server
-	print "Client Context var =",self.clientContext
-	self.context  = self.server.create_server_context(self.clientContext)
 
 class MenuKit:
     """Pretend kit that builds menu objects"""
@@ -121,19 +32,6 @@ class MenuKit:
 	return MenuItem(label, None, callback)
     def menu_item_sub(self, label, submenu):
 	return MenuItem(label, submenu)
-
-def Label(string):
-    "Creates a black label from the given string"
-    return kits.tool.rgb(kits.text.chunk(US(string)),0.,0.,0.)
-
-class Callback(Warsaw__POA.Command):
-    """Small wrapper command which calls a python function with a single
-    argument which is the Any."""
-    def __init__(self, callback):
-	self.callback = callback
-    def execute(self, any):
-	print "Callback to",self.callback,"with",any
-	self.callback(any)
 
 class MenuItem:
     """Encapsulates a Menu item with label and optional submenu and callback.
@@ -267,13 +165,7 @@ class About:
     def cb_show(self, any):
 	self._mapper_show.execute(any)
 
-class MenuApp:
-    def __init__(self):
-	global app
-	app = self
-	Connection()
-	Kits()
-
+class MenuApp (berlin.App):
     def run(self):
 	def add(menu, items): 
 	    for item in items: 
@@ -310,20 +202,23 @@ class MenuApp:
 	#kits.desktop.map(self.window, 1).execute(nullAny)
 
     def exit(self, any):
-	kits.desktop.map(self.window, 0).execute(nullAny)
-	sys.exit(0)
+	app.quit.set()
 
 
 def main():
-    # Create singletons
-    MenuApp()
+    # Create the singletons
+    global app, kits, connection
+    connection = berlin.get_connection()
+    kits = berlin.get_kits()
+    app = MenuApp()
 
     app.run()
 
-    print "Hit ENTER to quit."
-    while 1:
-   	line = sys.stdin.readline()
-   	if len(line) == 1: break
+    # Wait for the quit event
+    app.quit.wait()
+
+    # Tell the orb to shutdown (and wait for pending calls to complete)
+    connection.orb.shutdown(1)
 
 if __name__ == '__main__':
     main()
