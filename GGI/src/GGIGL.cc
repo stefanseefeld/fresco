@@ -30,23 +30,24 @@ class GGIGLContext : virtual public GLContext
 {
 public:
   GGIGLContext(Console::Drawable *drawable)
-    : _context(GGIMesaCreateContext())
+    : _drawable(static_cast<GGIDrawable *>(drawable)),
+      _context(GGIMesaCreateContext())
   {
-    if (GGIMesaSetVisual(_context, static_cast<GGIDrawable *>(drawable)->visual(), GL_TRUE, GL_FALSE))
+    if (GGIMesaSetVisual(_context, _drawable->visual(), GL_TRUE, GL_FALSE))
       throw std::runtime_error("GGIMesaSetVisual() failed");
     GGIMesaMakeCurrent(_context);
   }
-
-  ~GGIGLContext()
+  virtual ~GGIGLContext()
   {
     GGIMesaDestroyContext(_context);
   }
-
-  void flush() {
+  virtual void flush()
+  {
     glFlush();
-    _drawable->flush()
+    _drawable->flush();
   }
 private:
+  GGIDrawable   *_drawable;
   GGIMesaContext _context;  
 };
 
