@@ -10,9 +10,7 @@ import CosNaming
 # Import the Fresco stubs
 import Fresco, Unidraw
 
-import berlin
-
-class DemoApp (berlin.App):
+class DemoApp (Fresco.App):
     def run(self):
 	# FIXME: This is bitrotted
 	editor = kits.unidraw.create_editor()
@@ -22,8 +20,8 @@ class DemoApp (berlin.App):
 def main():
     # Create singletons
     global app, kits, connection
-    connection = berlin.get_connection()
-    kits = berlin.get_kits()
+    connection = Fresco.get_connection()
+    kits = Fresco.get_kits()
     app = DemoApp()
 
     app.run()

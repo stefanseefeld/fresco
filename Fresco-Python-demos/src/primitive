@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Python Berlin client that implements a client-side Graphic
+# Python Fresco client that implements a client-side Graphic
 # Copyright (c) 2000 by Stephen Davies
 # This file is licensed for use under the GPL.
 #
@@ -9,13 +9,10 @@
 import sys, string, time, math, thread, threading
 from omniORB import CORBA
 
-# Import berlin client lib
-import berlin
-from berlin import Label, Callback, nullAny
-
-# Import the Fresco stubs
+# Import the Fresco stubs and client lib
 import Fresco, Unidraw
 import Fresco__POA
+from Fresco import Label, Callback, nullAny
 
 # Import Fresco lib
 import pyfresco
@@ -91,7 +88,7 @@ class Primitive (pyfresco.PyGraphic):
 	dk.draw_mesh(self.__mesh)
 	dk.restore()
 
-class GraphicApp (berlin.App):
+class GraphicApp (Fresco.App):
     def run(self):
         vbox = kits.layout.vbox()
 	phi = kits.command.bvalue(0., 360., 0., 1., 10.)
@@ -138,8 +135,8 @@ class GraphicApp (berlin.App):
 def main():
     # Create singletons
     global app, kits, connection
-    connection = berlin.get_connection()
-    kits = berlin.get_kits()
+    connection = Fresco.get_connection()
+    kits = Fresco.get_kits()
     app = GraphicApp()
 
     app.run()

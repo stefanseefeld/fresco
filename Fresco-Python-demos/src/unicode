@@ -4,12 +4,9 @@ import sys, time
 import string
 import curses
 
-# Import Fresco Stubs
+# Import Fresco stubs and client lib
 import Fresco
 import Fresco__POA
-
-# Import berlin client lib
-import berlin
 
 class TextBufferObserver (Fresco__POA.Observer):
     "A simple Observer for a textbuffer."
@@ -83,7 +80,7 @@ def to_python(s):
     return '#'
 
 
-def to_berlin(s):
+def to_Fresco(s):
     if ord(s) in range(ord('A'), ord('Z')):
         return ord(s) - ord('A') + 0x05D0 # transform into hebrew
     elif s == '/':
@@ -97,10 +94,10 @@ def insert(current, s):
         return
     if (len(s) == 1):
         sys.stderr.write("inserting a single char (" + s[0] + ")\n")
-        current.insert_char(to_berlin(s[0]))
+        current.insert_char(to_Fresco(s[0]))
     else:
         sys.stderr.write("inserting a string.\n")
-        current.insert_string(map(to_berlin, s))
+        current.insert_string(map(to_Fresco, s))
 
 def stringify(s):
     output = ''
@@ -123,8 +120,8 @@ def main():
     
     # Create singletons
     global app, kits, connection
-    connection = berlin.get_connection()
-    kits = berlin.get_kits()
+    connection = Fresco.get_connection()
+    kits = Fresco.get_kits()
 
     # Get TextBuffers
     buffer = kits.command.text()

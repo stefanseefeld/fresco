@@ -1,23 +1,16 @@
 #!/usr/bin/env python
-# Python Berlin client that implements a pulldown panner
+# Python Fresco client that implements a pulldown panner
 # Copyright (c) 2001 by Stefan Seefeld
 # This file is licensed for use under the GPL.
 #
 # Tabstop is 8, SoftTabStop is 4, ShiftWidth is 4 (as per last line)
-#
-# Note that the menu api implemented here resembles more traditional
-# state-heavy guis, rather than berlin's lightweight graphic model.
-# Disclaimer: This is just an experiment :)
 
 import sys, string, os
 from omniORB import CORBA, PortableServer
 
-# Import Berlin module
-import berlin
-from berlin import Label, Callback, nullAny
-
-# Import the Fresco stubs
+# Import the Fresco stubs and client lib
 import Fresco, Unidraw, Layout
+from Fresco import Label, Callback, nullAny
 import Fresco__POA
 
 # Import Python client lib
@@ -41,10 +34,10 @@ class Mapper (pyfresco.PyController):
     def release(self, pickTraversal, input_event):
 	print "Release"
 
-class ViewportApp (berlin.App):
+class ViewportApp (Fresco.App):
     def run(self):
-        berlin.App.__init__(self)
-        kits = berlin.get_kits()
+        Fresco.App.__init__(self)
+        kits = Fresco.get_kits()
         pixmap = kits.figure.pixmap(kits.image.create("landscape.png"))
         viewport = kits.layout.scrollable(pixmap)
         xscroller = kits.widget.scrollbar(viewport.adjustment(Fresco.xaxis), Fresco.xaxis)
@@ -71,8 +64,8 @@ class ViewportApp (berlin.App):
 def main():
     # Create the singletons
     global app, kits, connection
-    connection = berlin.get_connection()
-    kits = berlin.get_kits()
+    connection = Fresco.get_connection()
+    kits = Fresco.get_kits()
 
     app = ViewportApp()
     app.run()

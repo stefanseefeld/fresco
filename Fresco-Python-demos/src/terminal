@@ -3,14 +3,10 @@
 import sys, time
 import string
 
-# Import Fresco generated stuff
+# Import Fresco client lib
 import Fresco
 
-# Import berlin client lib
-import berlin
-from berlin import Label, Callback, nullAny
-
-class DemoApp (berlin.App):
+class DemoApp (Fresco.App):
     def run(self):
 	terminal   = kits.widget.terminal()
 	scrollable = kits.widget.scrollable(kits.tool.rgb(terminal, 0., 0., 0.))
@@ -26,8 +22,8 @@ class DemoApp (berlin.App):
 def main():
     # Create singletons
     global app, kits, connection
-    connection = berlin.get_connection()
-    kits = berlin.get_kits()
+    connection = Fresco.get_connection()
+    kits = Fresco.get_kits()
     app = DemoApp()
 
     app.run()

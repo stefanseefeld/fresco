@@ -1,24 +1,21 @@
 #!/usr/bin/env python
-# Python Berlin client that implements a client-side menu
+# Python Fresco client that implements a client-side menu
 # Copyright (c) 2000 by Stephen Davies
 # This file is licensed for use under the GPL.
 #
 # Tabstop is 8, SoftTabStop is 4, ShiftWidth is 4 (as per last line)
 #
 # Note that the menu api implemented here resembles more traditional
-# state-heavy guis, rather than berlin's lightweight graphic model.
+# state-heavy guis, rather than Fresco's lightweight graphic model.
 # Disclaimer: This is just an experiment :)
 
 import sys, string, os
 from omniORB import CORBA, PortableServer
 
-# Import Berlin module
-import berlin
-from berlin import Label, Callback, nullAny
-
-# Import the Fresco stubs
+# Import the Fresco stubs and client lib
 import Fresco, Layout
 import Fresco__POA
+from Fresco import Label, Callback, nullAny
 
 # Import Python client lib
 import pyfresco
@@ -348,7 +345,7 @@ class RunApp(Fresco__POA.Command):
 	    print "Failed"
 	    sys.exit(0)
 
-class MenuApp (berlin.App):
+class MenuApp (Fresco.App):
     def run(self):
 	def add(menu, items): 
 	    for item in items: 
@@ -421,8 +418,8 @@ class MenuApp (berlin.App):
 def main():
     # Create the singletons
     global app, kits, connection
-    connection = berlin.get_connection()
-    kits = berlin.get_kits()
+    connection = Fresco.get_connection()
+    kits = Fresco.get_kits()
     app = MenuApp()
 
     app.run()

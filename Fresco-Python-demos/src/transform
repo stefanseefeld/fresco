@@ -3,15 +3,11 @@
 import sys, time
 import string
 
-# Import Fresco generated interface
-import Fresco
-import Figure
+# Import Fresco generated interface and client lib
+import Fresco, Figure
+from Fresco import Label, Callback, nullAny
 
-# Import berlin client lib
-import berlin
-from berlin import Label, Callback, nullAny
-
-class DemoApp (berlin.App):
+class DemoApp (Fresco.App):
     def run(self):
 	vbox   = kits.layout.vbox();
 	adjustable1 = kits.command.bvalue(0., 90., 0., 10., 10.)
@@ -43,8 +39,8 @@ class DemoApp (berlin.App):
 def main():
     # Create singletons
     global app, kits, connection
-    connection = berlin.get_connection()
-    kits = berlin.get_kits()
+    connection = Fresco.get_connection()
+    kits = Fresco.get_kits()
     app = DemoApp()
 
     app.run()

@@ -3,14 +3,14 @@
 import sys, time
 import string
 
-# Import berlin client lib
-import berlin
-from berlin import Label, Callback, nullAny
+# Import Fresco client lib
+import Fresco
+from Fresco import Label, Callback, nullAny
 
-class RefCountApp (berlin.App):
+class RefCountApp (Fresco.App):
     def run(self):
 	# Create a pixmap
-	raster = kits.image.create("../etc/PNG/berlin-48.png")
+	raster = kits.image.create("berlin-48.png")
 	pixmap = kits.figure.pixmap(raster)
 	wrapper1 = kits.layout.margin(pixmap, 50)
 	pixmap.decrement()
@@ -28,8 +28,8 @@ class RefCountApp (berlin.App):
 def main():
     # Create singletons
     global app, kits, connection
-    connection = berlin.get_connection()
-    kits = berlin.get_kits()
+    connection = Fresco.get_connection()
+    kits = Fresco.get_kits()
     app = RefCountApp()
 
     app.run()

@@ -3,11 +3,11 @@
 import sys, time
 import string
 
-# Import berlin client lib
-import berlin, Fresco
-from berlin import Label, Callback, nullAny
+# Import Fresco client lib
+import Fresco
+from Fresco import Label, Callback, nullAny
 
-class DemoApp (berlin.App):
+class DemoApp (Fresco.App):
     def run(self):
 	# Create a pixmap
 	pixmap = kits.figure.pixmap(kits.image.create_raster("berlin-128.png"))
@@ -22,8 +22,8 @@ class DemoApp (berlin.App):
 def main():
     # Create singletons
     global app, kits, connection
-    connection = berlin.get_connection()
-    kits = berlin.get_kits()
+    connection = Fresco.get_connection()
+    kits = Fresco.get_kits()
     app = DemoApp()
 
     app.run()
