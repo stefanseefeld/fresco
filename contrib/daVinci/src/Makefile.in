@@ -72,7 +72,7 @@ install: all
 
 clean:	
 	rm -f $(TARGET)
-	rm -f *.o
+	rm -f *.o *.d
 
 distclean:	clean
 	rm -f Makefile config.log config.status
