@@ -57,7 +57,7 @@ install:
 	$(INSTALL) -d -m 755 $(DESTDIR)$(datadir)/idl/Fresco
 	$(INSTALL) -m 644 $(INT) $(DESTDIR)$(datadir)/idl/Fresco
 
-install-doc:
+install-doc: doc
 	mkdir -p $(DESTDIR)$(datadir)/doc/Fresco
 	cp -a share/doc/Fresco/html $(DESTDIR)$(datadir)/doc/Fresco
 
