@@ -133,7 +133,6 @@ SDL::nonGLPointer::nonGLPointer(Drawable * drawable, Warsaw::Raster_ptr raster) 
 
   // set SDL_Alpha:
   SDL_SetAlpha(_cursor->surface(), SDL_SRCALPHA, 128);
-
 }
 
 

@@ -215,9 +215,6 @@ SDL::GLPointer::GLPointer(Drawable * drawable, Warsaw::Raster_ptr raster)
 
   // set position
   _position[0] = _position[1] = 8;
-
-  save();
-  draw();
 }
 
 
