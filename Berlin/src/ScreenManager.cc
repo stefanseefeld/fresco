@@ -64,12 +64,12 @@ void ScreenManager::repair()
   Trace trace("ScreenManager::repair");
   Tracer::reset_clock();
   clock_t start = traverse_clock = myclock(), mid, mid2, mid3, end;
-  //   Profiler prf("ScreenManager::repair");
+  // Profiler prf("ScreenManager::repair");
   _mutex.lock();
   _tmpDamage->copy(Region_var(_theDamage->_this()));
   _theDamage->clear();
   _mutex.unlock();
-  _emanager->restore(Region_var(_tmpDamage->_this()));
+  // _emanager->restore(Region_var(_tmpDamage->_this()));
   _traversal->init();
   _drawing->start_traversal();
   mid = myclock();
