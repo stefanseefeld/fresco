@@ -36,7 +36,7 @@ public:
   ~Pointer();
   void move(Coord, Coord);
   void draw();
-  void backup();
+  void save();
   void restore();
   bool intersects(const Coord &, const Coord &, const Coord &, const Coord &);
 private:

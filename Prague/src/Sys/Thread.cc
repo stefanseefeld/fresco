@@ -47,7 +47,9 @@ Thread::Guard::Guard()
   pthread_t pt = pthread_self();
   Thread::main = new Thread(pt);
   pthread_setspecific(Thread::self_key, Thread::main);
+  id_mutex.lock();
   pthread_setspecific(Thread::id_key, new unsigned long (counter++));
+  id_mutex.unlock();
 }
 
 Thread::Guard::~Guard()
@@ -126,7 +128,9 @@ void *Thread::start(void *X)
 {
   Thread *thread = reinterpret_cast<Thread *>(X);
   pthread_setspecific(self_key, thread);
+  id_mutex.lock();
   pthread_setspecific(id_key, new unsigned long (counter++));
+  id_mutex.unlock();
   void *ret = thread->p(thread->arg);
   return ret;
 }

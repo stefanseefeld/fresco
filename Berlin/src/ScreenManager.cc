@@ -60,6 +60,7 @@ void ScreenManager::repair()
   
   for (dlist_t::iterator i = tmp.begin(); i != tmp.end(); i++)
     {
+      Prague::Profiler prf("ScreenManager::redraw cycle");
       Logger::log(Logger::drawing) << "repairing region " << **i << endl;
 //       drawing->clear((*i)->lower.x, (*i)->lower.y, (*i)->upper.x, (*i)->upper.y);
       DrawTraversalImpl *traversal = new DrawTraversalImpl(Graphic_var(screen->_this()),

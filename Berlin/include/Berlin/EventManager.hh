@@ -39,6 +39,7 @@ public:
   ~EventManager();
   bool requestFocus(Controller_ptr, Input::Device);
   void nextEvent();
+  void restore(Region_ptr);
   void damage(Region_ptr);
 private:
   long ptrPositionX;

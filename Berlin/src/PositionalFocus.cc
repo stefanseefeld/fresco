@@ -62,6 +62,14 @@ bool PositionalFocus::request(Controller_ptr c)
   return false; // not granted !
 }
 
+void PositionalFocus::restore(Region_ptr region)
+{
+  Vertex l, u;
+  region->bounds(l, u);
+  if (pointer->intersects(l.x, u.x, l.y, u.y)) 
+    pointer->restore();
+}
+
 void PositionalFocus::damage(Region_ptr region)
 {
   SectionLog section("PositionalFocus::damage");
@@ -69,7 +77,7 @@ void PositionalFocus::damage(Region_ptr region)
   region->bounds(l, u);
   if (pointer->intersects(l.x, u.x, l.y, u.y))
     {
-      pointer->backup();
+      pointer->save();
       pointer->draw();
     }
   MutexGuard guard(mutex);
@@ -146,26 +154,23 @@ void PositionalFocus::dispatch(const Input::Event &event)
 	}
     }
   PickTraversalImpl *picked = traversal->memento();
-  if (!picked)
+  traversal->_dispose();
+  traversal = picked;
+  if (!traversal)
     {
       cerr << "PositionalFocus::dispatch : no Controller found ! (position is " << position << ")" << endl;
-      if (traversal)
-	{
-	  traversal->_dispose();
-	  traversal = 0;
-	}
       return;
     }
-  else picked->_obj_is_ready(CORBA::BOA::getBOA());
+  else traversal->_obj_is_ready(CORBA::BOA::getBOA());
   /*
    * ...now do the [lose/receive]Focus stuff,...
    */
-  vector<Controller_var>::const_iterator nf = picked->controllerStack().begin();
+  vector<Controller_var>::const_iterator nf = traversal->controllerStack().begin();
   cstack_t::iterator of = controllers.begin();
   /*
    * ...skip the unchanged controllers,...
    */
-  while (nf != picked->controllerStack().end() &&
+  while (nf != traversal->controllerStack().end() &&
 	 of != controllers.end() &&
 	 (*nf)->_is_equivalent(*of)) nf++, of++;
   /*
@@ -187,7 +192,6 @@ void PositionalFocus::dispatch(const Input::Event &event)
   /*
    * ...and finally dispatch the event
    */
-  traversal = picked;
 //   traversal->debug();
   controllers.back()->handlePositional(PickTraversal_var(traversal->_this()), event);
   if (!grabbed)

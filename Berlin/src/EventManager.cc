@@ -132,6 +132,11 @@ void EventManager::nextEvent()
   if (event.length()) focus[event[0].dev]->dispatch(event);
 }
 
+void EventManager::restore(Region_ptr r)
+{
+  for (vector<FocusImpl *>::iterator i = focus.begin(); i != focus.end(); i++) (*i)->restore(r);
+}
+
 void EventManager::damage(Region_ptr r)
 {
   for (vector<FocusImpl *>::iterator i = focus.begin(); i != focus.end(); i++) (*i)->damage(r);

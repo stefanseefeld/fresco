@@ -168,12 +168,12 @@ void Coprocess::shutdown(short m)
       delete inbuf;
       inbuf = 0;
     }
-  else if (m ^ out)
+  if (m ^ out)
     {
       delete outbuf;
       outbuf = 0;
     }
-  else if (m ^ err)
+  if (m ^ err)
     {
       delete errbuf;
       errbuf = 0;

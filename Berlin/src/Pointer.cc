@@ -83,7 +83,7 @@ Pointer::Pointer(GGI::Drawable *drawable)
 	mask[y*depth*size[0] + depth*x + d] = pointerImg[y*size[0] +x] > 0 ? ~0 : 0;
   
   cache = new unsigned char[size[0]*size[1]*depth];
-  backup();
+  save();
 }
 
 Pointer::~Pointer()
@@ -98,13 +98,13 @@ void Pointer::move(Coord x, Coord y)
   restore();
   position[0] = static_cast<PixelCoord>(max(static_cast<PixelCoord>(x/scale[0]), origin[0]));
   position[1] = static_cast<PixelCoord>(max(static_cast<PixelCoord>(y/scale[1]), origin[1]));
-  backup();
+  save();
   draw();
 };
 
 #define PIXPOS  (((position[1] + y) - origin[1])*(stride/depth) + (position[0]-origin[0]) + size[0])
 
-void Pointer::backup()
+void Pointer::save()
 {
   unsigned char *from = static_cast<unsigned char *>(dbuf->read) + (position[1]-origin[1])*stride + (position[0]-origin[0])*depth;
   unsigned char *to = cache;
