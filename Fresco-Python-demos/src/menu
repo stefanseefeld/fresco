@@ -109,6 +109,19 @@ class Connection:
 	print "Client Context var =",self.clientContext
 	self.context  = self.server.create_server_context(self.clientContext)
 
+class MenuKit:
+    """Pretend kit that builds menu objects"""
+    def menu_bar(self):
+	"""Returns a menubar object"""
+	return MenuBar()
+    def menu(self):
+	"""Returns a menu object"""
+	return Menu()
+    def menu_item(self, label, callback):
+	return MenuItem(label, None, callback)
+    def menu_item_sub(self, label, submenu):
+	return MenuItem(label, submenu)
+
 def Label(string):
     "Creates a black label from the given string"
     return kits.tool.rgb(kits.text.chunk(US(string)),0.,0.,0.)
@@ -162,10 +175,13 @@ class MenuItem:
 	    if self.callback is not None:
 		print "callback:",self.callback
 		dir(self.callback)
-		self.callback(any)
+		self.callback.execute(any)
 	    any = CORBA.Any(CORBA.TC_null, None)
 	    # Show submenu
 	    if self.submenu is not None:
+		print "Submenu:"
+		print self.submenu
+		dir(self.submenu)
 		sub = self.submenu.get_pulldown()
 		kits.desktop.map(sub, 1).execute(any)
 	    # Else close this menu and all parents
@@ -173,7 +189,7 @@ class MenuItem:
 	except SystemExit:
 	    self.close_all()
 	except:
-	    print "Any error occurred somewhere in clicked()"
+	    print "An error occurred somewhere in clicked()"
 	    import traceback
 	    traceback.print_exc()
 	    self.close_all()
@@ -181,14 +197,18 @@ class MenuItem:
 
 class Menu:
     """Encapsulates a vertical menu of MenuItems"""
-    def __init__(self, items):
+    def __init__(self, items = []):
 	"Creates menu from sequence of items"
-	self.items = items
+	self.items = list(items)
 	self.graphic = None
 	self.pulldown = None
 	self.parent_item = None
 	for item in items:
 	    item.parent_menu = self
+    
+    def add_item(self, item):
+	self.items.append(item)
+	item.parent_menu = self
 
     def _get_box(self):
 	"""Template method to return the box to put the items in. Defaults to
@@ -255,20 +275,25 @@ class MenuApp:
 	Kits()
 
     def run(self):
-	menu = MenuBar([
-	    MenuItem('File', submenu=Menu([
-		MenuItem('New', submenu=Menu([
-		    MenuItem('One'),
-		    MenuItem('Two'),
-		    MenuItem('Three'),
+	def add(menu, items): 
+	    for item in items: 
+		menu.add_item(item)
+	    return menu
+	kit = MenuKit()
+	menu = add(kit.menu_bar(), [
+	    kit.menu_item_sub('File', add(kit.menu(), [
+		kit.menu_item_sub('New', add(kit.menu(), [
+		    kit.menu_item('One', None),
+		    kit.menu_item('Two', None),
+		    kit.menu_item('Three', None),
 		])),
-		MenuItem('Open...'),
-		MenuItem('Close'),
-		MenuItem('Quit', callback=self.exit),
+		kit.menu_item('Open...', None),
+		kit.menu_item('Close', None),
+		kit.menu_item('Quit', Callback(self.exit)),
 	    ])),
-	    MenuItem('Help', submenu=Menu([
-		MenuItem('Contents'),
-		MenuItem('About', callback=About().cb_show),
+	    kit.menu_item_sub('Help', add(kit.menu(), [
+		kit.menu_item('Contents', None),
+		kit.menu_item('About', Callback(About().cb_show)),
 	    ])),
 	])
 
