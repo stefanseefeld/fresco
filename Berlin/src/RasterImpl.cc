@@ -35,21 +35,20 @@ RasterImpl::RasterImpl(const std::string &file) : _rows(0)
   Prague::Path path = RCManager::get_path("rasterpath");
   std::string pngfile = path.lookup_file(file);
   if (pngfile.empty())
-    {
-      std::cerr << "RasterImpl Warning : can't find '" << file << "' in current rasterpath" << std::endl;
-      pngfile = path.lookup_file("berlin-128.png");
-    }
+  {
+    std::cerr << "RasterImpl Warning : can't find '" << file 
+              << "' in current rasterpath" << std::endl;
+    throw CreationFailureException();
+  }
+
   _rows = _png.read(pngfile);
-  if (!_rows)
-    {
-      std::cerr << "RasterImpl error: can't read " << pngfile << std::endl;
-      pngfile = path.lookup_file("berlin-128.png");
-      _rows = _png.read(pngfile);
-      if (!_rows) {
-	std::cerr << "RasterImpl fatal error: can't read " << pngfile << std::endl;
-	exit(-1);
-      }
-    }
+
+  if (_rows == 0) 
+  {
+    std::cerr << "RasterImpl Warning : can't read '" << file 
+              << "' in current rasterpath" << std::endl;
+    throw CreationFailureException();
+  }
 }
 RasterImpl::~RasterImpl() { Trace trace("RasterImpl::~RasterImpl");}
 void RasterImpl::clear()

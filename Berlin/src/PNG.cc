@@ -157,7 +157,6 @@ inline PNG::Decoder::Decoder(std::streambuf *sbuf, png_structp p, png_infop i, p
 }
 
 inline unsigned char **PNG::Decoder::decode()
-
 {
   Trace trace("PNGDecoder::decode");
   if (!_valid)
@@ -352,7 +351,10 @@ unsigned char **PNG::read(const std::string &file)
 {
   unsigned char **rows = 0;
   std::ifstream ifs(file.c_str());
-  if (!ifs) std::cerr << "PNG : file " << file << " unreadable" << std::endl;
+  if (!ifs.is_open()) 
+    {
+      std::cerr << "PNG : file " << file << " unreadable" << std::endl;
+    }
   else
     {
       Decoder decoder(ifs.rdbuf(), _rpng, _rinfo, _rend);
