@@ -119,7 +119,8 @@ void GLDrawingKit::clear(Coord l, Coord t, Coord r, Coord b)
   glRectf(l, t, r, b);
   glFlush();
   char c;
-  cout << "GLDrawingKit::clear: enter key to continue :"; cin >> c;
+  cout << "GLDrawingKit::clear: enter key to continue :";
+  cin.get(c);
   glColor4d(0., 0., 0., 1.);      
   glRectf(l, t, r, b);
 }
