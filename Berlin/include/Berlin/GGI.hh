@@ -97,7 +97,7 @@ class GGIConsole
 {
 public:
   typedef GGIDrawable Drawable;
-  GGIConsole();
+  GGIConsole(int &argc, char **argv);
   ~GGIConsole();
   static DrawableTie<Drawable> *drawable();
   static DrawableTie<Drawable> *newDrawable(PixelCoord, PixelCoord, PixelCoord);

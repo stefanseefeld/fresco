@@ -28,25 +28,30 @@
 #include <cmath>
 
 // -- OpenGL Includes
+
 extern "C" {
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/glut.h>
 }
 
+// Local GLUT handler. GLUT 
 class GLUTHandler {
-    
+    struct arg_t {
+	arg_t(int c, char **v, const char *n, int ww, int hh)
+	    : argc(c), argv(v), name(n), w(ww), h(hh)
+	{ }
+	int argc;
+	char **argv;
+	const char *name;
+	int w, h;
+    };
+    friend class GLUTDrawable;
 public:
-    GLUTHandler() { }
-    ~GLUTHandler() { }
-
-    static void init(GLUTConsole *console, int &argc, char **argv, const char *name, int w, int h);
-    
+    static void init(GLUTConsole *console, int &argc, char **argv, const char *name, int w, int h);    
 private:
     
-    static void *start(void *p) {
-	glutMainLoop(); return 0;
-    }
+    static void *start(void *);
     
     static void render();
     static void reshape(int width, int height);
@@ -54,86 +59,97 @@ private:
     static void special(int key, int x, int y);
     static void mouse(int button, int state, int x, int y);
     static void mouseMotion(int x, int y);
- 
-    static Thread _glutThread;
-    static GLUTConsole *_console;
-
+    static void idle();
+    
+    static Thread *_glutThread;
+    static GLUTDrawable *drawable;
+    static GLUTConsole *console;
+    
     static const int numbuttons = 3;
     static int button_state[numbuttons];
 };
 
 // -- Static member variable initializations
-Thread GLUTHandler::_glutThread(GLUTHandler::start, 0);
+Thread *GLUTHandler::_glutThread = 0;
 int GLUTHandler::button_state[3];
-GLUTConsole *GLUTHandler::_console = 0;
+GLUTConsole *GLUTHandler::console = 0;
+GLUTDrawable *GLUTHandler::drawable = 0;
 DrawableTie<GLUTDrawable> *GLUTConsole::_drawable = 0;
-Mutex GLUTDrawable::_glutMutex;
 
 // -- Code Segment
 
-void GLUTHandler::init(GLUTConsole *console, int &argc, char **argv, const char *name, int w, int h)
-{		     
-    _console = console;
+void GLUTHandler::init(GLUTConsole *c, int &argc, char **argv, const char *name, int w, int h)
+{
+    console = c;
+    drawable = &console->drawable()->impl();
     
-    // Initialize button state
+    // Initialize state
     for (int i = 0; i < numbuttons; i++) button_state[i] = GLUT_UP;
-    
-    // Set up GLUT
-    {
-	//MutexGuard glut_guard(GLUTDrawable::_glutMutex);
+    arg_t *arg = new arg_t(argc, argv, name, w, h);
 
-	// Initialize the GLUT library
-	glutInit(&argc, argv);
-	
-	// Initialize display mode and the window
-	//glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
-	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
-	glutInitWindowSize(w, h);
-	
-	// Okay, create the window
-	glutCreateWindow(name);
-	
-	// Specify the display callback functions
-	glutDisplayFunc(render);
-	glutReshapeFunc(reshape);
-	
-	// Install input handlers
-	glutKeyboardFunc(keyboard);
-	glutSpecialFunc(special);
-	glutMouseFunc(mouse);
-	glutMotionFunc(mouseMotion);
-	glutPassiveMotionFunc(mouseMotion);
-    }
-    
     // Start the GLUT thread
-    _glutThread.start();
+    _glutThread = new Thread(&GLUTHandler::start, arg);
+    _glutThread->start();
+}
+
+void *GLUTHandler::start(void *X)
+{
+    arg_t *arg = static_cast<arg_t *>(X);
+    
+    // Initialize the GLUT library
+    glutInit(&arg->argc, arg->argv);
+    
+    // Initialize display mode and the window
+    //glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
+    glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
+    glutInitWindowSize(arg->w, arg->h);
+    
+    // Okay, create the window
+    glutCreateWindow(arg->name);
+    
+    // Specify the display callback functions
+    glutDisplayFunc(&GLUTHandler::render);
+    glutReshapeFunc(&GLUTHandler::reshape);
+    
+    // Install input handlers
+    glutKeyboardFunc(&GLUTHandler::keyboard);
+    glutSpecialFunc(&GLUTHandler::special);
+    glutMouseFunc(&GLUTHandler::mouse);
+    glutMotionFunc(&GLUTHandler::mouseMotion);
+    glutPassiveMotionFunc(&GLUTHandler::mouseMotion);
+    glutIdleFunc(&GLUTHandler::idle);
+
+    // @@@ Remove the GLUT mouse pointer here later
+    
+    glutMainLoop();
+    return 0;
 }
 
 void GLUTHandler::render()
 {
+    Trace trace("GLUTHandler::render");
     cerr << "GLUTHandler::render() -- enter" << endl;
     
     // Clear the canvas
     //glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
     
     // Render the Berlin scene graph!
-    _console->drawable()->impl().render();
+    drawable->render();
     
     // Need to flip, we're double-buffered!
-    {
-	//MutexGuard glut_guard(GLUTDrawable::_glutMutex);
-	glutSwapBuffers();
-    }
+    glutSwapBuffers();
     cerr << "GLUTHandler::render() -- done" << endl;
 }
 
 void GLUTHandler::reshape(int width, int height)
 {
-    _console->drawable()->impl().reshape(width, height);
+    Trace trace("GLUTHandler::reshape");
+    drawable->reshape(width, height);
 }
 
 void GLUTHandler::keyboard(unsigned char key, int x, int y)
 {
+    Trace trace("GLUTHandler::keyboard");
     Input::Event_var event = new Input::Event;
     
     // Keyboard event
@@ -145,19 +161,20 @@ void GLUTHandler::keyboard(unsigned char key, int x, int y)
     event[0].attr.selection(toggle); event[0].attr._d(Input::key);
     
     // Add the event to the queue
-    _console->_eventQueue.push(event._retn());
+    console->_eventQueue.push(event._retn());
 }
 
 void GLUTHandler::special(int key, int x, int y)
 {
+    Trace trace("GLUTHandler::special");
     // @@@ How to handle special keystrokes?
 }
 
 void GLUTHandler::mouse(int button, int state, int x, int y)
 {
+    Trace trace("GLUTHandler::mouse");
     // Is this change in button state?
     if (button_state[button] != state) {
-	
 	Input::Event_var event = new Input::Event;
 	
 	// Fill out the event object
@@ -166,10 +183,10 @@ void GLUTHandler::mouse(int button, int state, int x, int y)
 	    toggle.actuation = Input::Toggle::press;
 	else
 	    toggle.actuation = Input::Toggle::release;
- 	toggle.number = button;
+	toggle.number = button;
 	Input::Position position;
-	position.x = x / _console->drawable()->resolution(xaxis);
-	position.y = y / _console->drawable()->resolution(yaxis);
+	position.x = x / drawable->resolution(xaxis);
+	position.y = y / drawable->resolution(yaxis);
 	position.z = 0;
 	event->length(2);
 	event[0].dev = 1;
@@ -178,9 +195,9 @@ void GLUTHandler::mouse(int button, int state, int x, int y)
 	event[1].attr.location(position);
 	
 	// Add the event to the queue and update state info
-	_console->_eventQueue.push(event._retn());
+	console->_eventQueue.push(event._retn());
 	button_state[button] = state;
-
+	
 	cerr << "button " << button
 	     << " in pos (" 
 	     << position.x << ", " << position.y << ")" << endl;
@@ -189,19 +206,32 @@ void GLUTHandler::mouse(int button, int state, int x, int y)
 
 void GLUTHandler::mouseMotion(int x, int y)
 {
+    Trace trace("GLUTHandler::mouseMotion");
     Input::Event_var event = new Input::Event;
     
     // Mouse movement function (we rely on this being called only when
     // changes in the cursor are detected).
     Input::Position position;
-    position.x = x / _console->drawable()->resolution(xaxis);
-    position.y = y / _console->drawable()->resolution(yaxis);
+    position.x = x / drawable->resolution(xaxis);
+    position.y = y / drawable->resolution(yaxis);
     position.z = 0;
     event->length(1);
     event[0].dev = 1;
     event[0].attr.location(position);    
     
-    _console->_eventQueue.push(event._retn());
+    console->_eventQueue.push(event._retn());
+}
+
+
+void GLUTHandler::idle()
+{
+    Trace trace("GLUTHandler::idle");
+    MutexGuard guard(drawable->_mutex);
+    if (drawable->_dirty) {
+	drawable->_dirty = false;
+	glutPostRedisplay();
+    }
+    else Thread::delay(500);
 }
 
 
@@ -223,9 +253,10 @@ GLUTDrawable::~GLUTDrawable()
 Coord GLUTDrawable::resolution(Axis a) const
 {
     // Return the resolution as dots/pixels per tenth of a millimeter    
+    // @@@ The 25 below is a 'magic' number. We need to tweak it!
     return a == xaxis 
-	? screenx / (50.0 * screendimx) 
-	: screeny / (50.0 * screendimy);
+	? screenx / (25.0 * screendimx) 
+	: screeny / (25.0 * screendimy);
 }
 
 void GLUTDrawable::init()
@@ -247,20 +278,16 @@ void GLUTDrawable::finish()
 {
     // End display list definition
     glEndList();
-    _mutex.unlock();
+    _dirty = true;
     cerr << "Display list finished and unlocked." << endl;
-
-    // Tell GLUT we have something new to render
-    {
-	//MutexGuard glut_guard(GLUTDrawable::_glutMutex);
-	glutPostRedisplay();
-    }
+    _mutex.unlock();
 }
 
 void GLUTDrawable::render()
 {
+    Trace trace("GLUTDrawable::render");
     MutexGuard guard(_mutex);
-
+    
     // Call display list 
     if (_displist != 0) {
 	glCallList(_displist);
@@ -270,19 +297,19 @@ void GLUTDrawable::render()
 
 void GLUTDrawable::reshape(int width, int height)
 {
+    Trace trace("GLUTDrawable::reshape");
     _width = width; _height = height;
     cerr << "Reshape to dimensions (" << width << "x" << height 
 	 << ") [ " << _width / resolution(xaxis) << "x"
 	 << _height / resolution(yaxis) <<"]" << endl;
-
+  
     // Reset the viewport
     glViewport(0, 0, (GLsizei) _width, (GLsizei) _height);
-    
+  
     // Set up a new projection mode
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glOrtho(0, _width / resolution(xaxis), _height / resolution(yaxis),
-	    0, -1000.0, 1000.0); 
+    glOrtho(0, _width / resolution(xaxis), _height / resolution(yaxis), 0, -1000.0, 1000.0); 
     glTranslatef(0.375, 0.375, 0.);
     glMatrixMode(GL_MODELVIEW);
 }
@@ -299,17 +326,15 @@ DrawableTie<GLUTDrawable>::PixelFormat GLUTDrawable::pixelFormat()
 
 // -- GLUTConsole implementation 
 
-GLUTConsole::GLUTConsole()
+GLUTConsole::GLUTConsole(int &argc, char **argv)
     : _eventQueue(eventQueueCapacity)
 {
     _drawable = new DrawableTie<Drawable>(new GLUTDrawable);
-
+  
     // @@@ Hardcoded stuff for simplicity!
-    int argc = 1;
-    char *argv[] = { "dummy" };
     int winwidth = 640;
     int winheight = 480;
-	
+  
     // Initialize and launch the GLUT handling thread
     GLUTHandler::init(this, argc, argv, "Berlin-on-glut", winwidth, winheight);
 }
@@ -322,11 +347,14 @@ GLUTConsole::~GLUTConsole()
 
 Input::Event *GLUTConsole::nextEvent()
 {
-    return _eventQueue.pop();
+    Trace trace("GLUTConsole::nextEvent");
+    Input::Event_var e = _eventQueue.pop();
+    return e._retn();
 }
 
 void GLUTConsole::wakeup()
 {
+    Trace trace("GLUTConsole::wakeup");
     // Add an empty event to the event queue to wake up the combined
     // rendering/input thread. In the event manager, an empty event
     // pointer (NULL or 0) will cause a window repair, so this is

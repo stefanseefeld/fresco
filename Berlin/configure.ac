@@ -149,9 +149,12 @@ for kit in $enable_drawing_kits ; do
 	fi
 done
 
-# We can't use libArt if we're on the GLUT console
+# Must use the GLDrawingKit if we're on the GLUT or CAVELib console
 # (need a better way to do this later!)
 if test ".$CON_IMPL" = .GLUT; then
+	enable_libArt=no
+fi
+if test ".$CON_IMPL" = .CAVELIB; then
 	enable_libArt=no
 fi
 

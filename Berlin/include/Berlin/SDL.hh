@@ -92,7 +92,7 @@ class SDLConsole
 {
 public:
   typedef SDLDrawable Drawable;
-  SDLConsole();
+  SDLConsole(int &argc, char **argv);
   ~SDLConsole();
   static DrawableTie<Drawable> *drawable();
   static DrawableTie<Drawable> *newDrawable(PixelCoord, PixelCoord, PixelCoord);

@@ -34,11 +34,12 @@ using namespace Prague;
 
 // Cavelib OpenGL bindings
 extern "C" {
-#include <cave_ogl.h>
+    //#include <cave_ogl.h>
 }
 
 // -- Forward Declarations
 class CAVEConsole;
+class CAVEEventListener;
 
 // -- Class Declarations
 
@@ -58,7 +59,7 @@ private:
   
 public:
     typedef long Pixel;
-    DrawableTie<CAVEDrawable>::PixelFormat pixelFormat() { }
+    DrawableTie<CAVEDrawable>::PixelFormat pixelFormat();
     
     PixelCoord width() const { return _width; }
     PixelCoord height() const { return _height; }
@@ -66,10 +67,10 @@ public:
     PixelCoord vheight() const { return _height;}
     Coord resolution(Axis a) const { return _resolution; }
     Coord dpi(Axis a) const { return resolution(a) * 254.0; }
-    PixelCoord rowlength() { }
-    Pixel map(const Color &) { }
-    void *readBuffer() { }
-    void *writeBuffer() { }
+    PixelCoord rowlength() { return 0; }
+    Pixel map(const Color &) { return 0; }
+    void *readBuffer() { return 0; }
+    void *writeBuffer() { return 0; }
     
     /*
      * Read one or more pixels from framebuffer
@@ -99,10 +100,21 @@ public:
      * Fast blits
      */
     void blit(PixelCoord, PixelCoord, PixelCoord, PixelCoord, PixelCoord, PixelCoord) { }
-    void blit(const GGIDrawable &, PixelCoord, PixelCoord, PixelCoord, PixelCoord, PixelCoord, PixelCoord) { }
+    void blit(const CAVEDrawable &, PixelCoord, PixelCoord, PixelCoord, PixelCoord, PixelCoord, PixelCoord) { }
     
     void flush() { }
     void flush(PixelCoord x, PixelCoord y, PixelCoord w, PixelCoord h) { }
+
+    void init();
+    void finish();
+
+
+    /**
+     * Render the "cached" scene (i.e. the display lists comprising
+     * the scene). This is a slight breach of abstraction, but it is
+     * by far the easiest solution.
+     **/
+    void render();
     
 private:
     
@@ -118,8 +130,55 @@ private:
   
     // Resolution 
     float _resolution;
+    
+    /// Main display list
+    unsigned int _displist;
+
+    /// Access mutex (to control access to display lists)
+    Mutex _mutex;
+
 };
 
+
+/**
+ * CAVE event listener (runs in its own thread and listens for CAVE
+ * events to add to the CAVEConsole event queue).
+ **/
+class CAVEEventListener {
+
+public:
+    
+    CAVEEventListener(CAVEConsole *console, Thread::Queue<Input::Event *> &queue) 
+	: _listener(proc, this), _queue(queue), _console(console) { }
+    ~CAVEEventListener() { cancel(); }
+    void run() { _listener.start(); }
+    void cancel() { _listener.join(0); }
+
+private:
+    
+    /**
+     * Listener thread bootstrapping function.
+     **/
+    static void *proc(void *X) {
+	CAVEEventListener *listener = reinterpret_cast<CAVEEventListener *>(X);
+	listener->start();
+	return 0;
+    }
+
+    /**
+     * Main listening function.
+     **/
+    void start();
+
+    // Listener thread
+    Thread _listener;
+
+    // Event queue
+    Thread::Queue<Input::Event *> &_queue;
+
+    // Console handle
+    CAVEConsole *_console;
+};
 
 /**
  * Cavelib console implementation (also a tie implementation).
@@ -129,7 +188,7 @@ class CAVEConsole {
 public:
     
     typedef CAVEDrawable Drawable;
-    CAVEConsole();
+    CAVEConsole(int &argc, char **argv);
     ~CAVEConsole();
     static DrawableTie<Drawable> *drawable() { return _drawable; }
     static DrawableTie<Drawable> *newDrawable(PixelCoord, PixelCoord, PixelCoord);
@@ -140,14 +199,24 @@ public:
     
 private:
 
+    /// Cavelib rendering callback
+    static void render();
+
+    /// Automatic replay of events?
     bool _autoplay;
+
+    /// Capacity of event queue
+    static const int eventQueueCapacity = 100;
     
     /// Single CAVE drawable instance
-    DrawableTie<Drawable> *_drawable;
+    static DrawableTie<Drawable> *_drawable;
 
     /// Event producer-consumer queue (for polling threads)
     Thread::Queue<Input::Event *> _eventQueue;
 
+    /// Event listening thread
+    CAVEEventListener _listener;
+    
 };
 
 #endif /* CAVE.hh */

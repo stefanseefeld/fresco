@@ -31,67 +31,32 @@
 // think)
 const int CAVENumComponents = 3;
 const int CAVENumButtons = 4;
-const float tolerance = 0.1f;
 typedef float CAVEPosData[CAVENumComponents];
 typedef int CAVEButtonData[CAVENumButtons];
 
-/**
- * CAVE event listener (runs in its own thread and listens for CAVE
- * events to add to the CAVEConsole event queue).
- **/
-class EventListener {
-    
-    EventListener(ThreadQueue<Input::Event> *queue) 
-	: _listener(proc, this), _queue(queue) { }
-    ~EventListener() { cancel(); }
-    void run() { _listener.start(); }
-    void cancel() { _listener.join(0); }
-
-private:
-    
-    /**
-     * Listener thread bootstrapping function.
-     **/
-    static void *proc(void *X) {
-	EventListener *listener = reinterpret_cast<EventListener *>(X);
-	listener->start();
-	return 0;
-    }
-
-    /**
-     * Main listening function.
-     **/
-    void start();
-
-    // Listener thread
-    Thread _listener;
-
-    // Event queue
-    ThreadQueue<Input::Event *> *_queue;
-    
-};
-
-CAVEConsole::CAVEConsole()
-    : _autoplay(false)
+CAVEConsole::CAVEConsole(int &argc, char **argv)
+    : _autoplay(false), 
+      _eventQueue(eventQueueCapacity), 
+      _listener(this, _eventQueue)
 {
-    cerr << "Initializing CAVELib console " <<
+    // Configure the cavelib
+    CAVEConfigure(&argc, argv, 0);
+
+    cerr << "Initializing CAVELib console "
 	 << "(CAVELib version " << CAVEVersion << " with "
 	 << CAVENumPipes() << " rendering pipes." << endl;
-    _drawable = new CAVEDrawable;
+    _drawable = new DrawableTie<CAVEDrawable>(new CAVEDrawable);
 
-    // @@@ Set up callbacks
+    // Register display callback
+    CAVEDisplay(render, 0);
     
-    // @@@ Create event listening thread
+    // Start event listening thread
+    _listener.run();
 }
 
 CAVEConsole::~CAVEConsole()
 {
     delete _drawable;
-}
-
-DrawableTie<Drawable> *CAVEConsole::drawable()
-{
-    return 0;
 }
 
 DrawableTie<CAVEDrawable> *CAVEConsole::newDrawable(PixelCoord w, PixelCoord h, PixelCoord d)
@@ -101,17 +66,25 @@ DrawableTie<CAVEDrawable> *CAVEConsole::newDrawable(PixelCoord w, PixelCoord h, 
 
 Input::Event *CAVEConsole::nextEvent()
 {
-    return _eventQueue.pop();
+    Input::Event_var e = _eventQueue.pop();
+    return e._retn();
 }
+
+static void render();
 
 void CAVEConsole::wakeup()
 {
-    
+    // Put a null pointer (0) on the event queue, that will notify the
+    // event handling thread in the event manager to wake up and
+    // relinquish control to the screen manager and repair the screen.
+    _eventQueue.push(0);
 }
 
 CAVEDrawable::CAVEDrawable()
 {
-    // Compute the resolution
+    // Compute the resolution (Still wondering if this is the correct
+    // way, the alternative is to use the CAVE's physical dimensions
+    // and display resolution like in the GLUTConsole.)
     float conv2mm = CAVEConvertFromCAVEUnits(1.0f, CAVE_METERS) * 1000.0f;
     _resolution = 1 / (conv2mm * 10.0f);
 }
@@ -121,20 +94,32 @@ CAVEDrawable::~CAVEDrawable()
     // empty
 }
 
+DrawableTie<CAVEDrawable>::PixelFormat CAVEDrawable::pixelFormat()
+{
+    // Load dummy values (@@@ How do we fill in this correctly?)
+    DrawableTie<CAVEDrawable>::PixelFormat pft = {
+	32, 32, 0xff000000, 24, 0x00ff0000, 16, 0x0000ff00, 8, 0x000000ff, 0
+    };
+    return pft;
+}
+
 // @@@ Ugly! Need real vector classes...
 float dist3d(const CAVEPosData &v1, const CAVEPosData &v2)
 {
     float result = 0.0f;
     for (int i = 0; i < CAVENumComponents; i++) {
-	float diff = = v1[i] - v2[i];
+	float diff = v1[i] - v2[i];
 	diff *= diff;
 	result += diff;
     }
     return sqrt(result);
 }
 
-void EventListener::start()
+void CAVEEventListener::start()
 {
+    // Position change tolerance
+    const float tolerance = 0.1f;
+    
     CAVEPosData position, old_position;
     CAVEPosData orientation, old_orientation;
     CAVEButtonData buttons, old_buttons;
@@ -143,19 +128,20 @@ void EventListener::start()
     while (true) {
 	
 	// Get CAVE input state (only pointer state at the moment!)
+	// @@@ How to incorporate head tracking here?
 	CAVEGetPosition(CAVE_WAND, position);
 	CAVEGetOrientation(CAVE_WAND, orientation);
 	
 	// Yes, this is ugly, but it's cavelib's fault...
-	buttons[0] = CAVEBUTTON1; buttons[1] = CAVEBUTTON2; 
-	buttons[2] = CAVEBUTTON3; buttons[3] = CAVEBUTTON4;
+	buttons[0] = CAVEBUTTON1; buttons[1] = CAVEBUTTON2; 
+	buttons[2] = CAVEBUTTON3; buttons[3] = CAVEBUTTON4;
 
 	Input::Position pos;
-	pos.x = position[0] / drawable->resolution(xaxis);
-	pos.y = position[1] / drawable->resolution(yaxis);
-	pos.z = position[2] / drawable->resolution(zaxis);
+	pos.x = position[0] / _console->drawable()->resolution(xaxis);
+	pos.y = position[1] / _console->drawable()->resolution(yaxis);
+	pos.z = position[2] / _console->drawable()->resolution(zaxis);
 
-	Input::Position ori;	
+	Input::Position ori;
 	ori.x = orientation[0]; ori.y = orientation[1]; ori.z = orientation[2];
 
 	// Orientation or positional changes
@@ -170,7 +156,7 @@ void EventListener::start()
 	    event[1].attr.location(ori);
 
 	    // Add the event to the thread queue (producer-consumer)
-	    _queue->push(event._retn());
+	    _queue.push(event._retn());
 	}
 	
 	// Check changes in buttons
@@ -198,7 +184,7 @@ void EventListener::start()
 		event[2].attr.location(ori);
 		
 		// Add the event to the thread queue (producer-consumer)
-		_queue->push(event._retn());
+		_queue.push(event._retn());
 	    }
 	}
 

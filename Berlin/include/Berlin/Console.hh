@@ -95,8 +95,7 @@ public:
    * Init and finish hooks called by the server when the scene is
    * about to be drawn, and when it has been drawn, respectively. This
    * is a suitable place to add calls for building display lists, for
-   * example (this is what is done in the GLUTConsole and
-   * CAVEConsole).
+   * example (this is what is done in the GLUT and CAVELib consoles).
    **/
   void init() { t->init(); }
   void finish() { t->finish(); }
@@ -117,7 +116,7 @@ public:
   typedef DrawableTie<typename T::Drawable> Drawable;
   ConsoleTie() {}
   ~ConsoleTie() {}
-  static void open() { if (!t) t = new T();}
+  static void open(int &argc, char **argv) { if (!t) t = new T(argc, argv);}
   static DrawableTie<typename T::Drawable> *drawable() { return T::drawable();}
   static DrawableTie<typename T::Drawable> *newDrawable(PixelCoord w, PixelCoord h, PixelCoord d) { return T::newDrawable(w, h, d);}
 

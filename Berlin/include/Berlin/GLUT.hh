@@ -30,6 +30,46 @@
 #include <Prague/Sys/ThreadQueue.hh>
 #include <vector>
 
+/* This is a console implementation based on GLUT, meaning that all
+ * that is required is an OpenGL installation complete with GLUT, the
+ * GL utility toolkit. In other words, it should be possible to run
+ * Berlin on a Win32 system using this console, or at least on top of
+ * X on Linux system and take advantage of hardware acceleration. Of
+ * course, since we are using GLUT, we only support the GLDrawingKit.
+ *
+ * GLUT was not really meant to be used in a realistic application
+ * like Berlin, and is used to getting control of the main loop and
+ * stuff like when to redraw, poll for input, shut down, etc.  This is
+ * of course not possible in Berlin, so I've designed the GLUTConsole
+ * around a producer/consumer scheme with a dedicated thread that
+ * makes GLUT happy (then it can make-believe that it retains control
+ * of the main loop).
+ *
+ * However, there are some nasty problems with GLUT not being
+ * thread-safe nor instance-safe.  We're currently being plagued by
+ * deadlocks between the GLUT thread and the drawing/event polling
+ * thread, and GLUT sometimes rolls itself into a little ball and
+ * shuts out the world when it is forced to play with the other
+ * children. Nevertheless, we do get graphical output between lockups,
+ * so the main concept is sound!
+ * 
+ * I've received word of new implementations of GLUT (called freeglut
+ * and slimglut) that reportedly will be thread-safe. I will likely go
+ * back and revisit the GLUTConsole then.
+ * 
+ * Still, this is a sample console implementation that could serve as
+ * a useful template for budding console writers, especially when you
+ * have to take to dirty tricks like I had to. :)
+ * 
+ * To activate the GLUT console, configure the server with
+ * --with-console=GLUT, and the rest should be automatic. You also
+ * need to comment out the calls to readBuffer/writeBuffer in
+ * Pointer.cc, since those calls are not (and cannot) be implemented
+ * in the GLUTDrawable.
+ * 
+ * /elm, 2000-08-29
+ **/
+
 // @@@ FIXME! Need a better way for this (can't hardcode it!)
 // Screen resolution (in pixels)
 const Coord screenx = 1024;
@@ -53,9 +93,9 @@ class GLUTHandler;
  * GLDrawingKit only.
  **/
 class GLUTDrawable {
-
+  
 private:
-    
+  
     friend class GLUTConsole;
     friend class GLUTHandler;
     friend class DrawableTie<GLUTDrawable>;
@@ -63,7 +103,7 @@ private:
 public:
     typedef long Pixel;
     DrawableTie<GLUTDrawable>::PixelFormat pixelFormat();
-    
+  
     PixelCoord width() const { return _width; }
     PixelCoord height() const { return _height; }
     PixelCoord vwidth() const { return _width;}
@@ -74,13 +114,13 @@ public:
     Pixel map(const Color &) { return 0; }
     void *readBuffer() { return 0; }
     void *writeBuffer() { return 0; }
-    
+  
     /*
      * Read one or more pixels from framebuffer
      */
     void readPixel(PixelCoord x, PixelCoord y, Pixel &p) { }
     void readPixels(PixelCoord, PixelCoord, PixelCoord, PixelCoord, void *) { }
-    
+  
     /*
      * Draw primitives with the current color (Pixel)
      */
@@ -90,7 +130,7 @@ public:
     void drawVLine(PixelCoord x, PixelCoord y, PixelCoord h) { }
     void drawLine(PixelCoord x, PixelCoord y, PixelCoord w, PixelCoord h) { }
     void drawBox(PixelCoord x, PixelCoord y, PixelCoord w, PixelCoord h) { }
-    
+  
     /*
      * Draw primitives with the given color (Pixel). 
      */
@@ -98,53 +138,52 @@ public:
     void putHLine(PixelCoord x, PixelCoord y, PixelCoord w, void *p) { }
     void putVLine(PixelCoord x, PixelCoord y, PixelCoord h, void *p) { }
     void drawPixels(PixelCoord x, PixelCoord y, PixelCoord w, PixelCoord h, void *p) { }
-    
+  
     /*
      * Fast blits
      */
     void blit(PixelCoord, PixelCoord, PixelCoord, PixelCoord, PixelCoord, PixelCoord);
     void blit(const GLUTDrawable &, PixelCoord, PixelCoord, PixelCoord, PixelCoord, PixelCoord, PixelCoord);
-    
+  
     void flush() { }
     void flush(PixelCoord x, PixelCoord y, PixelCoord w, PixelCoord h) { }
-
+  
     void init();
     void finish();
-    
+  
     /**
      * Render the "cached" scene (i.e. the display lists comprising
      * the scene). This is a slight breach of abstraction, but it is
      * by far the easiest solution.
      **/
     void render();
-
-    
+  
+  
     /**
      * GLUT window may be reshaped by the user.
      **/
     void reshape(int width, int height);
-			
+  
 private:
-    
+  
     // Constructor and destructor
     GLUTDrawable();
     ~GLUTDrawable();
-    
+  
     /// Display width
     int _width;
-    
+  
     /// Display height
     int _height;
-
+  
     /// Main display list
     unsigned int _displist;
-    
+
+    /// Is the drawable dirty? (i.e. do we need to redraw?)
+    bool _dirty;
+
     /// Access mutex (to control access to display lists)
     Mutex _mutex;
-
-    /// GLUT mutex (GLUT does not seem to be reentrant)
-    static Mutex _glutMutex;
-
 };
 
 
@@ -152,13 +191,13 @@ private:
  * GLUT console implementation.
  **/
 class GLUTConsole {
-
+  
     friend class GLUTHandler;
-    
+  
 public:
-    
+  
     typedef GLUTDrawable Drawable;
-    GLUTConsole();
+    GLUTConsole(int &argc, char **argv);
     ~GLUTConsole();
     static DrawableTie<Drawable> *drawable() { return _drawable; }
     static DrawableTie<Drawable> *newDrawable(PixelCoord, PixelCoord, PixelCoord) { return 0; }
@@ -166,34 +205,21 @@ public:
     Input::Event *nextEvent();
     void wakeup();
     void activate_autoplay() { _autoplay = true; }
-    
+  
 private:
-    
+  
     bool _autoplay;
-    
+  
     /// Capacity of event queue
     static const int eventQueueCapacity = 100;
-    
+  
     /// Drawable vector
     //static vector<DrawableTie<Drawable> *> _drawables;
     static DrawableTie<Drawable> *_drawable;
-
+  
     /// Event producer-consumer queue (for polling threads)
     Thread::Queue<Input::Event *> _eventQueue;
-        
+  
 };
-
-
-// -- Inline functions
-
-/*
-inline Coord GLUTDrawable::resolution(Axis a) const
-{
-    // Return the resolution as dots/pixels per tenth of a millimeter    
-    return a == xaxis 
-	? screenx / (50.0 * screendimx) 
-	: screeny / (50.0 * screendimy);
-}
-*/
 
 #endif /* GLUT.hh */
