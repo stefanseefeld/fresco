@@ -34,6 +34,7 @@ module Warsaw
   //. on-screen.
   interface Image : View
     {
+      //. The actual ImageData.
       attribute Raster data;
     };
 };

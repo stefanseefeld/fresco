@@ -30,7 +30,7 @@
 module Warsaw
 {
   //. This kit produces graphics with appropriate logic for rendering
-  //. abstract 3D shapes.  you input meshes, patches, styles (which define
+  //. abstract 3D shapes. You input meshes, patches, styles (which define
   //. attributes like color, line thickness, pattern, etc) and you get
   //. back an object which will draw the specified type of object when it
   //. is traversed.
@@ -39,15 +39,21 @@ module Warsaw
       //. Return a graphic that centers its body by transformation.
       //. This kind of graphic should be put around a collection
       //. of primitives that are inside a layout object such as a box.
+      //. FIXME: What do the parameters do?
       Graphic root(in Graphic g);
+      //. FIXME: What does this do?
       Primitive::Geometry geometry(in Mesh m);
-      //. apply a fixed transformation to the body graphic
+      //. Apply a fixed transformation to the body graphic
+      //. FIXME: What does the parameter do?
       Graphic transformer(in Graphic g);
-      //. create a directional light source
+      //. Create a directional light source.
+      //. FIXME: What do the parameters do?
       Graphic directional_light(in Graphic g, in Color c, in float i, in Vertex d);
-      //. create a point light source
+      //. Create a point light source.
+      //. FIXME: What do the parameters do?
       Graphic point_light(in Graphic g, in Color c, in float i, in Vertex l);
-      //. create a spot light source
+      //. Create a spot light source.
+      //. FIXME: What do the parameters do?
       Graphic spot_light(in Graphic g, in Color c, in float i, in Vertex l, in Vertex d, in float r, in float a);
     };
 };

@@ -33,16 +33,17 @@ module Warsaw
   interface Telltale : Subject
     {
       //. A Telltale can have at most 32 bits. Mask is used to address them.
+      //. It is a bitmask that can select zero, one or more flags at once.
       typedef unsigned long Mask;
 
       // Used to set and readout the TelltaleConstraint Object used by this
       // Telltale.
       attribute TelltaleConstraint constraint;
-      //. Turns on the given flag.
+      //. Turn on the given flag(s) on.
       void set(in Mask m);
-      //. Turns off the given flag.
+      //. Turn the given flag(s) off.
       void clear(in Mask m);
-      //. Return true if given flag is currently on.
+      //. Return true if all given flags are currently set.
       boolean test(in Mask m);
       //. Subtract or add the masked bits, depending on the flag. This
       //. method is useful in the context of constraints, where 'set' can't
@@ -59,7 +60,7 @@ module Warsaw
       //. this constraint enforces restrictions.
       void remove(in Telltale t);
       //. This is called by the set() and clear() function of the
-      //. Telltale if it has a constraint set. This is where the
+      //. Telltale that uses this constraint. Here is where the
       //. actual constraint is implemented.
       void trymodify(in Telltale t, in Telltale::Mask m, in boolean b);
     };

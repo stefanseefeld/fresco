@@ -37,8 +37,8 @@ module Warsaw
       //. this selection refers to
       typedef long Policy;
 
-      const Policy exclusive = 0x1;
-      const Policy required = 0x2;
+      const Policy exclusive = 0x1; //.< FIXME: Add info on me!
+      const Policy required = 0x2; //.< FIXME: Add info on me!
 
       //. An Item is used as the payload in the notify call, i.e. it is
       //. what observers get in the delivered any

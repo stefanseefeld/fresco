@@ -30,6 +30,8 @@ module Warsaw
   interface Controller;
   interface Focus;
 
+  //. The PickTraversal is used to deliver Events to the Controller
+  //. that should handle it.
   interface PickTraversal : Traversal
     {
       void enter_controller(in Controller c);

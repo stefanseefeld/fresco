@@ -24,8 +24,15 @@
 
 module Warsaw
 {
+  //. This interface is needed to test in a location transparent way
+  //. wether two Objects are identical.
   interface Identifiable
     {
+      //. Returns true if the given Identifiable is identical with
+      //. this Identifiable and false otherwise.
+      //. FIXME: Is this really this simple? It does not ise _is_equivalent,
+      //.        so it might be... Two objects are identical if _is_equivalent
+      //.        is true, they might be identical if _is_equivalent os false.
       boolean is_identical(in Identifiable i);
     };
 };

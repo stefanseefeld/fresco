@@ -31,7 +31,13 @@ module Warsaw
   //. will call them back
   interface Observer : Identifiable
     {
+      //. This is the function that gets called back whenever the Subject
+      //. calls notify().
+      //. The given any is filled in by the Subject to give more
+      //. information on what got changed.
       void update(in any a);
+      //. FIXME: What is this used for? Do the observers get destroyed
+      //.        if the Subject gets destructed? -- tobias
       void destroy();
     };
 };

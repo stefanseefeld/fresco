@@ -35,7 +35,7 @@ module Warsaw
   interface Image;
   
   //. This kit produces graphics with appropriate logic for rendering
-  //. abstract shapes.  you input paths, patches, styles (which define
+  //. abstract shapes. You input paths, patches, styles (which define
   //. attributes like color, line thickness, pattern, etc) and you get
   //. back an object which will draw the specified type of object when it
   //. is traversed.
@@ -57,6 +57,7 @@ module Warsaw
       Graphic group();
       //. Return a group that can contain one or more figures but
       //. acts as a new entity.
+      //. FIXME: What exactly is the difference to group()? -- tobias
       Graphic ugroup();
       //. Return a figure that draws a point in the foreground color
       //. of the given style.
@@ -110,7 +111,7 @@ module Warsaw
       Image   pixmap(in Raster r);
       //. Return a decorator that sets the texture for the body graphic
       Graphic texture(in Graphic g, in Raster r);
-      //. apply a fixed transformation to the body graphic
+      //. Apply a fixed transformation to the body graphic
       Graphic transformer(in Graphic g);
     };
 };

@@ -30,18 +30,24 @@
 
 module Warsaw
 {
-  /*
-   * Raster holds the detailed image data corresponding to a picture
-   * or texture mapping on the screen (or in memory).
-   *
-   * It is generally contained within an Image object, which handles
-   * all of the nasty details related to layout and so forth.
-   *
-   */
+  //. The ImageKit is used to add pixelbased Images into the SceneGraph.
+
+  //. Raster holds the detailed image data corresponding to a picture
+  //. or texture mapping on the screen (or in memory).
+  //.
+  //. It is generally contained within an Image object, which handles
+  //. all of the nasty details related to layout and so forth.
   interface ImageKit : Kit
     {
-      Raster empty();				// Returns a null raster
-      Raster create(in string file);		// Create from a file
+      //. Create a empty Raster.
+      Raster empty();
+      //. Create a Raster from a file. 'rasterpath' from Berlin's config file
+      //. is prepended! If the file is not found a the ImageKit
+      //. falls back to 'berlin-128.png' in 'rasterpath'.
+      // FIXME: This should throw an exception if the file is not found.
+      //        The current behaviour is not useful for real-world
+      //        applications.
+      Raster create(in string file);
     };
 };
 

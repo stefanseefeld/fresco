@@ -50,10 +50,10 @@ module Warsaw
       readonly attribute long size;
       //. The contents of the TextBuffer.
       readonly attribute Unistring value;
-      //. Returns the position of the Cursor.
+      //. Return or set the position of the cursor.
       attribute long position;
-      //. Get a substring of the Buffer starting at pos
-      //. and len characters long.
+      //. Get a substring of the TextBuffer starting at pos
+      //. that is len characters long.
       Unistring get_chars(in unsigned long pos, in unsigned long len);
       //. Move the cursor forward for one character.
       void forward();
@@ -65,18 +65,18 @@ module Warsaw
       //. Insert a character at the current position.
       //. Allways use insert_string since this
       //. might lead to unexspected results when adding characters with
-      //. codevalues bigger then 0xFFFF!
+      //. codevalues higher then 0xFFFF!
       void insert_char(in Unichar u);
-      //. Inserts a string into the Buffer. It gets inserted at the
+      //. Insert a string into the Buffer. It gets inserted at the
       //. current cursor position.
       void insert_string(in Unistring u);
-      //. Removes d characters backward.
+      //. Remove d characters backward.
       //. This is relative to the current cursor position.
       void remove_backward(in long d);
-      //. Removes d characters forward.
+      //. Remove d characters forward.
       //. This is relative to the current cursor position.
       void remove_forward(in long d);
-      //. Clears the buffer. It will be empty afterwards.
+      //. Clear the buffer. It will be empty afterwards.
       void clear();
     };
 };

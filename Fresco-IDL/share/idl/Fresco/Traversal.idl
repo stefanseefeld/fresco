@@ -38,39 +38,42 @@ module Warsaw
   interface Traversal
     {
       enum order {up, down};
-      //. Return the current allocation region for the current graphic in the traversal
+      //. Return the current allocation region for the current graphic
+      //. in the traversal
       Region current_allocation();
       //. Return the cumulative transformation matrix for
       //. the current graphic in the traversal.
       Transform current_transformation();
       //. Return the graphic currently visited.
       Graphic current_graphic();
-      //. Sets the bounds and the origin of the current allocation.
+      //. Set the bounds and the origin of the current allocation.
       //. This functions returns true if everything went well and false
       //. otherwise.
       //. FIXME: Is this the right way to do it? We never use return values
       //.        for such things... -- tobias
       boolean bounds(out Vertex lower, out Vertex upper, out Vertex origin);
-      //. Calculates the current region and checks wether that intersects with
+      //. Calculate the current region and check wether that intersects with
       //. something relevant to the Traversal used (for example a clipping
-      //. region).
+      //. region). The actual test depends on the Traversal used.
       boolean intersects_allocation();
-      //. Tests wether the given Region intersects with something relevant to
-      //. the Traversal in use (for example a clipping region).
+      //. Test wether the given Region intersects with something relevant to
+      //. the Traversal in use (for example a clipping region). The actual
+      //. test depends on the Traversal used.
       boolean intersects_region(in Region r);
       //. Continue traversing down to the given child graphic.
+      //. FIXME: What are e, r and t used for?
       void traverse_child (in Graphic g, in Tag e, in Region r, in Transform t);
       //. Call the traversal-specific operation on the current graphic.
       //. This operation should be called on a leaf graphic
       //. (or a composite that wants to do more than traverse
       //. its children) when the traversal operation is other.
       void visit(in Graphic g);
-      //. Returns the direction in which this Traversal is done.
+      //. Return the direction of this Traversal.
       order direction();
-      //. Returns true is everything went OK so far. This is used to 
+      //. Return true is everything went OK so far. This is used to 
       //. break out of loops and simular things.
       boolean ok();
-      //. Recalculates the accumulated values.
+      //. Recalculate the accumulated values.
       void update();
     };
 };

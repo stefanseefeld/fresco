@@ -35,7 +35,8 @@ module Warsaw
   //. determines the Trigger's appearance.
   interface Trigger : Controller
     {
-      //. The Trigger will execute its Command (if not nil) when clicked.
+      //. The Trigger will execute this Command (if it is not nil) when
+      //. clicked.
       attribute Command action;
     };
 };

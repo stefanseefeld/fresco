@@ -59,7 +59,10 @@ void ServerImpl::set_singleton(const char *name,
 			       CORBA::Object_ptr singleton) 
   throw (SecurityException, SingletonFailureException) {
   Prague::Guard<Mutex> guard (_mutex);
-  _singletons[name] = singleton;
+  // test wether the name is allready in use:
+  smap_t::iterator p = _singletons.find(name);
+  if (p != _singletons.end()) throw SingletonFailureException();
+  else _singletons[name] = singleton;
 }
 
 void ServerImpl::remove_singleton(const char *name) 
@@ -67,6 +70,7 @@ void ServerImpl::remove_singleton(const char *name)
   Prague::Guard<Mutex> guard (_mutex);
   smap_t::iterator p = _singletons.find(name);
   if (p != _singletons.end()) _singletons.erase(p);
+  throw SingletonFailureException();
 }
 
 CORBA::Object_ptr ServerImpl::get_singleton(const char *name) 

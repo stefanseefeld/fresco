@@ -28,10 +28,13 @@ module Warsaw
 {
   interface ServerContext;
 
-  //. ths kit interface is the base type for most of the objects
+  //. The Kit interface is the base type for most of the objects
   //. you will allocate in a berlin server.
   interface Kit : RefCountBase
     {
+      //. A property is a NameValue Pair of strings.
+      // FIXME: Should we use NVPair from Types.idl here?
+      //        Propably overkill... -- tobias?
       struct Property
       {
 	string name;
@@ -39,11 +42,14 @@ module Warsaw
       };
       typedef sequence<Property> PropertySeq;
       
-      //. query for properties
+      //. Query for properties.
       readonly attribute PropertySeq properties;
+      //. Returns true if this Kit supports all properties in the given
+      //. PropertySeq p (and false otherwide).
       boolean _supports(in PropertySeq p);
-      //. initializer method which allows a kit to hook up resources it
-      //. might need from the same context
+      //. Initializer method which allows a kit to hook up resources it
+      //. might need from the same ServerContext (for example: other Kits
+      //. this use will use).
       void bind(in ServerContext sc);
     };
 };

@@ -38,12 +38,14 @@ module Layout
 	long row;
       };
       typedef sequence<Index> IndexSeq;
+
       //. The Range structure defines a sub-range of the glyphs in a grid.
       struct Range
       {
 	Index lower;
 	Index upper;
       };
+
       //. Replace the graphic at the row and column position.  It is ok
       //. to replace a graphic with nil, or to replace a nil with a graphic.
       void replace(in Warsaw::Graphic g, in Grid::Index i);
@@ -52,8 +54,10 @@ module Layout
       //. If no cell is intersected find the closest edge cell.
       Index find(in Warsaw::Traversal t);
       //. Return the allocation of a cell.
+      //. FIXME: Return?! Where is anything returned here? -- tobias
       void allocate_cell(in Warsaw::Region given, in Grid::Index i, in Warsaw::Region a);
       //. These operations use a sub-range of the glyphs in the grid.
+      //. FIXME: ...and do what? -- tobias
       void request_range(out Warsaw::Graphic::Requisition r, in Range a);
       void traverse_range(in Warsaw::Traversal t, in Range a);
       Grid::Index find_range(in Warsaw::Traversal t, in Range a);
@@ -61,6 +65,7 @@ module Layout
       //. Note that a grid's offset expects the Allocation given to
       //. childAllocate to be adjusted by the negated rangePosition. 
       void range_position(in Warsaw::Region given, in Range a, out Warsaw::Vertex pos);
+      //. FIXME: What does this do?
       Index upper();
     };
 };

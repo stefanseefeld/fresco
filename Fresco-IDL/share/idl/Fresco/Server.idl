@@ -41,15 +41,27 @@ module Warsaw
       Kit resolve(in string type, in Kit::PropertySeq attr)
 	raises (SecurityException, CreationFailureException);
       
-      //. access to singletons (like the fontManager) this way
-      //. FIXME: What exactly does it do? Does it add a singleton to
-      //.        This ServerContext only? Does it add it to all of them?
+      //. Add the given Object to the serverwide map of available singletons.
+      //. It can get accessed later by the given name.
+      //. SecurityException is raised if the client is not permitted to
+      //. install Singletons.
+      //. SingletonFailureException is raised whenever you try to add a
+      //. singleton with a name that allready exists.
       void set_singleton(in string name, in Object singleton) 
 	raises (SecurityException, SingletonFailureException);
-      //. FIXME: see set_singleton()
+      //. Remove the singleton with the given name from the serverwide map of
+      //. available singletons.
+      //. SecurityException is raised if the client is not permitted to
+      //. remove the given singleton.
+      //. SingletonFailureException is raised whenever you try to remove a
+      //. a name that does not exist in the map.
       void remove_singleton(in string name)
 	raises (SecurityException, SingletonFailureException);
-      //. Gets the Singleton that is associated to the given name.
+      //. Get the Singleton-Object that is associated to the given name.
+      //. SecurityException is raised if the client is not permitted to
+      //. access the Singleton.
+      //. SingletonFailureException is raised whenever you try to request a
+      //. singleton with a name that does not exist in the map.
       Object get_singleton(in string name) 
 	raises (SecurityException, SingletonFailureException);
     };

@@ -115,7 +115,7 @@ module Warsaw
   };
   typedef sequence<Triangle> TriangleSeq;
 
-  //. FIXME: And this.
+  //. FIXME: What exactly is this? Should this go to Types3D?
   struct Mesh
   {
     Vertices nodes;

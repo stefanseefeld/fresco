@@ -46,7 +46,8 @@ module Warsaw
       void next();
       //. Go back to the previous child
       void prev();
-      //. Insert the given graphic into the composite after the current iterator position
+      //. Insert the given graphic into the composite after the current
+      //. iterator position
       void insert(in Graphic g);
       //. Put the given graphic in place of the graphic at this position
       //. The replace operation is equivalent to an atomic transaction
@@ -57,14 +58,15 @@ module Warsaw
       //. refers to the end of the composite, then this operation
       //. will have no effect.
       void remove();
-      //. destroy the iterator
+      //. Destroy the iterator
       void destroy();
     };
   
   //. The Graphic interface defines the common operations for all objects
-  //. within the scene graph. Graphics have a size and an origin for the purposes 
-  //. of layout. The Graphic interface provides operations for geometry management,
-  //. drawing, picking, and a directed-acyclic structure (not strictly hierarchical).
+  //. within the scene graph. Graphics have a size and an origin for the
+  //. purposes of layout. The Graphic interface provides operations for
+  //. geometry management, drawing, picking, and a directed-acyclic structure
+  //. (not strictly hierarchical).
   interface Graphic : RefCountBase, Identifiable
     {
       //. If the defined flag is true, a requirement specifies
@@ -109,14 +111,21 @@ module Warsaw
       //. alter appearance without affecting structural operations.
       void append_graphic(in Graphic g);
       void prepend_graphic(in Graphic g);
+      //. Remove the child on the edge labled the given Tag.
       void remove_graphic(in Tag t);
-      //. to be called by the child to detach itself from the parent
+      //. Called by the child to detach itself from the parent
+      //. (which is this graphic).
+      //. FIXME: What is this Tag?
       void remove_child_graphic(in Tag t);
-      //. add a parent for this graphic.
+      //. Add a parent for this graphic.
+      //. FIXME: What is the given Tag? What is the returned Tag?
       Tag add_parent_graphic(in Graphic g, in Tag t);
-      //. remove a parent for this graphic.
+      //. Remove a parent for this Graphic.
+      //. FIXME: What is this Tag?
       void remove_parent_graphic(in Tag t);
+      //. Get an Iterator pointing to the first child Graphic.
       Iterator first_child_graphic();
+      //. Get an Iterator pointing to the last child Graphic.
       Iterator last_child_graphic();
       /*
        * layout related methods
@@ -129,7 +138,7 @@ module Warsaw
       //. The computation should be fast to allow a composite graphic
       //. to compute rather than store its components' requisitions.
       //. In general, if a requisition might be expensive to compute
-      //. then a graphic should store its own requisition.  A composite graphic
+      //. then a graphic should store its own requisition. A composite graphic
       //. therefore generally should store its requisition rather
       //. than traverse its components.  A composite can assume
       //. that needResize() will be called if the requisition
@@ -149,8 +158,8 @@ module Warsaw
       /*
        * traversal related
        */
-      //. Start traversing a graphic and its components.  The traversal
-      //. object defines the operation on each graphic.  Normally,
+      //. Start traversing a graphic and its components. The traversal
+      //. object defines the operation on each graphic. Normally,
       //. a composite will call traverse recursively on each
       //. of its components.
       void traverse(in Traversal t);
@@ -158,19 +167,19 @@ module Warsaw
       //. specified by the given traversal.  No clipping or translation
       //. is automatic for this operation--the allocation specifies
       //. the position and size of this graphic for the purposes
-      //. of layout.  However, a composite graphic may set clipping
+      //. of layout. However, a composite graphic may set clipping
       //. or transformations on the traversal's DrawingKit before
       //. the composite draws its children.
       //.
       //. Drawing order is important for graphics when
-      //. they overlap in the same plane.  A graphic's draw operation
+      //. they overlap in the same plane. A graphic's draw operation
       //. therefore should not be called directly, but implicitly
       //. will be called as part of the screen update process.
       void draw(in DrawTraversal t);
       //. Find the graphics that intersect a point or rectangle
-      //. specified in screen-relative coordinates.  Conceptually,
+      //. specified in screen-relative coordinates. Conceptually,
       //. picking is like drawing and determining what graphics
-      //. intersect the point or region.  When pick returns,
+      //. intersect the point or region. When pick returns,
       //. the traversal contains a list of the graphic trails
       //. that were hit.
       void pick(in PickTraversal t);

@@ -28,6 +28,9 @@
 #include <Warsaw/Viewport.idl>
 //#include <Warsaw/Splitter.idl>
 
+// FIXME: A synopsis-question: Is it OK to explain several functions at once,
+//        or should each function have its own explaination? -- tobias
+
 module Warsaw
 {
   //. LayoutKit provides operations for creating glyphs that
@@ -78,10 +81,10 @@ module Warsaw
       //. minimum of the child maximum sizes.
       //.
       //. The X alignment of an hbox is the left side of the box.
-      //. The Y alignment of a vbox is the top side of the box.
       Graphic hbox();
       //. A vbox tiles its children top-to-bottom along the 
       //. Y axis and aligns their origins along the X axis.
+      //. The Y alignment of a vbox is the top side of the box.
       Graphic vbox();
       
       //. These operations are variations on hbox and vbox,

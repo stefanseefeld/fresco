@@ -28,24 +28,32 @@ module Warsaw
 {
   module Input
     {
-      //. the device id. Each logical device has a unique id attached to it
+      //. The device id. Each logical device has a unique id attached to it
       //. which is used by events, focus etc.
       typedef unsigned long Device;
-      //. a set of flags
+
+      //. A set of flags (max. 32).
       typedef unsigned long Bitset;
-      //. the generalization of keys and mouse buttons
+
+      //. The generalization of keys and mouse buttons.
       struct Toggle
       {
+	//. What happened?
 	enum type {press, hold, release} actuation;
+	//. To which button or key did it happen?
 	unsigned long number;
       };
-      //. positional events have one...
+
+      //. Positional events have one...
       typedef Vertex        Position;
-      //. also possible: simple value input
+
+      //. Also possible: simple value input
       typedef double        Value;
-      //. the actual attributes; the concrete type is discriminated by these
-      enum Discriminator { telltale, key, button, positional, valuation};
-      //. the data associated with these attributes
+
+      //. The actual attributes; the concrete type is discriminated by these.
+      enum Discriminator { telltale, key, button, positional, valuation };
+
+      //. The data associated with these attributes of Discriminator.
       union Payload switch (Discriminator)
 	{
 	case telltale: Bitset state;
@@ -55,15 +63,17 @@ module Warsaw
 	case valuation: Value val;
 	};
       
-      //. each item contains a device id and an attribute
+      //. Items form the actual Event.
       struct Item
       {
-	Device dev;
-	Payload attr;
+	  Device dev; //.< The device id, aka. Where did it happen?
+	  Payload attr; //.< The Payload, aka. What happened?
       };
-      //. an event is simply a list of items
+      //. An event is simply a sequence of items.
       typedef sequence<Input::Item> Event;
-      //. An event filter controls the routing of events
+
+      //. An event filter controls the routing of events.
+      //. FIXME: Need more informations on this...
       interface Filter
 	{
 	  boolean handle(in Event e);

@@ -31,10 +31,15 @@ module Warsaw
   //. A raster is a two-dimensional pixel array
   //. Raster is based on the W3C PNG specs, see
   //. <http://www.w3.org/TR/REC-png> for details
+
+  //. FIXME: I have no idea about the PNG spec, so I'm propably
+  //.        not the best to update the documentation on this.
+  //.        Anyone with more background volunteering? We should
+  //.        at least have real sentences in our docs.
   interface Raster : Subject
     {
+      //. The image header (IHDR chunk)
       struct Info
-	//. the image header (IHDR chunk)
       {
 	unsigned long  width;       // 4 bytes
 	unsigned long  height;      // 4 bytes
@@ -48,23 +53,23 @@ module Warsaw
       struct Index { unsigned long x, y;};
       typedef sequence<Color> ColorSeq;
       
-      //. access the header information (the PNG IHDR chunk)
+      //. Access the header information (the PNG IHDR chunk).
       Info header();
       
-      //. clear the Raster
+      //. Clear the Raster.
       void clear();
       
-      //. these methods are suitable to transfer the Raster.
+      //. These methods are suitable to transfer the Raster.
       //. the used format follows the PNG specs
       void load_data(in Data d);
       void store_data(out Data d);
       
-      //. access and modify individual pixel values
+      //. Access and modify individual pixel values
       void load_pixel(in Index i, in Color c);
       void store_pixel(in Index i, out Color c);
       
-      //. access and modify ranges of pixels.
-      //. the length of the ColorSeq in load_pixels must at least correspond 
+      //. Access and modify ranges of pixels.
+      //. The length of the ColorSeq in load_pixels must at least correspond 
       //. to the given width times the given height
       void load_pixels(in Index lower, in Index upper, in ColorSeq s);
       void store_pixels(in Index lower, in Index upper, out ColorSeq s);

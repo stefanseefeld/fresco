@@ -27,40 +27,52 @@
 #include <Warsaw/Graphic.idl>
 #include <Warsaw/Types.idl>
 
+//. These interfaces define simple 3-dimensional objects (so called
+//. primitives) that can get put into the scenegraph.
+
+//. These interfaces are not completly implemented yet and are more or
+//. less a skeleton of what will be there some day.
+
+//. FIXME: Document me!
 module Primitive
 {
-
+  //. This interface is the base of all other primitives defined here.
   interface PrimitiveBase : Warsaw::Graphic
   {
-//     attribute Warsaw::Rasters textures;
-//     attribute Warsaw::MaterialAttr material;
+    //attribute Warsaw::Rasters textures;
+    //attribute Warsaw::MaterialAttr material;
     //attribute TextureMode texmode;
-    
+
     void resize();
   };
 
+  //. This defines a sphere.
   interface Sphere : PrimitiveBase
   {
+    //. The origin of the sphere.
     attribute Warsaw::Vertex position;
+    //. The radius of the sphere.
     attribute Warsaw::Coord radius;
   };
   
-  // "Rectangular parallelepiped" is the correct name, but it is
-  // horribly long and complex.
+  //. This defines a 'rectangular parallelepiped' or Box for short:-)
   interface Box : PrimitiveBase
   {
     attribute Warsaw::Vertex pt1, pt2;
   };
     
-  // Again, we should use "tetrahedron", but it is too obscure.
+  //. This defines a 'terahedron' or (foursided) Pyramid for short:-)
   interface Pyramid : PrimitiveBase
   {
     attribute Warsaw::Vertex pt1, pt2;
     attribute Warsaw::Coord height;
   };
     
+  //. This defines a Cone.
   interface Cone : PrimitiveBase
   {
+    // FIXME: Wouldn't be Coord height instead of Vertex top more
+    //        consistent with the definition of Pyramid?
     attribute Warsaw::Vertex base, top;
     attribute Warsaw::Coord radius;
   };

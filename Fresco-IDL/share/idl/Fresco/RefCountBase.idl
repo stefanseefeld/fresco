@@ -24,10 +24,13 @@
 
 module Warsaw
 {
+  //. RefCountBase defines everything needed to do distributed
+  //. reference counting for objects.
   interface RefCountBase 
-    //. Mixin interface for distributed reference counting
     {
+      //. Increment the reference count.
       void increment();
+      //. Decrement the reference count.
       void decrement();  
     };
 };

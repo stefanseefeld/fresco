@@ -10,7 +10,9 @@
 
 module Warsaw {
 
-    //. Menu kit that implements menubar and popup menus
+    //. Menu kit that implements menubar and popup menus.
+    //. FIXME: Add more documentation when this gets integrated into the
+    //.        WidgetKit!
     interface MenuKit {
 	//. Create a new horizontal menu bar
 	Controller menu_bar();

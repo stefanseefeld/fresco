@@ -35,7 +35,7 @@ module Widget
 {
   //. A Choice is a controller that can get used to toggle a set of
   //. flags stored in a Selection.
-  //. This Controller is used for Widgets like radio buttons and such.
+  //. This Controller is for example used by Widgets like radio buttons.
   interface Choice : Warsaw::Controller
     {
       //. The selection holding the choice's state
