@@ -37,7 +37,7 @@ class DrawingKitBase : lcimplements(DrawingKit)
     {
       State *state = states.top();
       states.pop();
-      state->restore(*this);
+      state->restore(this);
       delete state;
     }
  private:
@@ -54,104 +54,34 @@ class DrawingKitBase : lcimplements(DrawingKit)
   struct State
   {
     virtual ~State(){}
-    virtual void restore(DrawingKitBase &) {};
+    virtual void restore(DrawingKitBase *) const {};
   };
 
-  struct StateMarker : State { void restore(DrawingKitBase &) const {}};
+  struct StateMarker : State { void restore(DrawingKitBase *) const {}};
 
-  // 
-  // doesn't this make more sense templatized?
-  //
-  //   template <class PtrType, class CORBAType> 
-  //     struct StateKeeper {
-  //       PtrType val;
-  //     public:
-  //       StateKeeper(PtrType v) : val(CORBAType::_duplicate(v)){}
-  //       void restore(DrawingKitBase &dk) const {
-  // 	dk.set(val);
-  // 	dk.continueRestoring();
-  //       }
-  //     }
-  
-  struct TransformationState : State
+  template <class Ptr> struct PtrState : State
   {
-    TransformationState(Transform_ptr t) : transformation(Transform::_duplicate(t)) {}
-    void restore(DrawingKitBase &dk) const
+    typedef void (DrawingKitBase::*method)(typename Ptr::_ptr_type);
+    PtrState(typename Ptr::_ptr_type v, method mm) : val(v), m(mm) {} // the absence of _duplicate() is intentional...
+    void restore(DrawingKitBase *dk) const
     {
-      dk.setTransformation(transformation);
-      dk.continueRestoring();
+      (dk->*m)(val);
+      dk->continueRestoring();
     }
-    Transform_var transformation;
+    typename Ptr::_var_type val;
+    method m;
   };
-  struct ClippingState : State
+  template <class T> struct SimpleState : State
   {
-    ClippingState(Region_ptr c) : clipping(Region::_duplicate(c)) {}
-    void restore(DrawingKitBase &dk) const
+    typedef void (DrawingKitBase::*method)(T);
+    SimpleState(T v, method mm) : val(v), m(mm) {}
+    void restore(DrawingKitBase *dk) const
     {
-      dk.setClipping(clipping);
-      dk.continueRestoring();
+      (dk->*m)(val);
+      dk->continueRestoring();
     }
-    Region_var clipping;
-  };
-  struct ForegroundState : State
-  {
-    ForegroundState(const Color &c) : color(c) {}
-    void restore(DrawingKitBase &dk) const
-    {
-      dk.setForeground(color);
-      dk.continueRestoring();
-    }
-    Color color;
-  };
-  struct PointSizeState : State
-  {
-    PointSizeState(Coord s) : size(s) {}
-    void restore(DrawingKitBase &dk) const
-    {
-      dk.setPointSize(size);
-      dk.continueRestoring();
-    }
-    Coord size;
-  };
-  struct LineWidthState : State
-  {
-    LineWidthState(Coord w) : width(w) {}
-    void restore(DrawingKitBase &dk) const
-    {
-      dk.setLineWidth(width);
-      dk.continueRestoring();
-    }
-    Coord width;
-  };
-  struct LineEndstyleState : State
-  {
-    LineEndstyleState(Endstyle s) : style(s) {}
-    void restore(DrawingKitBase &dk) const
-    {
-      dk.setLineEndstyle(style);
-      dk.continueRestoring();
-    }
-    Endstyle style;
-  };
-  struct SurfaceFillstyleState : State
-  {
-    SurfaceFillstyleState(Fillstyle s) : style(s) {}
-    void restore(DrawingKitBase &dk) const
-    {
-      dk.setSurfaceFillstyle(style);
-      dk.continueRestoring();
-    }
-    Fillstyle style;
-  };
-  struct TextureState : State
-  {
-    TextureState(Raster_ptr t) : texture(Raster::_duplicate(t)) {}
-    void restore(DrawingKitBase &dk) const
-    {
-      dk.setTexture(texture);
-      dk.continueRestoring();
-    }
-    Raster_var texture;
+    T val;
+    method m;
   };
   struct FontState : State
   {
@@ -163,18 +93,25 @@ class DrawingKitBase : lcimplements(DrawingKit)
     }
     Text::Font_var font;
   };
-
  
   typedef stack<State *> stack_t;
 public:
-  virtual void transformation(Transform_ptr t) { states.push(new TransformationState(t)); setTransformation(t);}
-  virtual void clipping(Region_ptr c) { states.push(new ClippingState(c)); setClipping(c);}
-  virtual void foreground(const Color &c) { states.push(new ForegroundState(c)); setForeground(c);}
-  virtual void pointSize(Coord s) { states.push(new PointSizeState(s)); setPointSize(s);}
-  virtual void lineWidth(Coord w) { states.push(new LineWidthState(w)); setLineWidth(w);}
-  virtual void lineEndstyle(Endstyle s) { states.push(new LineEndstyleState(s)); setLineEndstyle(s);}
-  virtual void surfaceFillstyle(Fillstyle s) { states.push(new SurfaceFillstyleState(s)); setSurfaceFillstyle(s);}
-  virtual void texture(Raster_ptr t) { states.push(new TextureState(t)); setTexture(t);}
+  virtual void transformation(Transform_ptr);
+  virtual Transform_ptr transformation() = 0;
+  virtual void clipping(Region_ptr);
+  virtual Region_ptr clipping() = 0;
+  virtual void foreground(const Color &);
+  virtual Color foreground() = 0;
+  virtual void pointSize(Coord);
+  virtual Coord pointSize() = 0;
+  virtual void lineWidth(Coord);
+  virtual Coord lineWidth() = 0;
+  virtual void lineEndstyle(Endstyle);
+  virtual Endstyle lineEndstyle() = 0;
+  virtual void surfaceFillstyle(Fillstyle);
+  virtual Fillstyle surfaceFillstyle() = 0;
+  virtual void texture(Raster_ptr);
+  virtual Raster_ptr texture() = 0;
 
   // this text business is a little screwy, but it stems from some very good reasons
   // and I am hard pressed at the moment to develop a better approach. at least for
@@ -186,19 +123,65 @@ public:
 
   virtual void saveState() { states.push(new StateMarker);}
   virtual void restoreState() { continueRestoring();}
-
   virtual void setTransformation(Transform_ptr) = 0;
   virtual void setClipping(Region_ptr) = 0;
-  virtual void setForeground(const Color &) = 0;
+  virtual void setForeground(Color) = 0;
   virtual void setPointSize(Coord) = 0;
   virtual void setLineWidth(Coord) = 0;
   virtual void setLineEndstyle(Endstyle) = 0;
   virtual void setSurfaceFillstyle(Fillstyle) = 0;
   virtual void setTexture(Raster_ptr) = 0;
-
 private:
   Text::Font_var myFont;
   stack_t states;
 };
+
+inline void DrawingKitBase::transformation(Transform_ptr t)
+{
+  states.push(new PtrState<Transform>(transformation(), &setTransformation));
+  setTransformation(t);
+}
+
+inline void DrawingKitBase::clipping(Region_ptr c)
+{
+  states.push(new PtrState<Region>(clipping(), &setClipping));
+  setClipping(c);
+}
+
+inline void DrawingKitBase::foreground(const Color &c)
+{
+  states.push(new SimpleState<Color>(foreground(), &setForeground));
+  setForeground(c);
+}
+
+inline void DrawingKitBase::pointSize(Coord s)
+{
+ states.push(new SimpleState<Coord>(pointSize(), &setPointSize));
+ setPointSize(s);
+}
+
+inline void DrawingKitBase::lineWidth(Coord w)
+{
+  states.push(new SimpleState<Coord>(lineWidth(), &setLineWidth));
+  setLineWidth(w);
+}
+
+inline void DrawingKitBase::lineEndstyle(Endstyle s)
+{
+  states.push(new SimpleState<Endstyle>(lineEndstyle(), &setLineEndstyle));
+  setLineEndstyle(s);
+}
+
+inline void DrawingKitBase::surfaceFillstyle(Fillstyle s)
+{
+  states.push(new SimpleState<Fillstyle>(surfaceFillstyle(), &setSurfaceFillstyle));
+  setSurfaceFillstyle(s);
+}
+
+inline void DrawingKitBase::texture(Raster_ptr t)
+{
+  states.push(new PtrState<Raster>(texture(), &setTexture));
+  setTexture(t);
+}
 
 #endif /* _DrawingKitBase_hh */
