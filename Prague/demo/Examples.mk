@@ -3,6 +3,9 @@ world:	Timer DataType
 Timer:		Timer.o
 		$(CXX) $(LDFLAGS) -o $@ $< $(LIBS)
 
+Diner:		Diner.o
+		$(CXX) $(LDFLAGS) -o $@ $< $(LIBS)
+
 DataType:	DataType.o
 		$(CXX) $(LDFLAGS) -o $@ $< $(LIBS)
 
