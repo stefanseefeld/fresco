@@ -20,26 +20,32 @@
  * MA 02139, USA.
  */
 #include <Prague/Sys/Tracer.hh>
-#include <Berlin/RefCountVar.hh>
-#include "Unidraw/EditorImpl.hh"
-#include "Unidraw/Viewer.hh"
+#include "Unidraw/ManipulatorImpl.hh"
 
 using namespace Prague;
 using namespace Warsaw;
 using namespace Unidraw;
 
-EditorImpl::EditorImpl(FigureKit_ptr figure, Warsaw::ToolKit_ptr tool)
-  : _figure(Warsaw::FigureKit::_duplicate(figure)),
-    _tool(Warsaw::ToolKit::_duplicate(tool))
- {}
-EditorImpl::~EditorImpl() {}
-Unidraw::Tool_ptr EditorImpl::select() { return Tool::_nil();}
-Unidraw::Tool_ptr EditorImpl::move() { return Tool::_nil();}
-Unidraw::Tool_ptr EditorImpl::current_tool() { return Unidraw::Tool::_nil();}
-void EditorImpl::current_tool(Tool_ptr) {}
-Controller_ptr EditorImpl::create_viewer(Warsaw::Coord width, Warsaw::Coord height)
+ManipulatorImpl::ManipulatorImpl() {}
+ManipulatorImpl::~ManipulatorImpl() {}
+CORBA::Boolean ManipulatorImpl::grasp(PickTraversal_ptr, const Input::Event &) { return false;}
+CORBA::Boolean ManipulatorImpl::manipulate(PickTraversal_ptr, const Input::Event &) { return false;}
+Unidraw::Command_ptr ManipulatorImpl::effect(PickTraversal_ptr, const Input::Event &) { return Unidraw::Command::_nil();}
+
+SelectManipulator::SelectManipulator() {}
+SelectManipulator::~SelectManipulator() {}
+CORBA::Boolean SelectManipulator::grasp(PickTraversal_ptr traversal, const Input::Event &event)
 {
-  Viewer *viewer = new Viewer(width, height, _this(), _figure, _tool);
-  activate(viewer);
-  return viewer->_this();
+  return false;
 }
+
+CORBA::Boolean SelectManipulator::manipulate(PickTraversal_ptr traversal, const Input::Event &event)
+{
+  return false;
+}
+
+Unidraw::Command_ptr SelectManipulator::effect(PickTraversal_ptr traversal, const Input::Event &event)
+{
+  return Unidraw::Command::_nil();
+}
+

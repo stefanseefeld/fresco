@@ -42,17 +42,19 @@ module Unidraw
     };
   interface Manipulator
     {
-      boolean grasp(in Warsaw::Input::Event e);
-      boolean manipulate(in Warsaw::Input::Event e);
-      void effect(in Warsaw::Input::Event e);
+      boolean grasp(in Warsaw::PickTraversal t, in Warsaw::Input::Event e);
+      boolean manipulate(in Warsaw::PickTraversal t, in Warsaw::Input::Event e);
+      Command effect(in Warsaw::PickTraversal t, in Warsaw::Input::Event e);
     };
   interface Tool
     {
-      Manipulator create_manipulator(in Warsaw::Input::Event e);
+      Manipulator create_manipulator(in Warsaw::PickTraversal t, in Warsaw::Input::Event e);
       Command     interpret_manipulator(in Manipulator m);
     };
   interface Editor : Warsaw::RefCountBase
     {
+      Tool select();
+      Tool move();
       attribute Tool current_tool;
       Warsaw::Controller create_viewer(in Warsaw::Coord width, in Warsaw::Coord height);
     };

@@ -34,7 +34,7 @@ include $(cdir)/Server/local.mk
 # Compilation and linking flags.
 LIBS		+= -lBerlin
 
-SRC		:= Viewer.cc EditorImpl.cc UnidrawKitImpl.cc
+SRC		:= CommandImpl.cc ManipulatorImpl.cc ToolImpl.cc Viewer.cc EditorImpl.cc UnidrawKitImpl.cc
 
 MODULE		:= Unidraw
 

@@ -19,8 +19,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _EditorImpl_hh
-#define _EditorImpl_hh
+#ifndef _CommandImpl_hh
+#define _CommandImpl_hh
 
 #include <Warsaw/config.hh>
 #include <Warsaw/FigureKit.hh>
@@ -28,20 +28,15 @@
 #include <Warsaw/UnidrawKit.hh>
 #include <Berlin/RefCountBaseImpl.hh>
 
-class EditorImpl : public virtual POA_Unidraw::Editor,
-		   public RefCountBaseImpl
+class CommandImpl : public virtual POA_Unidraw::Command,
+		    public RefCountBaseImpl
 {
 public:
-  EditorImpl(Warsaw::FigureKit_ptr, Warsaw::ToolKit_ptr);
-  virtual ~EditorImpl();
-  Unidraw::Tool_ptr select();
-  Unidraw::Tool_ptr move();
-  virtual Unidraw::Tool_ptr current_tool();
-  virtual void current_tool(Unidraw::Tool_ptr);
-  virtual Warsaw::Controller_ptr create_viewer(Warsaw::Coord, Warsaw::Coord);
-private:
-  Warsaw::FigureKit_var _figure;
-  Warsaw::ToolKit_var   _tool;
+  CommandImpl();
+  virtual ~CommandImpl();
+  void execute(const CORBA::Any &);
+  void store(Unidraw::Component_ptr, const CORBA::Any &);
+  CORBA::Any *recall(Unidraw::Component_ptr);
 };
 
 #endif

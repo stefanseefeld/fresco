@@ -19,29 +19,30 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _EditorImpl_hh
-#define _EditorImpl_hh
+#include <Prague/Sys/Tracer.hh>
+#include "Unidraw/ToolImpl.hh"
+#include "Unidraw/ManipulatorImpl.hh"
+#include "Unidraw/CommandImpl.hh"
 
-#include <Warsaw/config.hh>
-#include <Warsaw/FigureKit.hh>
-#include <Warsaw/ToolKit.hh>
-#include <Warsaw/UnidrawKit.hh>
-#include <Berlin/RefCountBaseImpl.hh>
+using namespace Prague;
+using namespace Warsaw;
+using namespace Unidraw;
 
-class EditorImpl : public virtual POA_Unidraw::Editor,
-		   public RefCountBaseImpl
+ToolImpl::ToolImpl() {}
+ToolImpl::~ToolImpl() {}
+Manipulator_ptr ToolImpl::create_manipulator(PickTraversal_ptr, const Input::Event &) { return Unidraw::Manipulator::_nil();}
+Unidraw::Command_ptr ToolImpl::interpret_manipulator(Manipulator_ptr) { return Unidraw::Command::_nil();}
+
+SelectTool::SelectTool() {}
+SelectTool::~SelectTool() {}
+Manipulator_ptr SelectTool::create_manipulator(PickTraversal_ptr traversal, const Input::Event &event)
 {
-public:
-  EditorImpl(Warsaw::FigureKit_ptr, Warsaw::ToolKit_ptr);
-  virtual ~EditorImpl();
-  Unidraw::Tool_ptr select();
-  Unidraw::Tool_ptr move();
-  virtual Unidraw::Tool_ptr current_tool();
-  virtual void current_tool(Unidraw::Tool_ptr);
-  virtual Warsaw::Controller_ptr create_viewer(Warsaw::Coord, Warsaw::Coord);
-private:
-  Warsaw::FigureKit_var _figure;
-  Warsaw::ToolKit_var   _tool;
-};
+  SelectManipulator *select = new SelectManipulator();
+  activate(select);
+  return select->_this();
+}
 
-#endif
+Unidraw::Command_ptr SelectTool::interpret_manipulator(Manipulator_ptr)
+{
+  return Unidraw::Command::_nil();
+}

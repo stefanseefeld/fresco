@@ -19,29 +19,34 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _EditorImpl_hh
-#define _EditorImpl_hh
+#ifndef _ManipulatorImpl_hh
+#define _ManipulatorImpl_hh
 
 #include <Warsaw/config.hh>
 #include <Warsaw/FigureKit.hh>
 #include <Warsaw/ToolKit.hh>
 #include <Warsaw/UnidrawKit.hh>
-#include <Berlin/RefCountBaseImpl.hh>
+#include <Berlin/ServantBase.hh>
 
-class EditorImpl : public virtual POA_Unidraw::Editor,
-		   public RefCountBaseImpl
+class ManipulatorImpl : public virtual POA_Unidraw::Manipulator,
+			public ServantBase
 {
 public:
-  EditorImpl(Warsaw::FigureKit_ptr, Warsaw::ToolKit_ptr);
-  virtual ~EditorImpl();
-  Unidraw::Tool_ptr select();
-  Unidraw::Tool_ptr move();
-  virtual Unidraw::Tool_ptr current_tool();
-  virtual void current_tool(Unidraw::Tool_ptr);
-  virtual Warsaw::Controller_ptr create_viewer(Warsaw::Coord, Warsaw::Coord);
-private:
-  Warsaw::FigureKit_var _figure;
-  Warsaw::ToolKit_var   _tool;
+  ManipulatorImpl();
+  virtual ~ManipulatorImpl();
+  CORBA::Boolean grasp(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
+  CORBA::Boolean manipulate(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
+  Unidraw::Command_ptr effect(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
+};
+
+class SelectManipulator : public ManipulatorImpl
+{
+public:
+  SelectManipulator();
+  virtual ~SelectManipulator();
+  CORBA::Boolean grasp(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
+  CORBA::Boolean manipulate(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
+  Unidraw::Command_ptr effect(Warsaw::PickTraversal_ptr, const Warsaw::Input::Event &);
 };
 
 #endif
