@@ -71,7 +71,12 @@ namespace Prague
           background_write = SIGTTOU, //.< Background process attempting write. (default: stop process)
           user1 = SIGUSR1, //.< User-defined signal 1. (default: terminate process)
           user2 = SIGUSR2, //.< User-defined signal 2. (default: terminate process)
+#ifdef __FreeBSD__
+          poll = SIGIO, //.< Pollable event. (default: terminate process)
+#else
           poll = SIGPOLL, //.< Pollable event. (default: terminate process)
+#endif
+
           profiling = SIGPROF, //.< Profiling timer expired. (default: terminate process)
           system = SIGSYS, //.< Bad system call. (default: abort process)
           trap = SIGTRAP, //.< Trace/breakpoint trap. (default: abort process)
