@@ -104,6 +104,8 @@ void ScreenManager::nextEvent()
     
     if (ggiEventPoll(visual, mask, &t)) {
 	ggiEventRead(visual, event, mask);
+    } else {
+      return;
     }
 
   CORBA::Any a;

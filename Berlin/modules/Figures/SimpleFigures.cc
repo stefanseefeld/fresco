@@ -30,6 +30,7 @@
 #include "Warsaw/DrawingKit.hh"
 #include "Warsaw/Traversal.hh"
 #include "Warsaw/Pencil.hh"
+#include <iostream>
 
 // rectangles
 

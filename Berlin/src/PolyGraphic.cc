@@ -25,6 +25,7 @@
  * MA 02139, USA.
  */
 #include "Berlin/PolyGraphic.hh"
+#include <iostream>
 
 Pool<Graphic::Requisition> PolyGraphic::pool;
 
@@ -38,7 +39,7 @@ PolyGraphic::~PolyGraphic()
 	{
 	  (*i)->child->removeParent(*i);
 	  CORBA::release((*i)->child);
-	  (*i)->child = 0;
+	  (*i)->child = Graphic::_nil();
         }
       (*i)->parent = 0;
       CORBA::release(*i);
@@ -62,13 +63,13 @@ void PolyGraphic::prepend(Graphic_ptr g)
 GraphicOffset_ptr PolyGraphic::firstOffset()
 {
   long n = children.size();
-  return n > 0 ? GraphicOffset::_duplicate(children[0]) : 0;
+  return n > 0 ? GraphicOffset::_duplicate(children[0]) : GraphicOffset::_nil();
 }
 
 GraphicOffset_ptr PolyGraphic::lastOffset()
 {
   long n = children.size();
-  return n > 0 ? GraphicOffset::_duplicate(children[n-1]) : 0;
+  return n > 0 ? GraphicOffset::_duplicate(children[n-1]) : GraphicOffset::_nil();
 }
 
 PolyGraphicOffset *PolyGraphic::newOffset(long index, Graphic_ptr child)
@@ -142,8 +143,8 @@ Graphic_ptr PolyGraphicOffset::Child() { return Graphic::_duplicate(child);}
 
 GraphicOffset_ptr PolyGraphicOffset::offset(long index)
 {
-  GraphicOffset_ptr g = 0;
-  if (index >= 0 && index < static_cast<long>(parent->children.size()))
+  GraphicOffset_ptr g = GraphicOffset::_nil();
+  if (index >= 0 && index < static_cast<long>(parent->children.size())) 
     g = GraphicOffset::_duplicate(parent->children[index]);
   return g;
 }
@@ -155,8 +156,9 @@ void PolyGraphicOffset::allocations(Collector_ptr c)
 {
   long start = c->size();
   parent->allocations(c);
-  for (long i = start; i < c->size(); i++)
+  for (long i = start; i < c->size(); i++) {    
     parent->allocateChild(index, *c->get(i));
+  }
 }
 
 void PolyGraphicOffset::insert(Graphic_ptr g)
@@ -188,7 +190,7 @@ void PolyGraphicOffset::remove()
 //       parent->modified();
       child->removeParent(_this());
       CORBA::release(child);
-      child = 0;
+      child = Graphic::_nil();
       CORBA::release(this);
     }
 }

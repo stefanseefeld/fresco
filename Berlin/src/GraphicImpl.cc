@@ -282,29 +282,28 @@ void GraphicImpl::allocations(Collector_ptr c)
 
 void GraphicImpl::needRedraw()
 {
-    CollectorImpl *collector = new CollectorImpl;
-    collector->_obj_is_ready(_boa());
-    allocations(collector->_this());
-    for (long i = 0; i < collector->size(); i++)
+  CollectorImpl *collector = new CollectorImpl;
+  collector->_obj_is_ready(_boa());
+  allocations(collector->_this());
+  for (long i = 0; i < collector->size(); i++)
+    {
+      Graphic::AllocationInfo * const a = collector->get(i);
+      if (!CORBA::is_nil(a->damaged))
 	{
-	    Graphic::AllocationInfo * const a = collector->get(i);
-	    if (!CORBA::is_nil(a->damaged))
-		{
-		    RegionImpl *newReg = new RegionImpl;
-		    newReg->_obj_is_ready(_boa());
-		    this->extension(*a, newReg->_this());
-		    
-		    if (newReg->valid)
-			{
-			    // 	      if (!CORBA::is_nil(a.clipping))
-			    // 		r.mergeIntersect(a.clipping);
-			    a->damaged->extend(newReg->_this());
-			}
-		    newReg->_dispose();
-		}
-	    //       Region_var(a.allocation)->_dispose();
+	  RegionImpl *newReg = new RegionImpl;
+	  newReg->_obj_is_ready(_boa());
+	  this->extension(*a, newReg->_this());
+	  if (newReg->valid)
+	    {
+	      // 	      if (!CORBA::is_nil(a.clipping))
+	      // 		r.mergeIntersect(a.clipping);
+	      a->damaged->extend(newReg->_this());
+	    }
+	  newReg->_dispose();
 	}
-    collector->_dispose();
+      //       Region_var(a.allocation)->_dispose();
+    }
+  collector->_dispose();
 }
 
 void GraphicImpl::needRedrawRegion(Region_ptr r)
@@ -422,10 +421,13 @@ void GraphicImpl::defaultExtension (const Graphic::AllocationInfo &a, Region_ptr
       if (CORBA::is_nil(a.transformation)) {
 	  r->mergeUnion(a.allocation);
       }  else {
-	  RegionImpl tmp(a.allocation, a.transformation);
-	  r->mergeUnion(&tmp);
+	RegionImpl * tmp = new RegionImpl(a.allocation, a.transformation);
+	tmp->_obj_is_ready(CORBA::BOA::getBOA());
+	r->mergeUnion(tmp->_this());
+	tmp->_dispose();
       }
   }
+  cerr << "returning from GraphicImpl::defaultExtension();" << endl;
 }
 
 void GraphicImpl::getParentOffsets(Graphic::OffsetSeq &offsets, const GraphicOffsetList &parents)

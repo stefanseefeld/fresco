@@ -31,8 +31,8 @@ GLPencil::GLPencil(const Style::Spec &sty, GLDrawable *d)
 {
 
   // init default values
-  Color defaultColor = {1.0, 1.0, 1.0, 1.0};
-  myFillColor = myLineColor = defaultColor;
+  //   GLfloat defaultColor[4] = {1.0, 1.0, 1.0, 1.0};
+  //   myFillColor = myLineColor = defaultColor;
   myFillMode = Style::solid;
   myThickness = 1.0;
 
@@ -41,11 +41,25 @@ GLPencil::GLPencil(const Style::Spec &sty, GLDrawable *d)
   // please, some GL hackers, set it the way it should be :)
   
   for (unsigned long i = 0; i < sty.length(); i++) {
+    Color *tmp;
     switch (sty[i].a) {
     case Style::fillcolor:
-      sty[i].val >>= &myFillColor; break;
+      sty[i].val >>= tmp;
+      //       cerr << "selected fill color" << tmp->red << tmp->green << tmp->blue << tmp->alpha << endl;
+      myFillColor[0] = tmp->red;
+      myFillColor[1] = tmp->green;
+      myFillColor[2] = tmp->blue;
+      myFillColor[3] = tmp->alpha;
+      break;
+      
     case Style::linecolor:
-      sty[i].val >>= &myLineColor; break;
+      sty[i].val >>= tmp;
+      myLineColor[0] = tmp->red;
+      myLineColor[1] = tmp->green;
+      myLineColor[2] = tmp->blue;
+      myLineColor[3] = tmp->alpha;
+      break;
+
     case Style::fill:
       sty[i].val >>= myFillMode; break;
     case Style::linethickness:
@@ -63,25 +77,32 @@ GLPencil::GLPencil(const Style::Spec &sty, GLDrawable *d)
 void GLPencil::drawPath(const Path &p) {
   myDrawable->makeCurrent();
   glLineWidth(myThickness);
-
+  
   if (p.m.length() == 0) {
     // we're drawing polys
-    
     if (myFillMode == Style::solid) {
       // filled polys
-      glColor4f(myFillColor.red, myFillColor.green, myFillColor.blue, myFillColor.alpha);
+      glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, myFillColor);
       glBegin(GL_POLYGON);
-      for (unsigned long i = 0; i < p.p.length(); i++)       
-	glVertex3d(p.p[i].x, p.p[i].y, p.p[i].z);      
+      for (unsigned long i = 0; i < p.p.length(); i++) { 
+	glVertex3f(p.p[i].x, p.p[i].y, p.p[i].z);      
+      }
       glEnd();
       
     } else { // for the time being there's only solid and nofill
       
       // line strips (no final connecting line)
-      glColor4f(myLineColor.red, myLineColor.green, myLineColor.blue, myLineColor.alpha);
+      // !!!FIXME!!! this is somehow broken on my machine. I can't draw lines. Am I living
+      // on jupiter?
+
+      glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, myLineColor);
       glBegin(GL_LINE_STRIP);
-      for (unsigned long i = 0; i < p.p.length(); i++)       
-	glVertex3d(p.p[i].x, p.p[i].y, p.p[i].z);      
+      
+      for (unsigned long i = 0; i < p.p.length(); i++) {
+	glVertex3f(p.p[i].x, p.p[i].y, p.p[i].z);      
+	// 	cerr << "drawing line strip with colors: " << myLineColor[0] << " " << myLineColor[1] << " " << 
+	// 	  myLineColor[2] << " " << myLineColor[3] << " thru (" << p.p[i].x << ", " << p.p[i].y << ") " << endl;
+      }
       glEnd();
     }
 
@@ -94,25 +115,28 @@ void GLPencil::drawPatch(const Patch &) {
   // to be completed
 }
 
-void GLPencil::drawRect(Coord w, Coord h) {
+void GLPencil::drawRect(const Vertex &lower, const Vertex &upper) {
   myDrawable->makeCurrent();
   glLineWidth(myThickness);
 
-    if (myFillMode == Style::solid) {
-      glColor4f(myFillColor.red, myFillColor.green, myFillColor.blue, myFillColor.alpha);
-      glRectf(0,0,w,h);
-    } else {
-      glColor4f(myLineColor.red, myLineColor.green, myLineColor.blue, myLineColor.alpha);
-      glBegin(GL_LINE_LOOP);
-      glVertex3d(0,0,0);
-      glVertex3d(w,0,0);
-      glVertex3d(w,h,0);
-      glVertex3d(0,h,0);
-      glEnd();
-    }      
+  if (myFillMode == Style::solid) {
+    //     cerr << "drawing solid rect with colors: " << myFillColor[0] << " " << myFillColor[1] << " " << 
+    //       myFillColor[2] << " " << myFillColor[3] << "from (" << lower.x << ", " << lower.y << ") to (" <<
+    //       upper.x << ", " << upper.y << ")" << endl;
+    glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, myFillColor);
+    glRectf(lower.x,lower.y,upper.x,upper.y);
+  } else {
+    glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, myLineColor);
+    glBegin(GL_LINE_LOOP);
+    glVertex3d(lower.x,lower.y,0);
+    glVertex3d(upper.x,lower.y,0);
+    glVertex3d(upper.x,upper.y,0);
+    glVertex3d(lower.x,upper.y,0);
+    glEnd();
+  }      
 }
 
-void GLPencil::drawEllipse(Coord w, Coord h) {
+void GLPencil::drawEllipse(const Vertex &lower, const Vertex &upper) {
   // !!!FIXME!!! quadrics code here
 }
 

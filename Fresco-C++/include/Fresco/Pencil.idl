@@ -34,8 +34,8 @@ interface Pencil
 {
   void drawPath(in Path p);
   void drawPatch(in Patch p);
-  void drawRect(in Vertex upper, in Vertex lower);
-  void drawEllipse(in Vertex upper, in Vertex lower);
+  void drawRect(in Vertex lower, in Vertex upper);
+  void drawEllipse(in Vertex lower, in Vertex upper);
 };
 
 #endif /* _Pencil_idl */

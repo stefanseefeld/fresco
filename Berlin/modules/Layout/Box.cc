@@ -29,6 +29,7 @@
 #include "Layout/Placement.hh"
 #include "Berlin/TransformImpl.hh"
 #include "Warsaw/Traversal.hh"
+#include <iostream>
 
 Box::Box(LayoutManager *l)
 {
@@ -72,30 +73,43 @@ void Box::extension(const AllocationInfo &a, Region_ptr r)
       Graphic::AllocationInfo child;
       Vertex prev_o, o, v;
       prev_o.x = Coord(0); prev_o.y = Coord(0); prev_o.z = Coord(0);
-      TransformImpl child_tx, tmp_tx;
-      child.transformation._ptr = &child_tx;
+      TransformImpl *child_tx, *tmp_tx;
+
+      child_tx = new TransformImpl();
+      child_tx->_obj_is_ready(_boa());
+
+      tmp_tx = new TransformImpl();
+      tmp_tx->_obj_is_ready(_boa());
+      
+      child.transformation = child_tx->_this();
       child.transformation->copy(a.transformation);
-//       child.damaged = a.damaged;
+      //       child.damaged = a.damaged;
       RegionImpl **result = childrenAllocations(a.allocation);
+
       for (long i = 0; i < n; i++)
 	{
 	  Placement::normalOrigin(result[i], o);
 	  v.x = o.x - prev_o.x;
 	  v.y = o.y - prev_o.y;
 	  v.z = o.z - prev_o.z;
-	  tmp_tx.loadIdentity();
-	  tmp_tx.translate(v);
-	  child.allocation._ptr = result[i];
-	  child.transformation->premultiply(&tmp_tx);
+	  tmp_tx->_this()->loadIdentity();
+	  tmp_tx->_this()->translate(v);
+	  child.allocation = Region::_duplicate(result[i]->_this());
+	  //child.allocation._ptr = result[i];
+	  child.transformation->premultiply(tmp_tx->_this());
+	  cerr << "extending Box by Child" << endl;
 	  children[i]->child->extension(child, r);
+	  cerr << "extended Box by Child" << endl;
 	  prev_o = o;
+	  CORBA::release(child.allocation);
+	  CORBA::release(child.transformation);
 	}
-      child.transformation._ptr = 0;
-      child.allocation._ptr = 0;
-//       child.damaged = 0;
+      CORBA::release(child_tx);
+      CORBA::release(tmp_tx);
 
+//       child.damaged = 0;
 //       CORBA::ULong n = CORBA::ULong(children_.count());
-      for (long i = 0; i < n; i++) CORBA::release(result[i]);
+      for (long i = 0; i < n; i++) CORBA::release(result[i]->_this());
       delete [] result;
     }
 }
@@ -117,7 +131,9 @@ void Box::traverse(Traversal_ptr t)
  	{
   	  if (t->intersects()) traverseWithAllocation(t, given);
  	}
-      else traverseWithoutAllocation(t);
+      else {
+	traverseWithoutAllocation(t);
+      }
     }
 }
 
@@ -172,10 +188,10 @@ void Box::traverseWithAllocation(Traversal_ptr t, Region_ptr a)
       if (!t->ok()) break;
     }
   long n = children.size();
-  for (long i = 0; i < n; i++) CORBA::release(result[i]);
+  //for (long i = 0; i < n; i++) CORBA::release(result[i]);
   for (long i = 0; i < n; i++) result[i]->_dispose();
   delete [] result;
-  CORBA::release(tx);
+  //CORBA::release(tx);
   tx->_dispose();
 }
 

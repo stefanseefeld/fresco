@@ -26,6 +26,7 @@
 #include "Berlin/ScreenImpl.hh"
 #include "Berlin/ScreenManager.hh"
 #include "Berlin/TransformImpl.hh"
+#include <iostream>
 
 ScreenImpl::ScreenImpl(GLDrawingKit *drawing, Coord w, Coord h)
 {
