@@ -22,6 +22,7 @@
  */
 
 #include <Warsaw/config.hh>
+#include <Warsaw/Traversal.hh>
 #include <Warsaw/Transform.hh>
 #include <Warsaw/Region.hh>
 #include <Warsaw/Raster.hh>
@@ -42,7 +43,6 @@ PSDrawingKit::PSDrawingKit(const std::string &id, const Warsaw::Kit::PropertySeq
 {
 //   _os.rdbuf(cout.rdbuf());
   std::filebuf *fbuf = new std::filebuf();
-  fbuf->open("berlin-output.ps", std::ios::out);
   _os.rdbuf(fbuf);
   _os.precision(5);
 }
@@ -58,12 +58,29 @@ KitImpl *PSDrawingKit::clone(const Warsaw::Kit::PropertySeq &p)
   return kit;
 }
 
-void PSDrawingKit::start_traversal()
+void PSDrawingKit::start_traversal(Traversal_ptr traversal)
 {
+  _os.clear();
+  static_cast<std::filebuf *>(_os.rdbuf())->open("berlin-output.ps", std::ios::out);
+
+  Region_var allocation = traversal->current_allocation();
+  Transform_var transformation = traversal->current_transformation();
+  RegionImpl region(allocation, transformation);
+
+  // FIXME: figure out what is wrong with the resolution,
+  //        the problems seems to be in the coordinate system used,
+  //        not PS...
+  //        -stefan
+  double xfactor = resolution(xaxis);
+  double yfactor = resolution(yaxis);
   _os << "%!PS-Adobe-3.0 EPSF-3.0" << std::endl;
-  _os << "%%BoundingBox: 0 "
-      << 0-(int)(Console::instance()->drawable()->width()/resolution(yaxis)+1.) << ' '
-      << (int)(Console::instance()->drawable()->height()/resolution(xaxis)+1.) << " 0" << std::endl;
+  _os << "%%BoundingBox: "
+      << region.lower.x*resolution(xaxis)*xfactor << ' '
+      << (region.lower.y - region.upper.y)*resolution(yaxis)*yfactor << ' '
+      << (region.upper.x - region.lower.x)*resolution(xaxis)*xfactor << ' '
+      << region.lower.y*resolution(yaxis)*yfactor << std::endl;
+//       << 0 - (int)(Console::instance()->drawable()->width()/resolution(yaxis)+1.) << ' '
+//       << (int)(Console::instance()->drawable()->height()/resolution(xaxis)+1.) << " 0" << std::endl;
   _os << "%%LanguageLevel: 2" << std::endl;
   _os << "%%Creator: Fresco" << std::endl;
   _os << "/Times-Roman findfont 12 scalefont setfont" << std::endl;
