@@ -93,7 +93,7 @@ AC_MSG_NOTICE([Output Substitution])
 
 AC_CONFIG_FILES(config/local.mk)
 AC_CONFIG_FILES([config/GGI.spec])
-AC_CONFIG_FILES([Makefile src/Makefile clients/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile demos/Makefile])
 AC_CONFIG_FILES([GGIKit/Makefile:config/$MAKEFILE])
 
 mkdir -p lib/Fresco/Console

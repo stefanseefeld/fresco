@@ -32,7 +32,9 @@ SRC	:= VisualImpl.cc GGIKitImpl.cc
 DEP	:= $(patsubst %.cc, %.d, $(SRC))
 OBJ	:= $(patsubst %.cc, %.o, $(SRC))
 
-TARGET	:= ../lib/Fresco/GGIKit.so
+GGIKIT	:= ../lib/Fresco/GGIKit.so 
+LIBGGI	:= ../lib/libBerlin-GGI.so
+TARGETS	:= $(GGIKIT) $(LIBGGI)
 
 vpath %.hh $(srcdir)
 vpath %.cc $(srcdir)
@@ -41,9 +43,13 @@ vpath %.cc $(srcdir)
 
 .PHONY: all install uninstall clean distclean maintainer-clean
 
-all:	$(TARGET)
+all:	$(TARGETS)
 
-$(TARGET):	$(DEP) $(OBJ)
+$(GGIKIT):	$(DEP) $(OBJ)
+		@echo linking $(@F)
+		$(CXX) $(LDFLAGS) $(SO_LDFLAGS) -o $@ $(OBJ) $(LIBS)
+
+$(LIBGGI):	$(DEP) $(OBJ)
 		@echo linking $(@F)
 		$(CXX) $(LDFLAGS) $(SO_LDFLAGS) -o $@ $(OBJ) $(LIBS)
 

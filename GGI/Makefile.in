@@ -26,8 +26,9 @@ top_srcdir	:= @top_srcdir@
 
 distdir		:= @PACKAGE_NAME@-@PACKAGE_VERSION@
 
-subdirs	:= src GGIKit clients
+subdirs	:= src GGIKit demos
 # insert inter-directory dependencies below
+demos: GGIKit
 
 # Overridden by the clean-targets, allowing the same subdirs-rule to be used
 # for everything.

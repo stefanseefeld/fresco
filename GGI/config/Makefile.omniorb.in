@@ -35,7 +35,7 @@ SHORTCUT	:= @SHORTCUT@
 
 include $(cdir)/local.mk
 
-CPPFLAGS	+= -include $(h2dir)/Fresco/acconfig.hh -I$(h2dir)/Fresco -I$(h1dir)
+CPPFLAGS	+= -I$(h1dir)
 CXXFLAGS	+= $(SO_CXXFLAGS)
 LDFLAGS		+= $(SO_LDFLAGS)
 
@@ -51,7 +51,9 @@ SRC	:= $(GENSRC) VisualImpl.cc GGIKitImpl.cc
 DEP	:= $(patsubst %, %.d, $(IDL) $(SRC))
 OBJ	:= $(patsubst %.cc, %.o, $(SRC))
 
-TARGET	:= ../lib/Fresco/GGIKit.so
+GGIKIT	:= ../lib/Fresco/GGIKit.so 
+LIBGGI	:= ../lib/libBerlin-GGI.so
+TARGETS	:= $(GGIKIT) $(LIBGGI)
 
 vpath %.idl $(srcdir)
 vpath %.hh $(h2dir)/Fresco
@@ -61,23 +63,28 @@ vpath %.cc $(srcdir)
 
 .PHONY: all install uninstall clean distclean maintainer-clean
 
-all:	$(TARGET)
+all:	$(TARGETS)
 
-$(TARGET):	$(DEP) $(OBJ)
+$(GGIKIT):	$(DEP) $(OBJ)
 	@echo linking $(@F)
 	$(CXX) $(LDFLAGS) $(SO_LDFLAGS) -o $@ $(OBJ) $(LIBS)
+
+$(LIBGGI):	$(DEP) GGIKitSK.o
+	@echo linking $(@F)
+	$(CXX) $(LDFLAGS) $(SO_LDFLAGS) -o $@ GGIKitSK.o $(LIBS)
 
 depend:		$(DEP)
 
 install:	all
-	$(INSTALL) -m 755 $(TARGET) $(DESTDIR)$(libdir)/Fresco/
+	$(INSTALL) -m 755 $(GGIKIT) $(DESTDIR)$(libdir)/Fresco/
+	$(INSTALL) -m 755 $(LIBGGI) $(DESTDIR)$(libdir)/
 	$(INSTALL) -d -m 755 $(DESTDIR)$(includedir)/Fresco
 	if ! cmp -s $(h2dir)/Fresco/GGIKit.hh $(DESTDIR)$(includedir)/Fresco/GGIKit.hh 2>/dev/null; then \
-     echo "$(INSTALL) -m 644 $(h2dir)/Fresco/GGIKit.hh $(DESTDIR)$(includedir)/Fresco/GGIKit.hh"; \
-     $(INSTALL) -m 644 $(h2dir)/Fresco/GGIKit.hh $(DESTDIR)$(includedir)/Fresco/GGIKit.hh; \
-   else \
-     echo "$(DESTDIR)$(includedir)/Fresco/GGIKit.hh is up to date"; \
-   fi
+          echo "$(INSTALL) -m 644 $(h2dir)/Fresco/GGIKit.hh $(DESTDIR)$(includedir)/Fresco/GGIKit.hh"; \
+          $(INSTALL) -m 644 $(h2dir)/Fresco/GGIKit.hh $(DESTDIR)$(includedir)/Fresco/GGIKit.hh; \
+          else \
+          echo "$(DESTDIR)$(includedir)/Fresco/GGIKit.hh is up to date"; \
+        fi
 
 uninstall:
 		rm -f $(DESTDIR)$(libdir)/Fresco/$(TARGET)
@@ -116,6 +123,10 @@ $(GENHDR): %.hh:	%.idl
 %.o:	%.cc
 	@echo compiling $(@F)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(SO_CXXFLAGS) -c $< -o $@
+
+GGIKitSK.o:	GGIKitSK.cc
+	@echo compiling $(@F)
+	$(CXX) -include $(h2dir)/Fresco/acconfig.hh -I$(h2dir)/Fresco $(CPPFLAGS) $(CXXFLAGS) $(SO_CXXFLAGS) -c $< -o $@
 
 ifneq (,$(findstring depend, $(MAKECMDGOALS)))
 $(DEP): %.d:	.FORCE

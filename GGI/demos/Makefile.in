@@ -37,9 +37,6 @@ endef
 
 include $(cdir)/local.mk
 
-#CPPFLAGS	+= @CPPFLAGS@
-#LIBS		+= -lBerlin -lWarsaw -lBabylon -lPrague @LIBS@
-
 TARGET	:= ../bin/ggiwrapper
 
 vpath %.hh $(srcdir)
@@ -49,7 +46,7 @@ all:	$(TARGET)
 
 ../bin/ggiwrapper:	ggiwrapper.o
 	@echo linking $(@F)
-	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
+	$(CXX) $(LDFLAGS) -o $@ $^ -L../lib -lBerlin-GGI $(LIBS)
 
 depend:	
 
