@@ -48,12 +48,16 @@ dnl ORB
 dnl ------------------------------------------------------------------
 
 FRESCO_ORB
-MAKEFILE=
-if test ".$ORB" = .omniORB ; then
-  MAKEFILE="Makefile.omniorb.in"
-elif test ".$ORB" = .TAO ; then
-  MAKEFILE="Makefile.tao.in"
-fi
+MAKEFILE="UNKNOWN"
+case $supported_orb_found in
+omniORB)
+    MAKEFILE="Makefile.omniorb"
+    ;;
+TAO)
+    MAKEFILE="Makefile.tao"
+    ;;
+esac
+AC_SUBST(MAKEFILE)
 
 dnl ------------------------------------------------------------------
 dnl General flags
@@ -91,7 +95,7 @@ AC_CONFIG_FILES([config/local.mk config/synopsis.py])
 AC_CONFIG_FILES([config/Fresco-C++-config], [chmod +x config/Fresco-C++-config])
 AC_CONFIG_FILES([bin/Fresco-C++-config:config/Fresco-C++-build-config.in], [chmod +x bin/Fresco-C++-config])
 AC_CONFIG_FILES([config/Fresco-C++.spec])
-AC_CONFIG_FILES([Makefile src/Makefile:config/$MAKEFILE])
+AC_CONFIG_FILES([Makefile src/Makefile:config/${MAKEFILE}.in])
 
 mkdir -p lib
 mkdir -p bin

@@ -47,8 +47,8 @@ AC_DEFUN([FRESCO_TAO],[
 	else
 		tao_idl_path="$PATH"
 	fi
-	AC_PATH_PROG(IDLCXX, tao_idl, no, $tao_idl_path)
-	if test ".$IDLCXX" = ".no" ; then
+	AC_PATH_PROG(TAO_IDLCXX, tao_idl, no, $tao_idl_path)
+	if test ".$TAO_IDLCXX" = ".no" ; then
 		no_tao="yes"
 	fi
 	save_CPPFLAGS="$CPPFLAGS"
@@ -69,6 +69,6 @@ dnl	CPPFLAGS="$save_CPPFLAGS"
 
 	if test ".$no_tao" = "." ; then
 		fresco_cv_lib_tao="yes"
+                IDLCXX=$TAO_IDLCXX
 	fi
-
 ])

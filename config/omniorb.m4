@@ -60,8 +60,8 @@ AC_DEFUN([FRESCO_OMNIORB],
   else
     omniorb_path="$PATH"
   fi
-  AC_PATH_PROG(IDLCXX, omniidl, no, $omniorb_path)
-  if test ".$IDLCXX" = ".no" ; then
+  AC_PATH_PROG(OMNI_IDLCXX, omniidl, no, $omniorb_path)
+  if test ".$OMNI_IDLCXX" = ".no" ; then
     no_omniorb="yes"
   fi
 
@@ -171,8 +171,8 @@ AC_DEFUN([FRESCO_OMNIORB],
       FRESCO_CHECK_LIB(ORB_LIBS, omniORB4, [CORBA::ORB_var orb], omniORB4/CORBA.h)
       FRESCO_CHECK_LIB(ORB_LIBS, omniDynamic4, [CORBA::Any_var any;], omniORB4/CORBA.h)
       if test ".$fresco_cv_lib_omniORB4" = ".no" \
-        -a ".$fresco_cv_lib_omniDynamic4" = ".no" \
-        -a ".$fresco_cv_lib_omnithread" = ".no" ; then
+        -o ".$fresco_cv_lib_omniDynamic4" = ".no" \
+        -o ".$fresco_cv_lib_omnithread" = ".no" ; then
         no_omniorb="yes"
       fi
       LIBS="$ORB_LIBS $LIBS"
@@ -181,8 +181,8 @@ AC_DEFUN([FRESCO_OMNIORB],
       FRESCO_CHECK_LIB(ORB_LIBS, omniORB3, [CORBA::ORB_var orb], omniORB3/CORBA.h)
       FRESCO_CHECK_LIB(ORB_LIBS, omniDynamic3, [CORBA::Any_var any;], omniORB3/CORBA.h)
       if test ".$fresco_cv_lib_omniORB3" = ".no" \
-      	-a ".$fresco_cv_lib_omniDynamic3" = ".no" \
-      	-a ".$fresco_cv_lib_omnithread" = ".no" ; then
+      	-o ".$fresco_cv_lib_omniDynamic3" = ".no" \
+      	-o ".$fresco_cv_lib_omnithread" = ".no" ; then
       	no_omniorb="yes"
       fi
       LIBS="$ORB_LIBS $LIBS"
@@ -191,5 +191,6 @@ AC_DEFUN([FRESCO_OMNIORB],
 
   if test ".$no_omniorb" = "." ; then
     fresco_cv_lib_omniORB="yes"
+    IDLCXX=$OMNI_IDLCXX
   fi
 ])

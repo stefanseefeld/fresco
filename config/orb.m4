@@ -32,7 +32,7 @@ dnl IDLTIEFLAGS. Those variables are AC_SUBSTed here.
 
 AC_DEFUN([FRESCO_ORB],[
 
-	AC_MSG_NOTICE(ORB)
+	AC_MSG_NOTICE(checking for CORBA environment.)
 	AC_ARG_WITH(orb,
 		[  --with-orb=NAME         Specify which ORB to use],[dnl
 		ORB="$withval"],[dnl
@@ -40,40 +40,50 @@ AC_DEFUN([FRESCO_ORB],[
 			ORB="auto"
 		fi])
 
-	case "$ORB" in
-		omniORB|auto)
-	  	  FRESCO_OMNIORB
-		  if test ".$fresco_cv_lib_omniORB" != ".yes"; then
-		    AC_MSG_ERROR([No supported CORBA environment found!])
-	 	  else
-		    ORB=omniORB
-		  fi		
-		;;
-		TAO)
-		  FRESCO_TAO
-		  if test ".$fresco_cv_lib_TAO" != ".yes"; then
-		    AC_MSG_ERROR([No supported CORBA environment found!])
-		  else
-		    ORB=TAO
-		  fi		
-		;;
- 		*)
- 		  msg="$ORB is not supported (yet)."
- 		  AC_MSG_ERROR([$ORB is not supported (yet)])
- 		;;
-	esac
-	
-	case $ORB in
+        supported_orb_found="none"
+        checked_orbs=""
+
+        dnl Test for omniORB
+        if test \( ".$ORB" = ".omniORB" -o ".$ORB" = ".auto" \) -a \
+                \( ".$supported_orb_found" = ".none" \) ; then
+            AC_MSG_NOTICE(... omniORB)
+            checked_orbs="${checked_orbs}${checked_orbs:+, }omniORB"
+            FRESCO_OMNIORB
+            if test ".$fresco_cv_lib_omniORB" = ".yes"; then
+                supported_orb_found="omniORB"
+            fi
+        fi
+
+        dnl Test for TAO
+        if test \( ".$ORB" = ".TAO" -o ".$ORB" = ".auto" \) -a \
+                \( ".$supported_orb_found" = ".none" \) ; then
+            AC_MSG_NOTICE(... TAO)
+            checked_orbs="${checked_orbs}${checked_orbs:+, }TAO"
+            FRESCO_TAO
+            if test ".$fresco_cv_lib_TAO" = ".yes"; then
+                supported_orb_found="TAO"
+            fi
+        fi
+
+        dnl Invald ORB passed in via configure setting.
+        if test \( ".$ORB" != ".auto" \) -a \
+                \( ".$checked_orbs" = "." \) ; then
+            AC_MSG_ERROR([$ORB is not a supported CORBA environment (yet).])
+        fi
+
+	AC_MSG_CHECKING(for CORBA environment done)
+	case $supported_orb_found in
 		omniORB)
-		  AC_MSG_RESULT([use omniORB])
+		  AC_MSG_RESULT([using omniORB])
 		  AC_DEFINE(ORB_omniORB, 1, [Define if omniORB is used.])
 		;;
 		TAO)
-		  AC_MSG_RESULT([use TAO])
+		  AC_MSG_RESULT([using TAO])
 	  	  AC_DEFINE(ORB_TAO, 1, [Define if TAO is used.])
 		;;
 		none)
-		  AC_MSG_RESULT([none found])
+		  AC_MSG_RESULT([none found (I checked for '$checked_orbs')])
+                  AC_MSG_ERROR([No supported CORBA environment found, stopping.])
 		;;
 	esac
 	AC_SUBST(ORB)

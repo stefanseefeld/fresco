@@ -47,15 +47,17 @@ dnl ORB
 dnl ------------------------------------------------------------------
 
 FRESCO_ORB
-MAKEFILE=
-if test ".$ORB" = .omniORB ; then
-  MAKEFILE="Makefile.omniorb.in"
-elif test ".$ORB" = .TAO ; then
-  MAKEFILE="Makefile.tao.in"
-fi
+MAKEFILE="UNKNOWN"
+case $supported_orb_found in
+omniORB)
+    MAKEFILE="Makefile.omniorb"
+    ;;  
+TAO)
+    MAKEFILE="Makefile.tao"
+    ;;
+esac
 
 FRESCO_IDL_PATH
-
 AC_SUBST(Fresco_IDL_prefix)
 
 dnl ------------------------------------------------------------------
@@ -93,7 +95,7 @@ AC_MSG_NOTICE([Output Substitution])
 AC_CONFIG_FILES(config/local.mk)
 AC_CONFIG_FILES([config/GGI.spec])
 AC_CONFIG_FILES([Makefile src/Makefile demos/Makefile])
-AC_CONFIG_FILES([GGIKit/Makefile:config/$MAKEFILE])
+AC_CONFIG_FILES([GGIKit/Makefile:config/${MAKEFILE}.in])
 
 mkdir -p lib/Berlin/Console
 mkdir -p bin
