@@ -60,8 +60,7 @@ SRC		:= $(patsubst %, Sys/%, $(Sys))
 SRC		+= $(patsubst %, IPC/%, $(IPC))
 SRC		+= $(patsubst %, Filter/%, $(Filter))
 SRC		+= $(patsubst %, Network/%, $(Network))
-HDR		:=  Prague/config.hh
-HDR		+= $(patsubst $(hdir)/%, %, $(wildcard $(hdir)/Prague/Sys/*.hh))
+HDR		:= $(patsubst $(hdir)/%, %, $(wildcard $(hdir)/Prague/Sys/*.hh))
 HDR		+= $(patsubst $(hdir)/%, %, $(wildcard $(hdir)/Prague/IPC/*.hh))
 HDR		+= $(patsubst $(hdir)/%, %, $(wildcard $(hdir)/Prague/Filter/*.hh))
 HDR		+= $(patsubst $(hdir)/%, %, $(wildcard $(hdir)/Prague/Network/*.hh))
@@ -93,6 +92,12 @@ install:	all
 	$(INSTALL) -d -m 755 $(DESTDIR)$(includedir)/Prague/IPC
 	$(INSTALL) -d -m 755 $(DESTDIR)$(includedir)/Prague/Filter
 	$(INSTALL) -d -m 755 $(DESTDIR)$(includedir)/Prague/Network
+	@if ! cmp -s ../include/Prague/config.hh $(DESTDIR)$(includedir)/Prague/config.hh 2>/dev/null; then \
+	  echo "$(INSTALL) -m 644 ../include/Prague/config.hh $(DESTDIR)$(includedir)/Prague/config.hh"; \
+	  $(INSTALL) -m 644 ../include/Prague/config.hh $(DESTDIR)$(includedir)/Prague/config.hh; \
+	else \
+          echo "$(DESTDIR)$(includedir)/$$header is up to date"; \
+        fi
 	@for header in $(HDR); do \
 	  if ! cmp -s $(hdir)/$$header $(DESTDIR)$(includedir)/$$header 2>/dev/null; then \
 	    echo "$(INSTALL) -m 644 $(hdir)/$$header $(DESTDIR)$(includedir)/$$header"; \
