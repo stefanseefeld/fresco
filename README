@@ -2,12 +2,12 @@ Welcome to the Berlin windowing system
 
 The current release is 0.2.1, which means it is not even into the stage
 where the most adventuresome users will gain any productivity from
-it. It's a *developers* release. If you want to help develop berlin,
+it. It's a *developer's* release. If you want to help develop berlin,
 you can work off this release with some modicum of confidence and
 convenience. 
 
 If you're unpacked the entire source tree, and you meet the prerequisites
-( see below) you should be able to run:
+(see below) you should be able to run:
 
 # make config
 # make
@@ -32,9 +32,8 @@ facilities we build & test with are:
  * g++ 2.9 +
  * glibc 2.1.1 & pthreads
  * libstdc++ 2.9 & devel
- * libggi 2 (recent snaps) & devel
- * Mesa 3.1b3 & devel
- * ggiMesa
+ * libggi 2.0 beta 2.1 & devel
+ * Mesa 3.1b3 (targetted at GGI) & devel
  * omniORB 2.7.1
 
 Please do not hesitate to customize the build process for an
