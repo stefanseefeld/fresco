@@ -1,1 +1,18 @@
+<chapter>
+<abstract>
+This section deals with the mechanisms of OpenGL, and how berlin
+interacts with them. OpenGL is hidden from the OO API, but it just
+beneath the surface of the berlin display server, running the show.
+</abstract>
+
+  </chapter>
+
+
+    <!--
+     Local Variables:
+     mode: sgml
+     sgml-doctype: "berlin-man.sgm"
+     sgml-parent-document: ("berlin-man.sgm" "book" "chapter")
+     End:
+     -->
  

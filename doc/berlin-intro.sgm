@@ -9,7 +9,8 @@
       you need to know as a programmer interacting with berlin, either
       from the inside of the display server or from the outside, as a
       client. Here we present an overview of the project, its history,
-      motivation, and design goals.</para>      
+      motivation, influences, and goals; and an introduction to the
+implementation design</para>      
     </abstract>
 
     <sect1>
@@ -116,6 +117,111 @@
       useful when referring to different levels of
       abstraction. </para>
     </sect1>
+
+    <sect1>
+      <title>The Design</title>
+      
+      <para>We sought a design which would solve the shortcomings of
+      existing windowing systems while leveraging as much existing,
+      standard software as possible. Our first task was to settle on a
+      means for clients to speak to the display server. Regardless of
+      how much traffic we localized on the server (and it turned out
+      to be a lot), we were still going to need
+      <emphasis>some</emphasis> way of communicating requests back and
+      forth. This lead us to examine IPC mechanisms such as sockets,
+      RPC, ILU, and eventually Corba, RMI and DCOM. It was clear from
+      the developers slant on extensibility and modularity that an OO
+      system (one which made polymorphism and inheritence easy) would
+      be more favourable than a purely procedural one, and that Corba
+      was the only system with wide enough use, flexibility, and
+      reasonable free implementations, so we decided that
+      client/server communication would take place through
+      Corba.</para>
+
+      <para>The actual API was strongly motivated by Fresco (derived
+      from InterViews). This means that we tried to model the GUI in
+      very abstract terms, keep the interfaces intentionally vague,
+      and adhere to recursive structures, generic algorithms and
+      encapsulated delegation of responsibility wherever possible. The
+      details of the interfaces in the current version of the API are
+      available later on in the manual. It is clean, minimal, and
+      breaks up a GUI into easily digestible concepts. It is a
+      work-in-progress and you are welcome to contribute to it.</para>
+
+      <para>In terms of implenting components, it was very important
+      to us that the user be able to "plug in" different
+      look-and-feel, and potentially complete behaviour and semantics,
+      and make all connecting client programs use that look-and-feel
+      regardless of the library they were originally linked
+      against. It was felt important that the system be completely
+      threadsafe, and that a high degree of concurrency be achieved
+      not only in principle but in practise -- a lot of time is wasted
+      in a GUI waiting for responses from client programs (especially
+      network bound ones), polling the user, or dumping commands on a
+      graphics card. All of these, we believe, should be executing in
+      separate threads, otherwise the user may experience lag or
+      lock-up, which is extremely unpleasant and breaks the GUI
+      metaphor. It was also considered important that the pluggable
+      parts could be replaced one-by-one as new versions came out, and
+      that no single monolithic upgrade would be required unless a
+      fundamental aspect of the interfaces changed -- the
+      implementations of various components had to be modularized down
+      to the level of separate shared libraries you could just
+      re-arrange on disk to get different behaviour. This meant that
+      the components would reside <emphasis>in the display-server
+      process</emphasis> and connecting clients would allocate
+      resources on the server side. In fact, the server will
+      eventually contain various scripting engines and VMs, allowing
+      the clients to dynamically extend the server at runtime. This
+      functionality was put to great use in NeWS; we expect even
+      greater returns given the number of scripting languages with
+      Corba bindings.</para>
+      
+      <para>At the same time we were talking turkey about components,
+      we were looking at different ways of drawing on the screen. From
+      the beginning, we were interested in using GGI to provide
+      automatic hardware acceleration, device portability and safe
+      user-mode operation. However GGI's imaging abstractions are
+      decidedly weak -- basically you are given access to pixel
+      buffers and some simple pixel-oriented 2d drawing logic. While
+      we were fiddling around making windowing code on top of this and
+      trying to figure out a way to incorporate the powerful high-end
+      imaging layers like Postscript into our work, it was suggested
+      that we adopt OpenGL. Upon close inspection, OpenGL actually has
+      everything you need for sophisticated drawing. It is not merely
+      a 3d library -- it is a very generic and powerful graphics state
+      machine with 2/3d geometry, curves, NURBS, an advanced color
+      system, pixel and clipping management, texture mapping,
+      transparency, atmospheric effects, and various lighting and
+      shading operators. It is highly customizable, and we found
+      virtually everything we wanted buried in the manual
+      somewhere. Add to this the fact that OpenGL is amongst the best
+      supported graphics languages in silicon, and it seemed a winning
+      bet. This notion was met with some hesitation about speed, and
+      although a ggi-based OpenGL implementation already exists
+      (vastly reducing our development time) it was decided to keep
+      the OpenGL-ness hidden from the OO API, such that berlin client
+      programs need not explicitly know (or be forced to know) that
+      they were causing OpenGL commands to be processed. Furthermore,
+      this leaves the door open for non-OpenGL implementations of the
+      display server without upsetting the clients.</para>
+      
+      <para>Finally, the issue of how to handle text remained somewhat
+      of a mystery. Luckily, I work for a guy who lives and breathes
+      typography and text, so after lots of recommended reading about
+      unicode, SGML, fonts, glyphs, and document rendering and layout
+      systems, I set about implementing a text processing system in
+      accordance with the ISO recommendations.  This is described in
+      much more detail later on, but it should have most of what you'd
+      want as far as flexibility and multilinguality. This brought
+      about a lot of contributed code, very fast. Andrew donated a
+      library which renders most known types of fonts, ANOQ
+      implemented the W3C's DOM, which you can use for interacting
+      with an SGML/XML model in memory, and Alistair contributed
+      implementations of a number of key unicode routines.</para>
+      
+    </sect1>
+
     
   </chapter>
 
