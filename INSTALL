@@ -36,6 +36,9 @@ In case you use the cvs version, you have to step into the toplevel
 directory ('Berlin'), and call ./autogen.sh, to generate configure
 scripts and helper files.
 
+We have seen problems with autoconf 2.50 and later. For now you must
+use autoconf 2.13 to build berlin.
+
 Decide where to build berlin, either inside the source tree (let's
 refer to this as $berlin-src), or (the recomended way), in a separate 
 build directory ($berlin-build).
