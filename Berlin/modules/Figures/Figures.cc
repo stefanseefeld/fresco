@@ -77,6 +77,7 @@ void RectangleImpl::pt1(const Vertex &v1)
 {
     Vertex v2 =  pt2();
     my_path->nodes[0] = v1;
+    my_path->nodes[0].z = 0;
     my_path->nodes[1].x = v1.x;
     my_path->nodes[1].y = v2.y;
     my_path->nodes[3].x = v2.x;
@@ -89,6 +90,7 @@ void RectangleImpl::pt2(const Vertex &v2)
 {
     Vertex v1 =  pt1();
     my_path->nodes[2] = v2;
+    my_path->nodes[2].z = 0;
     my_path->nodes[1].x = v1.x;
     my_path->nodes[1].y = v2.y;
     my_path->nodes[3].x = v2.x;
