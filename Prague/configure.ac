@@ -96,11 +96,9 @@ AC_MSG_PART(Output Substitution)
 
 mkdir -p $builddir/bin
 mkdir -p $builddir/lib
-mkdir -p $builddir/modules/Unicode
 mkdir -p $builddir/config/Prague
 mkdir -p $builddir/include/Prague
 mkdir -p $builddir/src/Prague
-mkdir -p $builddir/src/Prague/Unicode/Blocks
 dnl mkdir -p $builddir/src/Prague/SAX/expat
 mkdir -p $builddir/src/Prague/Examples/Sys
 mkdir -p $builddir/src/Prague/Examples/Thread
@@ -113,7 +111,6 @@ AC_OUTPUT([
 	$builddir/bin/Prague-config:config/package-config.in
 	$builddir/config/Prague/subdirs.mk:config/Prague/subdirs.mk.in
 	$builddir/src/Prague/Makefile:src/Prague/Makefile.in
-	$builddir/src/Prague/Unicode/Blocks/Makefile:src/Prague/Unicode/Blocks/Makefile.in
 dnl $builddir/src/Prague/SAX/expat/Makefile:src/Prague/SAX/expat/Makefile.in
 	$builddir/src/Prague/Examples/Makefile:src/Prague/Examples/Makefile.in
 	$builddir/src/Prague/Examples/Sys/Makefile:src/Prague/Examples/Sys/Makefile.in

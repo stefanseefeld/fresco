@@ -47,7 +47,7 @@ private:
   T *t;
 };
 
-}; // namespace
+} // namespace
 
 #define dload(T) extern "C" T *load() { return new T;}
 

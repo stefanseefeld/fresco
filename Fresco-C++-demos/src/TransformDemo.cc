@@ -51,5 +51,5 @@ TransformDemo::TransformDemo(Application *a)
   Transform_var(transformer->transformation())->rotate(45., zaxis);
   Graphic_var root = layout->halign(transformer, 0.);
   Controller_var group = tool->group(root);
-  application->append(group, Unicode::String("transformation demo"));
+  application->append(group, Babylon::String("transformation demo"));
 };

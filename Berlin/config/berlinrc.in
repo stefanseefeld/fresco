@@ -2,4 +2,3 @@ modulepath	= @builddir@/modules
 rasterpath	= @topdir@/etc/PNG
 fontpath	= /usr/lib/X11/fonts/Type1
 unifontpath	= @topdir@/etc
-unicode		= @builddir@/etc/Unicode/UnicodeBlocks.txt

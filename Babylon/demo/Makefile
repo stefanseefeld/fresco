@@ -64,21 +64,12 @@ rpath		= $(lpath)
 
 LIBS		= -lPrague -lBabylon -ldl -lpthread
 
-ALL             = Unistring Unicode Uni_perf
+ALL             = UnicodeData Blocks Uni_perf
 
 world:		$(ALL)
 
 %.o:		%.cc
 		$(CXX) $(CXXFLAGS) $(OPTFLAGS) -I../../../include -c $< -o $@
-
-Unistring:	Unistring.o
-		$(CXX) $(LDFLAGS) -ltcpwrapGK -lomniORB3 -o $@ $^ $(LIBS)
-
-Unicode:	Unicode.o
-		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
-
-Uni_perf:	Uni_perf.o
-		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 clean:	
 		$(RM) *.o *~

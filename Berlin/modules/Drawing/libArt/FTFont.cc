@@ -1,4 +1,3 @@
-
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
@@ -41,8 +40,10 @@
 using namespace Prague;
 using namespace Warsaw;
 
-bool LibArtFTFont::chooseFaceInteractively(const map<FamStyle,FT_Face> &faces, const char *env, 
-					   Unicode::String &fam, Unicode::String &style)
+bool LibArtFTFont::chooseFaceInteractively(const map<FamStyle,FT_Face> &faces,
+					   const char *env, 
+					   Babylon::String &fam,
+					   Babylon::String &style)
 {
   int idx = -1;
   if (env[0] == '\0')
@@ -59,8 +60,8 @@ bool LibArtFTFont::chooseFaceInteractively(const map<FamStyle,FT_Face> &faces, c
   map<FamStyle,FT_Face>::const_iterator j = faces.begin();
   for (int i = 0; i != idx && j != faces.end(); ++i, ++j);
   if (j == faces.end()) return false;
-  fam = Unicode::String((*j).second->family_name);
-  style = Unicode::String((*j).second->style_name);
+  fam = Babylon::String((*j).second->family_name);
+  style = Babylon::String((*j).second->style_name);
   return true;
 }
 
@@ -102,8 +103,8 @@ LibArtFTFont::LibArtFTFont(Console::Drawable *drawable)
 	      Logger::log(Logger::text) << "LibArtFTFont: can't open font " << file << endl;
 	      continue;
 	    }
-	  _familyStr = Unicode::String(_face->family_name);
-	  _styleStr = Unicode::String(_face->style_name);
+	  _familyStr = Babylon::String(_face->family_name);
+	  _styleStr = Babylon::String(_face->style_name);
 	  _family = atomize(_familyStr);
 	  _style = atomize(_styleStr);
 	  Logger::log(Logger::text) << "found FT-readable font "
@@ -114,7 +115,7 @@ LibArtFTFont::LibArtFTFont(Console::Drawable *drawable)
     }
   Logger::log(Logger::text) << "completed scaning font directories" << endl;
   char *env = getenv("BERLIN_FONT_CHOOSER");
-  Unicode::String tmpFam, tmpStyle;
+  Babylon::String tmpFam, tmpStyle;
   if (env && chooseFaceInteractively(_faces, env, tmpFam, tmpStyle))
     {
       _familyStr = tmpFam;
@@ -133,7 +134,7 @@ void LibArtFTFont::weight(unsigned long wt) {}
 
 Unistring *LibArtFTFont::family()
 { 
-  return new Unistring (Unicode::toCORBA(Unicode::String(_familyStr)));
+  return new Unistring (Unicode::to_CORBA(_familyStr));
 }
 
 Unistring *LibArtFTFont::subfamily() { return 0;}
@@ -142,27 +143,27 @@ void LibArtFTFont::fullname(const Unistring &fname) {}
 
 void LibArtFTFont::family(const Unistring &fname)
 { 
-  _familyStr = Unicode::toPrague(fname);
+  _familyStr = Unicode::to_internal(fname);
   _family = atomize(_familyStr);
 }
 
 void LibArtFTFont::style(const Unistring &sname)
 { 
-  _styleStr = Unicode::toPrague(sname);
+  _styleStr = Unicode::to_internal(sname);
   _style = atomize(_styleStr);
 }
 
 Unistring *LibArtFTFont::fullname()
 { 
-  Unicode::String str = _familyStr;
-  str += Unicode::Char(' ');
+  Babylon::String str = _familyStr;
+  str += Babylon::Char(' ');
   str += _styleStr;
-  return new Unistring(Unicode::toCORBA(str));
+  return new Unistring(Unicode::to_CORBA(str));
 }
 
 Unistring *LibArtFTFont::style() 
 { 
-  return new Unistring (Unicode::toCORBA(Unicode::String(_styleStr)));
+  return new Unistring (Unicode::to_CORBA(Babylon::String(_styleStr)));
 }
 
 DrawingKit::FontMetrics LibArtFTFont::metrics()
@@ -246,9 +247,9 @@ bool LibArtFTFont::transform(double trafo[4])
 }
 
   
-LibArtFTFont::atom LibArtFTFont::Atomizer::atomize(Unicode::String &u)
+LibArtFTFont::atom LibArtFTFont::Atomizer::atomize(Babylon::String &u)
 {
-  map<Unicode::String, atom>::iterator i = _atoms.find(u);
+  map<Babylon::String, atom>::iterator i = _atoms.find(u);
   if (i == _atoms.end())
     {
       _atoms[u] = ++_atom;

@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Wed,  6 Dec 2000 23:23:34 +0100.
+ * ftp.unicode.org on Mon,  8 Jan 2001 23:31:26 +0100.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -25,6 +25,7 @@
 
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
+#include <bitset>
 #include <map>
 
 namespace Babylon {
@@ -35,26 +36,26 @@ namespace Babylon {
     };
 
     TibetanF00() {
-      _first_letter = 0xF00;
-      _last_letter  = 0xFFF;
-      // _version="3.0.1" // Not yet supported!
-      _composeMap[0x0F400FB5] = 0x0F69;
-      _composeMap[0x0F420FB7] = 0x0F43;
-      _composeMap[0x0F4C0FB7] = 0x0F4D;
-      _composeMap[0x0F510FB7] = 0x0F52;
-      _composeMap[0x0F560FB7] = 0x0F57;
-      _composeMap[0x0F5B0FB7] = 0x0F5C;
-      _composeMap[0x0F710F72] = 0x0F73;
-      _composeMap[0x0F710F74] = 0x0F75;
-      _composeMap[0x0F710F80] = 0x0F81;
-      _composeMap[0x0F900FB5] = 0x0FB9;
-      _composeMap[0x0F920FB7] = 0x0F93;
-      _composeMap[0x0F9C0FB7] = 0x0F9D;
-      _composeMap[0x0FA10FB7] = 0x0FA2;
-      _composeMap[0x0FA60FB7] = 0x0FA7;
-      _composeMap[0x0FAB0FB7] = 0x0FAC;
-      _composeMap[0x0FB20F80] = 0x0F76;
-      _composeMap[0x0FB30F80] = 0x0F78;
+      m_first_letter = 0xF00;
+      m_last_letter  = 0xFFF;
+      // m_version="3.0.1" // Not yet supported!
+      m_composeMap[make_pair(0x00000F40, 0x00000FB5)] = 0x0F69;
+      m_composeMap[make_pair(0x00000F42, 0x00000FB7)] = 0x0F43;
+      m_composeMap[make_pair(0x00000F4C, 0x00000FB7)] = 0x0F4D;
+      m_composeMap[make_pair(0x00000F51, 0x00000FB7)] = 0x0F52;
+      m_composeMap[make_pair(0x00000F56, 0x00000FB7)] = 0x0F57;
+      m_composeMap[make_pair(0x00000F5B, 0x00000FB7)] = 0x0F5C;
+      m_composeMap[make_pair(0x00000F71, 0x00000F72)] = 0x0F73;
+      m_composeMap[make_pair(0x00000F71, 0x00000F74)] = 0x0F75;
+      m_composeMap[make_pair(0x00000F71, 0x00000F80)] = 0x0F81;
+      m_composeMap[make_pair(0x00000F90, 0x00000FB5)] = 0x0FB9;
+      m_composeMap[make_pair(0x00000F92, 0x00000FB7)] = 0x0F93;
+      m_composeMap[make_pair(0x00000F9C, 0x00000FB7)] = 0x0F9D;
+      m_composeMap[make_pair(0x00000FA1, 0x00000FB7)] = 0x0FA2;
+      m_composeMap[make_pair(0x00000FA6, 0x00000FB7)] = 0x0FA7;
+      m_composeMap[make_pair(0x00000FAB, 0x00000FB7)] = 0x0FAC;
+      m_composeMap[make_pair(0x00000FB2, 0x00000F80)] = 0x0F76;
+      m_composeMap[make_pair(0x00000FB3, 0x00000F80)] = 0x0F78;
 
     }
 
@@ -63,11 +64,11 @@ namespace Babylon {
     }
 
     UCS4 firstLetter() {
-      return _first_letter;
+      return m_first_letter;
     }
 
     UCS4 lastLetter() {
-      return _last_letter;
+      return m_last_letter;
     }
 
     bool is_undef_block() const {
@@ -81,31 +82,19 @@ namespace Babylon {
     }
 
     bool is_defined(const UCS4 uc) const {
-      return (_is_defined[uc - _first_letter]);
+      return (m_is_defined.test(uc - m_first_letter));
     }
 
     UCS4 uppercase(const UCS4 uc) const {
       return uc;
     }
 
-    bool is_Uppercase(const UCS4 uc) const {
-      return category(uc) == CAT_Lu;
-    }
-
     UCS4 lowercase(const UCS4 uc) const {
       return uc;
     }
 
-    bool is_Lowercase(const UCS4 uc) const {
-      return category(uc) == CAT_Ll;
-    }
-
     UCS4 titlecase(const UCS4 uc) const {
       return uc;
-    }
-
-    bool is_Titlecase(const UCS4 uc) const {
-      return category(uc) == CAT_Lt;
     }
 
     int dec_digit_value(const UCS4 uc) const {
@@ -322,33 +311,33 @@ namespace Babylon {
     Gen_Cat category(const UCS4 uc) const {
       if (!is_defined(uc))
         return CAT_MAX;
-      return Babylon::Gen_Cat(TibetanF00::_cat[uc - _first_letter]);
+      return Babylon::Gen_Cat(TibetanF00::_cat[uc - m_first_letter]);
     }
 
     Can_Comb_Class comb_class(const UCS4 uc) const {
       if (!is_defined(uc))
         return CC_MAX;
-      return Can_Comb_Class(TibetanF00::_comb_cl[uc - _first_letter]);
+      return Can_Comb_Class(TibetanF00::_comb_cl[uc - m_first_letter]);
     }
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
         return BIDIR_MAX;
-      return Babylon::Bidir_Props(TibetanF00::_bidir[uc - _first_letter]);
+      return Babylon::Bidir_Props(TibetanF00::m_bidir[uc - m_first_letter]);
     }
 
     Char_Decomp decomp_type(const UCS4 uc) const {
       if (!is_defined(uc))
         return DECOMP_MAX;
-      return Babylon::Char_Decomp(TibetanF00::_decomp[uc - _first_letter]);
+      return Babylon::Char_Decomp(TibetanF00::_decomp[uc - m_first_letter]);
     }
 
     UTF32_string decompose(const UCS4 uc) const {
       Babylon::UTF32_string us;
       us.resize(2);
-      us[0] = TibetanF00::_decompStr[uc - _first_letter][0];
-      us[1] = TibetanF00::_decompStr[uc - _first_letter][1];
-      if (us[1] == 0x0000) {
+      us[0] = TibetanF00::m_decompStr[uc - m_first_letter][0];
+      us[1] = TibetanF00::m_decompStr[uc - m_first_letter][1];
+      if (us[1] == 0x0000u) {
         us.resize(1);
       }
 
@@ -362,7 +351,7 @@ namespace Babylon {
     Line_Break linebreak(const UCS4 uc) const {
       if (!is_defined(uc))
         return LB_MAX;
-      return Babylon::Line_Break(TibetanF00::_lb[uc - _first_letter]);
+      return Babylon::Line_Break(TibetanF00::m_lb[uc - m_first_letter]);
     }
 
     EA_Width EA_width(const UCS4 uc) const {
@@ -371,12 +360,8 @@ namespace Babylon {
       return Babylon::EA_Width(EA_WIDTH_N);
     }
 
-    UCS4 compose (const UCS4 starter, const UCS4 last) {
-      return _composeMap[starter << 16 | last];
-    }
-
-    bool is_Zero_width(const UCS4 uc) const {
-      return 0;
+    UCS4 compose (const UCS4 start, const UCS4 last) {
+      return m_composeMap[make_pair(start, last)];
     }
 
     bool is_White_space(const UCS4 uc) const {
@@ -384,7 +369,11 @@ namespace Babylon {
     }
 
     bool is_Non_break(const UCS4 uc) const {
-      return TibetanF00::_Non_break[uc - _first_letter];
+      return 0;
+    }
+
+    bool is_Format_Control(const UCS4 uc) const {
+      return 0;
     }
 
     bool is_Bidi_Control(const UCS4 uc) const {
@@ -395,7 +384,7 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Format_Control(const UCS4 uc) const {
+    bool is_Other_Format_Control(const UCS4 uc) const {
       return 0;
     }
 
@@ -419,24 +408,8 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Paired_Punctuation(const UCS4 uc) const {
-      return TibetanF00::_Paired_Punctuation[uc - _first_letter];
-    }
-
-    bool is_Left_of_Pair(const UCS4 uc) const {
-      return TibetanF00::_Left_of_Pair[uc - _first_letter];
-    }
-
-    bool is_Combining(const UCS4 uc) const {
-      return TibetanF00::_Combining[uc - _first_letter];
-    }
-
-    bool is_Non_spacing(const UCS4 uc) const {
-      return TibetanF00::_Non_spacing[uc - _first_letter];
-    }
-
     bool is_Composite(const UCS4 uc) const {
-      return TibetanF00::_Composite[uc - _first_letter];
+      return m_Composite.test(uc - m_first_letter);
     }
 
     bool is_Hex_Digit(const UCS4 uc) const {
@@ -444,30 +417,26 @@ namespace Babylon {
     }
 
     bool is_Alphabetic(const UCS4 uc) const {
-      return TibetanF00::_Alphabetic[uc - _first_letter];
+      return m_Alphabetic.test(uc - m_first_letter);
     }
 
     bool is_Diacritic(const UCS4 uc) const {
-      return TibetanF00::_Diacritic[uc - _first_letter];
+      return m_Diacritic.test(uc - m_first_letter);
     }
 
     bool is_Extender(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Identifier_Part(const UCS4 uc) const {
-      return TibetanF00::_Identifier_Part[uc - _first_letter];
+    bool is_Identifier_Part_Not_Cf(const UCS4 uc) const {
+      return m_Identifier_Part_Not_Cf.test(uc - m_first_letter);
     }
 
-    bool is_Ignorable_Control(const UCS4 uc) const {
+    bool is_Other_Uppercase(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Bidi_Hebrew_Right_to_Left(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Bidi_Arabic_Right_to_Left(const UCS4 uc) const {
+    bool is_Other_Lowercase(const UCS4 uc) const {
       return 0;
     }
 
@@ -479,7 +448,7 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Not_a_Character(const UCS4 uc) const {
+    bool is_Noncharacter_Code_Point(const UCS4 uc) const {
       return ((uc & 0xFFFE) == 0xFFFE);
     }
 
@@ -495,177 +464,30 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Space(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Zs);
-    }
-
-    bool is_ISO_Control(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Cc);
-    }
-
-    bool is_Punctuation(const UCS4 uc) const {
-      return (is_defined(uc) && (category(uc) == CAT_Pc ||
-                                 category(uc) == CAT_Pd ||
-                                 category(uc) == CAT_Ps ||
-                                 category(uc) == CAT_Pe ||
-                                 category(uc) == CAT_Pi ||
-                                 category(uc) == CAT_Pf ||
-                                 category(uc) == CAT_Po)
-             );
-    }
-
-    bool is_Line_Separator(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Zl);
-    }
-
-    bool is_Paragraph_Separator(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Zp);
-    }
-
-    bool is_Currency_Symbol(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Sc);
-    }
-
-    bool is_Bidi_Left_to_Right(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_L;
-    }
-
-    bool is_Bidi_European_Digit(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_EN;
-    }
-
-    bool is_Bidi_Eur_Num_Separator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_ES;
-    }
-
-    bool is_Bidi_Eur_Num_Terminator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_ET;
-    }
-
-    bool is_Bidi_Arabic_Digit(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_AN;
-    }
-
-    bool is_Bidi_Common_Separator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_CS;
-    }
-
-    bool is_Bidi_Block_Separator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_B;
-    }
-
-    bool is_Bidi_Segment_Separator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_S;
-    }
-
-    bool is_Bidi_Whitespace(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_WS;
-    }
-
-    bool is_Bidi_Non_spacing_Mark(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_NSM;
-    }
-
-    bool is_Bidi_Boundary_Neutral(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_BN;
-    }
-
-    bool is_Bidi_PDF(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_PDF;
-    }
-
-    bool is_Bidi_Embedding_or_Override(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_LRE ||
-             bidir_props(uc) == BIDIR_RLE ||
-             bidir_props(uc) == BIDIR_LRO ||
-             bidir_props(uc) == BIDIR_RLO;
-    }
-
-    bool is_Bidi_LRE(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_LRE;
-    }
-
-    bool is_Bidi_RLE(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_RLE;
-    }
-
-    bool is_Bidi_LRO(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_LRO;
-    }
-
-    bool is_Bidi_RLO(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_RLO;
-    }
-
-    bool is_Bidi_Other_Neutral(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_ON;
-    }
-
-    bool is_Unassigned_Code_Value(const UCS4 uc) const {
-      return !is_defined(uc) && !is_Not_a_Character(uc);
-    }
-
 
   private:
     // functions
     TibetanF00(const TibetanF00 &) {}
 
-    Babylon::UCS4 _first_letter;
-    Babylon::UCS4 _last_letter;
-    static const bool _is_defined[256];
+    Babylon::UCS4 m_first_letter;
+    Babylon::UCS4 m_last_letter;
+    // Babylon::UCS4_string m_version;
+    static const bitset<256> m_is_defined;
     static const unsigned char _cat[256];
     static const unsigned char _comb_cl[256];
-    static const unsigned char _bidir[256];
+    static const unsigned char m_bidir[256];
     static const unsigned char _decomp[256];
-    static const UCS2 _decompStr[256][2];
-    static const unsigned char _lb[256];
-    map<UCS4, UCS4> _composeMap;
-    static const bool _Non_break[256];
-    static const bool _Paired_Punctuation[256];
-    static const bool _Left_of_Pair[256];
-    static const bool _Combining[256];
-    static const bool _Non_spacing[256];
-    static const bool _Composite[256];
-    static const bool _Alphabetic[256];
-    static const bool _Diacritic[256];
-    static const bool _Identifier_Part[256];
+    static const UCS2 m_decompStr[256][2];
+    static const unsigned char m_lb[256];
+    map<pair<UCS4, UCS4>, UCS4> m_composeMap;
+    static const bitset<256> m_Composite;
+    static const bitset<256> m_Alphabetic;
+    static const bitset<256> m_Diacritic;
+    static const bitset<256> m_Identifier_Part_Not_Cf;
 
   }; // class TibetanF00
 
-  const bool TibetanF00::_is_defined[] = {
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    0, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 0, 0, 0, 0, 0, 
-    0, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 0, 0, 0, 0, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    0, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 0, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 0, 0, 1, 
-    0, 0, 0, 0, 0, 0, 0, 0, 
-    0, 0, 0, 0, 0, 0, 0, 0, 
-    0, 0, 0, 0, 0, 0, 0, 0, 
-    0, 0, 0, 0, 0, 0, 0, 0, 
-    0, 0, 0, 0, 0, 0, 0, 0, 
-    0, 0, 0, 0, 0, 0, 0, 0
-  };
+    const bitset<256> TibetanF00::m_is_defined(string("0000000000000000000000000000000000000000000000001001111111111111110111111111111111111111111111111111111011111111000011111111111111111111111111100000011111111111111111111111111111111110111111111111111111111111111111111111111111111111111111111111111111111111"));
 
   const unsigned char TibetanF00::_cat[] = {
     CAT_Lo, CAT_So, CAT_So, CAT_So, CAT_Po, CAT_Po, CAT_Po, CAT_Po, 
@@ -737,7 +559,7 @@ namespace Babylon {
     0, 0, 0, 0, 0, 0, 0, 0
   };
 
-  const unsigned char TibetanF00::_bidir[] = {
+  const unsigned char TibetanF00::m_bidir[] = {
     BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
     BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
     BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
@@ -807,74 +629,74 @@ namespace Babylon {
     DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP
   };
 
-  const UCS2 TibetanF00::_decompStr[][2] = {
-    { 0x0F00, 0x0000 }, { 0x0F01, 0x0000 }, { 0x0F02, 0x0000 }, { 0x0F03, 0x0000 }, 
-    { 0x0F04, 0x0000 }, { 0x0F05, 0x0000 }, { 0x0F06, 0x0000 }, { 0x0F07, 0x0000 }, 
-    { 0x0F08, 0x0000 }, { 0x0F09, 0x0000 }, { 0x0F0A, 0x0000 }, { 0x0F0B, 0x0000 }, 
-    { 0x0F0B, 0x0000 }, { 0x0F0D, 0x0000 }, { 0x0F0E, 0x0000 }, { 0x0F0F, 0x0000 }, 
-    { 0x0F10, 0x0000 }, { 0x0F11, 0x0000 }, { 0x0F12, 0x0000 }, { 0x0F13, 0x0000 }, 
-    { 0x0F14, 0x0000 }, { 0x0F15, 0x0000 }, { 0x0F16, 0x0000 }, { 0x0F17, 0x0000 }, 
-    { 0x0F18, 0x0000 }, { 0x0F19, 0x0000 }, { 0x0F1A, 0x0000 }, { 0x0F1B, 0x0000 }, 
-    { 0x0F1C, 0x0000 }, { 0x0F1D, 0x0000 }, { 0x0F1E, 0x0000 }, { 0x0F1F, 0x0000 }, 
-    { 0x0F20, 0x0000 }, { 0x0F21, 0x0000 }, { 0x0F22, 0x0000 }, { 0x0F23, 0x0000 }, 
-    { 0x0F24, 0x0000 }, { 0x0F25, 0x0000 }, { 0x0F26, 0x0000 }, { 0x0F27, 0x0000 }, 
-    { 0x0F28, 0x0000 }, { 0x0F29, 0x0000 }, { 0x0F2A, 0x0000 }, { 0x0F2B, 0x0000 }, 
-    { 0x0F2C, 0x0000 }, { 0x0F2D, 0x0000 }, { 0x0F2E, 0x0000 }, { 0x0F2F, 0x0000 }, 
-    { 0x0F30, 0x0000 }, { 0x0F31, 0x0000 }, { 0x0F32, 0x0000 }, { 0x0F33, 0x0000 }, 
-    { 0x0F34, 0x0000 }, { 0x0F35, 0x0000 }, { 0x0F36, 0x0000 }, { 0x0F37, 0x0000 }, 
-    { 0x0F38, 0x0000 }, { 0x0F39, 0x0000 }, { 0x0F3A, 0x0000 }, { 0x0F3B, 0x0000 }, 
-    { 0x0F3C, 0x0000 }, { 0x0F3D, 0x0000 }, { 0x0F3E, 0x0000 }, { 0x0F3F, 0x0000 }, 
-    { 0x0F40, 0x0000 }, { 0x0F41, 0x0000 }, { 0x0F42, 0x0000 }, { 0x0F42, 0x0FB7 }, 
-    { 0x0F44, 0x0000 }, { 0x0F45, 0x0000 }, { 0x0F46, 0x0000 }, { 0x0F47, 0x0000 }, 
-    { 0x0F48, 0x0000 }, { 0x0F49, 0x0000 }, { 0x0F4A, 0x0000 }, { 0x0F4B, 0x0000 }, 
-    { 0x0F4C, 0x0000 }, { 0x0F4C, 0x0FB7 }, { 0x0F4E, 0x0000 }, { 0x0F4F, 0x0000 }, 
-    { 0x0F50, 0x0000 }, { 0x0F51, 0x0000 }, { 0x0F51, 0x0FB7 }, { 0x0F53, 0x0000 }, 
-    { 0x0F54, 0x0000 }, { 0x0F55, 0x0000 }, { 0x0F56, 0x0000 }, { 0x0F56, 0x0FB7 }, 
-    { 0x0F58, 0x0000 }, { 0x0F59, 0x0000 }, { 0x0F5A, 0x0000 }, { 0x0F5B, 0x0000 }, 
-    { 0x0F5B, 0x0FB7 }, { 0x0F5D, 0x0000 }, { 0x0F5E, 0x0000 }, { 0x0F5F, 0x0000 }, 
-    { 0x0F60, 0x0000 }, { 0x0F61, 0x0000 }, { 0x0F62, 0x0000 }, { 0x0F63, 0x0000 }, 
-    { 0x0F64, 0x0000 }, { 0x0F65, 0x0000 }, { 0x0F66, 0x0000 }, { 0x0F67, 0x0000 }, 
-    { 0x0F68, 0x0000 }, { 0x0F40, 0x0FB5 }, { 0x0F6A, 0x0000 }, { 0x0F6B, 0x0000 }, 
-    { 0x0F6C, 0x0000 }, { 0x0F6D, 0x0000 }, { 0x0F6E, 0x0000 }, { 0x0F6F, 0x0000 }, 
-    { 0x0F70, 0x0000 }, { 0x0F71, 0x0000 }, { 0x0F72, 0x0000 }, { 0x0F71, 0x0F72 }, 
-    { 0x0F74, 0x0000 }, { 0x0F71, 0x0F74 }, { 0x0FB2, 0x0F80 }, { 0x0FB2, 0x0F81 }, 
-    { 0x0FB3, 0x0F80 }, { 0x0FB3, 0x0F81 }, { 0x0F7A, 0x0000 }, { 0x0F7B, 0x0000 }, 
-    { 0x0F7C, 0x0000 }, { 0x0F7D, 0x0000 }, { 0x0F7E, 0x0000 }, { 0x0F7F, 0x0000 }, 
-    { 0x0F80, 0x0000 }, { 0x0F71, 0x0F80 }, { 0x0F82, 0x0000 }, { 0x0F83, 0x0000 }, 
-    { 0x0F84, 0x0000 }, { 0x0F85, 0x0000 }, { 0x0F86, 0x0000 }, { 0x0F87, 0x0000 }, 
-    { 0x0F88, 0x0000 }, { 0x0F89, 0x0000 }, { 0x0F8A, 0x0000 }, { 0x0F8B, 0x0000 }, 
-    { 0x0F8C, 0x0000 }, { 0x0F8D, 0x0000 }, { 0x0F8E, 0x0000 }, { 0x0F8F, 0x0000 }, 
-    { 0x0F90, 0x0000 }, { 0x0F91, 0x0000 }, { 0x0F92, 0x0000 }, { 0x0F92, 0x0FB7 }, 
-    { 0x0F94, 0x0000 }, { 0x0F95, 0x0000 }, { 0x0F96, 0x0000 }, { 0x0F97, 0x0000 }, 
-    { 0x0F98, 0x0000 }, { 0x0F99, 0x0000 }, { 0x0F9A, 0x0000 }, { 0x0F9B, 0x0000 }, 
-    { 0x0F9C, 0x0000 }, { 0x0F9C, 0x0FB7 }, { 0x0F9E, 0x0000 }, { 0x0F9F, 0x0000 }, 
-    { 0x0FA0, 0x0000 }, { 0x0FA1, 0x0000 }, { 0x0FA1, 0x0FB7 }, { 0x0FA3, 0x0000 }, 
-    { 0x0FA4, 0x0000 }, { 0x0FA5, 0x0000 }, { 0x0FA6, 0x0000 }, { 0x0FA6, 0x0FB7 }, 
-    { 0x0FA8, 0x0000 }, { 0x0FA9, 0x0000 }, { 0x0FAA, 0x0000 }, { 0x0FAB, 0x0000 }, 
-    { 0x0FAB, 0x0FB7 }, { 0x0FAD, 0x0000 }, { 0x0FAE, 0x0000 }, { 0x0FAF, 0x0000 }, 
-    { 0x0FB0, 0x0000 }, { 0x0FB1, 0x0000 }, { 0x0FB2, 0x0000 }, { 0x0FB3, 0x0000 }, 
-    { 0x0FB4, 0x0000 }, { 0x0FB5, 0x0000 }, { 0x0FB6, 0x0000 }, { 0x0FB7, 0x0000 }, 
-    { 0x0FB8, 0x0000 }, { 0x0F90, 0x0FB5 }, { 0x0FBA, 0x0000 }, { 0x0FBB, 0x0000 }, 
-    { 0x0FBC, 0x0000 }, { 0x0FBD, 0x0000 }, { 0x0FBE, 0x0000 }, { 0x0FBF, 0x0000 }, 
-    { 0x0FC0, 0x0000 }, { 0x0FC1, 0x0000 }, { 0x0FC2, 0x0000 }, { 0x0FC3, 0x0000 }, 
-    { 0x0FC4, 0x0000 }, { 0x0FC5, 0x0000 }, { 0x0FC6, 0x0000 }, { 0x0FC7, 0x0000 }, 
-    { 0x0FC8, 0x0000 }, { 0x0FC9, 0x0000 }, { 0x0FCA, 0x0000 }, { 0x0FCB, 0x0000 }, 
-    { 0x0FCC, 0x0000 }, { 0x0FCD, 0x0000 }, { 0x0FCE, 0x0000 }, { 0x0FCF, 0x0000 }, 
-    { 0x0FD0, 0x0000 }, { 0x0FD1, 0x0000 }, { 0x0FD2, 0x0000 }, { 0x0FD3, 0x0000 }, 
-    { 0x0FD4, 0x0000 }, { 0x0FD5, 0x0000 }, { 0x0FD6, 0x0000 }, { 0x0FD7, 0x0000 }, 
-    { 0x0FD8, 0x0000 }, { 0x0FD9, 0x0000 }, { 0x0FDA, 0x0000 }, { 0x0FDB, 0x0000 }, 
-    { 0x0FDC, 0x0000 }, { 0x0FDD, 0x0000 }, { 0x0FDE, 0x0000 }, { 0x0FDF, 0x0000 }, 
-    { 0x0FE0, 0x0000 }, { 0x0FE1, 0x0000 }, { 0x0FE2, 0x0000 }, { 0x0FE3, 0x0000 }, 
-    { 0x0FE4, 0x0000 }, { 0x0FE5, 0x0000 }, { 0x0FE6, 0x0000 }, { 0x0FE7, 0x0000 }, 
-    { 0x0FE8, 0x0000 }, { 0x0FE9, 0x0000 }, { 0x0FEA, 0x0000 }, { 0x0FEB, 0x0000 }, 
-    { 0x0FEC, 0x0000 }, { 0x0FED, 0x0000 }, { 0x0FEE, 0x0000 }, { 0x0FEF, 0x0000 }, 
-    { 0x0FF0, 0x0000 }, { 0x0FF1, 0x0000 }, { 0x0FF2, 0x0000 }, { 0x0FF3, 0x0000 }, 
-    { 0x0FF4, 0x0000 }, { 0x0FF5, 0x0000 }, { 0x0FF6, 0x0000 }, { 0x0FF7, 0x0000 }, 
-    { 0x0FF8, 0x0000 }, { 0x0FF9, 0x0000 }, { 0x0FFA, 0x0000 }, { 0x0FFB, 0x0000 }, 
-    { 0x0FFC, 0x0000 }, { 0x0FFD, 0x0000 }, { 0x0FFE, 0x0000 }, { 0x0FFF, 0x0000 }
+  const UCS2 TibetanF00::m_decompStr[][2] = {
+    { 0x0F00u, 0x0000u }, { 0x0F01u, 0x0000u }, { 0x0F02u, 0x0000u }, { 0x0F03u, 0x0000u }, 
+    { 0x0F04u, 0x0000u }, { 0x0F05u, 0x0000u }, { 0x0F06u, 0x0000u }, { 0x0F07u, 0x0000u }, 
+    { 0x0F08u, 0x0000u }, { 0x0F09u, 0x0000u }, { 0x0F0Au, 0x0000u }, { 0x0F0Bu, 0x0000u }, 
+    { 0x0F0Bu, 0x0000u }, { 0x0F0Du, 0x0000u }, { 0x0F0Eu, 0x0000u }, { 0x0F0Fu, 0x0000u }, 
+    { 0x0F10u, 0x0000u }, { 0x0F11u, 0x0000u }, { 0x0F12u, 0x0000u }, { 0x0F13u, 0x0000u }, 
+    { 0x0F14u, 0x0000u }, { 0x0F15u, 0x0000u }, { 0x0F16u, 0x0000u }, { 0x0F17u, 0x0000u }, 
+    { 0x0F18u, 0x0000u }, { 0x0F19u, 0x0000u }, { 0x0F1Au, 0x0000u }, { 0x0F1Bu, 0x0000u }, 
+    { 0x0F1Cu, 0x0000u }, { 0x0F1Du, 0x0000u }, { 0x0F1Eu, 0x0000u }, { 0x0F1Fu, 0x0000u }, 
+    { 0x0F20u, 0x0000u }, { 0x0F21u, 0x0000u }, { 0x0F22u, 0x0000u }, { 0x0F23u, 0x0000u }, 
+    { 0x0F24u, 0x0000u }, { 0x0F25u, 0x0000u }, { 0x0F26u, 0x0000u }, { 0x0F27u, 0x0000u }, 
+    { 0x0F28u, 0x0000u }, { 0x0F29u, 0x0000u }, { 0x0F2Au, 0x0000u }, { 0x0F2Bu, 0x0000u }, 
+    { 0x0F2Cu, 0x0000u }, { 0x0F2Du, 0x0000u }, { 0x0F2Eu, 0x0000u }, { 0x0F2Fu, 0x0000u }, 
+    { 0x0F30u, 0x0000u }, { 0x0F31u, 0x0000u }, { 0x0F32u, 0x0000u }, { 0x0F33u, 0x0000u }, 
+    { 0x0F34u, 0x0000u }, { 0x0F35u, 0x0000u }, { 0x0F36u, 0x0000u }, { 0x0F37u, 0x0000u }, 
+    { 0x0F38u, 0x0000u }, { 0x0F39u, 0x0000u }, { 0x0F3Au, 0x0000u }, { 0x0F3Bu, 0x0000u }, 
+    { 0x0F3Cu, 0x0000u }, { 0x0F3Du, 0x0000u }, { 0x0F3Eu, 0x0000u }, { 0x0F3Fu, 0x0000u }, 
+    { 0x0F40u, 0x0000u }, { 0x0F41u, 0x0000u }, { 0x0F42u, 0x0000u }, { 0x0F42u, 0x0FB7u }, 
+    { 0x0F44u, 0x0000u }, { 0x0F45u, 0x0000u }, { 0x0F46u, 0x0000u }, { 0x0F47u, 0x0000u }, 
+    { 0x0F48u, 0x0000u }, { 0x0F49u, 0x0000u }, { 0x0F4Au, 0x0000u }, { 0x0F4Bu, 0x0000u }, 
+    { 0x0F4Cu, 0x0000u }, { 0x0F4Cu, 0x0FB7u }, { 0x0F4Eu, 0x0000u }, { 0x0F4Fu, 0x0000u }, 
+    { 0x0F50u, 0x0000u }, { 0x0F51u, 0x0000u }, { 0x0F51u, 0x0FB7u }, { 0x0F53u, 0x0000u }, 
+    { 0x0F54u, 0x0000u }, { 0x0F55u, 0x0000u }, { 0x0F56u, 0x0000u }, { 0x0F56u, 0x0FB7u }, 
+    { 0x0F58u, 0x0000u }, { 0x0F59u, 0x0000u }, { 0x0F5Au, 0x0000u }, { 0x0F5Bu, 0x0000u }, 
+    { 0x0F5Bu, 0x0FB7u }, { 0x0F5Du, 0x0000u }, { 0x0F5Eu, 0x0000u }, { 0x0F5Fu, 0x0000u }, 
+    { 0x0F60u, 0x0000u }, { 0x0F61u, 0x0000u }, { 0x0F62u, 0x0000u }, { 0x0F63u, 0x0000u }, 
+    { 0x0F64u, 0x0000u }, { 0x0F65u, 0x0000u }, { 0x0F66u, 0x0000u }, { 0x0F67u, 0x0000u }, 
+    { 0x0F68u, 0x0000u }, { 0x0F40u, 0x0FB5u }, { 0x0F6Au, 0x0000u }, { 0x0F6Bu, 0x0000u }, 
+    { 0x0F6Cu, 0x0000u }, { 0x0F6Du, 0x0000u }, { 0x0F6Eu, 0x0000u }, { 0x0F6Fu, 0x0000u }, 
+    { 0x0F70u, 0x0000u }, { 0x0F71u, 0x0000u }, { 0x0F72u, 0x0000u }, { 0x0F71u, 0x0F72u }, 
+    { 0x0F74u, 0x0000u }, { 0x0F71u, 0x0F74u }, { 0x0FB2u, 0x0F80u }, { 0x0FB2u, 0x0F81u }, 
+    { 0x0FB3u, 0x0F80u }, { 0x0FB3u, 0x0F81u }, { 0x0F7Au, 0x0000u }, { 0x0F7Bu, 0x0000u }, 
+    { 0x0F7Cu, 0x0000u }, { 0x0F7Du, 0x0000u }, { 0x0F7Eu, 0x0000u }, { 0x0F7Fu, 0x0000u }, 
+    { 0x0F80u, 0x0000u }, { 0x0F71u, 0x0F80u }, { 0x0F82u, 0x0000u }, { 0x0F83u, 0x0000u }, 
+    { 0x0F84u, 0x0000u }, { 0x0F85u, 0x0000u }, { 0x0F86u, 0x0000u }, { 0x0F87u, 0x0000u }, 
+    { 0x0F88u, 0x0000u }, { 0x0F89u, 0x0000u }, { 0x0F8Au, 0x0000u }, { 0x0F8Bu, 0x0000u }, 
+    { 0x0F8Cu, 0x0000u }, { 0x0F8Du, 0x0000u }, { 0x0F8Eu, 0x0000u }, { 0x0F8Fu, 0x0000u }, 
+    { 0x0F90u, 0x0000u }, { 0x0F91u, 0x0000u }, { 0x0F92u, 0x0000u }, { 0x0F92u, 0x0FB7u }, 
+    { 0x0F94u, 0x0000u }, { 0x0F95u, 0x0000u }, { 0x0F96u, 0x0000u }, { 0x0F97u, 0x0000u }, 
+    { 0x0F98u, 0x0000u }, { 0x0F99u, 0x0000u }, { 0x0F9Au, 0x0000u }, { 0x0F9Bu, 0x0000u }, 
+    { 0x0F9Cu, 0x0000u }, { 0x0F9Cu, 0x0FB7u }, { 0x0F9Eu, 0x0000u }, { 0x0F9Fu, 0x0000u }, 
+    { 0x0FA0u, 0x0000u }, { 0x0FA1u, 0x0000u }, { 0x0FA1u, 0x0FB7u }, { 0x0FA3u, 0x0000u }, 
+    { 0x0FA4u, 0x0000u }, { 0x0FA5u, 0x0000u }, { 0x0FA6u, 0x0000u }, { 0x0FA6u, 0x0FB7u }, 
+    { 0x0FA8u, 0x0000u }, { 0x0FA9u, 0x0000u }, { 0x0FAAu, 0x0000u }, { 0x0FABu, 0x0000u }, 
+    { 0x0FABu, 0x0FB7u }, { 0x0FADu, 0x0000u }, { 0x0FAEu, 0x0000u }, { 0x0FAFu, 0x0000u }, 
+    { 0x0FB0u, 0x0000u }, { 0x0FB1u, 0x0000u }, { 0x0FB2u, 0x0000u }, { 0x0FB3u, 0x0000u }, 
+    { 0x0FB4u, 0x0000u }, { 0x0FB5u, 0x0000u }, { 0x0FB6u, 0x0000u }, { 0x0FB7u, 0x0000u }, 
+    { 0x0FB8u, 0x0000u }, { 0x0F90u, 0x0FB5u }, { 0x0FBAu, 0x0000u }, { 0x0FBBu, 0x0000u }, 
+    { 0x0FBCu, 0x0000u }, { 0x0FBDu, 0x0000u }, { 0x0FBEu, 0x0000u }, { 0x0FBFu, 0x0000u }, 
+    { 0x0FC0u, 0x0000u }, { 0x0FC1u, 0x0000u }, { 0x0FC2u, 0x0000u }, { 0x0FC3u, 0x0000u }, 
+    { 0x0FC4u, 0x0000u }, { 0x0FC5u, 0x0000u }, { 0x0FC6u, 0x0000u }, { 0x0FC7u, 0x0000u }, 
+    { 0x0FC8u, 0x0000u }, { 0x0FC9u, 0x0000u }, { 0x0FCAu, 0x0000u }, { 0x0FCBu, 0x0000u }, 
+    { 0x0FCCu, 0x0000u }, { 0x0FCDu, 0x0000u }, { 0x0FCEu, 0x0000u }, { 0x0FCFu, 0x0000u }, 
+    { 0x0FD0u, 0x0000u }, { 0x0FD1u, 0x0000u }, { 0x0FD2u, 0x0000u }, { 0x0FD3u, 0x0000u }, 
+    { 0x0FD4u, 0x0000u }, { 0x0FD5u, 0x0000u }, { 0x0FD6u, 0x0000u }, { 0x0FD7u, 0x0000u }, 
+    { 0x0FD8u, 0x0000u }, { 0x0FD9u, 0x0000u }, { 0x0FDAu, 0x0000u }, { 0x0FDBu, 0x0000u }, 
+    { 0x0FDCu, 0x0000u }, { 0x0FDDu, 0x0000u }, { 0x0FDEu, 0x0000u }, { 0x0FDFu, 0x0000u }, 
+    { 0x0FE0u, 0x0000u }, { 0x0FE1u, 0x0000u }, { 0x0FE2u, 0x0000u }, { 0x0FE3u, 0x0000u }, 
+    { 0x0FE4u, 0x0000u }, { 0x0FE5u, 0x0000u }, { 0x0FE6u, 0x0000u }, { 0x0FE7u, 0x0000u }, 
+    { 0x0FE8u, 0x0000u }, { 0x0FE9u, 0x0000u }, { 0x0FEAu, 0x0000u }, { 0x0FEBu, 0x0000u }, 
+    { 0x0FECu, 0x0000u }, { 0x0FEDu, 0x0000u }, { 0x0FEEu, 0x0000u }, { 0x0FEFu, 0x0000u }, 
+    { 0x0FF0u, 0x0000u }, { 0x0FF1u, 0x0000u }, { 0x0FF2u, 0x0000u }, { 0x0FF3u, 0x0000u }, 
+    { 0x0FF4u, 0x0000u }, { 0x0FF5u, 0x0000u }, { 0x0FF6u, 0x0000u }, { 0x0FF7u, 0x0000u }, 
+    { 0x0FF8u, 0x0000u }, { 0x0FF9u, 0x0000u }, { 0x0FFAu, 0x0000u }, { 0x0FFBu, 0x0000u }, 
+    { 0x0FFCu, 0x0000u }, { 0x0FFDu, 0x0000u }, { 0x0FFEu, 0x0000u }, { 0x0FFFu, 0x0000u }
   };
 
-  const unsigned char TibetanF00::_lb[] = {
+  const unsigned char TibetanF00::m_lb[] = {
     LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, 
     LB_AL, LB_AL, LB_AL, LB_BA, LB_GL, LB_AL, LB_AL, LB_AL, 
     LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, 
@@ -909,320 +731,13 @@ namespace Babylon {
     LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL
   };
 
-    const bool TibetanF00::_Non_break[] = {
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 1, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
+    const bitset<256> TibetanF00::m_Composite(string("0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011111000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"));
 
-    const bool TibetanF00::_Paired_Punctuation[] = {
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 1, 1, 1, 1, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
+    const bitset<256> TibetanF00::m_Alphabetic(string("0000000000000000000000000000000000000000000000000000000000000000000111111111111111111111111111111111111011111111000011110000001101111111111111100000011111111111111111111111111111111110111111110000000000000000000000000000000000000000000000000000000000000000"));
 
-    const bool TibetanF00::_Left_of_Pair[] = {
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 1, 0, 1, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
+    const bitset<256> TibetanF00::m_Diacritic(string("0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001101110000000000000000000000000000000000000000000000000000000000000000001100000000000000000000000000000000000011000000000000000000000000"));
 
-    const bool TibetanF00::_Combining[] = {
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        1, 1, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 1, 0, 1, 
-        0, 1, 0, 0, 0, 0, 1, 1, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 0, 1, 1, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        0, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 1, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
-
-    const bool TibetanF00::_Non_spacing[] = {
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        1, 1, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 1, 0, 1, 
-        0, 1, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 0, 
-        1, 1, 1, 1, 1, 0, 1, 1, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        0, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 1, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
-
-    const bool TibetanF00::_Composite[] = {
-        1, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 1, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 1, 0, 0, 
-        0, 0, 1, 0, 0, 0, 0, 1, 
-        0, 0, 0, 0, 1, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 1, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 1, 0, 1, 1, 1, 
-        1, 1, 0, 0, 0, 0, 0, 0, 
-        0, 1, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 1, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 1, 0, 0, 
-        0, 0, 1, 0, 0, 0, 0, 1, 
-        0, 0, 0, 0, 1, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 1, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
-
-    const bool TibetanF00::_Alphabetic[] = {
-        1, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        0, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 0, 0, 0, 0, 0, 
-        0, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 0, 0, 0, 0, 0, 0, 
-        1, 1, 1, 1, 0, 0, 0, 0, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        0, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
-
-    const bool TibetanF00::_Diacritic[] = {
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        1, 1, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 1, 0, 1, 
-        0, 1, 0, 0, 0, 0, 1, 1, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 1, 1, 1, 0, 1, 1, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 1, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
-
-    const bool TibetanF00::_Identifier_Part[] = {
-        1, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        1, 1, 0, 0, 0, 0, 0, 0, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 1, 0, 1, 
-        0, 1, 0, 0, 0, 0, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        0, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 0, 0, 0, 0, 0, 
-        0, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 0, 1, 1, 
-        1, 1, 1, 1, 0, 0, 0, 0, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        0, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 1, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
+    const bitset<256> TibetanF00::m_Identifier_Part_Not_Cf(string("0000000000000000000000000000000000000000000000000000000000000000000111111111111111111111111111111111111011111111000011111101111101111111111111100000011111111111111111111111111111111110111111111100000000000000000000111111111100000011000000000000000000000000"));
 
 }; // namespace Babylon
 

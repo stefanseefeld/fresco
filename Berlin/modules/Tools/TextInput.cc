@@ -23,7 +23,6 @@
 #include <Warsaw/config.hh>
 #include <Warsaw/Input.hh>
 #include "Tool/TextInput.hh"
-#include <Prague/Unicode/Unicode.hh>
 #include <Warsaw/Unicode.hh>
 #include <Prague/Sys/Tracer.hh>
 
@@ -34,13 +33,13 @@ void TextInput::key_press(const Input::Event &event)
 {
   Trace trace("TextInput::key_press");
   const Input::Toggle &toggle = event[0].attr.selection();
-  Unicode::Char uc(static_cast<Unicode::_Char>(toggle.number));
-  if (uc.is_printable()) buffer->insert_char(Unicode::toCORBA(uc));
+  Babylon::Char uc(static_cast<Babylon::UCS4>(toggle.number));
+  if (uc.is_Printable()) buffer->insert_char(Unicode::to_CORBA(uc));
   else switch (toggle.number)
     {
-    case Unicode::UC_BACKSPACE:     buffer->remove_backward(1); break; // backspace
-    case Unicode::KEY_CURSOR_LEFT:  buffer->backward(); break;        // left
-    case Unicode::KEY_CURSOR_RIGHT: buffer->forward(); break;         // right
+    case Babylon::UC_BACKSPACE:     buffer->remove_backward(1); break; // backspace
+    case Babylon::KEY_CURSOR_LEFT:  buffer->backward(); break;        // left
+    case Babylon::KEY_CURSOR_RIGHT: buffer->forward(); break;         // right
     default:                        ControllerImpl::key_press(event); break;
     };
 }

@@ -72,12 +72,12 @@ protected:
   {
   protected:
     atom _atom;
-    map<Unicode::String, atom> _atoms;
+    map<Babylon::String, atom> _atoms;
   public:
-    atom atomize(Unicode::String &);
+    atom atomize(Babylon::String &);
   };
   Atomizer _a;
-  atom atomize(Unicode::String &u) {return _a.atomize(u);}
+  atom atomize(Babylon::String &u) {return _a.atomize(u);}
     
   double _xres, _yres, _xdpi, _ydpi;  
   typedef unsigned int PtSize;
@@ -140,8 +140,8 @@ protected:
   
   atom                  _family;
   atom                  _style;
-  Unicode::String       _familyStr;
-  Unicode::String       _styleStr;
+  Babylon::String       _familyStr;
+  Babylon::String       _styleStr;
   PtSize                _size; 
   double                _scale;
   FT_Library            _library;
@@ -156,7 +156,7 @@ protected:
     map<TGlyphSpec, Warsaw::DrawingKit::GlyphMetrics,TGlyphSpec_cmp> > _glyphMetricsCache;   
 
 private:
-  bool chooseFaceInteractively(const map<FamStyle,FT_Face> &, const char *, Unicode::String &, Unicode::String &);
+  bool chooseFaceInteractively(const map<FamStyle,FT_Face> &, const char *, Babylon::String &, Babylon::String &);
 };
 
 #endif

@@ -63,10 +63,10 @@ LibArtUnifont::LibArtUnifont(Console::Drawable *drawable) :
 LibArtUnifont::~LibArtUnifont() { delete glyphmap ; art_pixbuf_free(myPixBuf);}
 unsigned long LibArtUnifont::size() { return 16;}
 unsigned long LibArtUnifont::weight() { return 100;}
-Unistring *LibArtUnifont::family() { return new Unistring(Unicode::toCORBA(Unicode::String("GNU Unifont")));}
+Unistring *LibArtUnifont::family() { return new Unistring(Unicode::to_CORBA(Babylon::String("GNU Unifont")));}
 Unistring *LibArtUnifont::subfamily() { return 0;}
 Unistring *LibArtUnifont::fullname() { return 0;}
-Unistring *LibArtUnifont::style() { return new Unistring(Unicode::toCORBA(Unicode::String("monospace")));}
+Unistring *LibArtUnifont::style() { return new Unistring(Unicode::to_CORBA(Babylon::String("monospace")));}
 
 DrawingKit::FontMetrics LibArtUnifont::metrics()
 {

@@ -99,5 +99,5 @@ FocusDemo::FocusDemo(Application *a)
   gr->append_controller(c2);
   gr->append_controller(c3);
   gr->append_controller(c4);
-  application->append(gr, Unicode::String("focus demo"));
+  application->append(gr, Babylon::String("focus demo"));
 };

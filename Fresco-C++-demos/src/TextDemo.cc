@@ -32,7 +32,7 @@ TextDemo::TextDemo(Application *a)
   CommandKit_var command = application->command();
   ToolKit_var tool = application->tool();
   WidgetKit_var widget = application->widget();
-  Unicode::Char chars[] = {
+  Babylon::Char chars[] = {
     0x004d, 0x0061, 0x0067, 0x0079, 0x0061, 0x0072, 0x0020, 0x0420,
     0x0443, 0x0441, 0x0441, 0x043a, 0x0438, 0x0439, 0x0020, 0x0395,
     0x039b, 0x039b, 0x0397, 0x039d, 0x0399, 0x039a, 0x0391, 0x0020,
@@ -40,8 +40,8 @@ TextDemo::TextDemo(Application *a)
     0xad6d, 0xc5b4
   };
 
-  Unicode::String str(34, chars);
-  Graphic_var txt = text->chunk(Unicode::toCORBA(str));
+  Babylon::String str(34, chars);
+  Graphic_var txt = text->chunk(Unicode::to_CORBA(str));
   Controller_var group = tool->group(Graphic_var(tool->rgb(txt, 0.7, 0.8, 1.0)));
-  application->append(group, Unicode::String("text demo"));
+  application->append(group, Babylon::String("text demo"));
 };

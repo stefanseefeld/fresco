@@ -41,10 +41,10 @@
 using namespace Warsaw;
 
 GLUnifont::GLUnifont()
-  : _family(Unicode::toCORBA(Unicode::String("GNU Unifont"))),
+  : _family(Unicode::to_CORBA(Babylon::String("GNU Unifont"))),
     _subfamily(),
     _fullname(),
-    _style(Unicode::toCORBA(Unicode::String("monospace")))
+    _style(Unicode::to_CORBA(Babylon::String("monospace")))
 {
   Prague::Path path = RCManager::get_path("unifontpath");
   string glyphDB = path.lookup_file("glyph.dat");

@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Wed,  6 Dec 2000 23:26:16 +0100.
+ * ftp.unicode.org on Mon,  8 Jan 2001 23:32:34 +0100.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -25,6 +25,7 @@
 
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
+#include <bitset>
 
 namespace Babylon {
 
@@ -34,9 +35,9 @@ namespace Babylon {
     };
 
     CJK_Radicals_Supplement2E80() {
-      _first_letter = 0x2E80;
-      _last_letter  = 0x2EFF;
-      // _version="3.0.1" // Not yet supported!
+      m_first_letter = 0x2E80;
+      m_last_letter  = 0x2EFF;
+      // m_version="3.0.1" // Not yet supported!
 
     }
 
@@ -45,11 +46,11 @@ namespace Babylon {
     }
 
     UCS4 firstLetter() {
-      return _first_letter;
+      return m_first_letter;
     }
 
     UCS4 lastLetter() {
-      return _last_letter;
+      return m_last_letter;
     }
 
     bool is_undef_block() const {
@@ -63,31 +64,19 @@ namespace Babylon {
     }
 
     bool is_defined(const UCS4 uc) const {
-      return (_is_defined[uc - _first_letter]);
+      return (m_is_defined.test(uc - m_first_letter));
     }
 
     UCS4 uppercase(const UCS4 uc) const {
       return uc;
     }
 
-    bool is_Uppercase(const UCS4 uc) const {
-      return category(uc) == CAT_Lu;
-    }
-
     UCS4 lowercase(const UCS4 uc) const {
       return uc;
     }
 
-    bool is_Lowercase(const UCS4 uc) const {
-      return category(uc) == CAT_Ll;
-    }
-
     UCS4 titlecase(const UCS4 uc) const {
       return uc;
-    }
-
-    bool is_Titlecase(const UCS4 uc) const {
-      return category(uc) == CAT_Lt;
     }
 
     int dec_digit_value(const UCS4 uc) const {
@@ -135,18 +124,13 @@ namespace Babylon {
     Char_Decomp decomp_type(const UCS4 uc) const {
       if (!is_defined(uc))
         return DECOMP_MAX;
-      return Babylon::Char_Decomp(CJK_Radicals_Supplement2E80::_decomp[uc - _first_letter]);
+      return Babylon::Char_Decomp(CJK_Radicals_Supplement2E80::_decomp[uc - m_first_letter]);
     }
 
     UTF32_string decompose(const UCS4 uc) const {
       Babylon::UTF32_string us;
-      us.resize(2);
-      us[0] = CJK_Radicals_Supplement2E80::_decompStr[uc - _first_letter][0];
-      us[1] = CJK_Radicals_Supplement2E80::_decompStr[uc - _first_letter][1];
-      if (us[1] == 0x0000) {
-        us.resize(1);
-      }
-
+      us.resize(1);
+      us[0] = CJK_Radicals_Supplement2E80::m_decompStr[uc - m_first_letter];
       return us;
     }
 
@@ -166,11 +150,7 @@ namespace Babylon {
       return Babylon::EA_Width(EA_WIDTH_W);
     }
 
-    UCS4 compose (const UCS4 starter, const UCS4 last) {
-      return 0;
-    }
-
-    bool is_Zero_width(const UCS4 uc) const {
+    UCS4 compose (const UCS4 start, const UCS4 last) {
       return 0;
     }
 
@@ -182,6 +162,10 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_Format_Control(const UCS4 uc) const {
+      return 0;
+    }
+
     bool is_Bidi_Control(const UCS4 uc) const {
       return 0;
     }
@@ -190,7 +174,7 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Format_Control(const UCS4 uc) const {
+    bool is_Other_Format_Control(const UCS4 uc) const {
       return 0;
     }
 
@@ -214,22 +198,6 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Paired_Punctuation(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Left_of_Pair(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Combining(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Non_spacing(const UCS4 uc) const {
-      return 0;
-    }
-
     bool is_Composite(const UCS4 uc) const {
       return 0;
     }
@@ -250,19 +218,15 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Identifier_Part(const UCS4 uc) const {
+    bool is_Identifier_Part_Not_Cf(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Ignorable_Control(const UCS4 uc) const {
+    bool is_Other_Uppercase(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Bidi_Hebrew_Right_to_Left(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Bidi_Arabic_Right_to_Left(const UCS4 uc) const {
+    bool is_Other_Lowercase(const UCS4 uc) const {
       return 0;
     }
 
@@ -274,7 +238,7 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Not_a_Character(const UCS4 uc) const {
+    bool is_Noncharacter_Code_Point(const UCS4 uc) const {
       return ((uc & 0xFFFE) == 0xFFFE);
     }
 
@@ -290,147 +254,21 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Space(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Zs);
-    }
-
-    bool is_ISO_Control(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Cc);
-    }
-
-    bool is_Punctuation(const UCS4 uc) const {
-      return (is_defined(uc) && (category(uc) == CAT_Pc ||
-                                 category(uc) == CAT_Pd ||
-                                 category(uc) == CAT_Ps ||
-                                 category(uc) == CAT_Pe ||
-                                 category(uc) == CAT_Pi ||
-                                 category(uc) == CAT_Pf ||
-                                 category(uc) == CAT_Po)
-             );
-    }
-
-    bool is_Line_Separator(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Zl);
-    }
-
-    bool is_Paragraph_Separator(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Zp);
-    }
-
-    bool is_Currency_Symbol(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Sc);
-    }
-
-    bool is_Bidi_Left_to_Right(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_L;
-    }
-
-    bool is_Bidi_European_Digit(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_EN;
-    }
-
-    bool is_Bidi_Eur_Num_Separator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_ES;
-    }
-
-    bool is_Bidi_Eur_Num_Terminator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_ET;
-    }
-
-    bool is_Bidi_Arabic_Digit(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_AN;
-    }
-
-    bool is_Bidi_Common_Separator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_CS;
-    }
-
-    bool is_Bidi_Block_Separator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_B;
-    }
-
-    bool is_Bidi_Segment_Separator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_S;
-    }
-
-    bool is_Bidi_Whitespace(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_WS;
-    }
-
-    bool is_Bidi_Non_spacing_Mark(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_NSM;
-    }
-
-    bool is_Bidi_Boundary_Neutral(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_BN;
-    }
-
-    bool is_Bidi_PDF(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_PDF;
-    }
-
-    bool is_Bidi_Embedding_or_Override(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_LRE ||
-             bidir_props(uc) == BIDIR_RLE ||
-             bidir_props(uc) == BIDIR_LRO ||
-             bidir_props(uc) == BIDIR_RLO;
-    }
-
-    bool is_Bidi_LRE(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_LRE;
-    }
-
-    bool is_Bidi_RLE(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_RLE;
-    }
-
-    bool is_Bidi_LRO(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_LRO;
-    }
-
-    bool is_Bidi_RLO(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_RLO;
-    }
-
-    bool is_Bidi_Other_Neutral(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_ON;
-    }
-
-    bool is_Unassigned_Code_Value(const UCS4 uc) const {
-      return !is_defined(uc) && !is_Not_a_Character(uc);
-    }
-
 
   private:
     // functions
     CJK_Radicals_Supplement2E80(const CJK_Radicals_Supplement2E80 &) {}
 
-    Babylon::UCS4 _first_letter;
-    Babylon::UCS4 _last_letter;
-    static const bool _is_defined[128];
+    Babylon::UCS4 m_first_letter;
+    Babylon::UCS4 m_last_letter;
+    // Babylon::UCS4_string m_version;
+    static const bitset<128> m_is_defined;
     static const unsigned char _decomp[128];
-    static const UCS2 _decompStr[128][2];
+    static const UCS2 m_decompStr[128];
 
   }; // class CJK_Radicals_Supplement2E80
 
-  const bool CJK_Radicals_Supplement2E80::_is_defined[] = {
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 0, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 0, 0, 0, 0, 
-    0, 0, 0, 0, 0, 0, 0, 0
-  };
+    const bitset<128> CJK_Radicals_Supplement2E80::m_is_defined(string("00000000000011111111111111111111111111111111111111111111111111111111111111111111111111111111111111111011111111111111111111111111"));
 
   const unsigned char CJK_Radicals_Supplement2E80::_decomp[] = {
     DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, 
@@ -451,39 +289,39 @@ namespace Babylon {
     DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP
   };
 
-  const UCS2 CJK_Radicals_Supplement2E80::_decompStr[][2] = {
-    { 0x2E80, 0x0000 }, { 0x2E81, 0x0000 }, { 0x2E82, 0x0000 }, { 0x2E83, 0x0000 }, 
-    { 0x2E84, 0x0000 }, { 0x2E85, 0x0000 }, { 0x2E86, 0x0000 }, { 0x2E87, 0x0000 }, 
-    { 0x2E88, 0x0000 }, { 0x2E89, 0x0000 }, { 0x2E8A, 0x0000 }, { 0x2E8B, 0x0000 }, 
-    { 0x2E8C, 0x0000 }, { 0x2E8D, 0x0000 }, { 0x2E8E, 0x0000 }, { 0x2E8F, 0x0000 }, 
-    { 0x2E90, 0x0000 }, { 0x2E91, 0x0000 }, { 0x2E92, 0x0000 }, { 0x2E93, 0x0000 }, 
-    { 0x2E94, 0x0000 }, { 0x2E95, 0x0000 }, { 0x2E96, 0x0000 }, { 0x2E97, 0x0000 }, 
-    { 0x2E98, 0x0000 }, { 0x2E99, 0x0000 }, { 0x2E9A, 0x0000 }, { 0x2E9B, 0x0000 }, 
-    { 0x2E9C, 0x0000 }, { 0x2E9D, 0x0000 }, { 0x2E9E, 0x0000 }, { 0x6BCD, 0x0000 }, 
-    { 0x2EA0, 0x0000 }, { 0x2EA1, 0x0000 }, { 0x2EA2, 0x0000 }, { 0x2EA3, 0x0000 }, 
-    { 0x2EA4, 0x0000 }, { 0x2EA5, 0x0000 }, { 0x2EA6, 0x0000 }, { 0x2EA7, 0x0000 }, 
-    { 0x2EA8, 0x0000 }, { 0x2EA9, 0x0000 }, { 0x2EAA, 0x0000 }, { 0x2EAB, 0x0000 }, 
-    { 0x2EAC, 0x0000 }, { 0x2EAD, 0x0000 }, { 0x2EAE, 0x0000 }, { 0x2EAF, 0x0000 }, 
-    { 0x2EB0, 0x0000 }, { 0x2EB1, 0x0000 }, { 0x2EB2, 0x0000 }, { 0x2EB3, 0x0000 }, 
-    { 0x2EB4, 0x0000 }, { 0x2EB5, 0x0000 }, { 0x2EB6, 0x0000 }, { 0x2EB7, 0x0000 }, 
-    { 0x2EB8, 0x0000 }, { 0x2EB9, 0x0000 }, { 0x2EBA, 0x0000 }, { 0x2EBB, 0x0000 }, 
-    { 0x2EBC, 0x0000 }, { 0x2EBD, 0x0000 }, { 0x2EBE, 0x0000 }, { 0x2EBF, 0x0000 }, 
-    { 0x2EC0, 0x0000 }, { 0x2EC1, 0x0000 }, { 0x2EC2, 0x0000 }, { 0x2EC3, 0x0000 }, 
-    { 0x2EC4, 0x0000 }, { 0x2EC5, 0x0000 }, { 0x2EC6, 0x0000 }, { 0x2EC7, 0x0000 }, 
-    { 0x2EC8, 0x0000 }, { 0x2EC9, 0x0000 }, { 0x2ECA, 0x0000 }, { 0x2ECB, 0x0000 }, 
-    { 0x2ECC, 0x0000 }, { 0x2ECD, 0x0000 }, { 0x2ECE, 0x0000 }, { 0x2ECF, 0x0000 }, 
-    { 0x2ED0, 0x0000 }, { 0x2ED1, 0x0000 }, { 0x2ED2, 0x0000 }, { 0x2ED3, 0x0000 }, 
-    { 0x2ED4, 0x0000 }, { 0x2ED5, 0x0000 }, { 0x2ED6, 0x0000 }, { 0x2ED7, 0x0000 }, 
-    { 0x2ED8, 0x0000 }, { 0x2ED9, 0x0000 }, { 0x2EDA, 0x0000 }, { 0x2EDB, 0x0000 }, 
-    { 0x2EDC, 0x0000 }, { 0x2EDD, 0x0000 }, { 0x2EDE, 0x0000 }, { 0x2EDF, 0x0000 }, 
-    { 0x2EE0, 0x0000 }, { 0x2EE1, 0x0000 }, { 0x2EE2, 0x0000 }, { 0x2EE3, 0x0000 }, 
-    { 0x2EE4, 0x0000 }, { 0x2EE5, 0x0000 }, { 0x2EE6, 0x0000 }, { 0x2EE7, 0x0000 }, 
-    { 0x2EE8, 0x0000 }, { 0x2EE9, 0x0000 }, { 0x2EEA, 0x0000 }, { 0x2EEB, 0x0000 }, 
-    { 0x2EEC, 0x0000 }, { 0x2EED, 0x0000 }, { 0x2EEE, 0x0000 }, { 0x2EEF, 0x0000 }, 
-    { 0x2EF0, 0x0000 }, { 0x2EF1, 0x0000 }, { 0x2EF2, 0x0000 }, { 0x9F9F, 0x0000 }, 
-    { 0x2EF4, 0x0000 }, { 0x2EF5, 0x0000 }, { 0x2EF6, 0x0000 }, { 0x2EF7, 0x0000 }, 
-    { 0x2EF8, 0x0000 }, { 0x2EF9, 0x0000 }, { 0x2EFA, 0x0000 }, { 0x2EFB, 0x0000 }, 
-    { 0x2EFC, 0x0000 }, { 0x2EFD, 0x0000 }, { 0x2EFE, 0x0000 }, { 0x2EFF, 0x0000 }
+  const UCS2 CJK_Radicals_Supplement2E80::m_decompStr[] = {
+    0x2E80u, 0x2E81u, 0x2E82u, 0x2E83u, 
+    0x2E84u, 0x2E85u, 0x2E86u, 0x2E87u, 
+    0x2E88u, 0x2E89u, 0x2E8Au, 0x2E8Bu, 
+    0x2E8Cu, 0x2E8Du, 0x2E8Eu, 0x2E8Fu, 
+    0x2E90u, 0x2E91u, 0x2E92u, 0x2E93u, 
+    0x2E94u, 0x2E95u, 0x2E96u, 0x2E97u, 
+    0x2E98u, 0x2E99u, 0x2E9Au, 0x2E9Bu, 
+    0x2E9Cu, 0x2E9Du, 0x2E9Eu, 0x6BCDu, 
+    0x2EA0u, 0x2EA1u, 0x2EA2u, 0x2EA3u, 
+    0x2EA4u, 0x2EA5u, 0x2EA6u, 0x2EA7u, 
+    0x2EA8u, 0x2EA9u, 0x2EAAu, 0x2EABu, 
+    0x2EACu, 0x2EADu, 0x2EAEu, 0x2EAFu, 
+    0x2EB0u, 0x2EB1u, 0x2EB2u, 0x2EB3u, 
+    0x2EB4u, 0x2EB5u, 0x2EB6u, 0x2EB7u, 
+    0x2EB8u, 0x2EB9u, 0x2EBAu, 0x2EBBu, 
+    0x2EBCu, 0x2EBDu, 0x2EBEu, 0x2EBFu, 
+    0x2EC0u, 0x2EC1u, 0x2EC2u, 0x2EC3u, 
+    0x2EC4u, 0x2EC5u, 0x2EC6u, 0x2EC7u, 
+    0x2EC8u, 0x2EC9u, 0x2ECAu, 0x2ECBu, 
+    0x2ECCu, 0x2ECDu, 0x2ECEu, 0x2ECFu, 
+    0x2ED0u, 0x2ED1u, 0x2ED2u, 0x2ED3u, 
+    0x2ED4u, 0x2ED5u, 0x2ED6u, 0x2ED7u, 
+    0x2ED8u, 0x2ED9u, 0x2EDAu, 0x2EDBu, 
+    0x2EDCu, 0x2EDDu, 0x2EDEu, 0x2EDFu, 
+    0x2EE0u, 0x2EE1u, 0x2EE2u, 0x2EE3u, 
+    0x2EE4u, 0x2EE5u, 0x2EE6u, 0x2EE7u, 
+    0x2EE8u, 0x2EE9u, 0x2EEAu, 0x2EEBu, 
+    0x2EECu, 0x2EEDu, 0x2EEEu, 0x2EEFu, 
+    0x2EF0u, 0x2EF1u, 0x2EF2u, 0x9F9Fu, 
+    0x2EF4u, 0x2EF5u, 0x2EF6u, 0x2EF7u, 
+    0x2EF8u, 0x2EF9u, 0x2EFAu, 0x2EFBu, 
+    0x2EFCu, 0x2EFDu, 0x2EFEu, 0x2EFFu
   };
 
 }; // namespace Babylon

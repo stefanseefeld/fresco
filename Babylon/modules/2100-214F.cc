@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Wed,  6 Dec 2000 23:25:15 +0100.
+ * ftp.unicode.org on Mon,  8 Jan 2001 23:32:08 +0100.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -25,6 +25,7 @@
 
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
+#include <bitset>
 
 namespace Babylon {
 
@@ -34,9 +35,9 @@ namespace Babylon {
     };
 
     Letterlike_Symbols2100() {
-      _first_letter = 0x2100;
-      _last_letter  = 0x214F;
-      // _version="3.0.1" // Not yet supported!
+      m_first_letter = 0x2100;
+      m_last_letter  = 0x214F;
+      // m_version="3.0.1" // Not yet supported!
 
     }
 
@@ -45,11 +46,11 @@ namespace Babylon {
     }
 
     UCS4 firstLetter() {
-      return _first_letter;
+      return m_first_letter;
     }
 
     UCS4 lastLetter() {
-      return _last_letter;
+      return m_last_letter;
     }
 
     bool is_undef_block() const {
@@ -63,31 +64,19 @@ namespace Babylon {
     }
 
     bool is_defined(const UCS4 uc) const {
-      return (_is_defined[uc - _first_letter]);
+      return (m_is_defined.test(uc - m_first_letter));
     }
 
     UCS4 uppercase(const UCS4 uc) const {
       return uc;
     }
 
-    bool is_Uppercase(const UCS4 uc) const {
-      return category(uc) == CAT_Lu;
-    }
-
     UCS4 lowercase(const UCS4 uc) const {
-      return Letterlike_Symbols2100::_lower[uc - _first_letter];
-    }
-
-    bool is_Lowercase(const UCS4 uc) const {
-      return category(uc) == CAT_Ll;
+      return Letterlike_Symbols2100::m_lower[uc - m_first_letter];
     }
 
     UCS4 titlecase(const UCS4 uc) const {
       return uc;
-    }
-
-    bool is_Titlecase(const UCS4 uc) const {
-      return category(uc) == CAT_Lt;
     }
 
     int dec_digit_value(const UCS4 uc) const {
@@ -117,7 +106,7 @@ namespace Babylon {
     Gen_Cat category(const UCS4 uc) const {
       if (!is_defined(uc))
         return CAT_MAX;
-      return Babylon::Gen_Cat(Letterlike_Symbols2100::_cat[uc - _first_letter]);
+      return Babylon::Gen_Cat(Letterlike_Symbols2100::_cat[uc - m_first_letter]);
     }
 
     Can_Comb_Class comb_class(const UCS4 uc) const {
@@ -129,49 +118,49 @@ namespace Babylon {
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
         return BIDIR_MAX;
-      return Babylon::Bidir_Props(Letterlike_Symbols2100::_bidir[uc - _first_letter]);
+      return Babylon::Bidir_Props(Letterlike_Symbols2100::m_bidir[uc - m_first_letter]);
     }
 
     Char_Decomp decomp_type(const UCS4 uc) const {
       if (!is_defined(uc))
         return DECOMP_MAX;
-      return Babylon::Char_Decomp(Letterlike_Symbols2100::_decomp[uc - _first_letter]);
+      return Babylon::Char_Decomp(Letterlike_Symbols2100::_decomp[uc - m_first_letter]);
     }
 
     UTF32_string decompose(const UCS4 uc) const {
       Babylon::UTF32_string us;
       us.resize(2);
-      us[0] = Letterlike_Symbols2100::_decompStr[uc - _first_letter][0];
-      us[1] = Letterlike_Symbols2100::_decompStr[uc - _first_letter][1];
+      us[0] = Letterlike_Symbols2100::m_decompStr[uc - m_first_letter][0];
+      us[1] = Letterlike_Symbols2100::m_decompStr[uc - m_first_letter][1];
 
       switch (uc) {
 
       case 0x2100:
         us.resize(3);
-        us[2] = 0x0063;
+        us[2u] = 0x0063u;
         break;
 
       case 0x2101:
         us.resize(3);
-        us[2] = 0x0073;
+        us[2u] = 0x0073u;
         break;
 
       case 0x2105:
         us.resize(3);
-        us[2] = 0x006F;
+        us[2u] = 0x006Fu;
         break;
 
       case 0x2106:
         us.resize(3);
-        us[2] = 0x0075;
+        us[2u] = 0x0075u;
         break;
 
       case 0x2121:
         us.resize(3);
-        us[2] = 0x004C;
+        us[2u] = 0x004Cu;
         break;
       }
-      if (us[1] == 0x0000) {
+      if (us[1] == 0x0000u) {
         us.resize(1);
       }
 
@@ -185,20 +174,16 @@ namespace Babylon {
     Line_Break linebreak(const UCS4 uc) const {
       if (!is_defined(uc))
         return LB_MAX;
-      return Babylon::Line_Break(Letterlike_Symbols2100::_lb[uc - _first_letter]);
+      return Babylon::Line_Break(Letterlike_Symbols2100::m_lb[uc - m_first_letter]);
     }
 
     EA_Width EA_width(const UCS4 uc) const {
       if (!is_defined(uc))
         return EA_WIDTH_MAX;
-      return Babylon::EA_Width(Letterlike_Symbols2100::_ea[uc - _first_letter]);
+      return Babylon::EA_Width(Letterlike_Symbols2100::m_ea[uc - m_first_letter]);
     }
 
-    UCS4 compose (const UCS4 starter, const UCS4 last) {
-      return 0;
-    }
-
-    bool is_Zero_width(const UCS4 uc) const {
+    UCS4 compose (const UCS4 start, const UCS4 last) {
       return 0;
     }
 
@@ -210,6 +195,10 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_Format_Control(const UCS4 uc) const {
+      return 0;
+    }
+
     bool is_Bidi_Control(const UCS4 uc) const {
       return 0;
     }
@@ -218,7 +207,7 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Format_Control(const UCS4 uc) const {
+    bool is_Other_Format_Control(const UCS4 uc) const {
       return 0;
     }
 
@@ -242,22 +231,6 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Paired_Punctuation(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Left_of_Pair(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Combining(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Non_spacing(const UCS4 uc) const {
-      return 0;
-    }
-
     bool is_Composite(const UCS4 uc) const {
       return 0;
     }
@@ -267,7 +240,7 @@ namespace Babylon {
     }
 
     bool is_Alphabetic(const UCS4 uc) const {
-      return Letterlike_Symbols2100::_Alphabetic[uc - _first_letter];
+      return m_Alphabetic.test(uc - m_first_letter);
     }
 
     bool is_Diacritic(const UCS4 uc) const {
@@ -278,19 +251,15 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Identifier_Part(const UCS4 uc) const {
-      return Letterlike_Symbols2100::_Identifier_Part[uc - _first_letter];
+    bool is_Identifier_Part_Not_Cf(const UCS4 uc) const {
+      return m_Identifier_Part_Not_Cf.test(uc - m_first_letter);
     }
 
-    bool is_Ignorable_Control(const UCS4 uc) const {
+    bool is_Other_Uppercase(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Bidi_Hebrew_Right_to_Left(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Bidi_Arabic_Right_to_Left(const UCS4 uc) const {
+    bool is_Other_Lowercase(const UCS4 uc) const {
       return 0;
     }
 
@@ -302,7 +271,7 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Not_a_Character(const UCS4 uc) const {
+    bool is_Noncharacter_Code_Point(const UCS4 uc) const {
       return ((uc & 0xFFFE) == 0xFFFE);
     }
 
@@ -318,150 +287,30 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Space(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Zs);
-    }
-
-    bool is_ISO_Control(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Cc);
-    }
-
-    bool is_Punctuation(const UCS4 uc) const {
-      return (is_defined(uc) && (category(uc) == CAT_Pc ||
-                                 category(uc) == CAT_Pd ||
-                                 category(uc) == CAT_Ps ||
-                                 category(uc) == CAT_Pe ||
-                                 category(uc) == CAT_Pi ||
-                                 category(uc) == CAT_Pf ||
-                                 category(uc) == CAT_Po)
-             );
-    }
-
-    bool is_Line_Separator(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Zl);
-    }
-
-    bool is_Paragraph_Separator(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Zp);
-    }
-
-    bool is_Currency_Symbol(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Sc);
-    }
-
-    bool is_Bidi_Left_to_Right(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_L;
-    }
-
-    bool is_Bidi_European_Digit(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_EN;
-    }
-
-    bool is_Bidi_Eur_Num_Separator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_ES;
-    }
-
-    bool is_Bidi_Eur_Num_Terminator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_ET;
-    }
-
-    bool is_Bidi_Arabic_Digit(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_AN;
-    }
-
-    bool is_Bidi_Common_Separator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_CS;
-    }
-
-    bool is_Bidi_Block_Separator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_B;
-    }
-
-    bool is_Bidi_Segment_Separator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_S;
-    }
-
-    bool is_Bidi_Whitespace(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_WS;
-    }
-
-    bool is_Bidi_Non_spacing_Mark(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_NSM;
-    }
-
-    bool is_Bidi_Boundary_Neutral(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_BN;
-    }
-
-    bool is_Bidi_PDF(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_PDF;
-    }
-
-    bool is_Bidi_Embedding_or_Override(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_LRE ||
-             bidir_props(uc) == BIDIR_RLE ||
-             bidir_props(uc) == BIDIR_LRO ||
-             bidir_props(uc) == BIDIR_RLO;
-    }
-
-    bool is_Bidi_LRE(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_LRE;
-    }
-
-    bool is_Bidi_RLE(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_RLE;
-    }
-
-    bool is_Bidi_LRO(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_LRO;
-    }
-
-    bool is_Bidi_RLO(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_RLO;
-    }
-
-    bool is_Bidi_Other_Neutral(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_ON;
-    }
-
-    bool is_Unassigned_Code_Value(const UCS4 uc) const {
-      return !is_defined(uc) && !is_Not_a_Character(uc);
-    }
-
 
   private:
     // functions
     Letterlike_Symbols2100(const Letterlike_Symbols2100 &) {}
 
-    Babylon::UCS4 _first_letter;
-    Babylon::UCS4 _last_letter;
-    static const bool _is_defined[80];
-    static const UCS4 _lower[80];
+    Babylon::UCS4 m_first_letter;
+    Babylon::UCS4 m_last_letter;
+    // Babylon::UCS4_string m_version;
+    static const bitset<80> m_is_defined;
+    static const UCS4 m_lower[80];
     static const unsigned char _cat[80];
-    static const unsigned char _bidir[80];
+    static const unsigned char m_bidir[80];
     static const unsigned char _decomp[80];
-    static const UCS2 _decompStr[80][2];
-    static const unsigned char _lb[80];
-    static const unsigned char _ea[80];
-    static const bool _Alphabetic[80];
-    static const bool _Identifier_Part[80];
+    static const UCS2 m_decompStr[80][2];
+    static const unsigned char m_lb[80];
+    static const unsigned char m_ea[80];
+    static const bitset<80> m_Alphabetic;
+    static const bitset<80> m_Identifier_Part_Not_Cf;
 
   }; // class Letterlike_Symbols2100
 
-  const bool Letterlike_Symbols2100::_is_defined[] = {
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 0, 0, 0, 0, 0, 
-    0, 0, 0, 0, 0, 0, 0, 0, 
-    0, 0, 0, 0, 0, 0, 0, 0
-  };
+    const bitset<80> Letterlike_Symbols2100::m_is_defined(string("00000000000000000000011111111111111111111111111111111111111111111111111111111111"));
 
-  const UCS4 Letterlike_Symbols2100::_lower[] = {
+  const UCS4 Letterlike_Symbols2100::m_lower[] = {
     0x2100, 0x2101, 0x2102, 0x2103, 0x2104, 0x2105, 0x2106, 0x2107, 
     0x2108, 0x2109, 0x210A, 0x210B, 0x210C, 0x210D, 0x210E, 0x210F, 
     0x2110, 0x2111, 0x2112, 0x2113, 0x2114, 0x2115, 0x2116, 0x2117, 
@@ -487,7 +336,7 @@ namespace Babylon {
     CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So
   };
 
-  const unsigned char Letterlike_Symbols2100::_bidir[] = {
+  const unsigned char Letterlike_Symbols2100::m_bidir[] = {
     BIDIR_ON, BIDIR_ON, BIDIR_L, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_L, 
     BIDIR_ON, BIDIR_ON, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
     BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_ON, BIDIR_L, BIDIR_ON, BIDIR_ON, 
@@ -513,30 +362,30 @@ namespace Babylon {
     DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP
   };
 
-  const UCS2 Letterlike_Symbols2100::_decompStr[][2] = {
-    { 0x0061, 0x002F }, { 0x0061, 0x002F }, { 0x0043, 0x0000 }, { 0x00B0, 0x0043 }, 
-    { 0x2104, 0x0000 }, { 0x0063, 0x002F }, { 0x0063, 0x002F }, { 0x0190, 0x0000 }, 
-    { 0x2108, 0x0000 }, { 0x00B0, 0x0046 }, { 0x0067, 0x0000 }, { 0x0048, 0x0000 }, 
-    { 0x0048, 0x0000 }, { 0x0048, 0x0000 }, { 0x0068, 0x0000 }, { 0x0127, 0x0000 }, 
-    { 0x0049, 0x0000 }, { 0x0049, 0x0000 }, { 0x004C, 0x0000 }, { 0x006C, 0x0000 }, 
-    { 0x2114, 0x0000 }, { 0x004E, 0x0000 }, { 0x004E, 0x006F }, { 0x2117, 0x0000 }, 
-    { 0x2118, 0x0000 }, { 0x0050, 0x0000 }, { 0x0051, 0x0000 }, { 0x0052, 0x0000 }, 
-    { 0x0052, 0x0000 }, { 0x0052, 0x0000 }, { 0x211E, 0x0000 }, { 0x211F, 0x0000 }, 
-    { 0x0053, 0x004D }, { 0x0054, 0x0045 }, { 0x0054, 0x004D }, { 0x2123, 0x0000 }, 
-    { 0x005A, 0x0000 }, { 0x2125, 0x0000 }, { 0x03A9, 0x0000 }, { 0x2127, 0x0000 }, 
-    { 0x005A, 0x0000 }, { 0x2129, 0x0000 }, { 0x004B, 0x0000 }, { 0x00C5, 0x0000 }, 
-    { 0x0042, 0x0000 }, { 0x0043, 0x0000 }, { 0x212E, 0x0000 }, { 0x0065, 0x0000 }, 
-    { 0x0045, 0x0000 }, { 0x0046, 0x0000 }, { 0x2132, 0x0000 }, { 0x004D, 0x0000 }, 
-    { 0x006F, 0x0000 }, { 0x05D0, 0x0000 }, { 0x05D1, 0x0000 }, { 0x05D2, 0x0000 }, 
-    { 0x05D3, 0x0000 }, { 0x0069, 0x0000 }, { 0x213A, 0x0000 }, { 0x213B, 0x0000 }, 
-    { 0x213C, 0x0000 }, { 0x213D, 0x0000 }, { 0x213E, 0x0000 }, { 0x213F, 0x0000 }, 
-    { 0x2140, 0x0000 }, { 0x2141, 0x0000 }, { 0x2142, 0x0000 }, { 0x2143, 0x0000 }, 
-    { 0x2144, 0x0000 }, { 0x2145, 0x0000 }, { 0x2146, 0x0000 }, { 0x2147, 0x0000 }, 
-    { 0x2148, 0x0000 }, { 0x2149, 0x0000 }, { 0x214A, 0x0000 }, { 0x214B, 0x0000 }, 
-    { 0x214C, 0x0000 }, { 0x214D, 0x0000 }, { 0x214E, 0x0000 }, { 0x214F, 0x0000 }
+  const UCS2 Letterlike_Symbols2100::m_decompStr[][2] = {
+    { 0x0061u, 0x002Fu }, { 0x0061u, 0x002Fu }, { 0x0043u, 0x0000u }, { 0x00B0u, 0x0043u }, 
+    { 0x2104u, 0x0000u }, { 0x0063u, 0x002Fu }, { 0x0063u, 0x002Fu }, { 0x0190u, 0x0000u }, 
+    { 0x2108u, 0x0000u }, { 0x00B0u, 0x0046u }, { 0x0067u, 0x0000u }, { 0x0048u, 0x0000u }, 
+    { 0x0048u, 0x0000u }, { 0x0048u, 0x0000u }, { 0x0068u, 0x0000u }, { 0x0127u, 0x0000u }, 
+    { 0x0049u, 0x0000u }, { 0x0049u, 0x0000u }, { 0x004Cu, 0x0000u }, { 0x006Cu, 0x0000u }, 
+    { 0x2114u, 0x0000u }, { 0x004Eu, 0x0000u }, { 0x004Eu, 0x006Fu }, { 0x2117u, 0x0000u }, 
+    { 0x2118u, 0x0000u }, { 0x0050u, 0x0000u }, { 0x0051u, 0x0000u }, { 0x0052u, 0x0000u }, 
+    { 0x0052u, 0x0000u }, { 0x0052u, 0x0000u }, { 0x211Eu, 0x0000u }, { 0x211Fu, 0x0000u }, 
+    { 0x0053u, 0x004Du }, { 0x0054u, 0x0045u }, { 0x0054u, 0x004Du }, { 0x2123u, 0x0000u }, 
+    { 0x005Au, 0x0000u }, { 0x2125u, 0x0000u }, { 0x03A9u, 0x0000u }, { 0x2127u, 0x0000u }, 
+    { 0x005Au, 0x0000u }, { 0x2129u, 0x0000u }, { 0x004Bu, 0x0000u }, { 0x00C5u, 0x0000u }, 
+    { 0x0042u, 0x0000u }, { 0x0043u, 0x0000u }, { 0x212Eu, 0x0000u }, { 0x0065u, 0x0000u }, 
+    { 0x0045u, 0x0000u }, { 0x0046u, 0x0000u }, { 0x2132u, 0x0000u }, { 0x004Du, 0x0000u }, 
+    { 0x006Fu, 0x0000u }, { 0x05D0u, 0x0000u }, { 0x05D1u, 0x0000u }, { 0x05D2u, 0x0000u }, 
+    { 0x05D3u, 0x0000u }, { 0x0069u, 0x0000u }, { 0x213Au, 0x0000u }, { 0x213Bu, 0x0000u }, 
+    { 0x213Cu, 0x0000u }, { 0x213Du, 0x0000u }, { 0x213Eu, 0x0000u }, { 0x213Fu, 0x0000u }, 
+    { 0x2140u, 0x0000u }, { 0x2141u, 0x0000u }, { 0x2142u, 0x0000u }, { 0x2143u, 0x0000u }, 
+    { 0x2144u, 0x0000u }, { 0x2145u, 0x0000u }, { 0x2146u, 0x0000u }, { 0x2147u, 0x0000u }, 
+    { 0x2148u, 0x0000u }, { 0x2149u, 0x0000u }, { 0x214Au, 0x0000u }, { 0x214Bu, 0x0000u }, 
+    { 0x214Cu, 0x0000u }, { 0x214Du, 0x0000u }, { 0x214Eu, 0x0000u }, { 0x214Fu, 0x0000u }
   };
 
-  const unsigned char Letterlike_Symbols2100::_lb[] = {
+  const unsigned char Letterlike_Symbols2100::m_lb[] = {
     LB_AL, LB_AL, LB_AL, LB_PO, LB_AL, LB_AI, LB_AL, LB_AL, 
     LB_AL, LB_PO, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, 
     LB_AL, LB_AL, LB_AL, LB_AI, LB_AL, LB_AL, LB_PR, LB_AL, 
@@ -549,7 +398,7 @@ namespace Babylon {
     LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL
   };
 
-  const unsigned char Letterlike_Symbols2100::_ea[] = {
+  const unsigned char Letterlike_Symbols2100::m_ea[] = {
     EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_A, EA_WIDTH_N, EA_WIDTH_A, EA_WIDTH_N, EA_WIDTH_N, 
     EA_WIDTH_N, EA_WIDTH_A, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, 
     EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_A, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, 
@@ -562,31 +411,9 @@ namespace Babylon {
     EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N
   };
 
-    const bool Letterlike_Symbols2100::_Alphabetic[] = {
-        0, 0, 1, 0, 0, 0, 0, 1, 
-        0, 0, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 0, 1, 0, 0, 
-        0, 1, 1, 1, 1, 1, 0, 0, 
-        0, 0, 0, 0, 1, 0, 1, 0, 
-        1, 0, 1, 1, 1, 1, 0, 1, 
-        1, 1, 0, 1, 1, 1, 1, 1, 
-        1, 1, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
+    const bitset<80> Letterlike_Symbols2100::m_Alphabetic(string("00000000000000000000000111111011101111000000000000111110000011111111110000000000"));
 
-    const bool Letterlike_Symbols2100::_Identifier_Part[] = {
-        0, 0, 1, 0, 0, 0, 0, 1, 
-        0, 0, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 0, 1, 0, 0, 
-        0, 1, 1, 1, 1, 1, 0, 0, 
-        0, 0, 0, 0, 1, 0, 1, 0, 
-        1, 0, 1, 1, 1, 1, 0, 1, 
-        1, 1, 0, 1, 1, 1, 1, 1, 
-        1, 1, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
+    const bitset<80> Letterlike_Symbols2100::m_Identifier_Part_Not_Cf(string("00000000000000000000000111111011101111000000000000111110000011111111110000000000"));
 
 }; // namespace Babylon
 

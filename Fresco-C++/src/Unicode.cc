@@ -30,32 +30,24 @@ using namespace Warsaw;
 // This is ugly but necessary since Unistring does not
 // know iterators! So I can´t do decent assigment
 // operators :-(
-Unistring Unicode::toCORBA(const Unicode::String &s)
-{
-  Unistring tmp;
-  tmp.length(s.length());
-  for (unsigned long i = 0; i < s.length(); i++)
-    tmp[i] = s[i].myUnicode();
-  return tmp;
+
+Unistring Unicode::to_CORBA(const Babylon::String &s) {
+  Babylon::UTF16_string tmp = s.utf16();
+  Warsaw::Unistring res(tmp.length(),
+			tmp.length(),
+			const_cast<Babylon::UCS2 *>(tmp.data()));
+  return res;
 }
 
-Unichar   Unicode::toCORBA(const Unicode::Char &c)
-{
-  Unichar tmp = c.myUnicode();
-  return tmp;
+Warsaw::Unichar Unicode::to_CORBA(const Babylon::Char c) {
+    return Warsaw::Unichar(c.value());
 }
 
-Unicode::String Unicode::toPrague(const Unistring & us)
-{
-  Unicode::String tmp;
-  tmp.resize(us.length());
-  for (unsigned long i = 0; i < us.length(); i++)
-    tmp[i] = us[i];
-  return tmp;
+Babylon::String Unicode::to_internal(const Unistring & us) {
+  Babylon::String res(us[0]);
+  return res;
 }
 
-Unicode::Char   Unicode::toPrague(const Unichar   & uc)
-{
-  Unicode::Char tmp = uc;
-  return tmp;
+Babylon::Char Unicode::to_internal(const Warsaw::Unichar uc) {
+    return Babylon::Char(Babylon::UCS4(uc));
 }

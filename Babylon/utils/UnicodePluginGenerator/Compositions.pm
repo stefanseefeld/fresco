@@ -51,8 +51,9 @@ sub new {
 
     if (($tmp =~ tr/ / /) == 1) {
       if (!(grep {$_ eq $list[0]} @excl)) {
-	$tmp =~ s/ //;
-	$self->{hex($tmp)} = $list[0];
+	my @chars = split / /, $tmp;
+	$tmp = sprintf "%08X%08X", hex($chars[0]), hex($chars[1]);
+	$self->{$tmp} = $list[0];
       }
     }
   }
@@ -74,16 +75,6 @@ sub data {
   my $pos = $_[0];
   my $result = "";
 
-  if    ($pos > 0x003400 and $pos < 0x004DB5) { $pos = 0x003400; }
-  elsif ($pos > 0x004E00 and $pos < 0x009FA5) { $pos = 0x004E00; }
-  elsif ($pos > 0x00AC00 and $pos < 0x00D7A3) { $pos = 0x00AC00; }
-  elsif ($pos > 0x00D800 and $pos < 0x00DB7F) { $pos = 0x00D800; }
-  elsif ($pos > 0x00DB80 and $pos < 0x00DBFF) { $pos = 0x00DB80; }
-  elsif ($pos > 0x00DC00 and $pos < 0x00DFFF) { $pos = 0x00DC00; }
-  elsif ($pos > 0x00E000 and $pos < 0x00F8FF) { $pos = 0x00E000; }
-  elsif ($pos > 0x0F0000 and $pos < 0x0FFFFD) { $pos = 0x0F0000; }
-  elsif ($pos > 0x100000 and $pos < 0x10FFFD) { $pos = 0x100000; }
-
   if(exists($self->{$pos})) {
     return $self->{$pos};
   } else {
@@ -104,8 +95,10 @@ sub include {
   my @blockkeys = sort grep {$_ ne "_ATTENTION_NEEDED" and
 			     $_ ne "_BL_START" and
 			     $_ ne "_BL_END" and
-                             $_ >= $bl_start*0x00010000 and 
-		             $_ <= $bl_end*0x00010000+0xFFFF}
+			     $_ ne "_INPUT_MAX_LENGTH" and
+			     $_ ne "_RES_MAX_LENGTH" and
+                             hex(substr $_, 0, 8) >= $bl_start and
+		             hex(substr $_, 0, 8) <= $bl_end}
                   keys %$self;
   if($self->{_BL_START} != $bl_start or $self->{_BL_END} != $bl_end) {
     $self->{_BL_START} = $bl_start;
@@ -137,8 +130,10 @@ sub init {
   my @blockkeys = sort grep {$_ ne "_ATTENTION_NEEDED" and
 			     $_ ne "_BL_START" and
 			     $_ ne "_BL_END" and
-                             $_ >= $bl_start*0x00010000 and 
-		             $_ <= $bl_end*0x00010000+0xFFFF}
+			     $_ ne "_INPUT_MAX_LENGTH" and
+			     $_ ne "_RES_MAX_LENGTH" and
+                             hex(substr $_, 0, 8) >= $bl_start and
+		             hex(substr $_, 0, 8) <= $bl_end}
                   keys %$self;
   if($self->{_BL_START} != $bl_start or $self->{_BL_END} != $bl_end) {
     $self->{_BL_START} = $bl_start;
@@ -154,8 +149,8 @@ sub init {
   if ($self->{_ATTENTION_NEEDED} == 1) {
     my $tmp = "";
     foreach my $i (@blockkeys) {
-      $tmp .= sprintf "      _composeMap\[0x%08X\] = 0x%s;\n",
-      $i, $self->data($i);
+      $tmp .= sprintf "      m_composeMap\[make_pair(0x%s, 0x%s)\] = 0x%s;\n",
+      substr($i, 0, 8), substr($i, 8, 8),  $self->data($i);
     }
     return $tmp;
   }
@@ -205,8 +200,10 @@ sub function {
   my @blockkeys = sort grep {$_ ne "_ATTENTION_NEEDED" and
 			     $_ ne "_BL_START" and
 			     $_ ne "_BL_END" and
-                             $_ >= $bl_start*0x00010000 and 
-			     $_ <= $bl_end*0x00010000+0xFFFF}
+			     $_ ne "_INPUT_MAX_LENGTH" and
+			     $_ ne "_RES_MAX_LENGTH" and
+                             hex(substr $_, 0, 8) >= $bl_start and
+		             hex(substr $_, 0, 8) <= $bl_end}
                   keys %$self;
 
   if($self->{_BL_START} != $bl_start or $self->{_BL_END} != $bl_end) {
@@ -220,10 +217,10 @@ sub function {
     }
   }
 
-  my $tmp = "    UCS4 compose (const UCS4 starter, const UCS4 last) {\n";
+  my $tmp = "    UCS4 compose (const UCS4 start, const UCS4 last) {\n";
 
   if ($self->{_ATTENTION_NEEDED} == 1) {
-    $tmp .= "      return _composeMap[starter << 16 | last];\n";
+    $tmp .= "      return m_composeMap[make_pair(start, last)];\n";
   } else {
     $tmp .= "      return 0;\n";
   }
@@ -244,8 +241,10 @@ sub var_def {
   my @blockkeys = sort grep {$_ ne "_ATTENTION_NEEDED" and
 			     $_ ne "_BL_START" and
 			     $_ ne "_BL_END" and
-                             $_ >= $bl_start*0x00010000  and 
-			     $_ <= $bl_end*0x00010000+0xFFFF}
+			     $_ ne "_INPUT_MAX_LENGTH" and
+			     $_ ne "_RES_MAX_LENGTH" and
+                             hex(substr $_, 0, 8) >= $bl_start and
+		             hex(substr $_, 0, 8) <= $bl_end}
                   keys %$self;
   if($self->{_BL_START} != $bl_start or $self->{_BL_END} != $bl_end) {
     $self->{_BL_START} = $bl_start;
@@ -259,7 +258,10 @@ sub var_def {
   }
 
   if ($self->{_ATTENTION_NEEDED} == 1) {
-    return "    map<UCS4, UCS4> _composeMap;\n";
+    my $inlength = $self->{_INPUT_MAX_LENGTH};
+    my $outlength = $self->{_RES_MAX_LENGTH};
+    my $tmp = "    map<pair<UCS4, UCS4>, UCS4> m_composeMap;\n";
+    return $tmp;
   }
 
   return "";

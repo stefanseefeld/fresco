@@ -29,7 +29,7 @@
 #include <Berlin/MonoGraphic.hh>       // for our decorators
 #include <Berlin/KitImpl.hh>           // for our parent impl
 #include <Berlin/ImplVar.hh>           // for the impls
-#include <Prague/Unicode/Unistring.hh> // for Unicode::String
+#include <Babylon/String.hh>           // for Babylon::String
 #include <Prague/Sys/Thread.hh>        // for Mutex
 #include <map>                         // for the cache
 #include <vector>                      // for the gc

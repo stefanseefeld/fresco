@@ -91,7 +91,7 @@ sub function {
   $tmp   .= "        return CC_MAX;\n";
 
   if ($self->{_ATTENTION_NEEDED} == 1) {
-    $tmp .= "      return Can_Comb_Class($bl_name\:\:_comb_cl\[uc - _first_letter\]);\n";
+    $tmp .= "      return Can_Comb_Class($bl_name\:\:_comb_cl\[uc - m_first_letter\]);\n";
     $tmp .= "    }\n\n";
     return $tmp;
   } else {

@@ -90,7 +90,7 @@ sub function {
   $tmp   .= "        return LB_MAX;\n";
 
   if ($self->{_ATTENTION_NEEDED} == 1) {
-    $tmp .= "      return Babylon::Line_Break($bl_name\:\:_lb\[uc - _first_letter\]);\n";
+    $tmp .= "      return Babylon::Line_Break($bl_name\:\:m_lb\[uc - m_first_letter\]);\n";
     $tmp .= "    }\n\n";
     return $tmp;
   } else {
@@ -125,7 +125,7 @@ sub var_def {
   }
 
   if ($self->{_ATTENTION_NEEDED}) {
-    return "    static const unsigned char _lb\[$bl_length\];\n";
+    return "    static const unsigned char m_lb\[$bl_length\];\n";
   } else {
     return "";
   }
@@ -157,7 +157,7 @@ sub var {
   }
 
   if ($self->{_ATTENTION_NEEDED}) {
-    my $tmp = "  const unsigned char $bl_name\:\:_lb\[\] = {";
+    my $tmp = "  const unsigned char $bl_name\:\:m_lb\[\] = {";
     for (my $i= $bl_start; $i <= $bl_end; $i++) {
       if (($i - $bl_start) % 8 == 0) {
 	$tmp .= "\n    ";
@@ -172,7 +172,7 @@ sub var {
       }
     }
     $tmp .= "\n  };\n\n";
-    
+
     return $tmp;
   } else {
     return "";

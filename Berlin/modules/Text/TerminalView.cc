@@ -26,7 +26,6 @@
 #include <Warsaw/DrawingKit.hh>
 #include "Text/TerminalView.hh"
 #include <Prague/Sys/Tracer.hh>
-#include <Prague/Unicode/Unicode.hh>
 #include <algorithm>
 
 using namespace Prague;
@@ -79,10 +78,10 @@ void TerminalView::update(const CORBA::Any &)
       {
 	if (isprint(*i))
 	  {
-	    Unicode::Char uc(*i);
+	    Babylon::Char uc(*i);
 	    Unistring us;
 	    us.length(1);
-	    us[0] = Unicode::toCORBA(uc);
+	    us[0] = Unicode::to_CORBA(uc);
 	    Graphic_var child = _kit->chunk(us);
 	    _lines.back()->append_graphic(child);
 	  }

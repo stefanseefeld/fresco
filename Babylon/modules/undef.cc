@@ -151,15 +151,15 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Zero_width(const UCS4 uc) const {
-      return 0;
-    }
-
     bool is_White_space(const UCS4 uc) const {
       return 0;
     }
 
     bool is_Non_break(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Format_Control(const UCS4 uc) const {
       return 0;
     }
 
@@ -171,7 +171,7 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Format_Control(const UCS4 uc) const {
+    bool is_Other_Format_Control(const UCS4 uc) const {
       return 0;
     }
 
@@ -195,22 +195,6 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Paired_Punctuation(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Left_of_Pair(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Combining(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Non_spacing(const UCS4 uc) const {
-      return 0;
-    }
-
     bool is_Composite(const UCS4 uc) const {
       return 0;
     }
@@ -231,19 +215,15 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Identifier_Part(const UCS4 uc) const {
+    bool is_Identifier_Part_Not_Cf(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Ignorable_Control(const UCS4 uc) const {
+    bool is_Other_Uppercase(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Bidi_Hebrew_Right_to_Left(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Bidi_Arabic_Right_to_Left(const UCS4 uc) const {
+    bool is_Other_Lowercase(const UCS4 uc) const {
       return 0;
     }
 
@@ -255,8 +235,8 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Not_a_Character(const UCS4 uc) const {
-      return ((uc & 0xFFFE) == 0xFFFE);
+    bool is_Noncharacter_Code_Point(const UCS4 uc) const {
+      return 0;
     }
 
     bool is_Private_Use_High_Surrogate(const UCS4 uc) const {
@@ -269,106 +249,6 @@ namespace Babylon {
 
     bool is_High_Surrogate(const UCS4 uc) const {
       return 0;
-    }
-
-    bool is_Space(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_ISO_Control(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Punctuation(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Line_Separator(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Paragraph_Separator(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Currency_Symbol(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Bidi_Left_to_Right(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Bidi_European_Digit(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Bidi_Eur_Num_Separator(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Bidi_Eur_Num_Terminator(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Bidi_Arabic_Digit(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Bidi_Common_Separator(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Bidi_Block_Separator(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Bidi_Segment_Separator(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Bidi_Whitespace(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Bidi_Non_spacing_Mark(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Bidi_Boundary_Neutral(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Bidi_PDF(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Bidi_Embedding_or_Override(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Bidi_LRE(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Bidi_RLE(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Bidi_LRO(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Bidi_RLO(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Bidi_Other_Neutral(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Unassigned_Code_Value(const UCS4 uc) const {
-      return 1;
     }
 
 

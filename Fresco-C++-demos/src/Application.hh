@@ -80,10 +80,10 @@ public:
   Warsaw::CommandKit_ptr command() { return Warsaw::CommandKit::_duplicate(ck);}
   Warsaw::ImageKit_ptr image() { return Warsaw::ImageKit::_duplicate(ik);}
   Warsaw::GadgetKit_ptr gadget() { return Warsaw::GadgetKit::_duplicate(gk);}
-  void append(Warsaw::Controller_ptr, const Unicode::String &);
+  void append(Warsaw::Controller_ptr, const Babylon::String &);
   void run();
 protected:
-  Item make_item(const Unicode::String &);
+  Item make_item(const Babylon::String &);
 private:
   Warsaw::ServerContext_var server;
   Warsaw::TextKit_var tk;

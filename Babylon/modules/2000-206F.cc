@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Wed,  6 Dec 2000 23:25:05 +0100.
+ * ftp.unicode.org on Mon,  8 Jan 2001 23:32:04 +0100.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -25,6 +25,7 @@
 
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
+#include <bitset>
 
 namespace Babylon {
 
@@ -34,9 +35,9 @@ namespace Babylon {
     };
 
     General_Punctuation2000() {
-      _first_letter = 0x2000;
-      _last_letter  = 0x206F;
-      // _version="3.0.1" // Not yet supported!
+      m_first_letter = 0x2000;
+      m_last_letter  = 0x206F;
+      // m_version="3.0.1" // Not yet supported!
 
     }
 
@@ -45,11 +46,11 @@ namespace Babylon {
     }
 
     UCS4 firstLetter() {
-      return _first_letter;
+      return m_first_letter;
     }
 
     UCS4 lastLetter() {
-      return _last_letter;
+      return m_last_letter;
     }
 
     bool is_undef_block() const {
@@ -63,31 +64,19 @@ namespace Babylon {
     }
 
     bool is_defined(const UCS4 uc) const {
-      return (_is_defined[uc - _first_letter]);
+      return (m_is_defined.test(uc - m_first_letter));
     }
 
     UCS4 uppercase(const UCS4 uc) const {
       return uc;
     }
 
-    bool is_Uppercase(const UCS4 uc) const {
-      return category(uc) == CAT_Lu;
-    }
-
     UCS4 lowercase(const UCS4 uc) const {
       return uc;
     }
 
-    bool is_Lowercase(const UCS4 uc) const {
-      return category(uc) == CAT_Ll;
-    }
-
     UCS4 titlecase(const UCS4 uc) const {
       return uc;
-    }
-
-    bool is_Titlecase(const UCS4 uc) const {
-      return category(uc) == CAT_Lt;
     }
 
     int dec_digit_value(const UCS4 uc) const {
@@ -117,7 +106,7 @@ namespace Babylon {
     Gen_Cat category(const UCS4 uc) const {
       if (!is_defined(uc))
         return CAT_MAX;
-      return Babylon::Gen_Cat(General_Punctuation2000::_cat[uc - _first_letter]);
+      return Babylon::Gen_Cat(General_Punctuation2000::_cat[uc - m_first_letter]);
     }
 
     Can_Comb_Class comb_class(const UCS4 uc) const {
@@ -129,39 +118,39 @@ namespace Babylon {
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
         return BIDIR_MAX;
-      return Babylon::Bidir_Props(General_Punctuation2000::_bidir[uc - _first_letter]);
+      return Babylon::Bidir_Props(General_Punctuation2000::m_bidir[uc - m_first_letter]);
     }
 
     Char_Decomp decomp_type(const UCS4 uc) const {
       if (!is_defined(uc))
         return DECOMP_MAX;
-      return Babylon::Char_Decomp(General_Punctuation2000::_decomp[uc - _first_letter]);
+      return Babylon::Char_Decomp(General_Punctuation2000::_decomp[uc - m_first_letter]);
     }
 
     UTF32_string decompose(const UCS4 uc) const {
       Babylon::UTF32_string us;
       us.resize(2);
-      us[0] = General_Punctuation2000::_decompStr[uc - _first_letter][0];
-      us[1] = General_Punctuation2000::_decompStr[uc - _first_letter][1];
+      us[0] = General_Punctuation2000::m_decompStr[uc - m_first_letter][0];
+      us[1] = General_Punctuation2000::m_decompStr[uc - m_first_letter][1];
 
       switch (uc) {
 
       case 0x2026:
         us.resize(3);
-        us[2] = 0x002E;
+        us[2u] = 0x002Eu;
         break;
 
       case 0x2034:
         us.resize(3);
-        us[2] = 0x2032;
+        us[2u] = 0x2032u;
         break;
 
       case 0x2037:
         us.resize(3);
-        us[2] = 0x2035;
+        us[2u] = 0x2035u;
         break;
       }
-      if (us[1] == 0x0000) {
+      if (us[1] == 0x0000u) {
         us.resize(1);
       }
 
@@ -169,87 +158,71 @@ namespace Babylon {
     }
 
     bool must_mirror(const UCS4 uc) const {
-      return General_Punctuation2000::_mirror[uc - _first_letter];
+      return m_mirror.test(uc - m_first_letter);
     }
 
     Line_Break linebreak(const UCS4 uc) const {
       if (!is_defined(uc))
         return LB_MAX;
-      return Babylon::Line_Break(General_Punctuation2000::_lb[uc - _first_letter]);
+      return Babylon::Line_Break(General_Punctuation2000::m_lb[uc - m_first_letter]);
     }
 
     EA_Width EA_width(const UCS4 uc) const {
       if (!is_defined(uc))
         return EA_WIDTH_MAX;
-      return Babylon::EA_Width(General_Punctuation2000::_ea[uc - _first_letter]);
+      return Babylon::EA_Width(General_Punctuation2000::m_ea[uc - m_first_letter]);
     }
 
-    UCS4 compose (const UCS4 starter, const UCS4 last) {
+    UCS4 compose (const UCS4 start, const UCS4 last) {
       return 0;
-    }
-
-    bool is_Zero_width(const UCS4 uc) const {
-      return General_Punctuation2000::_Zero_width[uc - _first_letter];
     }
 
     bool is_White_space(const UCS4 uc) const {
-      return General_Punctuation2000::_White_space[uc - _first_letter];
+      return m_White_space.test(uc - m_first_letter);
     }
 
     bool is_Non_break(const UCS4 uc) const {
-      return General_Punctuation2000::_Non_break[uc - _first_letter];
-    }
-
-    bool is_Bidi_Control(const UCS4 uc) const {
-      return General_Punctuation2000::_Bidi_Control[uc - _first_letter];
-    }
-
-    bool is_Join_Control(const UCS4 uc) const {
-      return General_Punctuation2000::_Join_Control[uc - _first_letter];
+      return 0;
     }
 
     bool is_Format_Control(const UCS4 uc) const {
-      return General_Punctuation2000::_Format_Control[uc - _first_letter];
+      return m_Format_Control.test(uc - m_first_letter);
+    }
+
+    bool is_Bidi_Control(const UCS4 uc) const {
+      return m_Bidi_Control.test(uc - m_first_letter);
+    }
+
+    bool is_Join_Control(const UCS4 uc) const {
+      return m_Join_Control.test(uc - m_first_letter);
+    }
+
+    bool is_Other_Format_Control(const UCS4 uc) const {
+      return m_Other_Format_Control.test(uc - m_first_letter);
     }
 
     bool is_Dash(const UCS4 uc) const {
-      return General_Punctuation2000::_Dash[uc - _first_letter];
+      return m_Dash.test(uc - m_first_letter);
     }
 
     bool is_Hyphen(const UCS4 uc) const {
-      return General_Punctuation2000::_Hyphen[uc - _first_letter];
+      return m_Hyphen.test(uc - m_first_letter);
     }
 
     bool is_Quotation_Mark(const UCS4 uc) const {
-      return General_Punctuation2000::_Quotation_Mark[uc - _first_letter];
+      return m_Quotation_Mark.test(uc - m_first_letter);
     }
 
     bool is_Terminal_Punctuation(const UCS4 uc) const {
-      return General_Punctuation2000::_Terminal_Punctuation[uc - _first_letter];
+      return m_Terminal_Punctuation.test(uc - m_first_letter);
     }
 
     bool is_Math(const UCS4 uc) const {
-      return General_Punctuation2000::_Math[uc - _first_letter];
-    }
-
-    bool is_Paired_Punctuation(const UCS4 uc) const {
-      return General_Punctuation2000::_Paired_Punctuation[uc - _first_letter];
-    }
-
-    bool is_Left_of_Pair(const UCS4 uc) const {
-      return General_Punctuation2000::_Left_of_Pair[uc - _first_letter];
-    }
-
-    bool is_Combining(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Non_spacing(const UCS4 uc) const {
-      return 0;
+      return m_Math.test(uc - m_first_letter);
     }
 
     bool is_Composite(const UCS4 uc) const {
-      return General_Punctuation2000::_Composite[uc - _first_letter];
+      return m_Composite.test(uc - m_first_letter);
     }
 
     bool is_Hex_Digit(const UCS4 uc) const {
@@ -268,19 +241,15 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Identifier_Part(const UCS4 uc) const {
-      return General_Punctuation2000::_Identifier_Part[uc - _first_letter];
+    bool is_Identifier_Part_Not_Cf(const UCS4 uc) const {
+      return m_Identifier_Part_Not_Cf.test(uc - m_first_letter);
     }
 
-    bool is_Ignorable_Control(const UCS4 uc) const {
-      return General_Punctuation2000::_Ignorable_Control[uc - _first_letter];
+    bool is_Other_Uppercase(const UCS4 uc) const {
+      return 0;
     }
 
-    bool is_Bidi_Hebrew_Right_to_Left(const UCS4 uc) const {
-      return General_Punctuation2000::_Bidi_Hebrew_Right_to_Left[uc - _first_letter];
-    }
-
-    bool is_Bidi_Arabic_Right_to_Left(const UCS4 uc) const {
+    bool is_Other_Lowercase(const UCS4 uc) const {
       return 0;
     }
 
@@ -292,7 +261,7 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Not_a_Character(const UCS4 uc) const {
+    bool is_Noncharacter_Code_Point(const UCS4 uc) const {
       return ((uc & 0xFFFE) == 0xFFFE);
     }
 
@@ -308,167 +277,38 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Space(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Zs);
-    }
-
-    bool is_ISO_Control(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Cc);
-    }
-
-    bool is_Punctuation(const UCS4 uc) const {
-      return (is_defined(uc) && (category(uc) == CAT_Pc ||
-                                 category(uc) == CAT_Pd ||
-                                 category(uc) == CAT_Ps ||
-                                 category(uc) == CAT_Pe ||
-                                 category(uc) == CAT_Pi ||
-                                 category(uc) == CAT_Pf ||
-                                 category(uc) == CAT_Po)
-             );
-    }
-
-    bool is_Line_Separator(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Zl);
-    }
-
-    bool is_Paragraph_Separator(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Zp);
-    }
-
-    bool is_Currency_Symbol(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Sc);
-    }
-
-    bool is_Bidi_Left_to_Right(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_L;
-    }
-
-    bool is_Bidi_European_Digit(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_EN;
-    }
-
-    bool is_Bidi_Eur_Num_Separator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_ES;
-    }
-
-    bool is_Bidi_Eur_Num_Terminator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_ET;
-    }
-
-    bool is_Bidi_Arabic_Digit(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_AN;
-    }
-
-    bool is_Bidi_Common_Separator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_CS;
-    }
-
-    bool is_Bidi_Block_Separator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_B;
-    }
-
-    bool is_Bidi_Segment_Separator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_S;
-    }
-
-    bool is_Bidi_Whitespace(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_WS;
-    }
-
-    bool is_Bidi_Non_spacing_Mark(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_NSM;
-    }
-
-    bool is_Bidi_Boundary_Neutral(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_BN;
-    }
-
-    bool is_Bidi_PDF(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_PDF;
-    }
-
-    bool is_Bidi_Embedding_or_Override(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_LRE ||
-             bidir_props(uc) == BIDIR_RLE ||
-             bidir_props(uc) == BIDIR_LRO ||
-             bidir_props(uc) == BIDIR_RLO;
-    }
-
-    bool is_Bidi_LRE(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_LRE;
-    }
-
-    bool is_Bidi_RLE(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_RLE;
-    }
-
-    bool is_Bidi_LRO(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_LRO;
-    }
-
-    bool is_Bidi_RLO(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_RLO;
-    }
-
-    bool is_Bidi_Other_Neutral(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_ON;
-    }
-
-    bool is_Unassigned_Code_Value(const UCS4 uc) const {
-      return !is_defined(uc) && !is_Not_a_Character(uc);
-    }
-
 
   private:
     // functions
     General_Punctuation2000(const General_Punctuation2000 &) {}
 
-    Babylon::UCS4 _first_letter;
-    Babylon::UCS4 _last_letter;
-    static const bool _is_defined[112];
+    Babylon::UCS4 m_first_letter;
+    Babylon::UCS4 m_last_letter;
+    // Babylon::UCS4_string m_version;
+    static const bitset<112> m_is_defined;
     static const unsigned char _cat[112];
-    static const unsigned char _bidir[112];
+    static const unsigned char m_bidir[112];
     static const unsigned char _decomp[112];
-    static const UCS2 _decompStr[112][2];
-    static const bool _mirror[112];
-    static const unsigned char _lb[112];
-    static const unsigned char _ea[112];
-    static const bool _Zero_width[112];
-    static const bool _White_space[112];
-    static const bool _Non_break[112];
-    static const bool _Bidi_Control[112];
-    static const bool _Join_Control[112];
-    static const bool _Format_Control[112];
-    static const bool _Dash[112];
-    static const bool _Hyphen[112];
-    static const bool _Quotation_Mark[112];
-    static const bool _Terminal_Punctuation[112];
-    static const bool _Math[112];
-    static const bool _Paired_Punctuation[112];
-    static const bool _Left_of_Pair[112];
-    static const bool _Composite[112];
-    static const bool _Identifier_Part[112];
-    static const bool _Ignorable_Control[112];
-    static const bool _Bidi_Hebrew_Right_to_Left[112];
+    static const UCS2 m_decompStr[112][2];
+    static const bitset<112> m_mirror;
+    static const unsigned char m_lb[112];
+    static const unsigned char m_ea[112];
+    static const bitset<112> m_White_space;
+    static const bitset<112> m_Format_Control;
+    static const bitset<112> m_Bidi_Control;
+    static const bitset<112> m_Join_Control;
+    static const bitset<112> m_Other_Format_Control;
+    static const bitset<112> m_Dash;
+    static const bitset<112> m_Hyphen;
+    static const bitset<112> m_Quotation_Mark;
+    static const bitset<112> m_Terminal_Punctuation;
+    static const bitset<112> m_Math;
+    static const bitset<112> m_Composite;
+    static const bitset<112> m_Identifier_Part_Not_Cf;
 
   }; // class General_Punctuation2000
 
-  const bool General_Punctuation2000::_is_defined[] = {
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 0, 
-    1, 1, 1, 1, 1, 1, 0, 0, 
-    0, 0, 0, 0, 0, 0, 0, 0, 
-    0, 0, 0, 0, 0, 0, 0, 0, 
-    0, 0, 0, 0, 0, 0, 0, 0, 
-    0, 0, 1, 1, 1, 1, 1, 1
-  };
+    const bitset<112> General_Punctuation2000::m_is_defined(string("1111110000000000000000000000000000111111011111111111111111111111111111111111111111111111111111111111111111111111"));
 
   const unsigned char General_Punctuation2000::_cat[] = {
     CAT_Zs, CAT_Zs, CAT_Zs, CAT_Zs, CAT_Zs, CAT_Zs, CAT_Zs, CAT_Zs, 
@@ -487,7 +327,7 @@ namespace Babylon {
     CAT_Zs, CAT_Zs, CAT_Cf, CAT_Cf, CAT_Cf, CAT_Cf, CAT_Cf, CAT_Cf
   };
 
-  const unsigned char General_Punctuation2000::_bidir[] = {
+  const unsigned char General_Punctuation2000::m_bidir[] = {
     BIDIR_WS, BIDIR_WS, BIDIR_WS, BIDIR_WS, BIDIR_WS, BIDIR_WS, BIDIR_WS, BIDIR_WS, 
     BIDIR_WS, BIDIR_WS, BIDIR_WS, BIDIR_BN, BIDIR_BN, BIDIR_BN, BIDIR_L, BIDIR_R, 
     BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, BIDIR_ON, 
@@ -521,55 +361,40 @@ namespace Babylon {
     DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP
   };
 
-  const UCS2 General_Punctuation2000::_decompStr[][2] = {
-    { 0x2002, 0x0000 }, { 0x2003, 0x0000 }, { 0x0020, 0x0000 }, { 0x0020, 0x0000 }, 
-    { 0x0020, 0x0000 }, { 0x0020, 0x0000 }, { 0x0020, 0x0000 }, { 0x0020, 0x0000 }, 
-    { 0x0020, 0x0000 }, { 0x0020, 0x0000 }, { 0x0020, 0x0000 }, { 0x200B, 0x0000 }, 
-    { 0x200C, 0x0000 }, { 0x200D, 0x0000 }, { 0x200E, 0x0000 }, { 0x200F, 0x0000 }, 
-    { 0x2010, 0x0000 }, { 0x2010, 0x0000 }, { 0x2012, 0x0000 }, { 0x2013, 0x0000 }, 
-    { 0x2014, 0x0000 }, { 0x2015, 0x0000 }, { 0x2016, 0x0000 }, { 0x0020, 0x0333 }, 
-    { 0x2018, 0x0000 }, { 0x2019, 0x0000 }, { 0x201A, 0x0000 }, { 0x201B, 0x0000 }, 
-    { 0x201C, 0x0000 }, { 0x201D, 0x0000 }, { 0x201E, 0x0000 }, { 0x201F, 0x0000 }, 
-    { 0x2020, 0x0000 }, { 0x2021, 0x0000 }, { 0x2022, 0x0000 }, { 0x2023, 0x0000 }, 
-    { 0x002E, 0x0000 }, { 0x002E, 0x002E }, { 0x002E, 0x002E }, { 0x2027, 0x0000 }, 
-    { 0x2028, 0x0000 }, { 0x2029, 0x0000 }, { 0x202A, 0x0000 }, { 0x202B, 0x0000 }, 
-    { 0x202C, 0x0000 }, { 0x202D, 0x0000 }, { 0x202E, 0x0000 }, { 0x0020, 0x0000 }, 
-    { 0x2030, 0x0000 }, { 0x2031, 0x0000 }, { 0x2032, 0x0000 }, { 0x2032, 0x2032 }, 
-    { 0x2032, 0x2032 }, { 0x2035, 0x0000 }, { 0x2035, 0x2035 }, { 0x2035, 0x2035 }, 
-    { 0x2038, 0x0000 }, { 0x2039, 0x0000 }, { 0x203A, 0x0000 }, { 0x203B, 0x0000 }, 
-    { 0x0021, 0x0021 }, { 0x203D, 0x0000 }, { 0x0020, 0x0305 }, { 0x203F, 0x0000 }, 
-    { 0x2040, 0x0000 }, { 0x2041, 0x0000 }, { 0x2042, 0x0000 }, { 0x2043, 0x0000 }, 
-    { 0x2044, 0x0000 }, { 0x2045, 0x0000 }, { 0x2046, 0x0000 }, { 0x2047, 0x0000 }, 
-    { 0x003F, 0x0021 }, { 0x0021, 0x003F }, { 0x204A, 0x0000 }, { 0x204B, 0x0000 }, 
-    { 0x204C, 0x0000 }, { 0x204D, 0x0000 }, { 0x204E, 0x0000 }, { 0x204F, 0x0000 }, 
-    { 0x2050, 0x0000 }, { 0x2051, 0x0000 }, { 0x2052, 0x0000 }, { 0x2053, 0x0000 }, 
-    { 0x2054, 0x0000 }, { 0x2055, 0x0000 }, { 0x2056, 0x0000 }, { 0x2057, 0x0000 }, 
-    { 0x2058, 0x0000 }, { 0x2059, 0x0000 }, { 0x205A, 0x0000 }, { 0x205B, 0x0000 }, 
-    { 0x205C, 0x0000 }, { 0x205D, 0x0000 }, { 0x205E, 0x0000 }, { 0x205F, 0x0000 }, 
-    { 0x2060, 0x0000 }, { 0x2061, 0x0000 }, { 0x2062, 0x0000 }, { 0x2063, 0x0000 }, 
-    { 0x2064, 0x0000 }, { 0x2065, 0x0000 }, { 0x2066, 0x0000 }, { 0x2067, 0x0000 }, 
-    { 0x2068, 0x0000 }, { 0x2069, 0x0000 }, { 0x206A, 0x0000 }, { 0x206B, 0x0000 }, 
-    { 0x206C, 0x0000 }, { 0x206D, 0x0000 }, { 0x206E, 0x0000 }, { 0x206F, 0x0000 }
+  const UCS2 General_Punctuation2000::m_decompStr[][2] = {
+    { 0x2002u, 0x0000u }, { 0x2003u, 0x0000u }, { 0x0020u, 0x0000u }, { 0x0020u, 0x0000u }, 
+    { 0x0020u, 0x0000u }, { 0x0020u, 0x0000u }, { 0x0020u, 0x0000u }, { 0x0020u, 0x0000u }, 
+    { 0x0020u, 0x0000u }, { 0x0020u, 0x0000u }, { 0x0020u, 0x0000u }, { 0x200Bu, 0x0000u }, 
+    { 0x200Cu, 0x0000u }, { 0x200Du, 0x0000u }, { 0x200Eu, 0x0000u }, { 0x200Fu, 0x0000u }, 
+    { 0x2010u, 0x0000u }, { 0x2010u, 0x0000u }, { 0x2012u, 0x0000u }, { 0x2013u, 0x0000u }, 
+    { 0x2014u, 0x0000u }, { 0x2015u, 0x0000u }, { 0x2016u, 0x0000u }, { 0x0020u, 0x0333u }, 
+    { 0x2018u, 0x0000u }, { 0x2019u, 0x0000u }, { 0x201Au, 0x0000u }, { 0x201Bu, 0x0000u }, 
+    { 0x201Cu, 0x0000u }, { 0x201Du, 0x0000u }, { 0x201Eu, 0x0000u }, { 0x201Fu, 0x0000u }, 
+    { 0x2020u, 0x0000u }, { 0x2021u, 0x0000u }, { 0x2022u, 0x0000u }, { 0x2023u, 0x0000u }, 
+    { 0x002Eu, 0x0000u }, { 0x002Eu, 0x002Eu }, { 0x002Eu, 0x002Eu }, { 0x2027u, 0x0000u }, 
+    { 0x2028u, 0x0000u }, { 0x2029u, 0x0000u }, { 0x202Au, 0x0000u }, { 0x202Bu, 0x0000u }, 
+    { 0x202Cu, 0x0000u }, { 0x202Du, 0x0000u }, { 0x202Eu, 0x0000u }, { 0x0020u, 0x0000u }, 
+    { 0x2030u, 0x0000u }, { 0x2031u, 0x0000u }, { 0x2032u, 0x0000u }, { 0x2032u, 0x2032u }, 
+    { 0x2032u, 0x2032u }, { 0x2035u, 0x0000u }, { 0x2035u, 0x2035u }, { 0x2035u, 0x2035u }, 
+    { 0x2038u, 0x0000u }, { 0x2039u, 0x0000u }, { 0x203Au, 0x0000u }, { 0x203Bu, 0x0000u }, 
+    { 0x0021u, 0x0021u }, { 0x203Du, 0x0000u }, { 0x0020u, 0x0305u }, { 0x203Fu, 0x0000u }, 
+    { 0x2040u, 0x0000u }, { 0x2041u, 0x0000u }, { 0x2042u, 0x0000u }, { 0x2043u, 0x0000u }, 
+    { 0x2044u, 0x0000u }, { 0x2045u, 0x0000u }, { 0x2046u, 0x0000u }, { 0x2047u, 0x0000u }, 
+    { 0x003Fu, 0x0021u }, { 0x0021u, 0x003Fu }, { 0x204Au, 0x0000u }, { 0x204Bu, 0x0000u }, 
+    { 0x204Cu, 0x0000u }, { 0x204Du, 0x0000u }, { 0x204Eu, 0x0000u }, { 0x204Fu, 0x0000u }, 
+    { 0x2050u, 0x0000u }, { 0x2051u, 0x0000u }, { 0x2052u, 0x0000u }, { 0x2053u, 0x0000u }, 
+    { 0x2054u, 0x0000u }, { 0x2055u, 0x0000u }, { 0x2056u, 0x0000u }, { 0x2057u, 0x0000u }, 
+    { 0x2058u, 0x0000u }, { 0x2059u, 0x0000u }, { 0x205Au, 0x0000u }, { 0x205Bu, 0x0000u }, 
+    { 0x205Cu, 0x0000u }, { 0x205Du, 0x0000u }, { 0x205Eu, 0x0000u }, { 0x205Fu, 0x0000u }, 
+    { 0x2060u, 0x0000u }, { 0x2061u, 0x0000u }, { 0x2062u, 0x0000u }, { 0x2063u, 0x0000u }, 
+    { 0x2064u, 0x0000u }, { 0x2065u, 0x0000u }, { 0x2066u, 0x0000u }, { 0x2067u, 0x0000u }, 
+    { 0x2068u, 0x0000u }, { 0x2069u, 0x0000u }, { 0x206Au, 0x0000u }, { 0x206Bu, 0x0000u }, 
+    { 0x206Cu, 0x0000u }, { 0x206Du, 0x0000u }, { 0x206Eu, 0x0000u }, { 0x206Fu, 0x0000u }
   };
 
-  const bool General_Punctuation2000::_mirror[] = {
-    0, 0, 0, 0, 0, 0, 0, 0, 
-    0, 0, 0, 0, 0, 0, 0, 0, 
-    0, 0, 0, 0, 0, 0, 0, 0, 
-    0, 0, 0, 0, 0, 0, 0, 0, 
-    0, 0, 0, 0, 0, 0, 0, 0, 
-    0, 0, 0, 0, 0, 0, 0, 0, 
-    0, 0, 0, 0, 0, 0, 0, 0, 
-    0, 1, 1, 0, 0, 0, 0, 0, 
-    0, 0, 0, 0, 0, 1, 1, 0, 
-    0, 0, 0, 0, 0, 0, 0, 0, 
-    0, 0, 0, 0, 0, 0, 0, 0, 
-    0, 0, 0, 0, 0, 0, 0, 0, 
-    0, 0, 0, 0, 0, 0, 0, 0, 
-    0, 0, 0, 0, 0, 0, 0, 0
-  };
+  const bitset<112> General_Punctuation2000::m_mirror(string("0000000000000000000000000000000000000000011000000000011000000000000000000000000000000000000000000000000000000000"));
 
-  const unsigned char General_Punctuation2000::_lb[] = {
+  const unsigned char General_Punctuation2000::m_lb[] = {
     LB_BA, LB_BA, LB_BA, LB_BA, LB_BA, LB_BA, LB_BA, LB_GL, 
     LB_BA, LB_BA, LB_BA, LB_ZW, LB_CM, LB_CM, LB_CM, LB_CM, 
     LB_BA, LB_GL, LB_BA, LB_BA, LB_B2, LB_AL, LB_AI, LB_AL, 
@@ -586,7 +411,7 @@ namespace Babylon {
     LB_BA, LB_BA, LB_CM, LB_CM, LB_CM, LB_CM, LB_CM, LB_CM
   };
 
-  const unsigned char General_Punctuation2000::_ea[] = {
+  const unsigned char General_Punctuation2000::m_ea[] = {
     EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, 
     EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, 
     EA_WIDTH_A, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_A, EA_WIDTH_N, 
@@ -603,294 +428,29 @@ namespace Babylon {
     EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N, EA_WIDTH_N
   };
 
-    const bool General_Punctuation2000::_Zero_width[] = {
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 1, 1, 1, 1, 1, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 1, 1, 1, 1, 1, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 1, 1, 1, 1, 1, 1
-    };
+    const bitset<112> General_Punctuation2000::m_White_space(string("0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000111111111111"));
 
-    const bool General_Punctuation2000::_White_space[] = {
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        1, 1, 0, 0, 0, 0, 0, 1, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
+    const bitset<112> General_Punctuation2000::m_Format_Control(string("1111110000000000000000000000000000000000000000000000000000000000011111000000000000000000000000001111000000000000"));
 
-    const bool General_Punctuation2000::_Non_break[] = {
-        0, 0, 0, 0, 0, 0, 0, 1, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 1, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 1, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
+    const bitset<112> General_Punctuation2000::m_Bidi_Control(string("0000000000000000000000000000000000000000000000000000000000000000011111000000000000000000000000001100000000000000"));
 
-    const bool General_Punctuation2000::_Bidi_Control[] = {
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 1, 1, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 1, 1, 1, 1, 1, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
+    const bitset<112> General_Punctuation2000::m_Join_Control(string("0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011000000000000"));
 
-    const bool General_Punctuation2000::_Join_Control[] = {
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 1, 1, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
+    const bitset<112> General_Punctuation2000::m_Other_Format_Control(string("1111110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"));
 
-    const bool General_Punctuation2000::_Format_Control[] = {
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 1, 1, 1, 1, 1, 1
-    };
+    const bitset<112> General_Punctuation2000::m_Dash(string("0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001111110000000000000000"));
 
-    const bool General_Punctuation2000::_Dash[] = {
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        1, 1, 1, 1, 1, 1, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
+    const bitset<112> General_Punctuation2000::m_Hyphen(string("0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000110000000000000000"));
 
-    const bool General_Punctuation2000::_Hyphen[] = {
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        1, 1, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
+    const bitset<112> General_Punctuation2000::m_Quotation_Mark(string("0000000000000000000000000000000000000000000000000000000000000000000000000000000000011000000000000000000000000000"));
 
-    const bool General_Punctuation2000::_Quotation_Mark[] = {
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 1, 1, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
+    const bitset<112> General_Punctuation2000::m_Terminal_Punctuation(string("0000000000000000000000000000000000000011000000000011000000000000000000000000000000000000000000000000000000000000"));
 
-    const bool General_Punctuation2000::_Terminal_Punctuation[] = {
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 1, 1, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        1, 1, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
+    const bitset<112> General_Punctuation2000::m_Math(string("0000000000000000000000000000000000000000000000000000000000011100000000000000000000000000000000000000000000000000"));
 
-    const bool General_Punctuation2000::_Math[] = {
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 1, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 1, 1, 1, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 1, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
+    const bitset<112> General_Punctuation2000::m_Composite(string("0000000000000000000000000000000000000011000000000000000011011000000000000110000000000000000000000000000000000000"));
 
-    const bool General_Punctuation2000::_Paired_Punctuation[] = {
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 1, 1, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 1, 1, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
-
-    const bool General_Punctuation2000::_Left_of_Pair[] = {
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        1, 0, 1, 1, 1, 0, 1, 1, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 1, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 1, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
-
-    const bool General_Punctuation2000::_Composite[] = {
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 1, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        1, 1, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
-
-    const bool General_Punctuation2000::_Identifier_Part[] = {
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 1, 
-        1, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
-
-    const bool General_Punctuation2000::_Ignorable_Control[] = {
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 1, 1, 1, 1, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 1, 1, 1, 1, 1, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 1, 1, 1, 1, 1, 1
-    };
-
-    const bool General_Punctuation2000::_Bidi_Hebrew_Right_to_Left[] = {
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 1, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
+    const bitset<112> General_Punctuation2000::m_Identifier_Part_Not_Cf(string("0000000000000000000000000000000000000000000000011000000000000000000000000000000000000000000000000000000000000000"));
 
 }; // namespace Babylon
 

@@ -22,13 +22,13 @@
 
 #include <Warsaw/config.hh>
 #include <Warsaw/Input.hh>
-#include <Prague/Unicode/Unicode.hh>
 #include <Warsaw/Unicode.hh>
 #include <Prague/Sys/Tracer.hh>
 #include "Tool/Terminal.hh"
 
 using namespace Prague;
 using namespace Warsaw;
+using namespace Babylon;
 
 void Terminal::key_press(const Input::Event &event)
 {
@@ -36,13 +36,13 @@ void Terminal::key_press(const Input::Event &event)
   StreamBuffer::Data data;
   data.length(1);
   const Input::Toggle &toggle = event[0].attr.selection();
-  Unicode::Char uc(static_cast<Unicode::_Char>(toggle.number));
-  char ascii = uc.myUnicode();
+  Char uc(UCS4(toggle.number));
+  char ascii = uc.value();
   if (isprint(ascii) || ascii == '\r' || ascii == '\n') data[0] = ascii;
   else switch(toggle.number)
     {
-    case Unicode::UC_HORIZONTAL_TABULATION: data[0] = '\t'; break;
-    case Unicode::UC_BACKSPACE:             data[0] = '\b'; break;
+    case Babylon::UC_HORIZONTAL_TABULATION: data[0] = '\t'; break;
+    case Babylon::UC_BACKSPACE:             data[0] = '\b'; break;
     default: return; // don't know how to handle...
     }
   buffer->write(data);

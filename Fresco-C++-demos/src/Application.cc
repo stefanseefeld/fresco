@@ -88,13 +88,13 @@ Application::Application(ServerContext_ptr sc)
   hbox->append_graphic(Graphic_var(lk->hfill()));
   vbox->append_graphic(hbox);
 
-  Graphic_var glyph = tk->chunk(Unicode::toCORBA(Unicode::String("close")));
+  Graphic_var glyph = tk->chunk(Unicode::to_CORBA(Babylon::String("close")));
   done = lk->margin(Graphic_var(ttk->rgb(glyph, 0., 0., 0.)), 20.);
-  glyph = tk->chunk(Unicode::toCORBA(Unicode::String("settings")));
+  glyph = tk->chunk(Unicode::to_CORBA(Babylon::String("settings")));
   settings = lk->margin(Graphic_var(ttk->rgb(glyph, 0., 0., 0.)), 20.);
 }
 
-void Application::append(Controller_ptr demo, const Unicode::String &name)
+void Application::append(Controller_ptr demo, const Babylon::String &name)
 {
   Item item = make_item(name);
 
@@ -136,10 +136,10 @@ void Application::run()
   spec.brightness(0.5); spec._d(ToolKit::concav);
   vbox->append_graphic(Graphic_var(ttk->frame(choice, 40., spec, false)));
   vbox->append_graphic(Graphic_var(lk->vspace(200.)));
-  Graphic_var glyph1 = tk->chunk(Unicode::toCORBA(Unicode::String("run")));
+  Graphic_var glyph1 = tk->chunk(Unicode::to_CORBA(Babylon::String("run")));
   Graphic_var label1 = lk->margin(glyph1, 20.);
   Trigger_var run = wk->button(Graphic_var(ttk->rgb(label1, 0., 0., 0.)), Command_var(mapper->_this()));
-  Graphic_var glyph2 = tk->chunk(Unicode::toCORBA(Unicode::String("quit")));
+  Graphic_var glyph2 = tk->chunk(Unicode::to_CORBA(Babylon::String("quit")));
   Graphic_var label2 = lk->margin(glyph2, 20.);
   ExitCommand *cmd = new ExitCommand();
   Trigger_var quit = wk->button(Graphic_var(ttk->rgb(label2, 0., 0., 0.)), Command_var(cmd->_this()));
@@ -164,14 +164,14 @@ void Application::run()
   while (true) Thread::delay(Prague::Time(1000));
 }
 
-Application::Item Application::make_item(const Unicode::String &name)
+Application::Item Application::make_item(const Babylon::String &name)
 {
   Item item;
 
   /*
    * insert an item into the choice
    */
-  Graphic_var label = tk->chunk(Unicode::toCORBA(name));
+  Graphic_var label = tk->chunk(Unicode::to_CORBA(name));
   item.id = choice->append_item(Graphic_var(ttk->rgb(label, 0., 0., 0.)));
   /*
    * create the control elements
@@ -192,7 +192,7 @@ Application::Item Application::make_item(const Unicode::String &name)
   Layout::Grid_var grid = lk->fixed_grid(index);
   index.row = 0;
   index.col = 0;
-  grid->replace(Graphic_var(lk->valign(Graphic_var(ttk->rgb(Graphic_var(tk->chunk(Unicode::toCORBA(Unicode::String("alpha")))),
+  grid->replace(Graphic_var(lk->valign(Graphic_var(ttk->rgb(Graphic_var(tk->chunk(Unicode::to_CORBA(Babylon::String("alpha")))),
 							    0., 0., 0.)), 0.5)), index);
   index.col = 1;
   grid->replace(Graphic_var(lk->valign(Graphic_var(lk->margin_flexible(Graphic_var(wk->slider(item.alpha, xaxis)),
@@ -200,7 +200,7 @@ Application::Item Application::make_item(const Unicode::String &name)
 
   index.row = 1;
   index.col = 0;
-  grid->replace(Graphic_var(lk->valign(Graphic_var(ttk->rgb(Graphic_var(tk->chunk(Unicode::toCORBA(Unicode::String("red")))),
+  grid->replace(Graphic_var(lk->valign(Graphic_var(ttk->rgb(Graphic_var(tk->chunk(Unicode::to_CORBA(Babylon::String("red")))),
 							    0., 0., 0.)), 0.5)), index);
   index.col = 1;
   grid->replace(Graphic_var(lk->valign(Graphic_var(lk->margin_flexible(Graphic_var(wk->slider(item.red, xaxis)),
@@ -208,7 +208,7 @@ Application::Item Application::make_item(const Unicode::String &name)
 
   index.row = 2;
   index.col = 0;
-  grid->replace(Graphic_var(lk->valign(Graphic_var(ttk->rgb(Graphic_var(tk->chunk(Unicode::toCORBA(Unicode::String("green")))),
+  grid->replace(Graphic_var(lk->valign(Graphic_var(ttk->rgb(Graphic_var(tk->chunk(Unicode::to_CORBA(Babylon::String("green")))),
 							    0., 0., 0.)), 0.5)), index);
   index.col = 1;
   grid->replace(Graphic_var(lk->valign(Graphic_var(lk->margin_flexible(Graphic_var(wk->slider(item.green, xaxis)),
@@ -216,7 +216,7 @@ Application::Item Application::make_item(const Unicode::String &name)
 
   index.row = 3;
   index.col = 0;
-  grid->replace(Graphic_var(lk->valign(Graphic_var(ttk->rgb(Graphic_var(tk->chunk(Unicode::toCORBA(Unicode::String("blue")))),
+  grid->replace(Graphic_var(lk->valign(Graphic_var(ttk->rgb(Graphic_var(tk->chunk(Unicode::to_CORBA(Babylon::String("blue")))),
 							    0., 0., 0.)), 0.5)), index);
   index.col = 1;
   grid->replace(Graphic_var(lk->valign(Graphic_var(lk->margin_flexible(Graphic_var(wk->slider(item.blue, xaxis)),
@@ -224,7 +224,7 @@ Application::Item Application::make_item(const Unicode::String &name)
 
   index.row = 4;
   index.col = 0;
-  grid->replace(Graphic_var(lk->valign(Graphic_var(ttk->rgb(Graphic_var(tk->chunk(Unicode::toCORBA(Unicode::String("z rotation")))),
+  grid->replace(Graphic_var(lk->valign(Graphic_var(ttk->rgb(Graphic_var(tk->chunk(Unicode::to_CORBA(Babylon::String("z rotation")))),
 							    0., 0., 0.)), 0.5)), index);
   index.col = 1;
   grid->replace(Graphic_var(lk->valign(Graphic_var(lk->margin_flexible(Graphic_var(wk->slider(item.zrotation, xaxis)),
@@ -232,7 +232,7 @@ Application::Item Application::make_item(const Unicode::String &name)
 
   index.row = 5;
   index.col = 0;
-  grid->replace(Graphic_var(lk->valign(Graphic_var(ttk->rgb(Graphic_var(tk->chunk(Unicode::toCORBA(Unicode::String("y rotation")))),
+  grid->replace(Graphic_var(lk->valign(Graphic_var(ttk->rgb(Graphic_var(tk->chunk(Unicode::to_CORBA(Babylon::String("y rotation")))),
 							    0., 0., 0.)), 0.5)), index);
   index.col = 1;
   grid->replace(Graphic_var(lk->valign(Graphic_var(lk->margin_flexible(Graphic_var(wk->slider(item.yrotation, xaxis)),
@@ -240,7 +240,7 @@ Application::Item Application::make_item(const Unicode::String &name)
 
   index.row = 6;
   index.col = 0;
-  grid->replace(Graphic_var(lk->valign(Graphic_var(ttk->rgb(Graphic_var(tk->chunk(Unicode::toCORBA(Unicode::String("zoom")))),
+  grid->replace(Graphic_var(lk->valign(Graphic_var(ttk->rgb(Graphic_var(tk->chunk(Unicode::to_CORBA(Babylon::String("zoom")))),
 							    0., 0., 0.)), 0.5)), index);
   index.col = 1;
   grid->replace(Graphic_var(lk->valign(Graphic_var(lk->margin_flexible(Graphic_var(wk->slider(item.zoom, xaxis)),
@@ -248,7 +248,7 @@ Application::Item Application::make_item(const Unicode::String &name)
 
   Graphic_var hbox = lk->hbox();
   hbox->append_graphic(Graphic_var(lk->hfill()));
-  Graphic_var glyph = tk->chunk(Unicode::toCORBA(Unicode::String("done")));
+  Graphic_var glyph = tk->chunk(Unicode::to_CORBA(Babylon::String("done")));
   Graphic_var dlabel = lk->margin(glyph, 20.);
   Trigger_var done = wk->button(Graphic_var(ttk->rgb(dlabel, 0., 0., 0.)), Command::_nil());
   hbox->append_graphic(done);

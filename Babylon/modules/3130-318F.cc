@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Wed,  6 Dec 2000 23:26:38 +0100.
+ * ftp.unicode.org on Mon,  8 Jan 2001 23:32:43 +0100.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -25,6 +25,7 @@
 
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
+#include <bitset>
 
 namespace Babylon {
 
@@ -34,9 +35,9 @@ namespace Babylon {
     };
 
     Hangul_Compatibility_Jamo3130() {
-      _first_letter = 0x3130;
-      _last_letter  = 0x318F;
-      // _version="3.0.1" // Not yet supported!
+      m_first_letter = 0x3130;
+      m_last_letter  = 0x318F;
+      // m_version="3.0.1" // Not yet supported!
 
     }
 
@@ -45,11 +46,11 @@ namespace Babylon {
     }
 
     UCS4 firstLetter() {
-      return _first_letter;
+      return m_first_letter;
     }
 
     UCS4 lastLetter() {
-      return _last_letter;
+      return m_last_letter;
     }
 
     bool is_undef_block() const {
@@ -63,31 +64,19 @@ namespace Babylon {
     }
 
     bool is_defined(const UCS4 uc) const {
-      return (_is_defined[uc - _first_letter]);
+      return (m_is_defined.test(uc - m_first_letter));
     }
 
     UCS4 uppercase(const UCS4 uc) const {
       return uc;
     }
 
-    bool is_Uppercase(const UCS4 uc) const {
-      return category(uc) == CAT_Lu;
-    }
-
     UCS4 lowercase(const UCS4 uc) const {
       return uc;
     }
 
-    bool is_Lowercase(const UCS4 uc) const {
-      return category(uc) == CAT_Ll;
-    }
-
     UCS4 titlecase(const UCS4 uc) const {
       return uc;
-    }
-
-    bool is_Titlecase(const UCS4 uc) const {
-      return category(uc) == CAT_Lt;
     }
 
     int dec_digit_value(const UCS4 uc) const {
@@ -135,18 +124,13 @@ namespace Babylon {
     Char_Decomp decomp_type(const UCS4 uc) const {
       if (!is_defined(uc))
         return DECOMP_MAX;
-      return Babylon::Char_Decomp(Hangul_Compatibility_Jamo3130::_decomp[uc - _first_letter]);
+      return Babylon::Char_Decomp(Hangul_Compatibility_Jamo3130::_decomp[uc - m_first_letter]);
     }
 
     UTF32_string decompose(const UCS4 uc) const {
       Babylon::UTF32_string us;
-      us.resize(2);
-      us[0] = Hangul_Compatibility_Jamo3130::_decompStr[uc - _first_letter][0];
-      us[1] = Hangul_Compatibility_Jamo3130::_decompStr[uc - _first_letter][1];
-      if (us[1] == 0x0000) {
-        us.resize(1);
-      }
-
+      us.resize(1);
+      us[0] = Hangul_Compatibility_Jamo3130::m_decompStr[uc - m_first_letter];
       return us;
     }
 
@@ -166,11 +150,7 @@ namespace Babylon {
       return Babylon::EA_Width(EA_WIDTH_W);
     }
 
-    UCS4 compose (const UCS4 starter, const UCS4 last) {
-      return 0;
-    }
-
-    bool is_Zero_width(const UCS4 uc) const {
+    UCS4 compose (const UCS4 start, const UCS4 last) {
       return 0;
     }
 
@@ -182,6 +162,10 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_Format_Control(const UCS4 uc) const {
+      return 0;
+    }
+
     bool is_Bidi_Control(const UCS4 uc) const {
       return 0;
     }
@@ -190,7 +174,7 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Format_Control(const UCS4 uc) const {
+    bool is_Other_Format_Control(const UCS4 uc) const {
       return 0;
     }
 
@@ -214,22 +198,6 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Paired_Punctuation(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Left_of_Pair(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Combining(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Non_spacing(const UCS4 uc) const {
-      return 0;
-    }
-
     bool is_Composite(const UCS4 uc) const {
       return 0;
     }
@@ -239,7 +207,7 @@ namespace Babylon {
     }
 
     bool is_Alphabetic(const UCS4 uc) const {
-      return Hangul_Compatibility_Jamo3130::_Alphabetic[uc - _first_letter];
+      return m_Alphabetic.test(uc - m_first_letter);
     }
 
     bool is_Diacritic(const UCS4 uc) const {
@@ -250,19 +218,15 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Identifier_Part(const UCS4 uc) const {
-      return Hangul_Compatibility_Jamo3130::_Identifier_Part[uc - _first_letter];
+    bool is_Identifier_Part_Not_Cf(const UCS4 uc) const {
+      return m_Identifier_Part_Not_Cf.test(uc - m_first_letter);
     }
 
-    bool is_Ignorable_Control(const UCS4 uc) const {
+    bool is_Other_Uppercase(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Bidi_Hebrew_Right_to_Left(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Bidi_Arabic_Right_to_Left(const UCS4 uc) const {
+    bool is_Other_Lowercase(const UCS4 uc) const {
       return 0;
     }
 
@@ -274,7 +238,7 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Not_a_Character(const UCS4 uc) const {
+    bool is_Noncharacter_Code_Point(const UCS4 uc) const {
       return ((uc & 0xFFFE) == 0xFFFE);
     }
 
@@ -290,145 +254,23 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Space(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Zs);
-    }
-
-    bool is_ISO_Control(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Cc);
-    }
-
-    bool is_Punctuation(const UCS4 uc) const {
-      return (is_defined(uc) && (category(uc) == CAT_Pc ||
-                                 category(uc) == CAT_Pd ||
-                                 category(uc) == CAT_Ps ||
-                                 category(uc) == CAT_Pe ||
-                                 category(uc) == CAT_Pi ||
-                                 category(uc) == CAT_Pf ||
-                                 category(uc) == CAT_Po)
-             );
-    }
-
-    bool is_Line_Separator(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Zl);
-    }
-
-    bool is_Paragraph_Separator(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Zp);
-    }
-
-    bool is_Currency_Symbol(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Sc);
-    }
-
-    bool is_Bidi_Left_to_Right(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_L;
-    }
-
-    bool is_Bidi_European_Digit(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_EN;
-    }
-
-    bool is_Bidi_Eur_Num_Separator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_ES;
-    }
-
-    bool is_Bidi_Eur_Num_Terminator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_ET;
-    }
-
-    bool is_Bidi_Arabic_Digit(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_AN;
-    }
-
-    bool is_Bidi_Common_Separator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_CS;
-    }
-
-    bool is_Bidi_Block_Separator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_B;
-    }
-
-    bool is_Bidi_Segment_Separator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_S;
-    }
-
-    bool is_Bidi_Whitespace(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_WS;
-    }
-
-    bool is_Bidi_Non_spacing_Mark(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_NSM;
-    }
-
-    bool is_Bidi_Boundary_Neutral(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_BN;
-    }
-
-    bool is_Bidi_PDF(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_PDF;
-    }
-
-    bool is_Bidi_Embedding_or_Override(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_LRE ||
-             bidir_props(uc) == BIDIR_RLE ||
-             bidir_props(uc) == BIDIR_LRO ||
-             bidir_props(uc) == BIDIR_RLO;
-    }
-
-    bool is_Bidi_LRE(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_LRE;
-    }
-
-    bool is_Bidi_RLE(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_RLE;
-    }
-
-    bool is_Bidi_LRO(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_LRO;
-    }
-
-    bool is_Bidi_RLO(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_RLO;
-    }
-
-    bool is_Bidi_Other_Neutral(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_ON;
-    }
-
-    bool is_Unassigned_Code_Value(const UCS4 uc) const {
-      return !is_defined(uc) && !is_Not_a_Character(uc);
-    }
-
 
   private:
     // functions
     Hangul_Compatibility_Jamo3130(const Hangul_Compatibility_Jamo3130 &) {}
 
-    Babylon::UCS4 _first_letter;
-    Babylon::UCS4 _last_letter;
-    static const bool _is_defined[96];
+    Babylon::UCS4 m_first_letter;
+    Babylon::UCS4 m_last_letter;
+    // Babylon::UCS4_string m_version;
+    static const bitset<96> m_is_defined;
     static const unsigned char _decomp[96];
-    static const UCS2 _decompStr[96][2];
-    static const bool _Alphabetic[96];
-    static const bool _Identifier_Part[96];
+    static const UCS2 m_decompStr[96];
+    static const bitset<96> m_Alphabetic;
+    static const bitset<96> m_Identifier_Part_Not_Cf;
 
   }; // class Hangul_Compatibility_Jamo3130
 
-  const bool Hangul_Compatibility_Jamo3130::_is_defined[] = {
-    0, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 0
-  };
+    const bitset<96> Hangul_Compatibility_Jamo3130::m_is_defined(string("011111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111110"));
 
   const unsigned char Hangul_Compatibility_Jamo3130::_decomp[] = {
     DECOMP_NO_DECOMP, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, 
@@ -445,62 +287,36 @@ namespace Babylon {
     DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_NO_DECOMP
   };
 
-  const UCS2 Hangul_Compatibility_Jamo3130::_decompStr[][2] = {
-    { 0x3130, 0x0000 }, { 0x1100, 0x0000 }, { 0x1101, 0x0000 }, { 0x11AA, 0x0000 }, 
-    { 0x1102, 0x0000 }, { 0x11AC, 0x0000 }, { 0x11AD, 0x0000 }, { 0x1103, 0x0000 }, 
-    { 0x1104, 0x0000 }, { 0x1105, 0x0000 }, { 0x11B0, 0x0000 }, { 0x11B1, 0x0000 }, 
-    { 0x11B2, 0x0000 }, { 0x11B3, 0x0000 }, { 0x11B4, 0x0000 }, { 0x11B5, 0x0000 }, 
-    { 0x111A, 0x0000 }, { 0x1106, 0x0000 }, { 0x1107, 0x0000 }, { 0x1108, 0x0000 }, 
-    { 0x1121, 0x0000 }, { 0x1109, 0x0000 }, { 0x110A, 0x0000 }, { 0x110B, 0x0000 }, 
-    { 0x110C, 0x0000 }, { 0x110D, 0x0000 }, { 0x110E, 0x0000 }, { 0x110F, 0x0000 }, 
-    { 0x1110, 0x0000 }, { 0x1111, 0x0000 }, { 0x1112, 0x0000 }, { 0x1161, 0x0000 }, 
-    { 0x1162, 0x0000 }, { 0x1163, 0x0000 }, { 0x1164, 0x0000 }, { 0x1165, 0x0000 }, 
-    { 0x1166, 0x0000 }, { 0x1167, 0x0000 }, { 0x1168, 0x0000 }, { 0x1169, 0x0000 }, 
-    { 0x116A, 0x0000 }, { 0x116B, 0x0000 }, { 0x116C, 0x0000 }, { 0x116D, 0x0000 }, 
-    { 0x116E, 0x0000 }, { 0x116F, 0x0000 }, { 0x1170, 0x0000 }, { 0x1171, 0x0000 }, 
-    { 0x1172, 0x0000 }, { 0x1173, 0x0000 }, { 0x1174, 0x0000 }, { 0x1175, 0x0000 }, 
-    { 0x1160, 0x0000 }, { 0x1114, 0x0000 }, { 0x1115, 0x0000 }, { 0x11C7, 0x0000 }, 
-    { 0x11C8, 0x0000 }, { 0x11CC, 0x0000 }, { 0x11CE, 0x0000 }, { 0x11D3, 0x0000 }, 
-    { 0x11D7, 0x0000 }, { 0x11D9, 0x0000 }, { 0x111C, 0x0000 }, { 0x11DD, 0x0000 }, 
-    { 0x11DF, 0x0000 }, { 0x111D, 0x0000 }, { 0x111E, 0x0000 }, { 0x1120, 0x0000 }, 
-    { 0x1122, 0x0000 }, { 0x1123, 0x0000 }, { 0x1127, 0x0000 }, { 0x1129, 0x0000 }, 
-    { 0x112B, 0x0000 }, { 0x112C, 0x0000 }, { 0x112D, 0x0000 }, { 0x112E, 0x0000 }, 
-    { 0x112F, 0x0000 }, { 0x1132, 0x0000 }, { 0x1136, 0x0000 }, { 0x1140, 0x0000 }, 
-    { 0x1147, 0x0000 }, { 0x114C, 0x0000 }, { 0x11F1, 0x0000 }, { 0x11F2, 0x0000 }, 
-    { 0x1157, 0x0000 }, { 0x1158, 0x0000 }, { 0x1159, 0x0000 }, { 0x1184, 0x0000 }, 
-    { 0x1185, 0x0000 }, { 0x1188, 0x0000 }, { 0x1191, 0x0000 }, { 0x1192, 0x0000 }, 
-    { 0x1194, 0x0000 }, { 0x119E, 0x0000 }, { 0x11A1, 0x0000 }, { 0x318F, 0x0000 }
+  const UCS2 Hangul_Compatibility_Jamo3130::m_decompStr[] = {
+    0x3130u, 0x1100u, 0x1101u, 0x11AAu, 
+    0x1102u, 0x11ACu, 0x11ADu, 0x1103u, 
+    0x1104u, 0x1105u, 0x11B0u, 0x11B1u, 
+    0x11B2u, 0x11B3u, 0x11B4u, 0x11B5u, 
+    0x111Au, 0x1106u, 0x1107u, 0x1108u, 
+    0x1121u, 0x1109u, 0x110Au, 0x110Bu, 
+    0x110Cu, 0x110Du, 0x110Eu, 0x110Fu, 
+    0x1110u, 0x1111u, 0x1112u, 0x1161u, 
+    0x1162u, 0x1163u, 0x1164u, 0x1165u, 
+    0x1166u, 0x1167u, 0x1168u, 0x1169u, 
+    0x116Au, 0x116Bu, 0x116Cu, 0x116Du, 
+    0x116Eu, 0x116Fu, 0x1170u, 0x1171u, 
+    0x1172u, 0x1173u, 0x1174u, 0x1175u, 
+    0x1160u, 0x1114u, 0x1115u, 0x11C7u, 
+    0x11C8u, 0x11CCu, 0x11CEu, 0x11D3u, 
+    0x11D7u, 0x11D9u, 0x111Cu, 0x11DDu, 
+    0x11DFu, 0x111Du, 0x111Eu, 0x1120u, 
+    0x1122u, 0x1123u, 0x1127u, 0x1129u, 
+    0x112Bu, 0x112Cu, 0x112Du, 0x112Eu, 
+    0x112Fu, 0x1132u, 0x1136u, 0x1140u, 
+    0x1147u, 0x114Cu, 0x11F1u, 0x11F2u, 
+    0x1157u, 0x1158u, 0x1159u, 0x1184u, 
+    0x1185u, 0x1188u, 0x1191u, 0x1192u, 
+    0x1194u, 0x119Eu, 0x11A1u, 0x318Fu
   };
 
-    const bool Hangul_Compatibility_Jamo3130::_Alphabetic[] = {
-        0, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 0
-    };
+    const bitset<96> Hangul_Compatibility_Jamo3130::m_Alphabetic(string("011111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111110"));
 
-    const bool Hangul_Compatibility_Jamo3130::_Identifier_Part[] = {
-        0, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 0
-    };
+    const bitset<96> Hangul_Compatibility_Jamo3130::m_Identifier_Part_Not_Cf(string("011111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111110"));
 
 }; // namespace Babylon
 

@@ -92,7 +92,7 @@ sub function {
   my $tmp = "    bool must_mirror(const UCS4 uc) const {\n";
 
   if ($self->{_ATTENTION_NEEDED} == 1) {
-    $tmp .= "      return $bl_name\:\:_mirror\[uc - _first_letter\];\n";
+    $tmp .= "      return m_mirror.test(uc - m_first_letter);\n";
     $tmp .= "    }\n\n";
     return $tmp;
   } else {
@@ -126,7 +126,7 @@ sub var_def {
   }
 
   if ($self->{_ATTENTION_NEEDED}) {
-    return "    static const bool _mirror\[$bl_length\];\n";
+    my $tmp  = "    static const bitset<$bl_length> m_mirror;\n";
   } else {
     return "";
   }
@@ -138,7 +138,8 @@ sub var {
   my $bl_start = $_[0];
   my $bl_end   = $_[1];
   my $bl_name  = $_[2];
-  my $bl_length = $bl_end - $bl_start;
+
+  my $bl_length = $bl_end - $bl_start + 1;
 
   if($self->{_BL_START} != $bl_start or $self->{_BL_END} != $bl_end) {
     $self->{_BL_START} = $bl_start;
@@ -158,23 +159,16 @@ sub var {
   }
 
   if ($self->{_ATTENTION_NEEDED}) {
-    my $tmp = "  const bool $bl_name\:\:_mirror\[\] = {";
+    my $tmp  = "  const bitset<$bl_length> $bl_name\:\:m_mirror(string(\"";
+    my $str  = "";
     for (my $i= $bl_start; $i <= $bl_end; $i++) {
-      if (($i - $bl_start) % 8 == 0) {
-	$tmp .= "\n    ";
-      }
       if ($self->data($i) eq "undef") {
-	$tmp .= $self->{_ELEM};
+	$str = $self->{_ELEM}.$str;
       } else {
-	$tmp .= $self->data($i);
-      }
-      if ( $i != $bl_end) {
-	$tmp .= ", ";
+	$str = $self->data($i).$str;
       }
     }
-    $tmp .= "\n  };\n\n";
-    
-    return $tmp;
+    $tmp    .= $str."\"));\n\n";
   } else {
     return "";
   }

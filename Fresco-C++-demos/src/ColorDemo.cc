@@ -64,48 +64,48 @@ ColorDemo::ColorDemo(Application *a)
 
   Graphic_var hbox21 = layout->hbox();
   hbox21->append_graphic(Graphic_var(layout->hfill()));
-  hbox21->append_graphic(Graphic_var(tool->rgb(Graphic_var(text->chunk(Unicode::toCORBA(Unicode::String("RGB Color Model")))), 0., 0., 0.)));
+  hbox21->append_graphic(Graphic_var(tool->rgb(Graphic_var(text->chunk(Unicode::to_CORBA(Babylon::String("RGB Color Model")))), 0., 0., 0.)));
   hbox21->append_graphic(Graphic_var(layout->hfill()));
   vbox->append_graphic(hbox21);
 
   Graphic_var hbox22 = layout->hbox();
-  hbox22->append_graphic(Graphic_var(tool->rgb(Graphic_var(text->chunk(Unicode::toCORBA(Unicode::String("R  ")))), 0., 0., 0.)));
+  hbox22->append_graphic(Graphic_var(tool->rgb(Graphic_var(text->chunk(Unicode::to_CORBA(Babylon::String("R  ")))), 0., 0., 0.)));
   hbox22->append_graphic(Graphic_var(widget->slider(red, xaxis)));
   vbox->append_graphic(hbox22);
  
   Graphic_var hbox23 = layout->hbox();
-  hbox23->append_graphic(Graphic_var(tool->rgb(Graphic_var(text->chunk(Unicode::toCORBA(Unicode::String("G  ")))), 0., 0., 0.)));
+  hbox23->append_graphic(Graphic_var(tool->rgb(Graphic_var(text->chunk(Unicode::to_CORBA(Babylon::String("G  ")))), 0., 0., 0.)));
   hbox23->append_graphic(Graphic_var(widget->slider(green, xaxis)));
   vbox->append_graphic(hbox23);
 
   Graphic_var hbox24 = layout->hbox();
-  hbox24->append_graphic(Graphic_var(tool->rgb(Graphic_var(text->chunk(Unicode::toCORBA(Unicode::String("B  ")))), 0., 0., 0.)));
+  hbox24->append_graphic(Graphic_var(tool->rgb(Graphic_var(text->chunk(Unicode::to_CORBA(Babylon::String("B  ")))), 0., 0., 0.)));
   hbox24->append_graphic(Graphic_var(widget->slider(blue, xaxis)));
   vbox->append_graphic(hbox24);
 
   Graphic_var hbox25 = layout->hbox();
   hbox25->append_graphic(Graphic_var(layout->hfill()));
-  hbox25->append_graphic(Graphic_var(tool->rgb(Graphic_var(text->chunk(Unicode::toCORBA(Unicode::String("HSV Color Model")))), 0., 0., 0.)));
+  hbox25->append_graphic(Graphic_var(tool->rgb(Graphic_var(text->chunk(Unicode::to_CORBA(Babylon::String("HSV Color Model")))), 0., 0., 0.)));
   hbox25->append_graphic(Graphic_var(layout->hfill()));
   vbox->append_graphic(hbox25);
 
   Graphic_var hbox26 = layout->hbox();
-  hbox26->append_graphic(Graphic_var(tool->rgb(Graphic_var(text->chunk(Unicode::toCORBA(Unicode::String("H  ")))), 0., 0., 0.)));
+  hbox26->append_graphic(Graphic_var(tool->rgb(Graphic_var(text->chunk(Unicode::to_CORBA(Babylon::String("H  ")))), 0., 0., 0.)));
   hbox26->append_graphic(Graphic_var(widget->slider(hue, xaxis)));
   vbox->append_graphic(hbox26);
  
   Graphic_var hbox27 = layout->hbox();
-  hbox27->append_graphic(Graphic_var(tool->rgb(Graphic_var(text->chunk(Unicode::toCORBA(Unicode::String("S  ")))), 0., 0., 0.)));
+  hbox27->append_graphic(Graphic_var(tool->rgb(Graphic_var(text->chunk(Unicode::to_CORBA(Babylon::String("S  ")))), 0., 0., 0.)));
   hbox27->append_graphic(Graphic_var(widget->slider(saturation, xaxis)));
   vbox->append_graphic(hbox27);
 
   Graphic_var hbox28 = layout->hbox();
-  hbox28->append_graphic(Graphic_var(tool->rgb(Graphic_var(text->chunk(Unicode::toCORBA(Unicode::String("V  ")))), 0., 0., 0.)));
+  hbox28->append_graphic(Graphic_var(tool->rgb(Graphic_var(text->chunk(Unicode::to_CORBA(Babylon::String("V  ")))), 0., 0., 0.)));
   hbox28->append_graphic(Graphic_var(widget->slider(value, xaxis)));
   vbox->append_graphic(hbox28);
   hbox->append_graphic(vbox);
   Controller_var root = tool->group(Graphic_var(layout->margin(hbox, 100.)));
-  application->append(root, Unicode::String("Color demo"));
+  application->append(root, Babylon::String("Color demo"));
 }
 
 void ColorDemo::adjust(Tag tag)

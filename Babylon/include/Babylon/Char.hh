@@ -38,457 +38,622 @@ namespace Babylon {
 
     class Char {
     public:
-	// QUERIES:
-	UCS4 value() const { return m_value; }
-	//. returns the Unicode value of this Unicode character.
-    
-	Char uppercase() const throw (Block_Error) {
-	    return Dictionary::instance()->uppercase(m_value);
-	}
-	//. return the uppercase equivalent of a given
-	//. unicode character.
-	//. Warning: For some characters of some locales
-	//.          this might not be the character you
-	//.          exspect!
-    
-	Char lowercase() const throw (Block_Error) {
-	    return Dictionary::instance()->lowercase(m_value);
-	}
-	//. return the lowercase equivalent of a given
-	//. unicode character.
-	//. Warning: For some characters of some locales
-	//.          this might not be the character you
-	//.          exspect!
-    
-	Char titlecase() const throw (Block_Error) {
-	    return Dictionary::instance()->titlecase(m_value);
-	}
-	//. return the titlecase equivalent of a given
-	//. unicode character.
-	//. Warning: For some characters of some locales
-	//.          this might not be the character you
-	//.          exspect!
+	// ------------------------------------------------------------
+	// CONVERSION:
+	// ------------------------------------------------------------
 
-	// Conversion:
+
+	//. Transcodes the character to UTF-8.
+	//. Throws : Trans_Error
+	//.          if transcoding was not successful.
 	UTF8_string utf8() const throw (Trans_Error);
-	UTF16_string utf16() const throw (Trans_Error);
-	// Warning: UTF-16 can not encode characters outside the
-	// Unicode und surrogate pair range!
-	UTF32_string utf32() const throw (Trans_Error);
 
+	//. Transcodes the character to UTF-16.
+	//. Throws : Trans_Error
+	//.          if transcoding was not successful.
+	//.
+	//. Warning: Not all characters of ISO 10646 can get
+	//.          transcoded to UTF-16!
+	UTF16_string utf16() const throw (Trans_Error);
+
+	//. Transcodes the character to UTF-32.
+	//. Throws : Trans_Error
+	//.          if transcoding was not successful.
+	UTF32_string utf32() const throw();
+
+	//. Creates a character from an UTF-8 encoded string.
+	//. Throws : Trans_Error
+	//.          if transcoding was not successful.
+	//. Returns: Iterator to the character in the UTF-8
+	//.          string after the last one used to encode
+	//.          this character.
 	UTF8_string::const_iterator utf8(const UTF8_string &,
 					 UTF8_string::const_iterator)
 	    throw (Trans_Error);
+
+	//. Creates a character from an UTF-16 encoded string.
+	//. Throws : Trans_Error
+	//.          if transcoding was not successful.
+	//. Returns: Iterator to the character in the UTF-16
+	//.          string after the last one used to encode
+	//.          this character.
 	UTF16_string::const_iterator utf16(const UTF16_string &,
 					   UTF16_string::const_iterator)
 	    throw (Trans_Error);
-	// Warning: UTF-16 can not encode characters outside the
-	// Unicode und surrogate pair range!
+
+	//. Creates a character from an UTF-32 encoded string.
+	//. Throws : Trans_Error
+	//.          if transcoding was not successful.
+	//. Returns: Iterator to the character in the UTF-32
+	//.          string after the last one used to encode
+	//.          this character.
 	UTF32_string::const_iterator utf32(const UTF32_string &,
 					   UTF32_string::const_iterator)
-	    throw (Trans_Error);
+	    throw();
+
+	// ------------------------------------------------------------
+	// QUERIES:
+	// ------------------------------------------------------------
+
+	//. Returns the (Scalar-) Unicode value of the character.
+	UCS4 value() const { return m_value; }
+
     
+	//. Gets the uppercase equivalent of the character.
+	//. If no uppercase equivalent is defined then a copy of
+	//. the current chracter is returned.
+	//.
+	//. Warning: For some characters of some locales
+	//.          this might not be the character you
+	//.          exspect!
+	Char uppercase() const throw (Block_Error) {
+	    return Dictionary::instance()->uppercase(m_value);
+	}
+
+	//. Gets the lowercase equivalent of the character.
+	//. If no uppercase equivalent is defined then a copy of
+	//. the current chracter is returned.
+	//.
+	//. Warning: For some characters of some locales
+	//.          this might not be the character you
+	//.          exspect!
+	Char lowercase() const throw (Block_Error) {
+	    return Dictionary::instance()->lowercase(m_value);
+	}
+
+	//. Gets the titlecase equivalent of the character.
+	//. If no uppercase equivalent is defined then a copy of
+	//. the current chracter is returned.
+	//.
+	//. Warning: For some characters of some locales
+	//.          this might not be the character you
+	//.          exspect!
+	Char titlecase() const throw (Block_Error) {
+	    return Dictionary::instance()->titlecase(m_value);
+	}
+	    
+	//. Gets the numeric value of the character.
+	//. Throws : Undefined_Property
+	//.          if it character is not defined or
+	//.          has no numeric property set.
+	//. Throws : Block_Error
+	//.          if the block containing the character
+	//.          could not get loaded.
+	//.          THIS SHOULD NEVER HAPPEN!
 	float numeric_value() const throw (Undefined_Property, Block_Error)  {
 	    return Dictionary::instance()->numeric_value(m_value);
 	}
 	//. return the numeric value of a given unicode character.
     
+	//. Gets the digit value of the character.
+	//. Throws : Undefined_Property
+	//.          if it character is not defined or
+	//.          has no digit value property set.
+	//. Throws : Block_Error
+	//.          if the block containing the character
+	//.          could not get loaded.
+	//.          THIS SHOULD NEVER HAPPEN!
 	int digit_value() const throw (Undefined_Property, Block_Error) {
 	    return Dictionary::instance()->digit_value(m_value);
 	}
-	//. return the digit value of a given unicode character.
-    
+
+	//. Gets the decimal digit value of the character.
+	//. Throws : Undefined_Property
+	//.          if it character is not defined or
+	//.          has no decimal digit value property set.
+	//. Throws : Block_Error
+	//.          if the block containing the character
+	//.          could not get loaded.
+	//.          THIS SHOULD NEVER HAPPEN!
 	int dec_digit_value() const throw (Undefined_Property, Block_Error) {
 	    return Dictionary::instance()->dec_digit_value(m_value);
 	}
-	//. return the decimal digit value of a given unicode character.
-    
+
+	//. Returns the name of the block (aka. script) the character belongs to.
+	//. Throws : Block_Error
+	//.          if the block containing the character
+	//.          could not get loaded.
+	//.          THIS SHOULD NEVER HAPPEN!
 	string blockname() const throw (Block_Error) {
 	    return Dictionary::instance()->blockname(m_value);
 	}
-	//. returns the name of the block a given unicode character
-	//. belongs to.
     
+	//. Gets the general category of the character.
+	//. Throws : Undefined_Property
+	//.          if it character is not defined or
+	//.          has no decimal digit value property set.
+	//.          THIS SHOULD NEVER HAPPEN, as all characters should
+	//.          have this defined.
+	//. Throws : Block_Error
+	//.          if the block containing the character
+	//.          could not get loaded.
+	//.          THIS SHOULD NEVER HAPPEN!
 	Gen_Cat category() const throw (Undefined_Property, Block_Error) {
 	    return Dictionary::instance()->category(m_value);
 	}
-	//. returns the general type of the given unicode
-	//. character.
-    
+
+    	//. Returns the linguistic direction property of the
+	//. given unicode character.
+	//. Throws : Undefined_Property
+	//.          if it character is not defined or
+	//.          has no decimal digit value property set.
+	//.          THIS SHOULD NEVER HAPPEN, as all characters should
+	//.          have this defined.
+	//. Throws : Block_Error
+	//.          if the block containing the character
+	//.          could not get loaded.
+	//.          THIS SHOULD NEVER HAPPEN!
 	Bidir_Props direction() const throw (Undefined_Property, Block_Error) {
 	    return Dictionary::instance()->bidir_props(m_value);
 	}
-	//. returns the linguistic direction property of the
-	//. given unicode character.
-    
+
+	//. Returns the cannonical comnbining class of
+	//. the given unicode character.
+	//. Throws : Undefined_Property
+	//.          if it character is not defined or
+	//.          has no decimal digit value property set.
+	//.          THIS SHOULD NEVER HAPPEN, as all characters should
+	//.          have this defined.
+	//. Throws : Block_Error
+	//.          if the block containing the character
+	//.          could not get loaded.
+	//.          THIS SHOULD NEVER HAPPEN!
 	Can_Comb_Class comb_class() const throw (Undefined_Property, Block_Error) {
 	    return Dictionary::instance()->comb_class(m_value);
 	}
-	//. returns the cannonical comnbining class of
-	//. the given unicode character.
-    
+
+	//. Returns the decomposition type of a given
+	//. unicode character.
+	//. Throws : Undefined_Property
+	//.          if it character is not defined or
+	//.          has no decimal digit value property set.
+	//.          THIS SHOULD NEVER HAPPEN, as all characters should
+	//.          have this defined.
+	//. Throws : Block_Error
+	//.          if the block containing the character
+	//.          could not get loaded.
+	//.          THIS SHOULD NEVER HAPPEN!
 	Char_Decomp decomp_type() const
 	    throw (Undefined_Property, Block_Error) {
 	    return Dictionary::instance()->decomp_type(m_value);
 	}
-	//. returns the decomposition type of a given
-	//. unicode character.
-    
-	String decompose() const throw (Undefined_Property, Block_Error);
-	//. returns the decomposition string of a given
-	//. unicode character.
 
+    	//. Returns the decomposition string of a given
+	//. unicode character.
+	//. Throws : Undefined_Property
+	//.          if it character is not defined or
+	//.          has no decimal digit value property set.
+	//.          THIS SHOULD NEVER HAPPEN, as all characters should
+	//.          have this defined.
+	//. Throws : Block_Error
+	//.          if the block containing the character
+	//.          could not get loaded.
+	//.          THIS SHOULD NEVER HAPPEN!
+	String decompose() const throw (Undefined_Property, Block_Error);
+
+	//. Returns true, if this character must be mirrored
+	//. when it appears in a right-to-left context. and false
+	//. otherwise. 
+	//. Throws : Undefined_Property
+	//.          if it character is not defined or
+	//.          has no decimal digit value property set.
+	//.          THIS SHOULD NEVER HAPPEN, as all characters should
+	//.          have this defined.
+	//. Throws : Block_Error
+	//.          if the block containing the character
+	//.          could not get loaded.
+	//.          THIS SHOULD NEVER HAPPEN!
 	bool must_mirror() const throw (Undefined_Property, Block_Error) {
 	    return Dictionary::instance()->must_mirror(m_value);
 	}
-	//. returns true, if this character must be mirrored in
-	//. when in a right-to-left context. and false otherwise. 
-    
+
+	//. Returns the (East Asian) cell width of the character.
+	//. Throws : Undefined_Property
+	//.          if it character is not defined or
+	//.          has no decimal digit value property set.
+	//.          THIS SHOULD NEVER HAPPEN, as all characters should
+	//.          have this defined.
+	//. Throws : Block_Error
+	//.          if the block containing the character
+	//.          could not get loaded.
+	//.          THIS SHOULD NEVER HAPPEN!
 	EA_Width  EA_width() const throw (Undefined_Property, Block_Error) {
 	    return Dictionary::instance()->EA_width(m_value);
 	}
-	//. returns the cell width of the character for the
-	//. given unicode.
-    
+
+    	//. Returns the line-breaking property of the character.
+	//. Throws : Undefined_Property
+	//.          if it character is not defined or
+	//.          has no decimal digit value property set.
+	//.          THIS SHOULD NEVER HAPPEN, as all characters should
+	//.          have this defined.
+	//. Throws : Block_Error
+	//.          if the block containing the character
+	//.          could not get loaded.
+	//.          THIS SHOULD NEVER HAPPEN!
 	Line_Break linebreak() const throw (Undefined_Property, Block_Error) {
 	    return Dictionary::instance()->linebreak(m_value);
 	}
-	//. returns the line-breaking property of the
-	//. given unicode character.
-    
-	// TESTS:
 
+	// ------------------------------------------------------------
+	// TESTS:
+	// ------------------------------------------------------------
+
+	//. Returns true, if this character is defined and false
+	//. otherwise. 
+	//. Throws : Block_Error
+	//.          if the block containing the character
+	//.          could not get loaded.
+	//.          THIS SHOULD NEVER HAPPEN!
 	bool is_defined() const 
 	    throw (Block_Error) {
 	    return Dictionary::instance()->is_defined(m_value);
 	}
     
-	bool is_Zero_width()
-	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Zero_width(m_value);
-	}
-
-	bool is_White_space()
-	    throw (Block_Error) {
-	    return Dictionary::instance()->is_White_space(m_value);
-	}
-
-	bool is_Non_break()
-	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Non_break(m_value);
-	}
-
-	bool is_Bidi_Control()
-	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Bidi_Control(m_value);
-	}
-
-	bool is_Join_Control()
-	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Join_Control(m_value);
-	}
-
-	bool is_Format_Control()
-	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Format_Control(m_value);
-	}
-
-	bool is_Dash()
-	    throw (Block_Error) {
-	     return Dictionary::instance()->is_Dash(m_value);
-	}
-
-	bool is_Hyphen()
-	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Hyphen(m_value); 
-	}
-
-	bool is_Quotation_Mark()
-	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Quotation_Mark(m_value);
-	}
-
-	bool is_Terminal_Punctuation()
-	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Terminal_Punctuation(m_value);
-	}
-
-	bool is_Math()
-	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Math(m_value);
-	}
-
-	bool is_Paired_Punctuation()
-	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Paired_Punctuation(m_value);
-	}
-
-	bool is_Left_of_Pair()
-	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Left_of_Pair(m_value);
-	}
-
-	bool is_Combining()
-	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Combining(m_value);
-	}
-
-	bool is_Non_spacing()
-	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Non_spacing(m_value);
-	}
-
-	bool is_Hex_Digit()
-	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Hex_Digit(m_value);
-	}
-
-	bool is_Alphabetic()
-	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Alphabetic(m_value);
-	}
-
-	bool is_Diacritic()
-	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Diacritic(m_value);
-	}
-
-	bool is_Extender()
-	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Extender(m_value);
-	}
-
-	bool is_Identifier_Part()
-	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Identifier_Part(m_value);
-	}
-	bool is_Ignorable_Control()
-	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Ignorable_Control(m_value);
-	}
-
-	bool is_Bidi_Hebrew_Right_to_Left()
-	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Bidi_Hebrew_Right_to_Left(m_value);
-	}
-
-	bool is_Bidi_Arabic_Right_to_Left()
-	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Bidi_Arabic_Right_to_Left(m_value);
-	}
-
-	bool is_Bidi_Embedding_or_Override()
-	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Bidi_Embedding_or_Override(m_value);
-	}
-
-	bool is_Uppercase()
-	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Uppercase(m_value);
-	}
-
-	bool is_Lowercase()
-	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Lowercase(m_value);   	     	     
-	}
-
+	//. Returns true, if this character is a Space and false
+	//. otherwise. 
+	//. Throws : Block_Error
+	//.          if the block containing the character
+	//.          could not get loaded.
+	//.          THIS SHOULD NEVER HAPPEN!
 	bool is_Space()
 	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Space(m_value);
+	    return Dictionary::instance()->category(m_value) == CAT_Zs;
 	}
 
+	//. Returns true, if this character is a ISO Control Character and false
+	//. otherwise. 
+	//. Throws : Block_Error
+	//.          if the block containing the character
+	//.          could not get loaded.
+	//.          THIS SHOULD NEVER HAPPEN!
 	bool is_ISO_Control()
 	    throw (Block_Error) {
-	    return Dictionary::instance()->is_ISO_Control(m_value);
+	    return Dictionary::instance()->category(m_value) == CAT_Cc;
 	}
 
+	//. Returns true, if this character is used for Punctuation and false
+	//. otherwise. 
+	//. Throws : Block_Error
+	//.          if the block containing the character
+	//.          could not get loaded.
+	//.          THIS SHOULD NEVER HAPPEN!
 	bool is_Punctuation()
 	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Punctuation(m_value);
+	    return (Dictionary::instance()->category(m_value) == CAT_Pc ||
+		    Dictionary::instance()->category(m_value) == CAT_Pd ||
+		    Dictionary::instance()->category(m_value) == CAT_Ps ||
+		    Dictionary::instance()->category(m_value) == CAT_Pe ||
+		    Dictionary::instance()->category(m_value) == CAT_Pi ||
+		    Dictionary::instance()->category(m_value) == CAT_Pf ||
+		    Dictionary::instance()->category(m_value) == CAT_Po);
 	}
 
+	//. Returns true, if this character is the line separator and false
+	//. otherwise. 
+	//. Throws : Block_Error
+	//.          if the block containing the character
+	//.          could not get loaded.
+	//.          THIS SHOULD NEVER HAPPEN!
 	bool is_Line_Separator()
 	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Line_Separator(m_value);
+	    return Dictionary::instance()->category(m_value) == CAT_Zl;
 	}
 
+	//. Returns true, if this character is the paragraph separator and false
+	//. otherwise. 
+	//. Throws : Block_Error
+	//.          if the block containing the character
+	//.          could not get loaded.
+	//.          THIS SHOULD NEVER HAPPEN!
 	bool is_Paragraph_Separator()
 	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Paragraph_Separator(m_value);
+	    return Dictionary::instance()->category(m_value) == CAT_Zp;
 	}
 
+	//. Returns true, if this character is a currency symbol and false
+	//. otherwise. 
+	//. Throws : Block_Error
+	//.          if the block containing the character
+	//.          could not get loaded.
+	//.          THIS SHOULD NEVER HAPPEN!	
 	bool is_Currency_Symbol()
 	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Currency_Symbol(m_value);
+	    return Dictionary::instance()->category(m_value) == CAT_Sc;
+	}
+	
+	//. Returns true, if this character is should be written left to right
+	//. and false otherwise. 
+	//. Throws : Block_Error
+	//.          if the block containing the character
+	//.          could not get loaded.
+	//.          THIS SHOULD NEVER HAPPEN!			
+	bool is_Bidi_Left_to_Right()
+	    throw (Block_Error) {
+	    return Dictionary::instance()->bidir_props(m_value) == BIDIR_L;
 	}
 
-	bool is_Titlecase()
+	//. Returns true, if this character must be treated like
+	//. a european number by the Bidi algorithemn and false otherwise. 
+	//. Throws : Block_Error
+	//.          if the block containing the character
+	//.          could not get loaded.
+	//.          THIS SHOULD NEVER HAPPEN!
+	bool is_Bidi_European_Digit()
 	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Titlecase(m_value);
-	}
-	bool is_Composite()
-	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Composite(m_value);
+	    return Dictionary::instance()->bidir_props(m_value) == BIDIR_EN;
 	}
 
+	//. Returns true, if this character must be treated like
+	//. a european number separator by the Bidi algorithemn and false
+	//. otherwise. 
+	//. Throws : Block_Error
+	//.          if the block containing the character
+	//.          could not get loaded.
+	//.          THIS SHOULD NEVER HAPPEN!
+	bool is_Bidi_Eur_Num_Separator()
+	    throw (Block_Error) {
+	    return Dictionary::instance()->bidir_props(m_value) == BIDIR_ES;
+	}	
+	
+	//. Returns true, if this character must be treated like
+	//. a european number terminator by the Bidi algorithemn and false
+	//. otherwise. 
+	//. Throws : Block_Error
+	//.          if the block containing the character
+	//.          could not get loaded.
+	//.          THIS SHOULD NEVER HAPPEN!
+	bool is_Bidi_Eur_Num_Terminator()
+	    throw (Block_Error) {
+	    return Dictionary::instance()->bidir_props(m_value) == BIDIR_ET;
+	}
+
+	//. Returns true, if this character must be treated like
+	//. a arabic number by the Bidi algorithemn and false
+	//. otherwise. 
+	//. Throws : Block_Error
+	//.          if the block containing the character
+	//.          could not get loaded.
+	//.          THIS SHOULD NEVER HAPPEN!
+	bool is_Bidi_Arabic_Digit()
+	    throw (Block_Error) {
+	    return Dictionary::instance()->bidir_props(m_value) == BIDIR_AN;
+	}
+		
+	//. Returns true, if this character must be treated like
+	//. a common separator by the Bidi algorithemn and false
+	//. otherwise. 
+	//. Throws : Block_Error
+	//.          if the block containing the character
+	//.          could not get loaded.
+	//.          THIS SHOULD NEVER HAPPEN!
+	bool is_Bidi_Common_Separator()
+	    throw (Block_Error) {
+	    return Dictionary::instance()->bidir_props(m_value) == BIDIR_CS;
+	}
+
+	//. Returns true, if this character must be treated like
+	//. a block separator by the Bidi algorithemn and false
+	//. otherwise. 
+	//. Throws : Block_Error
+	//.          if the block containing the character
+	//.          could not get loaded.
+	//.          THIS SHOULD NEVER HAPPEN!
+	bool is_Bidi_Block_Separator()
+	    throw (Block_Error) {
+	    return Dictionary::instance()->bidir_props(m_value) == BIDIR_B;
+	}
+
+	//. Returns true, if this character must be treated like
+	//. a segment separator by the Bidi algorithemn and false
+	//. otherwise. 
+	//. Throws : Block_Error
+	//.          if the block containing the character
+	//.          could not get loaded.
+	//.          THIS SHOULD NEVER HAPPEN!
+	bool is_Bidi_Segment_Separator()
+	    throw (Block_Error) {
+	    return Dictionary::instance()->bidir_props(m_value) == BIDIR_S;
+	}
+
+	//. Returns true, if this character must be treated like
+	//. a white space by the Bidi algorithemn and false
+	//. otherwise. 
+	//. Throws : Block_Error
+	//.          if the block containing the character
+	//.          could not get loaded.
+	//.          THIS SHOULD NEVER HAPPEN!
+	bool is_Bidi_Whitespace()
+	    throw (Block_Error) {
+	    return Dictionary::instance()->bidir_props(m_value) == BIDIR_WS;
+	}
+
+	//. Returns true, if this character must be treated like
+	//. a non spacing mark by the Bidi algorithemn and false
+	//. otherwise. 
+	//. Throws : Block_Error
+	//.          if the block containing the character
+	//.          could not get loaded.
+	//.          THIS SHOULD NEVER HAPPEN!
+	bool is_Bidi_Non_spacing_Mark()
+	    throw (Block_Error) {
+	    return Dictionary::instance()->bidir_props(m_value) == BIDIR_NSM;
+	}
+
+	//. Returns true, if this character must be treated like
+	//. a boundary neutral by the Bidi algorithemn and false
+	//. otherwise. 
+	//. Throws : Block_Error
+	//.          if the block containing the character
+	//.          could not get loaded.
+	//.          THIS SHOULD NEVER HAPPEN!
+	bool is_Bidi_Boundary_Neutral()
+	    throw (Block_Error) {
+	    return Dictionary::instance()->bidir_props(m_value) == BIDIR_BN;
+	}
+
+	//. Returns true, if this character pops the directional formating
+	//. and false otherwise. 
+	//. Throws : Block_Error
+	//.          if the block containing the character
+	//.          could not get loaded.
+	//.          THIS SHOULD NEVER HAPPEN!
+	bool is_Bidi_PDF()
+	    throw (Block_Error) {
+	    return Dictionary::instance()->bidir_props(m_value) == BIDIR_PDF;
+	}
+
+	//. Returns true, if this character is a bidirectional override or
+	//. embedding character and false otherwise. 
+	//. Throws : Block_Error
+	//.          if the block containing the character
+	//.          could not get loaded.
+	//.          THIS SHOULD NEVER HAPPEN!
+	bool is_Bidi_Embedding_or_Override()
+	    throw (Block_Error) {
+	    return (Dictionary::instance()->bidir_props(m_value) == BIDIR_LRE ||
+		    Dictionary::instance()->bidir_props(m_value) == BIDIR_RLE ||
+		    Dictionary::instance()->bidir_props(m_value) == BIDIR_LRO ||
+		    Dictionary::instance()->bidir_props(m_value) == BIDIR_RLO);
+	}
+
+	//. Returns true, if this character must be treated like
+	//. a other neutral by the Bidi algorithemn and false
+	//. otherwise. 
+	//. Throws : Block_Error
+	//.          if the block containing the character
+	//.          could not get loaded.
+	//.          THIS SHOULD NEVER HAPPEN!				
+	bool is_Bidi_Other_Neutral()
+	    throw (Block_Error) {
+	    return Dictionary::instance()->bidir_props(m_value) == BIDIR_ON;
+	}
+
+	//. Returns true, if this character has the decimal digit property set
+	//. and false otherwise. 
+	//. Throws : Block_Error
+	//.          if the block containing the character
+	//.          could not get loaded.
+	//.          THIS SHOULD NEVER HAPPEN!
 	bool is_Decimal_Digit()
 	    throw (Block_Error) {
 	    return Dictionary::instance()->is_Decimal_Digit(m_value);
 	}
 
+	//. Returns true, if this character has the numeric property set
+	//. and false otherwise. 
+	//. Throws : Block_Error
+	//.          if the block containing the character
+	//.          could not get loaded.
+	//.          THIS SHOULD NEVER HAPPEN!
 	bool is_Numeric()
 	    throw (Block_Error) {
 	    return Dictionary::instance()->is_Numeric(m_value);
 	}
 
+	//. Returns true, if this character has the digit property set
+	//. and false otherwise. 
+	//. Throws : Block_Error
+	//.          if the block containing the character
+	//.          could not get loaded.
+	//.          THIS SHOULD NEVER HAPPEN!
 	bool is_Digit()
 	    throw (Block_Error) {
 	    return Dictionary::instance()->is_Digit(m_value);
 	}
 
-	bool is_Ideographic()
+	//. Returns true, if this character is a virama and false
+	//. otherwise. 
+	//. Throws : Block_Error
+	//.          if the block containing the character
+	//.          could not get loaded.
+	//.          THIS SHOULD NEVER HAPPEN!
+	bool is_Virama()
 	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Ideographic(m_value);
+	    return Dictionary::instance()->comb_class(m_value) == CC_VIRAMAS;
 	}
 
-	bool is_Bidi_Left_to_Right()
+	//. Returns true, if this character is printable and false
+	//. otherwise. 
+	//. Throws : Block_Error
+	//.          if the block containing the character
+	//.          could not get loaded.
+	//.          THIS SHOULD NEVER HAPPEN!
+	bool is_Printable()
 	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Bidi_Left_to_Right(m_value);
+	    return (Dictionary::instance()->category(m_value) != CAT_MAX &&
+		    Dictionary::instance()->category(m_value) != CAT_Cc &&
+		    Dictionary::instance()->category(m_value) != CAT_Cf);
 	}
 
-	bool is_Bidi_European_Digit()
-	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Bidi_European_Digit(m_value);
+	//. Returns true, if this is NOT character and false otherwise. 
+	bool is_Not_a_Character() {
+	    return (m_value & 0xFFFD == 0);
 	}
 
-	bool is_Bidi_Eur_Num_Separator()
-	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Bidi_Eur_Num_Separator(m_value);
-	}
-
-	bool is_Bidi_Eur_Num_Terminator()
-	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Bidi_Eur_Num_Terminator(m_value);
-	}
-
-	bool is_Bidi_Arabic_Digit()
-	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Bidi_Arabic_Digit(m_value);
-	}
-
-	bool is_Bidi_Common_Separator()
-	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Bidi_Common_Separator(m_value); 
-	}
-
-	bool is_Bidi_Block_Separator()
-	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Bidi_Block_Separator(m_value);
-	}
-
-	bool is_Bidi_Segment_Separator()
-	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Bidi_Segment_Separator(m_value);
-	}
-
-	bool is_Bidi_Whitespace()
-	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Bidi_Whitespace(m_value); 
-	}
-
-	bool is_Bidi_Non_spacing_Mark()
-	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Bidi_Non_spacing_Mark(m_value);
-	}
-
-	bool is_Bidi_Boundary_Neutral()
-	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Bidi_Boundary_Neutral(m_value);
-	}
-
-	bool is_Bidi_PDF()
-	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Bidi_PDF(m_value); 
-	}
-
-	bool is_Bidi_LRE()
-	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Bidi_LRE(m_value); 
-	}
-
-	bool is_Bidi_RLE()
-	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Bidi_RLE(m_value); 
-	}
-
-	bool is_Bidi_LRO()
-	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Bidi_LRO(m_value); 
-	}
-
-	bool is_Bidi_RLO()
-	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Bidi_RLO(m_value); 
-	}
-
-	bool is_Bidi_Other_Neutral()
-	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Bidi_Other_Neutral(m_value);  
-	}
-
-	bool is_Private_Use()
-	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Private_Use(m_value);
-	}
-
-	bool is_Low_Surrogate()
-	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Low_Surrogate(m_value);
-	}
-
-	bool is_High_Surrogate()
-	    throw (Block_Error) {
-	    return Dictionary::instance()->is_High_Surrogate(m_value);
-	}
-
-	bool is_Private_Use_High_Surrogate()
-	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Private_Use_High_Surrogate(m_value);
-	}
-
-	bool is_Not_a_Character() 
-	    throw (Block_Error){
-	    return Dictionary::instance()->is_Not_a_Character(m_value);
-	}
-
-	bool is_Unassigned_Code_Value() 
-	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Unassigned_Code_Value(m_value); 
-	}
-
+	// ------------------------------------------------------------
 	// TRANSFORMATIONS:
+	// ------------------------------------------------------------
     
+	//. Turns ths character to lowercase.
+	//. Leaves it as it is if there is no lowercase equivalent defined
+	//. for it.
+	//. Throws : Block_Error
+	//.          if the block containing the character
+	//.          could not get loaded.
+	//.          THIS SHOULD NEVER HAPPEN!
 	void to_lower() throw (Block_Error);
-	//. returns the lowercase equivalent to a given unicode
-	//. character. If there is no such aequivalent this
-	//. function returns the input character.
-    
+
+	//. Turns ths character to uppercase.
+	//. Leaves it as it is if there is no lowercase equivalent defined
+	//. for it.
+	//. Throws : Block_Error
+	//.          if the block containing the character
+	//.          could not get loaded.
+	//.          THIS SHOULD NEVER HAPPEN!
 	void to_upper() throw (Block_Error);
-	//. returns the uppercase equivalent to a given unicode
-	//. character. If there is no such aequivalent this
-	//. function returns the input character.
-    
+
+	//. Turns ths character to titlecase.
+	//. Leaves it as it is if there is no lowercase equivalent defined
+	//. for it.
+	//. Throws : Block_Error
+	//.          if the block containing the character
+	//.          could not get loaded.
+	//.          THIS SHOULD NEVER HAPPEN!
 	void to_title() throw (Block_Error);
-	//. returns the titlecase equivalent to a given unicode
-	//. character. If there is no such aequivalent this
-	//. function returns the input character.
     
+	// ------------------------------------------------------------
 	// CONSTRUCTORS:
+	// ------------------------------------------------------------
+
 	Char() { m_value = Babylon::UC_NULL; }
 	Char(const UCS4 uc)   { m_value = uc; }
 	Char(const Char & uc) { m_value = uc.value(); }
 
+	// ------------------------------------------------------------
 	// OPERATORS:
+	// ------------------------------------------------------------
+
 	Char & operator = (const Char & uc) {
 	    m_value = uc.m_value;
 	    return *this;

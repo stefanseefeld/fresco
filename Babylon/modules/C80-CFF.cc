@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Wed,  6 Dec 2000 23:23:11 +0100.
+ * ftp.unicode.org on Mon,  8 Jan 2001 23:31:17 +0100.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -25,6 +25,7 @@
 
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
+#include <bitset>
 #include <map>
 
 namespace Babylon {
@@ -35,14 +36,14 @@ namespace Babylon {
     };
 
     KannadaC80() {
-      _first_letter = 0xC80;
-      _last_letter  = 0xCFF;
-      // _version="3.0.1" // Not yet supported!
-      _composeMap[0x0CBF0CD5] = 0x0CC0;
-      _composeMap[0x0CC60CC2] = 0x0CCA;
-      _composeMap[0x0CC60CD5] = 0x0CC7;
-      _composeMap[0x0CC60CD6] = 0x0CC8;
-      _composeMap[0x0CCA0CD5] = 0x0CCB;
+      m_first_letter = 0xC80;
+      m_last_letter  = 0xCFF;
+      // m_version="3.0.1" // Not yet supported!
+      m_composeMap[make_pair(0x00000CBF, 0x00000CD5)] = 0x0CC0;
+      m_composeMap[make_pair(0x00000CC6, 0x00000CC2)] = 0x0CCA;
+      m_composeMap[make_pair(0x00000CC6, 0x00000CD5)] = 0x0CC7;
+      m_composeMap[make_pair(0x00000CC6, 0x00000CD6)] = 0x0CC8;
+      m_composeMap[make_pair(0x00000CCA, 0x00000CD5)] = 0x0CCB;
 
     }
 
@@ -51,11 +52,11 @@ namespace Babylon {
     }
 
     UCS4 firstLetter() {
-      return _first_letter;
+      return m_first_letter;
     }
 
     UCS4 lastLetter() {
-      return _last_letter;
+      return m_last_letter;
     }
 
     bool is_undef_block() const {
@@ -69,31 +70,19 @@ namespace Babylon {
     }
 
     bool is_defined(const UCS4 uc) const {
-      return (_is_defined[uc - _first_letter]);
+      return (m_is_defined.test(uc - m_first_letter));
     }
 
     UCS4 uppercase(const UCS4 uc) const {
       return uc;
     }
 
-    bool is_Uppercase(const UCS4 uc) const {
-      return category(uc) == CAT_Lu;
-    }
-
     UCS4 lowercase(const UCS4 uc) const {
       return uc;
     }
 
-    bool is_Lowercase(const UCS4 uc) const {
-      return category(uc) == CAT_Ll;
-    }
-
     UCS4 titlecase(const UCS4 uc) const {
       return uc;
-    }
-
-    bool is_Titlecase(const UCS4 uc) const {
-      return category(uc) == CAT_Lt;
     }
 
     int dec_digit_value(const UCS4 uc) const {
@@ -270,19 +259,19 @@ namespace Babylon {
     Gen_Cat category(const UCS4 uc) const {
       if (!is_defined(uc))
         return CAT_MAX;
-      return Babylon::Gen_Cat(KannadaC80::_cat[uc - _first_letter]);
+      return Babylon::Gen_Cat(KannadaC80::_cat[uc - m_first_letter]);
     }
 
     Can_Comb_Class comb_class(const UCS4 uc) const {
       if (!is_defined(uc))
         return CC_MAX;
-      return Can_Comb_Class(KannadaC80::_comb_cl[uc - _first_letter]);
+      return Can_Comb_Class(KannadaC80::_comb_cl[uc - m_first_letter]);
     }
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
         return BIDIR_MAX;
-      return Babylon::Bidir_Props(KannadaC80::_bidir[uc - _first_letter]);
+      return Babylon::Bidir_Props(KannadaC80::m_bidir[uc - m_first_letter]);
     }
 
     Char_Decomp decomp_type(const UCS4 uc) const {
@@ -294,9 +283,9 @@ namespace Babylon {
     UTF32_string decompose(const UCS4 uc) const {
       Babylon::UTF32_string us;
       us.resize(2);
-      us[0] = KannadaC80::_decompStr[uc - _first_letter][0];
-      us[1] = KannadaC80::_decompStr[uc - _first_letter][1];
-      if (us[1] == 0x0000) {
+      us[0] = KannadaC80::m_decompStr[uc - m_first_letter][0];
+      us[1] = KannadaC80::m_decompStr[uc - m_first_letter][1];
+      if (us[1] == 0x0000u) {
         us.resize(1);
       }
 
@@ -310,7 +299,7 @@ namespace Babylon {
     Line_Break linebreak(const UCS4 uc) const {
       if (!is_defined(uc))
         return LB_MAX;
-      return Babylon::Line_Break(KannadaC80::_lb[uc - _first_letter]);
+      return Babylon::Line_Break(KannadaC80::m_lb[uc - m_first_letter]);
     }
 
     EA_Width EA_width(const UCS4 uc) const {
@@ -319,12 +308,8 @@ namespace Babylon {
       return Babylon::EA_Width(EA_WIDTH_N);
     }
 
-    UCS4 compose (const UCS4 starter, const UCS4 last) {
-      return _composeMap[starter << 16 | last];
-    }
-
-    bool is_Zero_width(const UCS4 uc) const {
-      return 0;
+    UCS4 compose (const UCS4 start, const UCS4 last) {
+      return m_composeMap[make_pair(start, last)];
     }
 
     bool is_White_space(const UCS4 uc) const {
@@ -332,6 +317,10 @@ namespace Babylon {
     }
 
     bool is_Non_break(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Format_Control(const UCS4 uc) const {
       return 0;
     }
 
@@ -343,7 +332,7 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Format_Control(const UCS4 uc) const {
+    bool is_Other_Format_Control(const UCS4 uc) const {
       return 0;
     }
 
@@ -367,24 +356,8 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Paired_Punctuation(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Left_of_Pair(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Combining(const UCS4 uc) const {
-      return KannadaC80::_Combining[uc - _first_letter];
-    }
-
-    bool is_Non_spacing(const UCS4 uc) const {
-      return KannadaC80::_Non_spacing[uc - _first_letter];
-    }
-
     bool is_Composite(const UCS4 uc) const {
-      return KannadaC80::_Composite[uc - _first_letter];
+      return m_Composite.test(uc - m_first_letter);
     }
 
     bool is_Hex_Digit(const UCS4 uc) const {
@@ -392,30 +365,26 @@ namespace Babylon {
     }
 
     bool is_Alphabetic(const UCS4 uc) const {
-      return KannadaC80::_Alphabetic[uc - _first_letter];
+      return m_Alphabetic.test(uc - m_first_letter);
     }
 
     bool is_Diacritic(const UCS4 uc) const {
-      return KannadaC80::_Diacritic[uc - _first_letter];
+      return 0;
     }
 
     bool is_Extender(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Identifier_Part(const UCS4 uc) const {
-      return KannadaC80::_Identifier_Part[uc - _first_letter];
+    bool is_Identifier_Part_Not_Cf(const UCS4 uc) const {
+      return m_Identifier_Part_Not_Cf.test(uc - m_first_letter);
     }
 
-    bool is_Ignorable_Control(const UCS4 uc) const {
+    bool is_Other_Uppercase(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Bidi_Hebrew_Right_to_Left(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Bidi_Arabic_Right_to_Left(const UCS4 uc) const {
+    bool is_Other_Lowercase(const UCS4 uc) const {
       return 0;
     }
 
@@ -427,7 +396,7 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Not_a_Character(const UCS4 uc) const {
+    bool is_Noncharacter_Code_Point(const UCS4 uc) const {
       return ((uc & 0xFFFE) == 0xFFFE);
     }
 
@@ -443,157 +412,28 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Space(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Zs);
-    }
-
-    bool is_ISO_Control(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Cc);
-    }
-
-    bool is_Punctuation(const UCS4 uc) const {
-      return (is_defined(uc) && (category(uc) == CAT_Pc ||
-                                 category(uc) == CAT_Pd ||
-                                 category(uc) == CAT_Ps ||
-                                 category(uc) == CAT_Pe ||
-                                 category(uc) == CAT_Pi ||
-                                 category(uc) == CAT_Pf ||
-                                 category(uc) == CAT_Po)
-             );
-    }
-
-    bool is_Line_Separator(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Zl);
-    }
-
-    bool is_Paragraph_Separator(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Zp);
-    }
-
-    bool is_Currency_Symbol(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Sc);
-    }
-
-    bool is_Bidi_Left_to_Right(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_L;
-    }
-
-    bool is_Bidi_European_Digit(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_EN;
-    }
-
-    bool is_Bidi_Eur_Num_Separator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_ES;
-    }
-
-    bool is_Bidi_Eur_Num_Terminator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_ET;
-    }
-
-    bool is_Bidi_Arabic_Digit(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_AN;
-    }
-
-    bool is_Bidi_Common_Separator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_CS;
-    }
-
-    bool is_Bidi_Block_Separator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_B;
-    }
-
-    bool is_Bidi_Segment_Separator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_S;
-    }
-
-    bool is_Bidi_Whitespace(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_WS;
-    }
-
-    bool is_Bidi_Non_spacing_Mark(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_NSM;
-    }
-
-    bool is_Bidi_Boundary_Neutral(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_BN;
-    }
-
-    bool is_Bidi_PDF(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_PDF;
-    }
-
-    bool is_Bidi_Embedding_or_Override(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_LRE ||
-             bidir_props(uc) == BIDIR_RLE ||
-             bidir_props(uc) == BIDIR_LRO ||
-             bidir_props(uc) == BIDIR_RLO;
-    }
-
-    bool is_Bidi_LRE(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_LRE;
-    }
-
-    bool is_Bidi_RLE(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_RLE;
-    }
-
-    bool is_Bidi_LRO(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_LRO;
-    }
-
-    bool is_Bidi_RLO(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_RLO;
-    }
-
-    bool is_Bidi_Other_Neutral(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_ON;
-    }
-
-    bool is_Unassigned_Code_Value(const UCS4 uc) const {
-      return !is_defined(uc) && !is_Not_a_Character(uc);
-    }
-
 
   private:
     // functions
     KannadaC80(const KannadaC80 &) {}
 
-    Babylon::UCS4 _first_letter;
-    Babylon::UCS4 _last_letter;
-    static const bool _is_defined[128];
+    Babylon::UCS4 m_first_letter;
+    Babylon::UCS4 m_last_letter;
+    // Babylon::UCS4_string m_version;
+    static const bitset<128> m_is_defined;
     static const unsigned char _cat[128];
     static const unsigned char _comb_cl[128];
-    static const unsigned char _bidir[128];
-    static const UCS2 _decompStr[128][2];
-    static const unsigned char _lb[128];
-    map<UCS4, UCS4> _composeMap;
-    static const bool _Combining[128];
-    static const bool _Non_spacing[128];
-    static const bool _Composite[128];
-    static const bool _Alphabetic[128];
-    static const bool _Diacritic[128];
-    static const bool _Identifier_Part[128];
+    static const unsigned char m_bidir[128];
+    static const UCS2 m_decompStr[128][2];
+    static const unsigned char m_lb[128];
+    map<pair<UCS4, UCS4>, UCS4> m_composeMap;
+    static const bitset<128> m_Composite;
+    static const bitset<128> m_Alphabetic;
+    static const bitset<128> m_Identifier_Part_Not_Cf;
 
   }; // class KannadaC80
 
-  const bool KannadaC80::_is_defined[] = {
-    0, 0, 1, 1, 0, 1, 1, 1, 
-    1, 1, 1, 1, 1, 0, 1, 1, 
-    1, 0, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 0, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 0, 1, 1, 1, 
-    1, 1, 0, 0, 0, 0, 1, 1, 
-    1, 1, 1, 1, 1, 0, 1, 1, 
-    1, 0, 1, 1, 1, 1, 0, 0, 
-    0, 0, 0, 0, 0, 1, 1, 0, 
-    0, 0, 0, 0, 0, 0, 1, 0, 
-    1, 1, 0, 0, 0, 0, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    0, 0, 0, 0, 0, 0, 0, 0, 
-    0, 0, 0, 0, 0, 0, 0, 0
-  };
+    const bitset<128> KannadaC80::m_is_defined(string("00000000000000001111111111000011010000000110000000111101110111111100001111101111111111011111111111111111111111011101111111101100"));
 
   const unsigned char KannadaC80::_cat[] = {
     CAT_Mc, CAT_Mc, CAT_Mc, CAT_Mc, CAT_Mc, CAT_Lo, CAT_Lo, CAT_Lo, 
@@ -633,7 +473,7 @@ namespace Babylon {
     0, 0, 0, 0, 0, 0, 0, 0
   };
 
-  const unsigned char KannadaC80::_bidir[] = {
+  const unsigned char KannadaC80::m_bidir[] = {
     BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
     BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
     BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
@@ -652,42 +492,42 @@ namespace Babylon {
     BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L
   };
 
-  const UCS2 KannadaC80::_decompStr[][2] = {
-    { 0x0C80, 0x0000 }, { 0x0C81, 0x0000 }, { 0x0C82, 0x0000 }, { 0x0C83, 0x0000 }, 
-    { 0x0C84, 0x0000 }, { 0x0C85, 0x0000 }, { 0x0C86, 0x0000 }, { 0x0C87, 0x0000 }, 
-    { 0x0C88, 0x0000 }, { 0x0C89, 0x0000 }, { 0x0C8A, 0x0000 }, { 0x0C8B, 0x0000 }, 
-    { 0x0C8C, 0x0000 }, { 0x0C8D, 0x0000 }, { 0x0C8E, 0x0000 }, { 0x0C8F, 0x0000 }, 
-    { 0x0C90, 0x0000 }, { 0x0C91, 0x0000 }, { 0x0C92, 0x0000 }, { 0x0C93, 0x0000 }, 
-    { 0x0C94, 0x0000 }, { 0x0C95, 0x0000 }, { 0x0C96, 0x0000 }, { 0x0C97, 0x0000 }, 
-    { 0x0C98, 0x0000 }, { 0x0C99, 0x0000 }, { 0x0C9A, 0x0000 }, { 0x0C9B, 0x0000 }, 
-    { 0x0C9C, 0x0000 }, { 0x0C9D, 0x0000 }, { 0x0C9E, 0x0000 }, { 0x0C9F, 0x0000 }, 
-    { 0x0CA0, 0x0000 }, { 0x0CA1, 0x0000 }, { 0x0CA2, 0x0000 }, { 0x0CA3, 0x0000 }, 
-    { 0x0CA4, 0x0000 }, { 0x0CA5, 0x0000 }, { 0x0CA6, 0x0000 }, { 0x0CA7, 0x0000 }, 
-    { 0x0CA8, 0x0000 }, { 0x0CA9, 0x0000 }, { 0x0CAA, 0x0000 }, { 0x0CAB, 0x0000 }, 
-    { 0x0CAC, 0x0000 }, { 0x0CAD, 0x0000 }, { 0x0CAE, 0x0000 }, { 0x0CAF, 0x0000 }, 
-    { 0x0CB0, 0x0000 }, { 0x0CB1, 0x0000 }, { 0x0CB2, 0x0000 }, { 0x0CB3, 0x0000 }, 
-    { 0x0CB4, 0x0000 }, { 0x0CB5, 0x0000 }, { 0x0CB6, 0x0000 }, { 0x0CB7, 0x0000 }, 
-    { 0x0CB8, 0x0000 }, { 0x0CB9, 0x0000 }, { 0x0CBA, 0x0000 }, { 0x0CBB, 0x0000 }, 
-    { 0x0CBC, 0x0000 }, { 0x0CBD, 0x0000 }, { 0x0CBE, 0x0000 }, { 0x0CBF, 0x0000 }, 
-    { 0x0CBF, 0x0CD5 }, { 0x0CC1, 0x0000 }, { 0x0CC2, 0x0000 }, { 0x0CC3, 0x0000 }, 
-    { 0x0CC4, 0x0000 }, { 0x0CC5, 0x0000 }, { 0x0CC6, 0x0000 }, { 0x0CC6, 0x0CD5 }, 
-    { 0x0CC6, 0x0CD6 }, { 0x0CC9, 0x0000 }, { 0x0CC6, 0x0CC2 }, { 0x0CCA, 0x0CD5 }, 
-    { 0x0CCC, 0x0000 }, { 0x0CCD, 0x0000 }, { 0x0CCE, 0x0000 }, { 0x0CCF, 0x0000 }, 
-    { 0x0CD0, 0x0000 }, { 0x0CD1, 0x0000 }, { 0x0CD2, 0x0000 }, { 0x0CD3, 0x0000 }, 
-    { 0x0CD4, 0x0000 }, { 0x0CD5, 0x0000 }, { 0x0CD6, 0x0000 }, { 0x0CD7, 0x0000 }, 
-    { 0x0CD8, 0x0000 }, { 0x0CD9, 0x0000 }, { 0x0CDA, 0x0000 }, { 0x0CDB, 0x0000 }, 
-    { 0x0CDC, 0x0000 }, { 0x0CDD, 0x0000 }, { 0x0CDE, 0x0000 }, { 0x0CDF, 0x0000 }, 
-    { 0x0CE0, 0x0000 }, { 0x0CE1, 0x0000 }, { 0x0CE2, 0x0000 }, { 0x0CE3, 0x0000 }, 
-    { 0x0CE4, 0x0000 }, { 0x0CE5, 0x0000 }, { 0x0CE6, 0x0000 }, { 0x0CE7, 0x0000 }, 
-    { 0x0CE8, 0x0000 }, { 0x0CE9, 0x0000 }, { 0x0CEA, 0x0000 }, { 0x0CEB, 0x0000 }, 
-    { 0x0CEC, 0x0000 }, { 0x0CED, 0x0000 }, { 0x0CEE, 0x0000 }, { 0x0CEF, 0x0000 }, 
-    { 0x0CF0, 0x0000 }, { 0x0CF1, 0x0000 }, { 0x0CF2, 0x0000 }, { 0x0CF3, 0x0000 }, 
-    { 0x0CF4, 0x0000 }, { 0x0CF5, 0x0000 }, { 0x0CF6, 0x0000 }, { 0x0CF7, 0x0000 }, 
-    { 0x0CF8, 0x0000 }, { 0x0CF9, 0x0000 }, { 0x0CFA, 0x0000 }, { 0x0CFB, 0x0000 }, 
-    { 0x0CFC, 0x0000 }, { 0x0CFD, 0x0000 }, { 0x0CFE, 0x0000 }, { 0x0CFF, 0x0000 }
+  const UCS2 KannadaC80::m_decompStr[][2] = {
+    { 0x0C80u, 0x0000u }, { 0x0C81u, 0x0000u }, { 0x0C82u, 0x0000u }, { 0x0C83u, 0x0000u }, 
+    { 0x0C84u, 0x0000u }, { 0x0C85u, 0x0000u }, { 0x0C86u, 0x0000u }, { 0x0C87u, 0x0000u }, 
+    { 0x0C88u, 0x0000u }, { 0x0C89u, 0x0000u }, { 0x0C8Au, 0x0000u }, { 0x0C8Bu, 0x0000u }, 
+    { 0x0C8Cu, 0x0000u }, { 0x0C8Du, 0x0000u }, { 0x0C8Eu, 0x0000u }, { 0x0C8Fu, 0x0000u }, 
+    { 0x0C90u, 0x0000u }, { 0x0C91u, 0x0000u }, { 0x0C92u, 0x0000u }, { 0x0C93u, 0x0000u }, 
+    { 0x0C94u, 0x0000u }, { 0x0C95u, 0x0000u }, { 0x0C96u, 0x0000u }, { 0x0C97u, 0x0000u }, 
+    { 0x0C98u, 0x0000u }, { 0x0C99u, 0x0000u }, { 0x0C9Au, 0x0000u }, { 0x0C9Bu, 0x0000u }, 
+    { 0x0C9Cu, 0x0000u }, { 0x0C9Du, 0x0000u }, { 0x0C9Eu, 0x0000u }, { 0x0C9Fu, 0x0000u }, 
+    { 0x0CA0u, 0x0000u }, { 0x0CA1u, 0x0000u }, { 0x0CA2u, 0x0000u }, { 0x0CA3u, 0x0000u }, 
+    { 0x0CA4u, 0x0000u }, { 0x0CA5u, 0x0000u }, { 0x0CA6u, 0x0000u }, { 0x0CA7u, 0x0000u }, 
+    { 0x0CA8u, 0x0000u }, { 0x0CA9u, 0x0000u }, { 0x0CAAu, 0x0000u }, { 0x0CABu, 0x0000u }, 
+    { 0x0CACu, 0x0000u }, { 0x0CADu, 0x0000u }, { 0x0CAEu, 0x0000u }, { 0x0CAFu, 0x0000u }, 
+    { 0x0CB0u, 0x0000u }, { 0x0CB1u, 0x0000u }, { 0x0CB2u, 0x0000u }, { 0x0CB3u, 0x0000u }, 
+    { 0x0CB4u, 0x0000u }, { 0x0CB5u, 0x0000u }, { 0x0CB6u, 0x0000u }, { 0x0CB7u, 0x0000u }, 
+    { 0x0CB8u, 0x0000u }, { 0x0CB9u, 0x0000u }, { 0x0CBAu, 0x0000u }, { 0x0CBBu, 0x0000u }, 
+    { 0x0CBCu, 0x0000u }, { 0x0CBDu, 0x0000u }, { 0x0CBEu, 0x0000u }, { 0x0CBFu, 0x0000u }, 
+    { 0x0CBFu, 0x0CD5u }, { 0x0CC1u, 0x0000u }, { 0x0CC2u, 0x0000u }, { 0x0CC3u, 0x0000u }, 
+    { 0x0CC4u, 0x0000u }, { 0x0CC5u, 0x0000u }, { 0x0CC6u, 0x0000u }, { 0x0CC6u, 0x0CD5u }, 
+    { 0x0CC6u, 0x0CD6u }, { 0x0CC9u, 0x0000u }, { 0x0CC6u, 0x0CC2u }, { 0x0CCAu, 0x0CD5u }, 
+    { 0x0CCCu, 0x0000u }, { 0x0CCDu, 0x0000u }, { 0x0CCEu, 0x0000u }, { 0x0CCFu, 0x0000u }, 
+    { 0x0CD0u, 0x0000u }, { 0x0CD1u, 0x0000u }, { 0x0CD2u, 0x0000u }, { 0x0CD3u, 0x0000u }, 
+    { 0x0CD4u, 0x0000u }, { 0x0CD5u, 0x0000u }, { 0x0CD6u, 0x0000u }, { 0x0CD7u, 0x0000u }, 
+    { 0x0CD8u, 0x0000u }, { 0x0CD9u, 0x0000u }, { 0x0CDAu, 0x0000u }, { 0x0CDBu, 0x0000u }, 
+    { 0x0CDCu, 0x0000u }, { 0x0CDDu, 0x0000u }, { 0x0CDEu, 0x0000u }, { 0x0CDFu, 0x0000u }, 
+    { 0x0CE0u, 0x0000u }, { 0x0CE1u, 0x0000u }, { 0x0CE2u, 0x0000u }, { 0x0CE3u, 0x0000u }, 
+    { 0x0CE4u, 0x0000u }, { 0x0CE5u, 0x0000u }, { 0x0CE6u, 0x0000u }, { 0x0CE7u, 0x0000u }, 
+    { 0x0CE8u, 0x0000u }, { 0x0CE9u, 0x0000u }, { 0x0CEAu, 0x0000u }, { 0x0CEBu, 0x0000u }, 
+    { 0x0CECu, 0x0000u }, { 0x0CEDu, 0x0000u }, { 0x0CEEu, 0x0000u }, { 0x0CEFu, 0x0000u }, 
+    { 0x0CF0u, 0x0000u }, { 0x0CF1u, 0x0000u }, { 0x0CF2u, 0x0000u }, { 0x0CF3u, 0x0000u }, 
+    { 0x0CF4u, 0x0000u }, { 0x0CF5u, 0x0000u }, { 0x0CF6u, 0x0000u }, { 0x0CF7u, 0x0000u }, 
+    { 0x0CF8u, 0x0000u }, { 0x0CF9u, 0x0000u }, { 0x0CFAu, 0x0000u }, { 0x0CFBu, 0x0000u }, 
+    { 0x0CFCu, 0x0000u }, { 0x0CFDu, 0x0000u }, { 0x0CFEu, 0x0000u }, { 0x0CFFu, 0x0000u }
   };
 
-  const unsigned char KannadaC80::_lb[] = {
+  const unsigned char KannadaC80::m_lb[] = {
     LB_CM, LB_CM, LB_CM, LB_CM, LB_CM, LB_AL, LB_AL, LB_AL, 
     LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_CM, LB_AL, LB_AL, 
     LB_AL, LB_CM, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, 
@@ -706,119 +546,11 @@ namespace Babylon {
     LB_CM, LB_CM, LB_CM, LB_CM, LB_CM, LB_CM, LB_CM, LB_CM
   };
 
-    const bool KannadaC80::_Combining[] = {
-        0, 0, 1, 1, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 1, 1, 
-        1, 1, 1, 1, 1, 0, 1, 1, 
-        1, 0, 1, 1, 1, 1, 0, 0, 
-        0, 0, 0, 0, 0, 1, 1, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
+    const bitset<128> KannadaC80::m_Composite(string("00000000000000000000000000000000000000000000000000001101100000000000000000000000000000000000000000000000000000000000000000000000"));
 
-    const bool KannadaC80::_Non_spacing[] = {
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 1, 
-        0, 0, 0, 0, 0, 0, 1, 0, 
-        0, 0, 0, 0, 1, 1, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
+    const bitset<128> KannadaC80::m_Alphabetic(string("00000000000000000000000000000011000000000110000000001101100111110000001111101111111111011111111111111111111111011101111111101100"));
 
-    const bool KannadaC80::_Composite[] = {
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        1, 0, 0, 0, 0, 0, 0, 1, 
-        1, 0, 1, 1, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
-
-    const bool KannadaC80::_Alphabetic[] = {
-        0, 0, 1, 1, 0, 1, 1, 1, 
-        1, 1, 1, 1, 1, 0, 1, 1, 
-        1, 0, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 0, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 0, 1, 1, 1, 
-        1, 1, 0, 0, 0, 0, 1, 1, 
-        1, 1, 1, 1, 1, 0, 1, 1, 
-        1, 0, 1, 1, 1, 0, 0, 0, 
-        0, 0, 0, 0, 0, 1, 1, 0, 
-        0, 0, 0, 0, 0, 0, 1, 0, 
-        1, 1, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
-
-    const bool KannadaC80::_Diacritic[] = {
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 1, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
-
-    const bool KannadaC80::_Identifier_Part[] = {
-        0, 0, 1, 1, 0, 1, 1, 1, 
-        1, 1, 1, 1, 1, 0, 1, 1, 
-        1, 0, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 0, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 0, 1, 1, 1, 
-        1, 1, 0, 0, 0, 0, 1, 1, 
-        1, 1, 1, 1, 1, 0, 1, 1, 
-        1, 0, 1, 1, 1, 1, 0, 0, 
-        0, 0, 0, 0, 0, 1, 1, 0, 
-        0, 0, 0, 0, 0, 0, 1, 0, 
-        1, 1, 0, 0, 0, 0, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
+    const bitset<128> KannadaC80::m_Identifier_Part_Not_Cf(string("00000000000000001111111111000011000000000110000000111101100111110000001111101111111111011111111111111111111111011101111111101100"));
 
 }; // namespace Babylon
 

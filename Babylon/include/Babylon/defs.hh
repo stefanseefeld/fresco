@@ -26,6 +26,7 @@
 #define _Babylon_Defs_hh
 
 #include <string>
+#include <stdio.h>
 
 namespace Babylon {
 
@@ -43,7 +44,6 @@ namespace Babylon {
     typedef char UCS1; // has to be char
     typedef u_int16_t UCS2;
     typedef u_int32_t UCS4;
-    typedef u_int64_t UCS8;
     typedef basic_string<UCS1> UTF8_string;
     typedef basic_string<UCS2> UTF16_string;
     typedef basic_string<UCS4> UTF32_string;
@@ -324,7 +324,10 @@ namespace Babylon {
 	KEY_F9                      = 0xE109,
 	KEY_F10                     = 0xE10A,
 	KEY_F11                     = 0xE10B,
-	KEY_F12                     = 0xE10C
+	KEY_F12                     = 0xE10C,
+
+	// IMPLEMENTATION DEPENDENT
+	UC_MAX_DEFINED              = 0x10FFFE
     }; // control_character_enum
     typedef enum control_character_enum Control_Char;
     
@@ -338,41 +341,118 @@ namespace Babylon {
     typedef enum norm_enum Norm;
     
     enum trans_error_enum {
-	TRANS_NO_ASCII,       // Exspected 7Bit ASCII, got something else
-	TRANS_INVALID_UTF8_CHAR,
-	TRANS_INVALID_UTF8_STRING,
-	TRANS_INVALID_UTF16_CHAR,
-	TRANS_INVALID_UTF16_STRING,
-	TRANS_INVALID_UCS4_CHAR,
-	TRANS_CAN_NOT_ENCODE_CHAR,
-	TRANS_CAN_NOT_AUTOTRANSCODE // could not figure out which translation to use.
+	TRANS_CAN_NOT_DECODE,
+	TRANS_CAN_NOT_ENCODE
     };
     typedef enum trans_error_enum Trans_Error;
 
     // Classes to throw around as exceptions:
     
-    class Undefined_Property {
+    class Undefined_Property : std::exception {
     public:
-	UCS4 errorUC;
-	Char_Props errorProp;
+	UCS4 m_error_uc;
+	Char_Props m_error_prop;
 	
 	Undefined_Property(const UCS4 uc,
 			   const Char_Props prop) {
-	    errorUC = uc;
-	    errorProp = prop;
+	    m_error_uc = uc;
+	    m_error_prop = prop;
+	}
+
+	const char * what() const throw() {
+	    char * res;
+	    switch (m_error_prop) {
+	    case PROP_CHARACTER:
+		sprintf(res, "(%08X) Character is undefined", m_error_uc);
+		break;
+	    case PROP_UNICODE_VALUE:
+		sprintf(res, "(%08X) Character has no unicode value.. how did this happen?",
+			m_error_uc);
+		break;
+	    case PROP_GEN_CAT:
+		sprintf(res, "(%08X) Character has no general category... how did this happen?",
+			m_error_uc);
+		break;
+	    case PROP_CHAR_DECOMP:
+		sprintf(res, "(%08X) Character has no decomposition",
+			m_error_uc);
+		break;
+	    case PROP_COMB_CLASS :
+		sprintf(res, "(%08X) Character has no canonical combining class.",
+			m_error_uc);
+		break;
+	    case PROP_BIDIR_PROPS:
+		sprintf(res, "(%08X) Character has no bidir property.",
+			m_error_uc);
+		break;
+	    case PROP_DEC_DIGIT_VALUE:
+		sprintf(res, "(%08X) Character has no decimal digit value.",
+			m_error_uc);
+		break;
+	    case PROP_DIGIT_VALUE:
+		sprintf(res, "(%08X) Character has no digit value.",
+			m_error_uc);
+		break;
+	    case PROP_NUMERIC_VALUE:
+		sprintf(res, "(%08X) Character has no numeric value.",
+			m_error_uc);
+		break;
+	    case PROP_IS_MIRRORED:
+		sprintf(res, "(%08X) Character has no mirroring property... how did this happen?",
+			m_error_uc);
+		break;
+	    case PROP_UPPER_EQUIV:
+		sprintf(res, "(%08X) Character has no uppercase equivalent... how did this happen?",
+			m_error_uc);
+		break;
+	    case PROP_LOWER_EQUIV:
+		sprintf(res, "(%08X) Character has no lowercase equivalent... how did this happen?",
+			m_error_uc);
+		break;
+	    case PROP_TITLE_EQUIV:
+		sprintf(res, "(%08X) Character has no titlecase equivalent... how did this happen?",
+			m_error_uc);
+		break;
+	    case PROP_SCRIPT:
+		sprintf(res, "(%08X) Character belongs to no script... how did this happen?",
+			m_error_uc);
+		break;
+	    case PROP_EA_WIDTH:
+		sprintf(res, "(%08X) Character has no EA width property set... how did this happen?",
+			m_error_uc);
+		break;
+	    case PROP_LINE_BREAKING:
+		sprintf(res, "(%08X) Character has no linebreak property set... how did this happen?",
+			m_error_uc);
+		break;
+	    case PROP_MAX:
+		sprintf(res, "(%08X) PROP_MAX throw... how did this happen?",
+			m_error_uc);
+		break;	
+	    }
+	    return res;
 	}
     }; // class Undefined_Property
     
-    class Transfer_Error {
+    class Transfer_Error : std::exception {
     public:
 	Trans_Error error;
 	
 	Transfer_Error(const Trans_Error transError) {
 	    error   = transError;
 	}
+
+	const char * what() const throw() {
+	    switch (error) {
+	    case TRANS_CAN_NOT_ENCODE:
+		return("Can not encode from Babylon to foreign format.");
+	    default:
+		return("Can not decode from foreign format to Babylon.");
+	    }
+	}
     }; // Transfer_Error
 
-    class Block_Error {
+    class Block_Error : std::exception {
     public:
 	UCS4 block_start;
 	UCS4 block_end;
@@ -384,6 +464,13 @@ namespace Babylon {
 	    block_start = startUC;
 	    block_end = endUC;
 	    error_message = em;
+	}
+
+	const char * what() const throw() {
+	    char * res;
+	    sprintf(res, "(%08X-%08X) %s",
+		    block_start, block_end, error_message.c_str());
+	    return res;
 	}
     }; // class Block_Error
     

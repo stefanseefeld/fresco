@@ -62,5 +62,5 @@ ViewportDemo::ViewportDemo(Application *a)
   group->append_controller(xscroller);
   group->append_controller(yscroller);
 
-  application->append(group, Unicode::String("viewport demo"));
+  application->append(group, Babylon::String("viewport demo"));
 }

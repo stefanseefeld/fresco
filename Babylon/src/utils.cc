@@ -27,6 +27,6 @@ namespace Babylon {
 bool Babylon::is_graphem_boundary(Babylon::Char a, Babylon::Char b) {
     // FIXME!
     return 0;
-} // isGraphemBoundary(...)
+} // isGraphemBoundary(...)  
 
 } // namespace Babylon

@@ -83,13 +83,10 @@ sub function {
 
   my $tmp = "    UCS4 titlecase(const UCS4 uc) const {\n";
   if ($self->{_ATTENTION_NEEDED} == 1) {
-    $tmp .= "      return $bl_name\:\:_title\[uc - _first_letter\];\n";
+    $tmp .= "      return $bl_name\:\:m_title\[uc - m_first_letter\];\n";
   } else {
     $tmp .= "      return uc;\n";
   }
-  $tmp   .= "    }\n\n";
-  $tmp   .= "    bool is_Titlecase(const UCS4 uc) const {\n";
-  $tmp   .= "      return category(uc) == CAT_Lt;\n";
   $tmp   .= "    }\n\n";
 
   return $tmp;
@@ -114,9 +111,8 @@ sub var_def {
     }
   }
 
-
   if ($self->{_ATTENTION_NEEDED}) {
-    return "    static const UCS4 _title\[$bl_length\];\n";
+    return "    static const UCS4 m_title\[$bl_length\];\n";
   } else {
     return "";
   }
@@ -143,7 +139,7 @@ sub var {
   }
 
   if ($self->{_ATTENTION_NEEDED}) {
-    my $tmp = "  const UCS4 $bl_name\:\:_title\[\] = {";
+    my $tmp = "  const UCS4 $bl_name\:\:m_title\[\] = {";
     for (my $i= $bl_start; $i <= $bl_end; $i++) {
       if (($i - $bl_start) % 8 == 0) {
 	$tmp .= "\n    ";

@@ -37,7 +37,7 @@ sub new {
   $self->{_BL_START} = -1;
   $self->{_BL_END} = -1;
   $self->{_ATTENTION_NEEDED} = 1;
-  $self->{_EXPANSION_NEEDED} = 0;
+  $self->{_MAX_LENGTH} = 2;
 
   bless($self);
   return $self;
@@ -122,15 +122,19 @@ sub function {
     $self->{_BL_END} = $bl_end;
     $self->{_ELEM} = "";
     $self->{_ATTENTION_NEEDED} = 0;
-    $self->{_EXPANSION_NEEDED} = 0;
+    $self->{_MAX_LENGTH} = 2;
 
     for (my $i = $bl_start; $i <= $bl_end; $i++) {
       if ($self->data($i) ne "undef") {
-	$self->{_ATTENTION_NEEDED} = 1;
 	my $tmpstr = $self->data($i);
-	if (($tmpstr =~ tr/ / /) > 1) {
-	  $self->{_EXPANSION_NEEDED} = 1;
-	  last;
+	if (($tmpstr =~ tr/ / /) > $self->{_ATTENTION_NEEDED} - 1) {
+	  $self->{_ATTENTION_NEEDED} = ($tmpstr =~ tr/ / /) + 1;
+	}
+	my @datas = split / /, $self->data($i);
+	foreach my $data (@datas) {
+	  if (hex($data) > 0xFFFF) {
+	    $self->{_MAX_LENGTH} = 4;
+	  }
 	}
       }
     }
@@ -138,10 +142,15 @@ sub function {
 
   if ($self->{_ATTENTION_NEEDED} == 1) {
     $tmp .= "      Babylon::UTF32_string us;\n";
+    $tmp .= "      us.resize(1);\n";
+    $tmp .= "      us\[0\] = $bl_name\:\:m_decompStr\[uc - m_first_letter\];\n";
+  }
+  elsif ($self->{_ATTENTION_NEEDED} >= 2) {
+    $tmp .= "      Babylon::UTF32_string us;\n";
     $tmp .= "      us.resize(2);\n";
-    $tmp .= "      us\[0\] = $bl_name\:\:_decompStr\[uc - _first_letter\]\[0\];\n";
-    $tmp .= "      us\[1\] = $bl_name\:\:_decompStr\[uc - _first_letter\]\[1\];\n";
-    if ($self->{_EXPANSION_NEEDED} == 1) {
+    $tmp .= "      us\[0\] = $bl_name\:\:m_decompStr\[uc - m_first_letter\]\[0\];\n";
+    $tmp .= "      us\[1\] = $bl_name\:\:m_decompStr\[uc - m_first_letter\]\[1\];\n";
+    if ($self->{_ATTENTION_NEEDED} >= 3) {
       $tmp .= "\n      switch (uc) {\n";
 
       for (my $i = $bl_start; $i <= $bl_end; $i++) {
@@ -151,23 +160,22 @@ sub function {
 	  $tmp .= sprintf "\n      case 0x%04X:\n        us.resize(%d);\n",
 	                  $i, ($data =~ tr/ / /) + 1;
  	  for (my $j = 2; $j <= ($data =~ tr/ / /); $j++) {
-	    $tmp .= sprintf "        us\[%d\] = 0x%s;\n", $j, $tmpstr[$j];
+	    $tmp .= sprintf "        us\[%du\] = 0x%su;\n", $j, $tmpstr[$j];
 	  }
              $tmp.= "        break;\n";
         }
       }
       $tmp .= "      }\n";
     }
-    $tmp .= "      if (us[1] == 0x0000) {\n";
+    $tmp .= "      if (us[1] == 0x0000u) {\n";
     $tmp .= "        us.resize(1);\n";
     $tmp .= "      }\n\n";
-    $tmp .= "      return us;\n";
   } else {
     $tmp .= "      UTF32_string us;\n";
-    $tmp .= "      us.resize(1); us[0]=uc;\n";
-    $tmp .= "      return us;\n";
+    $tmp .= "      us.resize(1); us[0] = uc;\n";
   }
-  $tmp .= "    }\n\n";
+  $tmp .=   "      return us;\n";
+  $tmp .=   "    }\n\n";
   return $tmp;
 }
 
@@ -183,21 +191,29 @@ sub var_def {
     $self->{_BL_END} = $bl_end;
     $self->{_ELEM} = "";
     $self->{_ATTENTION_NEEDED} = 0;
-    $self->{_EXPANSION_NEEDED} = 0;
+    $self->{_MAX_LENGTH} = 2;
+
     for (my $i = $bl_start; $i <= $bl_end; $i++) {
-      my $data = $self->data($i);
-      if ($data ne "undef") {
-	$self->{_ATTENTION_NEEDED} = 1;
-	if (($data =~ tr/ / /) > 1) {
-	  $self->{_EXPANSION_NEEDED} = 1;
-	  last;
+      if ($self->data($i) ne "undef") {
+	my $tmpstr = $self->data($i);
+	if (($tmpstr =~ tr/ / /) > $self->{_ATTENTION_NEEDED} - 1) {
+	  $self->{_ATTENTION_NEEDED} = ($tmpstr =~ tr/ / /) + 1;
+	}
+	my @datas = split / /, $self->data($i);
+	foreach my $data (@datas) {
+	  if (hex($data) > 0xFFFF) {
+	    $self->{_MAX_LENGTH} = 4;
+	  }
 	}
       }
     }
   }
 
-  if ($self->{_ATTENTION_NEEDED}) {
-    return "    static const UCS2 _decompStr\[$bl_length\][2];\n";
+  my $len = $self->{_MAX_LENGTH};
+  if ($self->{_ATTENTION_NEEDED} == 1) {
+    return "    static const UCS$len m_decompStr\[$bl_length\];\n";
+  } elsif ($self->{_ATTENTION_NEEDED} > 1) {
+    return "    static const UCS$len m_decompStr\[$bl_length\][2];\n";
   } else {
     return "";
   }
@@ -215,33 +231,57 @@ sub var {
     $self->{_BL_END} = $bl_end;
     $self->{_ELEM} = "";
     $self->{_ATTENTION_NEEDED} = 0;
-    $self->{_EXPANSION_NEEDED} = 0;
+    $self->{_MAX_LENGTH} = 2;
+
     for (my $i = $bl_start; $i <= $bl_end; $i++) {
-      my $data = $self->data($i);
-      if ($data ne "undef") {
-	$self->{_ATTENTION_NEEDED} = 1;
-	if (($data =~ tr/ / /) > 1) {
-	  $self->{_EXPANSION_NEEDED} = 1;
-	  last;
+      if ($self->data($i) ne "undef") {
+	my $tmpstr = $self->data($i);
+	if (($tmpstr =~ tr/ / /) > $self->{_ATTENTION_NEEDED} - 1) {
+	  $self->{_ATTENTION_NEEDED} = ($tmpstr =~ tr/ / /) + 1;
+	}
+	my @datas = split / /, $self->data($i);
+	foreach my $data (@datas) {
+	  if (hex($data) > 0xFFFF) {
+	    $self->{_MAX_LENGTH} = 4;
+	  }
 	}
       }
     }
   }
 
-  if ($self->{_ATTENTION_NEEDED}) {
-    my $tmp = "  const UCS2 $bl_name\:\:_decompStr\[\]\[2\] = {";
+  my $len = $self->{_MAX_LENGTH};
+  if ($self->{_ATTENTION_NEEDED} == 1) {
+    my $tmp = "  const UCS$len $bl_name\:\:m_decompStr\[\] = {";
     for (my $i= $bl_start; $i <= $bl_end; $i++) {
       my $data = $self->data($i);
       if (($i - $bl_start) % 4 == 0) {
 	$tmp .= "\n    ";
       }
       if ($data eq "undef") {
-	$tmp .= sprintf "{ 0x%04X, 0x0000 }", $i;
+	$tmp .= sprintf "0x%04Xu", $i;
       } elsif (($data =~ tr/ / /) == 0) {
-	$tmp .= "{ 0x".$data.", 0x0000 }";
+	$tmp .= "0x".$data."u";
+      }
+      if ( $i != $bl_end) {
+	$tmp .= ", ";
+      }
+    }
+    $tmp .= "\n  };\n\n";
+    return $tmp;
+  } elsif ($self->{_ATTENTION_NEEDED} > 1) {
+    my $tmp = "  const UCS$len $bl_name\:\:m_decompStr\[\]\[2\] = {";
+    for (my $i= $bl_start; $i <= $bl_end; $i++) {
+      my $data = $self->data($i);
+      if (($i - $bl_start) % 4 == 0) {
+	$tmp .= "\n    ";
+      }
+      if ($data eq "undef") {
+	$tmp .= sprintf "{ 0x%04Xu, 0x0000u }", $i;
+      } elsif (($data =~ tr/ / /) == 0) {
+	$tmp .= "{ 0x".$data."u, 0x0000u }";
       } elsif (($data =~ tr/ / /) >= 1) {
 	my @tmpstr = split / /, $data;
-	$tmp .= "{ 0x".$tmpstr[0].", 0x".$tmpstr[1]." }";
+	$tmp .= "{ 0x".$tmpstr[0]."u, 0x".$tmpstr[1]."u }";
       }
       if ( $i != $bl_end) {
 	$tmp .= ", ";

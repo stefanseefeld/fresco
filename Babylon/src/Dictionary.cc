@@ -21,6 +21,11 @@
  */
 
 #include <Babylon/Dictionary.hh>
+#include <fstream>
+#include <iostream>
+#include <iomanip>
+#include <algorithm>
+#include <functional>
 
 using namespace Prague;
 using namespace Babylon;
@@ -29,6 +34,7 @@ using namespace Babylon;
 Dictionary       *Dictionary::m_dictionary = 0;
 Dictionary::Guard Dictionary::m_guard;
 Mutex             Dictionary::m_singleton_mutex;
+
 
 bool Dictionary::is_defined(const UCS4 uc)
     throw (Block_Error) {
@@ -39,6 +45,7 @@ bool Dictionary::is_defined(const UCS4 uc)
     return result;
 }
 
+
 UCS4 Dictionary::uppercase(const UCS4 uc) 
     throw (Block_Error) {
     UCS4 result;
@@ -47,6 +54,7 @@ UCS4 Dictionary::uppercase(const UCS4 uc)
     m_rw_lock.unlock();
     return result;
 }
+
 
 UCS4 Dictionary::lowercase(const UCS4 uc) 
     throw (Block_Error) {
@@ -57,6 +65,7 @@ UCS4 Dictionary::lowercase(const UCS4 uc)
     return result;
 }
 
+
 UCS4 Dictionary::titlecase(const UCS4 uc) 
     throw (Block_Error) {
     UCS4 result;
@@ -65,6 +74,7 @@ UCS4 Dictionary::titlecase(const UCS4 uc)
     m_rw_lock.unlock();
     return result;
 }
+
 
 float Dictionary::numeric_value(const UCS4 uc) 
     throw (Undefined_Property, Block_Error) {
@@ -79,6 +89,7 @@ float Dictionary::numeric_value(const UCS4 uc)
     return result;
 }
 
+
 int Dictionary::dec_digit_value(const UCS4 uc) 
     throw (Undefined_Property, Block_Error) {
     int result;
@@ -91,6 +102,7 @@ int Dictionary::dec_digit_value(const UCS4 uc)
     m_rw_lock.unlock();
     return result;
 }
+
     
 int Dictionary::digit_value(const UCS4 uc) 
     throw (Undefined_Property, Block_Error) {
@@ -105,6 +117,7 @@ int Dictionary::digit_value(const UCS4 uc)
     return result;
 } 
 
+
 string Dictionary::blockname(const UCS4 uc) 
     throw (Block_Error) {
     string result;
@@ -113,6 +126,7 @@ string Dictionary::blockname(const UCS4 uc)
     m_rw_lock.unlock();
     return result;
 }
+
     
 Gen_Cat Dictionary::category(const UCS4 uc) 
     throw (Undefined_Property, Block_Error) {
@@ -127,6 +141,7 @@ Gen_Cat Dictionary::category(const UCS4 uc)
     return result;
 }
 
+
 Can_Comb_Class Dictionary::comb_class(const UCS4 uc) 
     throw (Undefined_Property, Block_Error) {
     Can_Comb_Class result;
@@ -139,6 +154,7 @@ Can_Comb_Class Dictionary::comb_class(const UCS4 uc)
     m_rw_lock.unlock();
     return result;
 }
+
     
 Bidir_Props Dictionary::bidir_props(const UCS4 uc) 
     throw (Undefined_Property, Block_Error) {
@@ -152,6 +168,7 @@ Bidir_Props Dictionary::bidir_props(const UCS4 uc)
     m_rw_lock.unlock();
     return result;
 }
+
     
 Char_Decomp Dictionary::decomp_type(const UCS4 uc) 
     throw (Undefined_Property, Block_Error) {
@@ -166,6 +183,7 @@ Char_Decomp Dictionary::decomp_type(const UCS4 uc)
     return result;
 }
 
+
 UTF32_string Dictionary::decompose(const UCS4 uc) 
     throw (Block_Error) {
     UTF32_string result;
@@ -175,6 +193,7 @@ UTF32_string Dictionary::decompose(const UCS4 uc)
     return result;
 }
 
+
 UCS4 Dictionary::compose(const UCS4 starter, const UCS4 last) 
     throw (Block_Error) {
     UCS4 result;
@@ -183,6 +202,7 @@ UCS4 Dictionary::compose(const UCS4 starter, const UCS4 last)
     m_rw_lock.unlock();
     return result;
 }
+
     
 bool Dictionary::must_mirror(const UCS4 uc) 
     throw (Block_Error) {
@@ -193,6 +213,7 @@ bool Dictionary::must_mirror(const UCS4 uc)
     return result;
 }
 
+
 EA_Width Dictionary::EA_width(const UCS4 uc) 
     throw (Block_Error) {
     EA_Width result;
@@ -201,6 +222,7 @@ EA_Width Dictionary::EA_width(const UCS4 uc)
     m_rw_lock.unlock();
     return result;
 }
+
 
 Line_Break Dictionary::linebreak(const UCS4 uc) 
     throw (Block_Error) {
@@ -212,15 +234,6 @@ Line_Break Dictionary::linebreak(const UCS4 uc)
 }
 
 
-bool Dictionary::is_Zero_width(const UCS4 uc) 
-    throw (Block_Error) {
-    bool result;
-    m_rw_lock.rlock();
-    result = find_char(uc)->is_Zero_width(uc);
-    m_rw_lock.unlock();
-    return result;
-}
-
 bool Dictionary::is_White_space(const UCS4 uc) 
     throw (Block_Error)  {
     bool result;
@@ -229,6 +242,7 @@ bool Dictionary::is_White_space(const UCS4 uc)
     m_rw_lock.unlock();
     return result;
 }
+
 
 bool Dictionary::is_Non_break(const UCS4 uc) 
     throw (Block_Error) {
@@ -239,6 +253,7 @@ bool Dictionary::is_Non_break(const UCS4 uc)
     return result;
 }
 
+
 bool Dictionary::is_Bidi_Control(const UCS4 uc) 
     throw (Block_Error) {
     bool result;
@@ -247,6 +262,7 @@ bool Dictionary::is_Bidi_Control(const UCS4 uc)
     m_rw_lock.unlock();
     return result;
 }
+
 
 bool Dictionary::is_Join_Control(const UCS4 uc) 
     throw (Block_Error) {
@@ -257,6 +273,7 @@ bool Dictionary::is_Join_Control(const UCS4 uc)
     return result;
 }
 
+
 bool Dictionary::is_Format_Control(const UCS4 uc) 
     throw (Block_Error) {
     bool result;
@@ -265,6 +282,17 @@ bool Dictionary::is_Format_Control(const UCS4 uc)
     m_rw_lock.unlock();
     return result;
 }
+
+
+bool Dictionary::is_Other_Format_Control(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Format_Control(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
 
 bool Dictionary::is_Dash(const UCS4 uc) 
     throw (Block_Error) {
@@ -275,6 +303,7 @@ bool Dictionary::is_Dash(const UCS4 uc)
     return result;
 }
 
+
 bool Dictionary::is_Hyphen(const UCS4 uc) 
     throw (Block_Error) {
     bool result;
@@ -283,6 +312,7 @@ bool Dictionary::is_Hyphen(const UCS4 uc)
     m_rw_lock.unlock();
     return result;
 }
+
 
 bool Dictionary::is_Quotation_Mark(const UCS4 uc) 
     throw (Block_Error) {
@@ -293,6 +323,7 @@ bool Dictionary::is_Quotation_Mark(const UCS4 uc)
     return result;
 }
 
+
 bool Dictionary::is_Terminal_Punctuation(const UCS4 uc) 
     throw (Block_Error) {
     bool result;
@@ -301,6 +332,7 @@ bool Dictionary::is_Terminal_Punctuation(const UCS4 uc)
     m_rw_lock.unlock();
     return result;
 }
+
 
 bool Dictionary::is_Math(const UCS4 uc) 
     throw (Block_Error) {
@@ -311,203 +343,6 @@ bool Dictionary::is_Math(const UCS4 uc)
     return result;
 }
 
-bool Dictionary::is_Paired_Punctuation(const UCS4 uc) 
-    throw (Block_Error) {
-    bool result;
-    m_rw_lock.rlock();
-    result = find_char(uc)->is_Paired_Punctuation(uc);
-    m_rw_lock.unlock();
-    return result;
-}
-
-bool Dictionary::is_Left_of_Pair(const UCS4 uc) 
-    throw (Block_Error) {
-    bool result;
-    m_rw_lock.rlock();
-    result = find_char(uc)->is_Left_of_Pair(uc);
-    m_rw_lock.unlock();
-    return result;
-}
-
-bool Dictionary::is_Combining(const UCS4 uc) 
-    throw (Block_Error) {
-    bool result;
-    m_rw_lock.rlock();
-    result = find_char(uc)->is_Combining(uc);
-    m_rw_lock.unlock();
-    return result;
-}
-
-bool Dictionary::is_Non_spacing(const UCS4 uc) 
-    throw (Block_Error) {
-    bool result;
-    m_rw_lock.rlock();
-    result = find_char(uc)->is_Non_spacing(uc);
-    m_rw_lock.unlock();
-    return result;
-}
-
-bool Dictionary::is_Hex_Digit(const UCS4 uc) 
-    throw (Block_Error) {
-    bool result;
-    m_rw_lock.rlock();
-    result = find_char(uc)->is_Hex_Digit(uc);
-    m_rw_lock.unlock();
-    return result;
-}
-
-bool Dictionary::is_Alphabetic(const UCS4 uc) 
-    throw (Block_Error) {
-    bool result;
-    m_rw_lock.rlock();
-    result = find_char(uc)->is_Alphabetic(uc);
-    m_rw_lock.unlock();
-    return result;
-}
-
-bool Dictionary::is_Diacritic(const UCS4 uc) 
-    throw (Block_Error) {
-    bool result;
-    m_rw_lock.rlock();
-    result = find_char(uc)->is_Diacritic(uc);
-    m_rw_lock.unlock();
-    return result;
-}
-
-bool Dictionary::is_Extender(const UCS4 uc) 
-    throw (Block_Error) {
-    bool result;
-    m_rw_lock.rlock();
-    result = find_char(uc)->is_Extender(uc);
-    m_rw_lock.unlock();
-    return result;
-}
-
-bool Dictionary::is_Identifier_Part(const UCS4 uc) 
-    throw (Block_Error) {
-    bool result;
-    m_rw_lock.rlock();
-    result = find_char(uc)->is_Identifier_Part(uc);
-    m_rw_lock.unlock();
-    return result;
-}
-
-bool Dictionary::is_Ignorable_Control(const UCS4 uc) 
-    throw (Block_Error) {
-    bool result;
-    m_rw_lock.rlock();
-    result = find_char(uc)->is_Ignorable_Control(uc);
-    m_rw_lock.unlock();
-    return result;
-}
-
-bool Dictionary::is_Bidi_Hebrew_Right_to_Left(const UCS4 uc) 
-    throw (Block_Error) {
-    bool result;
-    m_rw_lock.rlock();
-    result = find_char(uc)->is_Bidi_Hebrew_Right_to_Left(uc);
-    m_rw_lock.unlock();
-    return result;
-}
-
-bool Dictionary::is_Bidi_Arabic_Right_to_Left(const UCS4 uc) 
-    throw (Block_Error) {
-    bool result;
-    m_rw_lock.rlock();
-    result = find_char(uc)->is_Bidi_Arabic_Right_to_Left(uc);
-    m_rw_lock.unlock();
-    return result;
-}
-
-bool Dictionary::is_Bidi_Embedding_or_Override(const UCS4 uc) 
-    throw (Block_Error) {
-    bool result;
-    m_rw_lock.rlock();
-    result = find_char(uc)->is_Bidi_Embedding_or_Override(uc);
-    m_rw_lock.unlock();
-    return result;
-}
-
-bool Dictionary::is_Uppercase(const UCS4 uc) 
-    throw (Block_Error) {
-    bool result;
-    m_rw_lock.rlock();
-    result = find_char(uc)->is_Uppercase(uc);
-    m_rw_lock.unlock();
-    return result;
-}
-
-bool Dictionary::is_Lowercase(const UCS4 uc) 
-    throw (Block_Error) {
-    bool result;
-    m_rw_lock.rlock();
-    result = find_char(uc)->is_Lowercase(uc);
-    m_rw_lock.unlock();
-    return result;
-}
-
-bool Dictionary::is_Space(const UCS4 uc) 
-    throw (Block_Error) {
-    bool result;
-    m_rw_lock.rlock();
-    result = find_char(uc)->is_Space(uc);
-    m_rw_lock.unlock();
-    return result;
-}
-
-bool Dictionary::is_ISO_Control(const UCS4 uc) 
-    throw (Block_Error) {
-    bool result;
-    m_rw_lock.rlock();
-    result = find_char(uc)->is_ISO_Control(uc);
-    m_rw_lock.unlock();
-    return result;
-}
-
-bool Dictionary::is_Punctuation(const UCS4 uc) 
-    throw (Block_Error) {
-    bool result;
-    m_rw_lock.rlock();
-    result = find_char(uc)->is_Punctuation(uc);
-    m_rw_lock.unlock();
-    return result;
-}
-
-bool Dictionary::is_Line_Separator(const UCS4 uc) 
-    throw (Block_Error) {
-    bool result;
-    m_rw_lock.rlock();
-    result = find_char(uc)->is_Line_Separator(uc);
-    m_rw_lock.unlock();
-    return result;
-}
-
-bool Dictionary::is_Paragraph_Separator(const UCS4 uc) 
-    throw (Block_Error) {
-    bool result;
-    m_rw_lock.rlock();
-    result = find_char(uc)->is_Paragraph_Separator(uc);
-    m_rw_lock.unlock();
-    return result;
-}
-
-bool Dictionary::is_Currency_Symbol(const UCS4 uc) 
-    throw (Block_Error) {
-    bool result;
-    m_rw_lock.rlock();
-    result = find_char(uc)->is_Currency_Symbol(uc);
-    m_rw_lock.unlock();
-    return result;
-}
-
-bool Dictionary::is_Titlecase(const UCS4 uc) 
-    throw (Block_Error) {
-    bool result;
-    m_rw_lock.rlock();
-    result = find_char(uc)->is_Titlecase(uc);
-    m_rw_lock.unlock();
-    return result;
-}
 
 bool Dictionary::is_Composite(const UCS4 uc) 
     throw (Block_Error) {
@@ -518,32 +353,26 @@ bool Dictionary::is_Composite(const UCS4 uc)
     return result;
 }
 
-bool Dictionary::is_Decimal_Digit(const UCS4 uc) 
+
+bool Dictionary::is_Hex_Digit(const UCS4 uc) 
     throw (Block_Error) {
     bool result;
     m_rw_lock.rlock();
-    result = find_char(uc)->is_Decimal_Digit(uc);
+    result = find_char(uc)->is_Hex_Digit(uc);
     m_rw_lock.unlock();
     return result;
 }
 
-bool Dictionary::is_Numeric(const UCS4 uc) 
+
+bool Dictionary::is_Alphabetic(const UCS4 uc) 
     throw (Block_Error) {
     bool result;
     m_rw_lock.rlock();
-    result = find_char(uc)->is_Numeric(uc);
+    result = find_char(uc)->is_Alphabetic(uc);
     m_rw_lock.unlock();
     return result;
 }
 
-bool Dictionary::is_Digit(const UCS4 uc) 
-    throw (Block_Error) {
-    bool result;
-    m_rw_lock.rlock();
-    result = find_char(uc)->is_Digit(uc);
-    m_rw_lock.unlock();
-    return result;
-}
 
 bool Dictionary::is_Ideographic(const UCS4 uc) 
     throw (Block_Error) {
@@ -554,158 +383,36 @@ bool Dictionary::is_Ideographic(const UCS4 uc)
     return result;
 }
 
-bool Dictionary::is_Bidi_Left_to_Right(const UCS4 uc) 
+
+bool Dictionary::is_Diacritic(const UCS4 uc) 
     throw (Block_Error) {
     bool result;
     m_rw_lock.rlock();
-    result = find_char(uc)->is_Bidi_Left_to_Right(uc);
+    result = find_char(uc)->is_Diacritic(uc);
     m_rw_lock.unlock();
     return result;
 }
 
-bool Dictionary::is_Bidi_European_Digit(const UCS4 uc) 
+
+bool Dictionary::is_Extender(const UCS4 uc) 
     throw (Block_Error) {
     bool result;
     m_rw_lock.rlock();
-    result = find_char(uc)->is_Bidi_European_Digit(uc);
+    result = find_char(uc)->is_Extender(uc);
     m_rw_lock.unlock();
     return result;
 }
 
-bool Dictionary::is_Bidi_Eur_Num_Separator(const UCS4 uc) 
+
+bool Dictionary::is_Identifier_Part_Not_Cf(const UCS4 uc) 
     throw (Block_Error) {
     bool result;
     m_rw_lock.rlock();
-    result = find_char(uc)->is_Bidi_Eur_Num_Separator(uc);
+    result = find_char(uc)->is_Identifier_Part_Not_Cf(uc);
     m_rw_lock.unlock();
     return result;
 }
 
-bool Dictionary::is_Bidi_Eur_Num_Terminator(const UCS4 uc) 
-    throw (Block_Error) {
-    bool result;
-    m_rw_lock.rlock();
-    result = find_char(uc)->is_Bidi_Eur_Num_Terminator(uc);
-    m_rw_lock.unlock();
-    return result;
-}
-
-bool Dictionary::is_Bidi_Arabic_Digit(const UCS4 uc) 
-    throw (Block_Error) {
-    bool result;
-    m_rw_lock.rlock();
-    result = find_char(uc)->is_Bidi_Arabic_Digit(uc);
-    m_rw_lock.unlock();
-    return result;
-}
-
-bool Dictionary::is_Bidi_Common_Separator(const UCS4 uc) 
-    throw (Block_Error)  {
-    bool result;
-    m_rw_lock.rlock();
-    result = find_char(uc)->is_Bidi_Common_Separator(uc);
-    m_rw_lock.unlock();
-    return result;
-}
-
-bool Dictionary::is_Bidi_Block_Separator(const UCS4 uc) 
-    throw (Block_Error) {
-    bool result;
-    m_rw_lock.rlock();
-    result = find_char(uc)->is_Bidi_Block_Separator(uc);
-    m_rw_lock.unlock();
-    return result;
-}
-
-bool Dictionary::is_Bidi_Segment_Separator(const UCS4 uc) 
-    throw (Block_Error) {
-    bool result;
-    m_rw_lock.rlock();
-    result = find_char(uc)->is_Bidi_Segment_Separator(uc);
-    m_rw_lock.unlock();
-    return result;
-}
-
-bool Dictionary::is_Bidi_Whitespace(const UCS4 uc) 
-    throw (Block_Error) {
-    bool result;
-    m_rw_lock.rlock();
-    result = find_char(uc)->is_Bidi_Whitespace(uc);
-    m_rw_lock.unlock();
-    return result;
-}
-
-bool Dictionary::is_Bidi_Non_spacing_Mark(const UCS4 uc) 
-    throw (Block_Error) {
-    bool result;
-    m_rw_lock.rlock();
-    result = find_char(uc)->is_Bidi_Non_spacing_Mark(uc);
-    m_rw_lock.unlock();
-    return result;
-}
-
-bool Dictionary::is_Bidi_Boundary_Neutral(const UCS4 uc) 
-    throw (Block_Error) {
-    bool result;
-    m_rw_lock.rlock();
-    result = find_char(uc)->is_Bidi_Boundary_Neutral(uc);
-    m_rw_lock.unlock();
-    return result;
-}
-
-bool Dictionary::is_Bidi_PDF(const UCS4 uc) 
-    throw (Block_Error) {
-    bool result;
-    m_rw_lock.rlock();
-    result = find_char(uc)->is_Bidi_PDF(uc);
-    m_rw_lock.unlock();
-    return result;
-}
-
-bool Dictionary::is_Bidi_LRE(const UCS4 uc) 
-    throw (Block_Error) {
-    bool result;
-    m_rw_lock.rlock();
-    result = find_char(uc)->is_Bidi_LRE(uc);
-    m_rw_lock.unlock();
-    return result;
-}
-
-bool Dictionary::is_Bidi_RLE(const UCS4 uc) 
-    throw (Block_Error) {
-    bool result;
-    m_rw_lock.rlock();
-    result = find_char(uc)->is_Bidi_RLE(uc);
-    m_rw_lock.unlock();
-    return result;
-}
-
-bool Dictionary::is_Bidi_LRO(const UCS4 uc) 
-    throw (Block_Error) {
-    bool result;
-    m_rw_lock.rlock();
-    result = find_char(uc)->is_Bidi_LRO(uc);
-    m_rw_lock.unlock();
-    return result;
-}
-
-bool Dictionary::is_Bidi_RLO(const UCS4 uc) 
-    throw (Block_Error) {
-    bool result;
-    m_rw_lock.rlock();
-    result = find_char(uc)->is_Bidi_RLO(uc);
-    m_rw_lock.unlock();
-    return result;
-}
-
-bool Dictionary::is_Bidi_Other_Neutral(const UCS4 uc) 
-    throw (Block_Error) {
-    bool result;
-    m_rw_lock.rlock();
-    result = find_char(uc)->is_Bidi_Other_Neutral(uc);
-    m_rw_lock.unlock();
-    return result;
-}
 
 bool Dictionary::is_Private_Use(const UCS4 uc) 
     throw (Block_Error) {
@@ -716,32 +423,26 @@ bool Dictionary::is_Private_Use(const UCS4 uc)
     return result;
 }
 
-bool Dictionary::is_Not_a_Character(const UCS4 uc) 
+
+bool Dictionary::is_Other_Uppercase(const UCS4 uc) 
     throw (Block_Error) {
     bool result;
     m_rw_lock.rlock();
-    result = find_char(uc)->is_Not_a_Character(uc);
+    result = find_char(uc)->is_Other_Uppercase(uc);
     m_rw_lock.unlock();
     return result;
 }
 
-bool Dictionary::is_Unassigned_Code_Value(const UCS4 uc) 
+
+bool Dictionary::is_Other_Lowercase(const UCS4 uc) 
     throw (Block_Error) {
     bool result;
     m_rw_lock.rlock();
-    result = find_char(uc)->is_Unassigned_Code_Value(uc);
+    result = find_char(uc)->is_Other_Lowercase(uc);
     m_rw_lock.unlock();
     return result;
 }
 
-bool Dictionary::is_Private_Use_High_Surrogate(const UCS4 uc) 
-    throw (Block_Error) {
-    bool result;
-    m_rw_lock.rlock();
-    result = find_char(uc)->is_Private_Use_High_Surrogate(uc);
-    m_rw_lock.unlock();
-    return result;
-}
 
 bool Dictionary::is_Low_Surrogate(const UCS4 uc) 
     throw (Block_Error) {
@@ -752,11 +453,84 @@ bool Dictionary::is_Low_Surrogate(const UCS4 uc)
     return result;
 }
 
+
 bool Dictionary::is_High_Surrogate(const UCS4 uc) 
     throw (Block_Error) {
     bool result;
     m_rw_lock.rlock();
     result = find_char(uc)->is_High_Surrogate(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+
+bool Dictionary::is_Private_Use_High_Surrogate(const UCS4 uc) 
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Private_Use_High_Surrogate(uc);
+    m_rw_lock.unlock();
+    return result;
+}
+
+
+bool Dictionary::is_Noncharacter_Code_Point(const UCS4 uc)
+    throw (Block_Error) {
+    bool result;
+    m_rw_lock.rlock();
+    result = find_char(uc)->is_Noncharacter_Code_Point(uc);
+    m_rw_lock.unlock();
+    return result;
+}    
+
+UCS4 Dictionary::first_letter_of_block(const UCS4 uc)
+    throw () {
+    UCS4 result = UC_MAX_DEFINED;
+    if (uc >= UC_MAX_DEFINED)
+	return result;
+
+    vector<Data>::const_iterator b;
+    Data tmp(uc, uc);
+    m_rw_lock.rlock();
+    b = lower_bound(m_data.begin(), m_data.end(), tmp, DataLess());
+    if (b->m_start <= uc && b->m_end >= uc)
+	result = b->m_start;
+    m_rw_lock.unlock();
+    return result;
+}
+
+UCS4 Dictionary::last_letter_of_block(const UCS4 uc)
+    throw () {
+    UCS4 result = UC_MAX_DEFINED;
+    if (uc >= UC_MAX_DEFINED)
+	return result;
+
+    vector<Data>::const_iterator b;
+    Data tmp(uc, uc);
+    m_rw_lock.rlock();
+    b = lower_bound(m_data.begin(), m_data.end(), tmp, DataLess());
+    if (b->m_start <= uc && b->m_end >= uc)
+	result = b->m_end;
+    m_rw_lock.unlock();
+    return result;
+}
+
+UCS4 Dictionary::start_of_next_block(const UCS4 uc) 
+    throw () {
+    UCS4 result = UC_MAX_DEFINED;
+    if (uc >= UC_MAX_DEFINED)
+	return result;
+
+    vector<Data>::const_iterator b;
+    Data tmp(uc, uc);
+    m_rw_lock.rlock();
+    b = lower_bound(m_data.begin(), m_data.end(), tmp, DataLess()); 
+    if (b != m_data.end()) {
+	if (b->m_end >= uc)
+	    ++b;
+	if (b != m_data.end())
+	    result = b->m_start;
+    }
     m_rw_lock.unlock();
     return result;
 }
@@ -800,29 +574,23 @@ UTF32_string Dictionary::recursive_decompose(const bool compat, const UCS4 uc)
     return result;
 }
 
+
 Dictionary::Block * Dictionary::find_char(const UCS4 uc)
     throw (Block_Error) {
     // Gets only called after the dictionary is rlocked!
 
     // Binary search version:
-    size_t i = 0;
+    vector<Data>::iterator p = m_data.begin();
     
     // ASCII happens so often that this speeds things up a bit
-    if (uc > m_data[i].m_end) {
+    if (uc > p->m_end) {
 	// binary search for non-ASCII characters
-	size_t start = 1; // 0 was allready checked
-	size_t end = m_data.size(); 
-	i = (start + end) / 2;
-	while (i > start && i < end) {
-	    if (uc < m_data[i].m_start) end = i;
-	    else if (uc > m_data[i].m_end) start = i;
-	    else break; // we found it...
-	    i = (start + end) / 2;
-	}
+	++p; // advance past ASCII
+	Data tmp(uc, uc);
+	p = lower_bound(p, m_data.end(), tmp, DataLess());
     }
     
-    Data *p = &m_data[i];
-    if (uc < p->m_start || uc > p->m_end) { // uc belongs to no block
+    if (p == m_data.end() || p->m_start > uc) { // uc belongs to no block
 	return m_undef_block->get();
     }
     
@@ -834,7 +602,7 @@ Dictionary::Block * Dictionary::find_char(const UCS4 uc)
 	    throw Block_Error(p->m_start, p->m_end, p->m_block->error());
 	}
     }
-    
+
     return p->m_block->get();
 } // Dictionary::find_char
 
@@ -857,8 +625,10 @@ void Dictionary::update(const string & scanDir) {
 	Prague::Plugin<Dictionary::Block> * block =
 	    new Prague::Plugin<Dictionary::Block>(name);
 	
-	if (block == 0)
-	    continue;
+	// new throws en exception when running out of memory,
+	// so this is not necesarry:
+	// if (block == 0)
+	//    continue;
 	
 	if (*block == 0)
 	    continue;
@@ -870,11 +640,10 @@ void Dictionary::update(const string & scanDir) {
 	    if(m_undef_block == 0) {
 		m_undef_block = block;
 		// don't delete the block!
-	    }
+	    } else
+		delete block;
 	} else {
-	    Data current;
-	    current.m_start = start;
-	    current.m_end = end;
+	    Data current(start, end);
 	    current.m_file = name;
 	    current.m_can_remove = 0;
 	    current.m_block = 0;
@@ -883,8 +652,9 @@ void Dictionary::update(const string & scanDir) {
 	    delete block;
 	}
     }      
-    
-    sort(m_data.begin(), m_data.end());
+
+    std::vector<Data> (m_data).swap(m_data); // shrink vector
+    sort(m_data.begin(), m_data.end(), DataLess()); // sort it
 
     // Sanity tests:
     if (m_undef_block == 0) {
@@ -898,7 +668,8 @@ void Dictionary::update(const string & scanDir) {
     m_rw_lock.unlock();
 } // update_dictionary
 
-Dictionary::Dictionary() : m_data(0) {
+
+Dictionary::Dictionary() {
     m_version.resize(1);
     m_version[0] = UC_NULL;
     m_undef_block = 0;
@@ -919,6 +690,7 @@ Dictionary::~Dictionary() {
     m_rw_lock.unlock();
 } // Dictionary::~Dictionary()
 
+
 void Dictionary::clean() {
     // gets only called in writelocked functions!
     for (vector<Data>::const_iterator i = m_data.begin();
@@ -928,10 +700,14 @@ void Dictionary::clean() {
 	    delete i->m_block;
     
     m_data.clear();
+    delete m_undef_block;
 };
+
 
 Dictionary::Block::Block() {}
 
+
 Dictionary::Block::~Block() {}
+
 
 void Dictionary::Block::clean() {}

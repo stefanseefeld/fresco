@@ -71,6 +71,6 @@ inline void Time::normalize()
     }
 }
 
-};
+}
 
 #endif /* _Prague_Time_hh */

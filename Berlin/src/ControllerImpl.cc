@@ -21,7 +21,6 @@
  */
 
 #include <Prague/Sys/Tracer.hh>
-#include <Prague/Unicode/Unicode.hh>
 #include <Warsaw/config.hh>
 #include <Warsaw/Input.hh>
 #include <Warsaw/Transform.hh>
@@ -30,9 +29,12 @@
 #include <Warsaw/Focus.hh>
 #include "Berlin/ControllerImpl.hh"
 #include "Berlin/Event.hh"
+#include <Prague/Sys/Tracer.hh>
+#include <Babylon/Babylon.hh>
 
 using namespace Prague;
 using namespace Warsaw;
+using namespace Babylon;
 
 class ControllerImpl::Iterator : public virtual POA_Warsaw::ControllerIterator,
 		                 public virtual ServantBase
@@ -455,13 +457,13 @@ void ControllerImpl::key_press(const Input::Event &event)
   const Input::Toggle &toggle = event[0].attr.selection();
   switch (toggle.number)
     {
-    case Unicode::KEY_CURSOR_LEFT:          // left
+    case Babylon::KEY_CURSOR_LEFT:          // left
       {
 	prev_focus(event[0].dev);
 	break;
       }
-    case Unicode::UC_HORIZONTAL_TABULATION: // tab
-    case Unicode::KEY_CURSOR_RIGHT:         // right
+    case Babylon::UC_HORIZONTAL_TABULATION: // tab
+    case Babylon::KEY_CURSOR_RIGHT:         // right
       {
 	next_focus(event[0].dev);
 	break;

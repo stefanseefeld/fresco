@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Wed,  6 Dec 2000 23:26:30 +0100.
+ * ftp.unicode.org on Mon,  8 Jan 2001 23:32:40 +0100.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -25,6 +25,7 @@
 
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
+#include <bitset>
 #include <map>
 
 namespace Babylon {
@@ -35,36 +36,36 @@ namespace Babylon {
     };
 
     Hiragana3040() {
-      _first_letter = 0x3040;
-      _last_letter  = 0x309F;
-      // _version="3.0.1" // Not yet supported!
-      _composeMap[0x30463099] = 0x3094;
-      _composeMap[0x304B3099] = 0x304C;
-      _composeMap[0x304D3099] = 0x304E;
-      _composeMap[0x304F3099] = 0x3050;
-      _composeMap[0x30513099] = 0x3052;
-      _composeMap[0x30533099] = 0x3054;
-      _composeMap[0x30553099] = 0x3056;
-      _composeMap[0x30573099] = 0x3058;
-      _composeMap[0x30593099] = 0x305A;
-      _composeMap[0x305B3099] = 0x305C;
-      _composeMap[0x305D3099] = 0x305E;
-      _composeMap[0x305F3099] = 0x3060;
-      _composeMap[0x30613099] = 0x3062;
-      _composeMap[0x30643099] = 0x3065;
-      _composeMap[0x30663099] = 0x3067;
-      _composeMap[0x30683099] = 0x3069;
-      _composeMap[0x306F3099] = 0x3070;
-      _composeMap[0x306F309A] = 0x3071;
-      _composeMap[0x30723099] = 0x3073;
-      _composeMap[0x3072309A] = 0x3074;
-      _composeMap[0x30753099] = 0x3076;
-      _composeMap[0x3075309A] = 0x3077;
-      _composeMap[0x30783099] = 0x3079;
-      _composeMap[0x3078309A] = 0x307A;
-      _composeMap[0x307B3099] = 0x307C;
-      _composeMap[0x307B309A] = 0x307D;
-      _composeMap[0x309D3099] = 0x309E;
+      m_first_letter = 0x3040;
+      m_last_letter  = 0x309F;
+      // m_version="3.0.1" // Not yet supported!
+      m_composeMap[make_pair(0x00003046, 0x00003099)] = 0x3094;
+      m_composeMap[make_pair(0x0000304B, 0x00003099)] = 0x304C;
+      m_composeMap[make_pair(0x0000304D, 0x00003099)] = 0x304E;
+      m_composeMap[make_pair(0x0000304F, 0x00003099)] = 0x3050;
+      m_composeMap[make_pair(0x00003051, 0x00003099)] = 0x3052;
+      m_composeMap[make_pair(0x00003053, 0x00003099)] = 0x3054;
+      m_composeMap[make_pair(0x00003055, 0x00003099)] = 0x3056;
+      m_composeMap[make_pair(0x00003057, 0x00003099)] = 0x3058;
+      m_composeMap[make_pair(0x00003059, 0x00003099)] = 0x305A;
+      m_composeMap[make_pair(0x0000305B, 0x00003099)] = 0x305C;
+      m_composeMap[make_pair(0x0000305D, 0x00003099)] = 0x305E;
+      m_composeMap[make_pair(0x0000305F, 0x00003099)] = 0x3060;
+      m_composeMap[make_pair(0x00003061, 0x00003099)] = 0x3062;
+      m_composeMap[make_pair(0x00003064, 0x00003099)] = 0x3065;
+      m_composeMap[make_pair(0x00003066, 0x00003099)] = 0x3067;
+      m_composeMap[make_pair(0x00003068, 0x00003099)] = 0x3069;
+      m_composeMap[make_pair(0x0000306F, 0x00003099)] = 0x3070;
+      m_composeMap[make_pair(0x0000306F, 0x0000309A)] = 0x3071;
+      m_composeMap[make_pair(0x00003072, 0x00003099)] = 0x3073;
+      m_composeMap[make_pair(0x00003072, 0x0000309A)] = 0x3074;
+      m_composeMap[make_pair(0x00003075, 0x00003099)] = 0x3076;
+      m_composeMap[make_pair(0x00003075, 0x0000309A)] = 0x3077;
+      m_composeMap[make_pair(0x00003078, 0x00003099)] = 0x3079;
+      m_composeMap[make_pair(0x00003078, 0x0000309A)] = 0x307A;
+      m_composeMap[make_pair(0x0000307B, 0x00003099)] = 0x307C;
+      m_composeMap[make_pair(0x0000307B, 0x0000309A)] = 0x307D;
+      m_composeMap[make_pair(0x0000309D, 0x00003099)] = 0x309E;
 
     }
 
@@ -73,11 +74,11 @@ namespace Babylon {
     }
 
     UCS4 firstLetter() {
-      return _first_letter;
+      return m_first_letter;
     }
 
     UCS4 lastLetter() {
-      return _last_letter;
+      return m_last_letter;
     }
 
     bool is_undef_block() const {
@@ -91,31 +92,19 @@ namespace Babylon {
     }
 
     bool is_defined(const UCS4 uc) const {
-      return (_is_defined[uc - _first_letter]);
+      return (m_is_defined.test(uc - m_first_letter));
     }
 
     UCS4 uppercase(const UCS4 uc) const {
       return uc;
     }
 
-    bool is_Uppercase(const UCS4 uc) const {
-      return category(uc) == CAT_Lu;
-    }
-
     UCS4 lowercase(const UCS4 uc) const {
       return uc;
     }
 
-    bool is_Lowercase(const UCS4 uc) const {
-      return category(uc) == CAT_Ll;
-    }
-
     UCS4 titlecase(const UCS4 uc) const {
       return uc;
-    }
-
-    bool is_Titlecase(const UCS4 uc) const {
-      return category(uc) == CAT_Lt;
     }
 
     int dec_digit_value(const UCS4 uc) const {
@@ -145,33 +134,33 @@ namespace Babylon {
     Gen_Cat category(const UCS4 uc) const {
       if (!is_defined(uc))
         return CAT_MAX;
-      return Babylon::Gen_Cat(Hiragana3040::_cat[uc - _first_letter]);
+      return Babylon::Gen_Cat(Hiragana3040::_cat[uc - m_first_letter]);
     }
 
     Can_Comb_Class comb_class(const UCS4 uc) const {
       if (!is_defined(uc))
         return CC_MAX;
-      return Can_Comb_Class(Hiragana3040::_comb_cl[uc - _first_letter]);
+      return Can_Comb_Class(Hiragana3040::_comb_cl[uc - m_first_letter]);
     }
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
         return BIDIR_MAX;
-      return Babylon::Bidir_Props(Hiragana3040::_bidir[uc - _first_letter]);
+      return Babylon::Bidir_Props(Hiragana3040::m_bidir[uc - m_first_letter]);
     }
 
     Char_Decomp decomp_type(const UCS4 uc) const {
       if (!is_defined(uc))
         return DECOMP_MAX;
-      return Babylon::Char_Decomp(Hiragana3040::_decomp[uc - _first_letter]);
+      return Babylon::Char_Decomp(Hiragana3040::_decomp[uc - m_first_letter]);
     }
 
     UTF32_string decompose(const UCS4 uc) const {
       Babylon::UTF32_string us;
       us.resize(2);
-      us[0] = Hiragana3040::_decompStr[uc - _first_letter][0];
-      us[1] = Hiragana3040::_decompStr[uc - _first_letter][1];
-      if (us[1] == 0x0000) {
+      us[0] = Hiragana3040::m_decompStr[uc - m_first_letter][0];
+      us[1] = Hiragana3040::m_decompStr[uc - m_first_letter][1];
+      if (us[1] == 0x0000u) {
         us.resize(1);
       }
 
@@ -185,7 +174,7 @@ namespace Babylon {
     Line_Break linebreak(const UCS4 uc) const {
       if (!is_defined(uc))
         return LB_MAX;
-      return Babylon::Line_Break(Hiragana3040::_lb[uc - _first_letter]);
+      return Babylon::Line_Break(Hiragana3040::m_lb[uc - m_first_letter]);
     }
 
     EA_Width EA_width(const UCS4 uc) const {
@@ -194,12 +183,8 @@ namespace Babylon {
       return Babylon::EA_Width(EA_WIDTH_W);
     }
 
-    UCS4 compose (const UCS4 starter, const UCS4 last) {
-      return _composeMap[starter << 16 | last];
-    }
-
-    bool is_Zero_width(const UCS4 uc) const {
-      return 0;
+    UCS4 compose (const UCS4 start, const UCS4 last) {
+      return m_composeMap[make_pair(start, last)];
     }
 
     bool is_White_space(const UCS4 uc) const {
@@ -207,6 +192,10 @@ namespace Babylon {
     }
 
     bool is_Non_break(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Format_Control(const UCS4 uc) const {
       return 0;
     }
 
@@ -218,7 +207,7 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Format_Control(const UCS4 uc) const {
+    bool is_Other_Format_Control(const UCS4 uc) const {
       return 0;
     }
 
@@ -242,24 +231,8 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Paired_Punctuation(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Left_of_Pair(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Combining(const UCS4 uc) const {
-      return Hiragana3040::_Combining[uc - _first_letter];
-    }
-
-    bool is_Non_spacing(const UCS4 uc) const {
-      return Hiragana3040::_Non_spacing[uc - _first_letter];
-    }
-
     bool is_Composite(const UCS4 uc) const {
-      return Hiragana3040::_Composite[uc - _first_letter];
+      return m_Composite.test(uc - m_first_letter);
     }
 
     bool is_Hex_Digit(const UCS4 uc) const {
@@ -267,30 +240,26 @@ namespace Babylon {
     }
 
     bool is_Alphabetic(const UCS4 uc) const {
-      return Hiragana3040::_Alphabetic[uc - _first_letter];
+      return m_Alphabetic.test(uc - m_first_letter);
     }
 
     bool is_Diacritic(const UCS4 uc) const {
-      return Hiragana3040::_Diacritic[uc - _first_letter];
+      return m_Diacritic.test(uc - m_first_letter);
     }
 
     bool is_Extender(const UCS4 uc) const {
-      return Hiragana3040::_Extender[uc - _first_letter];
+      return m_Extender.test(uc - m_first_letter);
     }
 
-    bool is_Identifier_Part(const UCS4 uc) const {
-      return Hiragana3040::_Identifier_Part[uc - _first_letter];
+    bool is_Identifier_Part_Not_Cf(const UCS4 uc) const {
+      return m_Identifier_Part_Not_Cf.test(uc - m_first_letter);
     }
 
-    bool is_Ignorable_Control(const UCS4 uc) const {
+    bool is_Other_Uppercase(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Bidi_Hebrew_Right_to_Left(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Bidi_Arabic_Right_to_Left(const UCS4 uc) const {
+    bool is_Other_Lowercase(const UCS4 uc) const {
       return 0;
     }
 
@@ -302,7 +271,7 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Not_a_Character(const UCS4 uc) const {
+    bool is_Noncharacter_Code_Point(const UCS4 uc) const {
       return ((uc & 0xFFFE) == 0xFFFE);
     }
 
@@ -318,155 +287,31 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Space(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Zs);
-    }
-
-    bool is_ISO_Control(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Cc);
-    }
-
-    bool is_Punctuation(const UCS4 uc) const {
-      return (is_defined(uc) && (category(uc) == CAT_Pc ||
-                                 category(uc) == CAT_Pd ||
-                                 category(uc) == CAT_Ps ||
-                                 category(uc) == CAT_Pe ||
-                                 category(uc) == CAT_Pi ||
-                                 category(uc) == CAT_Pf ||
-                                 category(uc) == CAT_Po)
-             );
-    }
-
-    bool is_Line_Separator(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Zl);
-    }
-
-    bool is_Paragraph_Separator(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Zp);
-    }
-
-    bool is_Currency_Symbol(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Sc);
-    }
-
-    bool is_Bidi_Left_to_Right(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_L;
-    }
-
-    bool is_Bidi_European_Digit(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_EN;
-    }
-
-    bool is_Bidi_Eur_Num_Separator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_ES;
-    }
-
-    bool is_Bidi_Eur_Num_Terminator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_ET;
-    }
-
-    bool is_Bidi_Arabic_Digit(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_AN;
-    }
-
-    bool is_Bidi_Common_Separator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_CS;
-    }
-
-    bool is_Bidi_Block_Separator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_B;
-    }
-
-    bool is_Bidi_Segment_Separator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_S;
-    }
-
-    bool is_Bidi_Whitespace(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_WS;
-    }
-
-    bool is_Bidi_Non_spacing_Mark(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_NSM;
-    }
-
-    bool is_Bidi_Boundary_Neutral(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_BN;
-    }
-
-    bool is_Bidi_PDF(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_PDF;
-    }
-
-    bool is_Bidi_Embedding_or_Override(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_LRE ||
-             bidir_props(uc) == BIDIR_RLE ||
-             bidir_props(uc) == BIDIR_LRO ||
-             bidir_props(uc) == BIDIR_RLO;
-    }
-
-    bool is_Bidi_LRE(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_LRE;
-    }
-
-    bool is_Bidi_RLE(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_RLE;
-    }
-
-    bool is_Bidi_LRO(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_LRO;
-    }
-
-    bool is_Bidi_RLO(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_RLO;
-    }
-
-    bool is_Bidi_Other_Neutral(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_ON;
-    }
-
-    bool is_Unassigned_Code_Value(const UCS4 uc) const {
-      return !is_defined(uc) && !is_Not_a_Character(uc);
-    }
-
 
   private:
     // functions
     Hiragana3040(const Hiragana3040 &) {}
 
-    Babylon::UCS4 _first_letter;
-    Babylon::UCS4 _last_letter;
-    static const bool _is_defined[96];
+    Babylon::UCS4 m_first_letter;
+    Babylon::UCS4 m_last_letter;
+    // Babylon::UCS4_string m_version;
+    static const bitset<96> m_is_defined;
     static const unsigned char _cat[96];
     static const unsigned char _comb_cl[96];
-    static const unsigned char _bidir[96];
+    static const unsigned char m_bidir[96];
     static const unsigned char _decomp[96];
-    static const UCS2 _decompStr[96][2];
-    static const unsigned char _lb[96];
-    map<UCS4, UCS4> _composeMap;
-    static const bool _Combining[96];
-    static const bool _Non_spacing[96];
-    static const bool _Composite[96];
-    static const bool _Alphabetic[96];
-    static const bool _Diacritic[96];
-    static const bool _Extender[96];
-    static const bool _Identifier_Part[96];
+    static const UCS2 m_decompStr[96][2];
+    static const unsigned char m_lb[96];
+    map<pair<UCS4, UCS4>, UCS4> m_composeMap;
+    static const bitset<96> m_Composite;
+    static const bitset<96> m_Alphabetic;
+    static const bitset<96> m_Diacritic;
+    static const bitset<96> m_Extender;
+    static const bitset<96> m_Identifier_Part_Not_Cf;
 
   }; // class Hiragana3040
 
-  const bool Hiragana3040::_is_defined[] = {
-    0, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 0, 0, 0, 
-    0, 1, 1, 1, 1, 1, 1, 0
-  };
+    const bitset<96> Hiragana3040::m_is_defined(string("011111100001111111111111111111111111111111111111111111111111111111111111111111111111111111111110"));
 
   const unsigned char Hiragana3040::_cat[] = {
     CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, CAT_Lo, 
@@ -498,7 +343,7 @@ namespace Babylon {
     0, 8, 8, 0, 0, 0, 0, 0
   };
 
-  const unsigned char Hiragana3040::_bidir[] = {
+  const unsigned char Hiragana3040::m_bidir[] = {
     BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
     BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
     BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, 
@@ -528,34 +373,34 @@ namespace Babylon {
     DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_COMPAT, DECOMP_COMPAT, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP
   };
 
-  const UCS2 Hiragana3040::_decompStr[][2] = {
-    { 0x3040, 0x0000 }, { 0x3041, 0x0000 }, { 0x3042, 0x0000 }, { 0x3043, 0x0000 }, 
-    { 0x3044, 0x0000 }, { 0x3045, 0x0000 }, { 0x3046, 0x0000 }, { 0x3047, 0x0000 }, 
-    { 0x3048, 0x0000 }, { 0x3049, 0x0000 }, { 0x304A, 0x0000 }, { 0x304B, 0x0000 }, 
-    { 0x304B, 0x3099 }, { 0x304D, 0x0000 }, { 0x304D, 0x3099 }, { 0x304F, 0x0000 }, 
-    { 0x304F, 0x3099 }, { 0x3051, 0x0000 }, { 0x3051, 0x3099 }, { 0x3053, 0x0000 }, 
-    { 0x3053, 0x3099 }, { 0x3055, 0x0000 }, { 0x3055, 0x3099 }, { 0x3057, 0x0000 }, 
-    { 0x3057, 0x3099 }, { 0x3059, 0x0000 }, { 0x3059, 0x3099 }, { 0x305B, 0x0000 }, 
-    { 0x305B, 0x3099 }, { 0x305D, 0x0000 }, { 0x305D, 0x3099 }, { 0x305F, 0x0000 }, 
-    { 0x305F, 0x3099 }, { 0x3061, 0x0000 }, { 0x3061, 0x3099 }, { 0x3063, 0x0000 }, 
-    { 0x3064, 0x0000 }, { 0x3064, 0x3099 }, { 0x3066, 0x0000 }, { 0x3066, 0x3099 }, 
-    { 0x3068, 0x0000 }, { 0x3068, 0x3099 }, { 0x306A, 0x0000 }, { 0x306B, 0x0000 }, 
-    { 0x306C, 0x0000 }, { 0x306D, 0x0000 }, { 0x306E, 0x0000 }, { 0x306F, 0x0000 }, 
-    { 0x306F, 0x3099 }, { 0x306F, 0x309A }, { 0x3072, 0x0000 }, { 0x3072, 0x3099 }, 
-    { 0x3072, 0x309A }, { 0x3075, 0x0000 }, { 0x3075, 0x3099 }, { 0x3075, 0x309A }, 
-    { 0x3078, 0x0000 }, { 0x3078, 0x3099 }, { 0x3078, 0x309A }, { 0x307B, 0x0000 }, 
-    { 0x307B, 0x3099 }, { 0x307B, 0x309A }, { 0x307E, 0x0000 }, { 0x307F, 0x0000 }, 
-    { 0x3080, 0x0000 }, { 0x3081, 0x0000 }, { 0x3082, 0x0000 }, { 0x3083, 0x0000 }, 
-    { 0x3084, 0x0000 }, { 0x3085, 0x0000 }, { 0x3086, 0x0000 }, { 0x3087, 0x0000 }, 
-    { 0x3088, 0x0000 }, { 0x3089, 0x0000 }, { 0x308A, 0x0000 }, { 0x308B, 0x0000 }, 
-    { 0x308C, 0x0000 }, { 0x308D, 0x0000 }, { 0x308E, 0x0000 }, { 0x308F, 0x0000 }, 
-    { 0x3090, 0x0000 }, { 0x3091, 0x0000 }, { 0x3092, 0x0000 }, { 0x3093, 0x0000 }, 
-    { 0x3046, 0x3099 }, { 0x3095, 0x0000 }, { 0x3096, 0x0000 }, { 0x3097, 0x0000 }, 
-    { 0x3098, 0x0000 }, { 0x3099, 0x0000 }, { 0x309A, 0x0000 }, { 0x0020, 0x3099 }, 
-    { 0x0020, 0x309A }, { 0x309D, 0x0000 }, { 0x309D, 0x3099 }, { 0x309F, 0x0000 }
+  const UCS2 Hiragana3040::m_decompStr[][2] = {
+    { 0x3040u, 0x0000u }, { 0x3041u, 0x0000u }, { 0x3042u, 0x0000u }, { 0x3043u, 0x0000u }, 
+    { 0x3044u, 0x0000u }, { 0x3045u, 0x0000u }, { 0x3046u, 0x0000u }, { 0x3047u, 0x0000u }, 
+    { 0x3048u, 0x0000u }, { 0x3049u, 0x0000u }, { 0x304Au, 0x0000u }, { 0x304Bu, 0x0000u }, 
+    { 0x304Bu, 0x3099u }, { 0x304Du, 0x0000u }, { 0x304Du, 0x3099u }, { 0x304Fu, 0x0000u }, 
+    { 0x304Fu, 0x3099u }, { 0x3051u, 0x0000u }, { 0x3051u, 0x3099u }, { 0x3053u, 0x0000u }, 
+    { 0x3053u, 0x3099u }, { 0x3055u, 0x0000u }, { 0x3055u, 0x3099u }, { 0x3057u, 0x0000u }, 
+    { 0x3057u, 0x3099u }, { 0x3059u, 0x0000u }, { 0x3059u, 0x3099u }, { 0x305Bu, 0x0000u }, 
+    { 0x305Bu, 0x3099u }, { 0x305Du, 0x0000u }, { 0x305Du, 0x3099u }, { 0x305Fu, 0x0000u }, 
+    { 0x305Fu, 0x3099u }, { 0x3061u, 0x0000u }, { 0x3061u, 0x3099u }, { 0x3063u, 0x0000u }, 
+    { 0x3064u, 0x0000u }, { 0x3064u, 0x3099u }, { 0x3066u, 0x0000u }, { 0x3066u, 0x3099u }, 
+    { 0x3068u, 0x0000u }, { 0x3068u, 0x3099u }, { 0x306Au, 0x0000u }, { 0x306Bu, 0x0000u }, 
+    { 0x306Cu, 0x0000u }, { 0x306Du, 0x0000u }, { 0x306Eu, 0x0000u }, { 0x306Fu, 0x0000u }, 
+    { 0x306Fu, 0x3099u }, { 0x306Fu, 0x309Au }, { 0x3072u, 0x0000u }, { 0x3072u, 0x3099u }, 
+    { 0x3072u, 0x309Au }, { 0x3075u, 0x0000u }, { 0x3075u, 0x3099u }, { 0x3075u, 0x309Au }, 
+    { 0x3078u, 0x0000u }, { 0x3078u, 0x3099u }, { 0x3078u, 0x309Au }, { 0x307Bu, 0x0000u }, 
+    { 0x307Bu, 0x3099u }, { 0x307Bu, 0x309Au }, { 0x307Eu, 0x0000u }, { 0x307Fu, 0x0000u }, 
+    { 0x3080u, 0x0000u }, { 0x3081u, 0x0000u }, { 0x3082u, 0x0000u }, { 0x3083u, 0x0000u }, 
+    { 0x3084u, 0x0000u }, { 0x3085u, 0x0000u }, { 0x3086u, 0x0000u }, { 0x3087u, 0x0000u }, 
+    { 0x3088u, 0x0000u }, { 0x3089u, 0x0000u }, { 0x308Au, 0x0000u }, { 0x308Bu, 0x0000u }, 
+    { 0x308Cu, 0x0000u }, { 0x308Du, 0x0000u }, { 0x308Eu, 0x0000u }, { 0x308Fu, 0x0000u }, 
+    { 0x3090u, 0x0000u }, { 0x3091u, 0x0000u }, { 0x3092u, 0x0000u }, { 0x3093u, 0x0000u }, 
+    { 0x3046u, 0x3099u }, { 0x3095u, 0x0000u }, { 0x3096u, 0x0000u }, { 0x3097u, 0x0000u }, 
+    { 0x3098u, 0x0000u }, { 0x3099u, 0x0000u }, { 0x309Au, 0x0000u }, { 0x0020u, 0x3099u }, 
+    { 0x0020u, 0x309Au }, { 0x309Du, 0x0000u }, { 0x309Du, 0x3099u }, { 0x309Fu, 0x0000u }
   };
 
-  const unsigned char Hiragana3040::_lb[] = {
+  const unsigned char Hiragana3040::m_lb[] = {
     LB_NS, LB_NS, LB_ID, LB_NS, LB_ID, LB_NS, LB_ID, LB_NS, 
     LB_ID, LB_NS, LB_ID, LB_ID, LB_ID, LB_ID, LB_ID, LB_ID, 
     LB_ID, LB_ID, LB_ID, LB_ID, LB_ID, LB_ID, LB_ID, LB_ID, 
@@ -570,110 +415,15 @@ namespace Babylon {
     LB_NS, LB_CM, LB_CM, LB_NS, LB_NS, LB_NS, LB_NS, LB_NS
   };
 
-    const bool Hiragana3040::_Combining[] = {
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 1, 1, 0, 0, 0, 0, 0
-    };
+    const bitset<96> Hiragana3040::m_Composite(string("000000000000000000000000000000000011011011011011000000000000000000000000000000000000000000000000"));
 
-    const bool Hiragana3040::_Non_spacing[] = {
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 1, 1, 0, 0, 0, 0, 0
-    };
+    const bitset<96> Hiragana3040::m_Alphabetic(string("000000000001111111111111111111111111111111111111111111111111111111111111111111111111111111111110"));
 
-    const bool Hiragana3040::_Composite[] = {
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 1, 0, 1, 0, 
-        1, 0, 1, 0, 1, 0, 1, 0, 
-        1, 0, 1, 0, 1, 0, 1, 0, 
-        1, 0, 1, 0, 0, 1, 0, 1, 
-        0, 1, 0, 0, 0, 0, 0, 0, 
-        1, 1, 0, 1, 1, 0, 1, 1, 
-        0, 1, 1, 0, 1, 1, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 1, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 1, 0
-    };
+    const bitset<96> Hiragana3040::m_Diacritic(string("000111100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"));
 
-    const bool Hiragana3040::_Alphabetic[] = {
-        0, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
+    const bitset<96> Hiragana3040::m_Extender(string("011000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"));
 
-    const bool Hiragana3040::_Diacritic[] = {
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 1, 1, 1, 1, 0, 0, 0
-    };
-
-    const bool Hiragana3040::_Extender[] = {
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 1, 1, 0
-    };
-
-    const bool Hiragana3040::_Identifier_Part[] = {
-        0, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 0, 0, 0, 
-        0, 1, 1, 0, 0, 1, 1, 0
-    };
+    const bitset<96> Hiragana3040::m_Identifier_Part_Not_Cf(string("011001100001111111111111111111111111111111111111111111111111111111111111111111111111111111111110"));
 
 }; // namespace Babylon
 

@@ -41,7 +41,7 @@ public:
   virtual void draw(Warsaw::DrawTraversal_ptr);
   virtual void request(Warsaw::Graphic::Requisition &);
   
-  void get_text(Unicode::String &); 
+  void get_text(Babylon::String &); 
   unsigned long get_length();
 protected:
   Warsaw::Coord _width, _height;

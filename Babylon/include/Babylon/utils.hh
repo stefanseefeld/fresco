@@ -52,27 +52,27 @@ inline ostream & operator << (ostream & out, const Babylon::String & us) {
 // The relational operators look at the unicode values
 // ONLY! So semantically identical characters will not be
 // recognized.
-bool operator == (const Babylon::Char & lhs, const Babylon::Char & rhs) {
+inline bool operator == (const Babylon::Char & lhs, const Babylon::Char & rhs) {
     return lhs.equal(rhs);
 }
 
-bool operator != (const Babylon::Char & lhs, const Babylon::Char & rhs) {
+inline bool operator != (const Babylon::Char & lhs, const Babylon::Char & rhs) {
     return ! lhs.equal(rhs);
 }
 
-bool operator < (const Babylon::Char & lhs, const Babylon::Char & rhs) {
+inline bool operator < (const Babylon::Char & lhs, const Babylon::Char & rhs) {
     return lhs.less(rhs);
 }
 
-bool operator >	(const Babylon::Char & lhs, const Babylon::Char & rhs) {
+inline bool operator >	(const Babylon::Char & lhs, const Babylon::Char & rhs) {
     return !rhs.less(lhs);
 }
 
-bool operator <= (const Babylon::Char & lhs, const Babylon::Char & rhs) {
-    return !rhs.less(rhs);
+inline bool operator <= (const Babylon::Char & lhs, const Babylon::Char & rhs) {
+    return !rhs.less(lhs);
 }
 
-bool operator >= (const Babylon::Char & lhs, const Babylon::Char & rhs) {
+inline bool operator >= (const Babylon::Char & lhs, const Babylon::Char & rhs) {
     return !lhs.less(rhs);
 }
 

@@ -48,12 +48,12 @@ DocDemo::DocDemo(Application *a)
       string buf;
       getline(ifs, buf);
       Graphic_var line;
-      if (buf.length())	line = text->chunk(Unicode::toCORBA(Unicode::String(buf)));
+      if (buf.length())	line = text->chunk(Unicode::to_CORBA(Babylon::String(buf)));
       else line = text->strut();
       column->append_graphic(line);
     }
   Controller_var page = widget->scrollable(Graphic_var(tool->rgb(column, 0., 0., .0)));
   Controller_var root = tool->group(Graphic_var(layout->fixed_size(page, 3000., 2000.)));
   root->append_controller(page);
-  application->append(root, Unicode::String("multiline text demo"));
+  application->append(root, Babylon::String("multiline text demo"));
 };

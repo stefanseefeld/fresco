@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Wed,  6 Dec 2000 23:23:02 +0100.
+ * ftp.unicode.org on Mon,  8 Jan 2001 23:31:13 +0100.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -25,6 +25,7 @@
 
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
+#include <bitset>
 #include <map>
 
 namespace Babylon {
@@ -35,13 +36,13 @@ namespace Babylon {
     };
 
     TamilB80() {
-      _first_letter = 0xB80;
-      _last_letter  = 0xBFF;
-      // _version="3.0.1" // Not yet supported!
-      _composeMap[0x0B920BD7] = 0x0B94;
-      _composeMap[0x0BC60BBE] = 0x0BCA;
-      _composeMap[0x0BC60BD7] = 0x0BCC;
-      _composeMap[0x0BC70BBE] = 0x0BCB;
+      m_first_letter = 0xB80;
+      m_last_letter  = 0xBFF;
+      // m_version="3.0.1" // Not yet supported!
+      m_composeMap[make_pair(0x00000B92, 0x00000BD7)] = 0x0B94;
+      m_composeMap[make_pair(0x00000BC6, 0x00000BBE)] = 0x0BCA;
+      m_composeMap[make_pair(0x00000BC6, 0x00000BD7)] = 0x0BCC;
+      m_composeMap[make_pair(0x00000BC7, 0x00000BBE)] = 0x0BCB;
 
     }
 
@@ -50,11 +51,11 @@ namespace Babylon {
     }
 
     UCS4 firstLetter() {
-      return _first_letter;
+      return m_first_letter;
     }
 
     UCS4 lastLetter() {
-      return _last_letter;
+      return m_last_letter;
     }
 
     bool is_undef_block() const {
@@ -68,31 +69,19 @@ namespace Babylon {
     }
 
     bool is_defined(const UCS4 uc) const {
-      return (_is_defined[uc - _first_letter]);
+      return (m_is_defined.test(uc - m_first_letter));
     }
 
     UCS4 uppercase(const UCS4 uc) const {
       return uc;
     }
 
-    bool is_Uppercase(const UCS4 uc) const {
-      return category(uc) == CAT_Lu;
-    }
-
     UCS4 lowercase(const UCS4 uc) const {
       return uc;
     }
 
-    bool is_Lowercase(const UCS4 uc) const {
-      return category(uc) == CAT_Ll;
-    }
-
     UCS4 titlecase(const UCS4 uc) const {
       return uc;
-    }
-
-    bool is_Titlecase(const UCS4 uc) const {
-      return category(uc) == CAT_Lt;
     }
 
     int dec_digit_value(const UCS4 uc) const {
@@ -269,19 +258,19 @@ namespace Babylon {
     Gen_Cat category(const UCS4 uc) const {
       if (!is_defined(uc))
         return CAT_MAX;
-      return Babylon::Gen_Cat(TamilB80::_cat[uc - _first_letter]);
+      return Babylon::Gen_Cat(TamilB80::_cat[uc - m_first_letter]);
     }
 
     Can_Comb_Class comb_class(const UCS4 uc) const {
       if (!is_defined(uc))
         return CC_MAX;
-      return Can_Comb_Class(TamilB80::_comb_cl[uc - _first_letter]);
+      return Can_Comb_Class(TamilB80::_comb_cl[uc - m_first_letter]);
     }
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
         return BIDIR_MAX;
-      return Babylon::Bidir_Props(TamilB80::_bidir[uc - _first_letter]);
+      return Babylon::Bidir_Props(TamilB80::m_bidir[uc - m_first_letter]);
     }
 
     Char_Decomp decomp_type(const UCS4 uc) const {
@@ -293,9 +282,9 @@ namespace Babylon {
     UTF32_string decompose(const UCS4 uc) const {
       Babylon::UTF32_string us;
       us.resize(2);
-      us[0] = TamilB80::_decompStr[uc - _first_letter][0];
-      us[1] = TamilB80::_decompStr[uc - _first_letter][1];
-      if (us[1] == 0x0000) {
+      us[0] = TamilB80::m_decompStr[uc - m_first_letter][0];
+      us[1] = TamilB80::m_decompStr[uc - m_first_letter][1];
+      if (us[1] == 0x0000u) {
         us.resize(1);
       }
 
@@ -309,7 +298,7 @@ namespace Babylon {
     Line_Break linebreak(const UCS4 uc) const {
       if (!is_defined(uc))
         return LB_MAX;
-      return Babylon::Line_Break(TamilB80::_lb[uc - _first_letter]);
+      return Babylon::Line_Break(TamilB80::m_lb[uc - m_first_letter]);
     }
 
     EA_Width EA_width(const UCS4 uc) const {
@@ -318,12 +307,8 @@ namespace Babylon {
       return Babylon::EA_Width(EA_WIDTH_N);
     }
 
-    UCS4 compose (const UCS4 starter, const UCS4 last) {
-      return _composeMap[starter << 16 | last];
-    }
-
-    bool is_Zero_width(const UCS4 uc) const {
-      return 0;
+    UCS4 compose (const UCS4 start, const UCS4 last) {
+      return m_composeMap[make_pair(start, last)];
     }
 
     bool is_White_space(const UCS4 uc) const {
@@ -331,6 +316,10 @@ namespace Babylon {
     }
 
     bool is_Non_break(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Format_Control(const UCS4 uc) const {
       return 0;
     }
 
@@ -342,7 +331,7 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Format_Control(const UCS4 uc) const {
+    bool is_Other_Format_Control(const UCS4 uc) const {
       return 0;
     }
 
@@ -366,24 +355,8 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Paired_Punctuation(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Left_of_Pair(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Combining(const UCS4 uc) const {
-      return TamilB80::_Combining[uc - _first_letter];
-    }
-
-    bool is_Non_spacing(const UCS4 uc) const {
-      return TamilB80::_Non_spacing[uc - _first_letter];
-    }
-
     bool is_Composite(const UCS4 uc) const {
-      return TamilB80::_Composite[uc - _first_letter];
+      return m_Composite.test(uc - m_first_letter);
     }
 
     bool is_Hex_Digit(const UCS4 uc) const {
@@ -391,30 +364,26 @@ namespace Babylon {
     }
 
     bool is_Alphabetic(const UCS4 uc) const {
-      return TamilB80::_Alphabetic[uc - _first_letter];
+      return m_Alphabetic.test(uc - m_first_letter);
     }
 
     bool is_Diacritic(const UCS4 uc) const {
-      return TamilB80::_Diacritic[uc - _first_letter];
+      return 0;
     }
 
     bool is_Extender(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Identifier_Part(const UCS4 uc) const {
-      return TamilB80::_Identifier_Part[uc - _first_letter];
+    bool is_Identifier_Part_Not_Cf(const UCS4 uc) const {
+      return m_Identifier_Part_Not_Cf.test(uc - m_first_letter);
     }
 
-    bool is_Ignorable_Control(const UCS4 uc) const {
+    bool is_Other_Uppercase(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Bidi_Hebrew_Right_to_Left(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Bidi_Arabic_Right_to_Left(const UCS4 uc) const {
+    bool is_Other_Lowercase(const UCS4 uc) const {
       return 0;
     }
 
@@ -426,7 +395,7 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Not_a_Character(const UCS4 uc) const {
+    bool is_Noncharacter_Code_Point(const UCS4 uc) const {
       return ((uc & 0xFFFE) == 0xFFFE);
     }
 
@@ -442,157 +411,28 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Space(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Zs);
-    }
-
-    bool is_ISO_Control(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Cc);
-    }
-
-    bool is_Punctuation(const UCS4 uc) const {
-      return (is_defined(uc) && (category(uc) == CAT_Pc ||
-                                 category(uc) == CAT_Pd ||
-                                 category(uc) == CAT_Ps ||
-                                 category(uc) == CAT_Pe ||
-                                 category(uc) == CAT_Pi ||
-                                 category(uc) == CAT_Pf ||
-                                 category(uc) == CAT_Po)
-             );
-    }
-
-    bool is_Line_Separator(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Zl);
-    }
-
-    bool is_Paragraph_Separator(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Zp);
-    }
-
-    bool is_Currency_Symbol(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Sc);
-    }
-
-    bool is_Bidi_Left_to_Right(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_L;
-    }
-
-    bool is_Bidi_European_Digit(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_EN;
-    }
-
-    bool is_Bidi_Eur_Num_Separator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_ES;
-    }
-
-    bool is_Bidi_Eur_Num_Terminator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_ET;
-    }
-
-    bool is_Bidi_Arabic_Digit(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_AN;
-    }
-
-    bool is_Bidi_Common_Separator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_CS;
-    }
-
-    bool is_Bidi_Block_Separator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_B;
-    }
-
-    bool is_Bidi_Segment_Separator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_S;
-    }
-
-    bool is_Bidi_Whitespace(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_WS;
-    }
-
-    bool is_Bidi_Non_spacing_Mark(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_NSM;
-    }
-
-    bool is_Bidi_Boundary_Neutral(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_BN;
-    }
-
-    bool is_Bidi_PDF(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_PDF;
-    }
-
-    bool is_Bidi_Embedding_or_Override(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_LRE ||
-             bidir_props(uc) == BIDIR_RLE ||
-             bidir_props(uc) == BIDIR_LRO ||
-             bidir_props(uc) == BIDIR_RLO;
-    }
-
-    bool is_Bidi_LRE(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_LRE;
-    }
-
-    bool is_Bidi_RLE(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_RLE;
-    }
-
-    bool is_Bidi_LRO(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_LRO;
-    }
-
-    bool is_Bidi_RLO(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_RLO;
-    }
-
-    bool is_Bidi_Other_Neutral(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_ON;
-    }
-
-    bool is_Unassigned_Code_Value(const UCS4 uc) const {
-      return !is_defined(uc) && !is_Not_a_Character(uc);
-    }
-
 
   private:
     // functions
     TamilB80(const TamilB80 &) {}
 
-    Babylon::UCS4 _first_letter;
-    Babylon::UCS4 _last_letter;
-    static const bool _is_defined[128];
+    Babylon::UCS4 m_first_letter;
+    Babylon::UCS4 m_last_letter;
+    // Babylon::UCS4_string m_version;
+    static const bitset<128> m_is_defined;
     static const unsigned char _cat[128];
     static const unsigned char _comb_cl[128];
-    static const unsigned char _bidir[128];
-    static const UCS2 _decompStr[128][2];
-    static const unsigned char _lb[128];
-    map<UCS4, UCS4> _composeMap;
-    static const bool _Combining[128];
-    static const bool _Non_spacing[128];
-    static const bool _Composite[128];
-    static const bool _Alphabetic[128];
-    static const bool _Diacritic[128];
-    static const bool _Identifier_Part[128];
+    static const unsigned char m_bidir[128];
+    static const UCS2 m_decompStr[128][2];
+    static const unsigned char m_lb[128];
+    map<pair<UCS4, UCS4>, UCS4> m_composeMap;
+    static const bitset<128> m_Composite;
+    static const bitset<128> m_Alphabetic;
+    static const bitset<128> m_Identifier_Part_Not_Cf;
 
   }; // class TamilB80
 
-  const bool TamilB80::_is_defined[] = {
-    0, 0, 1, 1, 0, 1, 1, 1, 
-    1, 1, 1, 0, 0, 0, 1, 1, 
-    1, 0, 1, 1, 1, 1, 0, 0, 
-    0, 1, 1, 0, 1, 0, 1, 1, 
-    0, 0, 0, 1, 1, 0, 0, 0, 
-    1, 1, 1, 0, 0, 0, 1, 1, 
-    1, 1, 1, 1, 1, 1, 0, 1, 
-    1, 1, 0, 0, 0, 0, 1, 1, 
-    1, 1, 1, 0, 0, 0, 1, 1, 
-    1, 0, 1, 1, 1, 1, 0, 0, 
-    0, 0, 0, 0, 0, 0, 0, 1, 
-    0, 0, 0, 0, 0, 0, 0, 0, 
-    0, 0, 0, 0, 0, 0, 0, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 0, 0, 0, 0, 0, 
-    0, 0, 0, 0, 0, 0, 0, 0
-  };
+    const bitset<128> TamilB80::m_is_defined(string("00000000000001111111111110000000000000001000000000111101110001111100001110111111110001110001100011010110001111011100011111101100"));
 
   const unsigned char TamilB80::_cat[] = {
     CAT_Mn, CAT_Mn, CAT_Mn, CAT_Mc, CAT_Mn, CAT_Lo, CAT_Lo, CAT_Lo, 
@@ -632,7 +472,7 @@ namespace Babylon {
     0, 0, 0, 0, 0, 0, 0, 0
   };
 
-  const unsigned char TamilB80::_bidir[] = {
+  const unsigned char TamilB80::m_bidir[] = {
     BIDIR_NSM, BIDIR_NSM, BIDIR_NSM, BIDIR_L, BIDIR_NSM, BIDIR_L, BIDIR_L, BIDIR_L, 
     BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_NSM, BIDIR_NSM, BIDIR_NSM, BIDIR_L, BIDIR_L, 
     BIDIR_L, BIDIR_NSM, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_L, BIDIR_NSM, BIDIR_NSM, 
@@ -651,42 +491,42 @@ namespace Babylon {
     BIDIR_NSM, BIDIR_NSM, BIDIR_NSM, BIDIR_NSM, BIDIR_NSM, BIDIR_NSM, BIDIR_NSM, BIDIR_NSM
   };
 
-  const UCS2 TamilB80::_decompStr[][2] = {
-    { 0x0B80, 0x0000 }, { 0x0B81, 0x0000 }, { 0x0B82, 0x0000 }, { 0x0B83, 0x0000 }, 
-    { 0x0B84, 0x0000 }, { 0x0B85, 0x0000 }, { 0x0B86, 0x0000 }, { 0x0B87, 0x0000 }, 
-    { 0x0B88, 0x0000 }, { 0x0B89, 0x0000 }, { 0x0B8A, 0x0000 }, { 0x0B8B, 0x0000 }, 
-    { 0x0B8C, 0x0000 }, { 0x0B8D, 0x0000 }, { 0x0B8E, 0x0000 }, { 0x0B8F, 0x0000 }, 
-    { 0x0B90, 0x0000 }, { 0x0B91, 0x0000 }, { 0x0B92, 0x0000 }, { 0x0B93, 0x0000 }, 
-    { 0x0B92, 0x0BD7 }, { 0x0B95, 0x0000 }, { 0x0B96, 0x0000 }, { 0x0B97, 0x0000 }, 
-    { 0x0B98, 0x0000 }, { 0x0B99, 0x0000 }, { 0x0B9A, 0x0000 }, { 0x0B9B, 0x0000 }, 
-    { 0x0B9C, 0x0000 }, { 0x0B9D, 0x0000 }, { 0x0B9E, 0x0000 }, { 0x0B9F, 0x0000 }, 
-    { 0x0BA0, 0x0000 }, { 0x0BA1, 0x0000 }, { 0x0BA2, 0x0000 }, { 0x0BA3, 0x0000 }, 
-    { 0x0BA4, 0x0000 }, { 0x0BA5, 0x0000 }, { 0x0BA6, 0x0000 }, { 0x0BA7, 0x0000 }, 
-    { 0x0BA8, 0x0000 }, { 0x0BA9, 0x0000 }, { 0x0BAA, 0x0000 }, { 0x0BAB, 0x0000 }, 
-    { 0x0BAC, 0x0000 }, { 0x0BAD, 0x0000 }, { 0x0BAE, 0x0000 }, { 0x0BAF, 0x0000 }, 
-    { 0x0BB0, 0x0000 }, { 0x0BB1, 0x0000 }, { 0x0BB2, 0x0000 }, { 0x0BB3, 0x0000 }, 
-    { 0x0BB4, 0x0000 }, { 0x0BB5, 0x0000 }, { 0x0BB6, 0x0000 }, { 0x0BB7, 0x0000 }, 
-    { 0x0BB8, 0x0000 }, { 0x0BB9, 0x0000 }, { 0x0BBA, 0x0000 }, { 0x0BBB, 0x0000 }, 
-    { 0x0BBC, 0x0000 }, { 0x0BBD, 0x0000 }, { 0x0BBE, 0x0000 }, { 0x0BBF, 0x0000 }, 
-    { 0x0BC0, 0x0000 }, { 0x0BC1, 0x0000 }, { 0x0BC2, 0x0000 }, { 0x0BC3, 0x0000 }, 
-    { 0x0BC4, 0x0000 }, { 0x0BC5, 0x0000 }, { 0x0BC6, 0x0000 }, { 0x0BC7, 0x0000 }, 
-    { 0x0BC8, 0x0000 }, { 0x0BC9, 0x0000 }, { 0x0BC6, 0x0BBE }, { 0x0BC7, 0x0BBE }, 
-    { 0x0BC6, 0x0BD7 }, { 0x0BCD, 0x0000 }, { 0x0BCE, 0x0000 }, { 0x0BCF, 0x0000 }, 
-    { 0x0BD0, 0x0000 }, { 0x0BD1, 0x0000 }, { 0x0BD2, 0x0000 }, { 0x0BD3, 0x0000 }, 
-    { 0x0BD4, 0x0000 }, { 0x0BD5, 0x0000 }, { 0x0BD6, 0x0000 }, { 0x0BD7, 0x0000 }, 
-    { 0x0BD8, 0x0000 }, { 0x0BD9, 0x0000 }, { 0x0BDA, 0x0000 }, { 0x0BDB, 0x0000 }, 
-    { 0x0BDC, 0x0000 }, { 0x0BDD, 0x0000 }, { 0x0BDE, 0x0000 }, { 0x0BDF, 0x0000 }, 
-    { 0x0BE0, 0x0000 }, { 0x0BE1, 0x0000 }, { 0x0BE2, 0x0000 }, { 0x0BE3, 0x0000 }, 
-    { 0x0BE4, 0x0000 }, { 0x0BE5, 0x0000 }, { 0x0BE6, 0x0000 }, { 0x0BE7, 0x0000 }, 
-    { 0x0BE8, 0x0000 }, { 0x0BE9, 0x0000 }, { 0x0BEA, 0x0000 }, { 0x0BEB, 0x0000 }, 
-    { 0x0BEC, 0x0000 }, { 0x0BED, 0x0000 }, { 0x0BEE, 0x0000 }, { 0x0BEF, 0x0000 }, 
-    { 0x0BF0, 0x0000 }, { 0x0BF1, 0x0000 }, { 0x0BF2, 0x0000 }, { 0x0BF3, 0x0000 }, 
-    { 0x0BF4, 0x0000 }, { 0x0BF5, 0x0000 }, { 0x0BF6, 0x0000 }, { 0x0BF7, 0x0000 }, 
-    { 0x0BF8, 0x0000 }, { 0x0BF9, 0x0000 }, { 0x0BFA, 0x0000 }, { 0x0BFB, 0x0000 }, 
-    { 0x0BFC, 0x0000 }, { 0x0BFD, 0x0000 }, { 0x0BFE, 0x0000 }, { 0x0BFF, 0x0000 }
+  const UCS2 TamilB80::m_decompStr[][2] = {
+    { 0x0B80u, 0x0000u }, { 0x0B81u, 0x0000u }, { 0x0B82u, 0x0000u }, { 0x0B83u, 0x0000u }, 
+    { 0x0B84u, 0x0000u }, { 0x0B85u, 0x0000u }, { 0x0B86u, 0x0000u }, { 0x0B87u, 0x0000u }, 
+    { 0x0B88u, 0x0000u }, { 0x0B89u, 0x0000u }, { 0x0B8Au, 0x0000u }, { 0x0B8Bu, 0x0000u }, 
+    { 0x0B8Cu, 0x0000u }, { 0x0B8Du, 0x0000u }, { 0x0B8Eu, 0x0000u }, { 0x0B8Fu, 0x0000u }, 
+    { 0x0B90u, 0x0000u }, { 0x0B91u, 0x0000u }, { 0x0B92u, 0x0000u }, { 0x0B93u, 0x0000u }, 
+    { 0x0B92u, 0x0BD7u }, { 0x0B95u, 0x0000u }, { 0x0B96u, 0x0000u }, { 0x0B97u, 0x0000u }, 
+    { 0x0B98u, 0x0000u }, { 0x0B99u, 0x0000u }, { 0x0B9Au, 0x0000u }, { 0x0B9Bu, 0x0000u }, 
+    { 0x0B9Cu, 0x0000u }, { 0x0B9Du, 0x0000u }, { 0x0B9Eu, 0x0000u }, { 0x0B9Fu, 0x0000u }, 
+    { 0x0BA0u, 0x0000u }, { 0x0BA1u, 0x0000u }, { 0x0BA2u, 0x0000u }, { 0x0BA3u, 0x0000u }, 
+    { 0x0BA4u, 0x0000u }, { 0x0BA5u, 0x0000u }, { 0x0BA6u, 0x0000u }, { 0x0BA7u, 0x0000u }, 
+    { 0x0BA8u, 0x0000u }, { 0x0BA9u, 0x0000u }, { 0x0BAAu, 0x0000u }, { 0x0BABu, 0x0000u }, 
+    { 0x0BACu, 0x0000u }, { 0x0BADu, 0x0000u }, { 0x0BAEu, 0x0000u }, { 0x0BAFu, 0x0000u }, 
+    { 0x0BB0u, 0x0000u }, { 0x0BB1u, 0x0000u }, { 0x0BB2u, 0x0000u }, { 0x0BB3u, 0x0000u }, 
+    { 0x0BB4u, 0x0000u }, { 0x0BB5u, 0x0000u }, { 0x0BB6u, 0x0000u }, { 0x0BB7u, 0x0000u }, 
+    { 0x0BB8u, 0x0000u }, { 0x0BB9u, 0x0000u }, { 0x0BBAu, 0x0000u }, { 0x0BBBu, 0x0000u }, 
+    { 0x0BBCu, 0x0000u }, { 0x0BBDu, 0x0000u }, { 0x0BBEu, 0x0000u }, { 0x0BBFu, 0x0000u }, 
+    { 0x0BC0u, 0x0000u }, { 0x0BC1u, 0x0000u }, { 0x0BC2u, 0x0000u }, { 0x0BC3u, 0x0000u }, 
+    { 0x0BC4u, 0x0000u }, { 0x0BC5u, 0x0000u }, { 0x0BC6u, 0x0000u }, { 0x0BC7u, 0x0000u }, 
+    { 0x0BC8u, 0x0000u }, { 0x0BC9u, 0x0000u }, { 0x0BC6u, 0x0BBEu }, { 0x0BC7u, 0x0BBEu }, 
+    { 0x0BC6u, 0x0BD7u }, { 0x0BCDu, 0x0000u }, { 0x0BCEu, 0x0000u }, { 0x0BCFu, 0x0000u }, 
+    { 0x0BD0u, 0x0000u }, { 0x0BD1u, 0x0000u }, { 0x0BD2u, 0x0000u }, { 0x0BD3u, 0x0000u }, 
+    { 0x0BD4u, 0x0000u }, { 0x0BD5u, 0x0000u }, { 0x0BD6u, 0x0000u }, { 0x0BD7u, 0x0000u }, 
+    { 0x0BD8u, 0x0000u }, { 0x0BD9u, 0x0000u }, { 0x0BDAu, 0x0000u }, { 0x0BDBu, 0x0000u }, 
+    { 0x0BDCu, 0x0000u }, { 0x0BDDu, 0x0000u }, { 0x0BDEu, 0x0000u }, { 0x0BDFu, 0x0000u }, 
+    { 0x0BE0u, 0x0000u }, { 0x0BE1u, 0x0000u }, { 0x0BE2u, 0x0000u }, { 0x0BE3u, 0x0000u }, 
+    { 0x0BE4u, 0x0000u }, { 0x0BE5u, 0x0000u }, { 0x0BE6u, 0x0000u }, { 0x0BE7u, 0x0000u }, 
+    { 0x0BE8u, 0x0000u }, { 0x0BE9u, 0x0000u }, { 0x0BEAu, 0x0000u }, { 0x0BEBu, 0x0000u }, 
+    { 0x0BECu, 0x0000u }, { 0x0BEDu, 0x0000u }, { 0x0BEEu, 0x0000u }, { 0x0BEFu, 0x0000u }, 
+    { 0x0BF0u, 0x0000u }, { 0x0BF1u, 0x0000u }, { 0x0BF2u, 0x0000u }, { 0x0BF3u, 0x0000u }, 
+    { 0x0BF4u, 0x0000u }, { 0x0BF5u, 0x0000u }, { 0x0BF6u, 0x0000u }, { 0x0BF7u, 0x0000u }, 
+    { 0x0BF8u, 0x0000u }, { 0x0BF9u, 0x0000u }, { 0x0BFAu, 0x0000u }, { 0x0BFBu, 0x0000u }, 
+    { 0x0BFCu, 0x0000u }, { 0x0BFDu, 0x0000u }, { 0x0BFEu, 0x0000u }, { 0x0BFFu, 0x0000u }
   };
 
-  const unsigned char TamilB80::_lb[] = {
+  const unsigned char TamilB80::m_lb[] = {
     LB_CM, LB_CM, LB_CM, LB_CM, LB_CM, LB_AL, LB_AL, LB_AL, 
     LB_AL, LB_AL, LB_AL, LB_CM, LB_CM, LB_CM, LB_AL, LB_AL, 
     LB_AL, LB_CM, LB_AL, LB_AL, LB_AL, LB_AL, LB_CM, LB_CM, 
@@ -705,119 +545,11 @@ namespace Babylon {
     LB_CM, LB_CM, LB_CM, LB_CM, LB_CM, LB_CM, LB_CM, LB_CM
   };
 
-    const bool TamilB80::_Combining[] = {
-        0, 0, 1, 1, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 1, 1, 
-        1, 1, 1, 0, 0, 0, 1, 1, 
-        1, 0, 1, 1, 1, 1, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 1, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
+    const bitset<128> TamilB80::m_Composite(string("00000000000000000000000000000000000000000000000000011100000000000000000000000000000000000000000000000000000000000000000000000000"));
 
-    const bool TamilB80::_Non_spacing[] = {
-        0, 0, 1, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        1, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 1, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
+    const bitset<128> TamilB80::m_Alphabetic(string("00000000000000000000000000000000000000000000000000011101110001101100001110111111110001110001100011000110001111011100011111100000"));
 
-    const bool TamilB80::_Composite[] = {
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 1, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 1, 1, 1, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
-
-    const bool TamilB80::_Alphabetic[] = {
-        0, 0, 1, 1, 0, 1, 1, 1, 
-        1, 1, 1, 0, 0, 0, 1, 1, 
-        1, 0, 1, 1, 1, 1, 0, 0, 
-        0, 1, 1, 0, 1, 0, 1, 1, 
-        0, 0, 0, 1, 1, 0, 0, 0, 
-        1, 1, 1, 0, 0, 0, 1, 1, 
-        1, 1, 1, 1, 1, 1, 0, 1, 
-        1, 1, 0, 0, 0, 0, 1, 1, 
-        1, 1, 1, 0, 0, 0, 1, 1, 
-        1, 0, 1, 1, 1, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 1, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
-
-    const bool TamilB80::_Diacritic[] = {
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 1, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
-
-    const bool TamilB80::_Identifier_Part[] = {
-        0, 0, 1, 1, 0, 1, 1, 1, 
-        1, 1, 1, 0, 0, 0, 1, 1, 
-        1, 0, 1, 1, 1, 1, 0, 0, 
-        0, 1, 1, 0, 1, 0, 1, 1, 
-        0, 0, 0, 1, 1, 0, 0, 0, 
-        1, 1, 1, 0, 0, 0, 1, 1, 
-        1, 1, 1, 1, 1, 1, 0, 1, 
-        1, 1, 0, 0, 0, 0, 1, 1, 
-        1, 1, 1, 0, 0, 0, 1, 1, 
-        1, 0, 1, 1, 1, 1, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 1, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
+    const bitset<128> TamilB80::m_Identifier_Part_Not_Cf(string("00000000000000001111111110000000000000000000000000011101110001101100001110111111110001110001100011000110001111011100011111100000"));
 
 }; // namespace Babylon
 

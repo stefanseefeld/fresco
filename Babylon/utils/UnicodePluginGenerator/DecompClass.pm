@@ -105,7 +105,7 @@ sub function {
   $tmp   .= "        return DECOMP_MAX;\n";
 
   if ($self->{_ATTENTION_NEEDED} == 1) {
-    $tmp .= "      return Babylon::Char_Decomp($bl_name\:\:_decomp\[uc - _first_letter\]);\n";
+    $tmp .= "      return Babylon::Char_Decomp($bl_name\:\:_decomp\[uc - m_first_letter\]);\n";
     $tmp .= "    }\n\n";
     return $tmp;
   } else {

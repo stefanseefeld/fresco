@@ -19,12 +19,12 @@ use Compositions;
 use Block;
 use Prop;
 
-$UCD_File     = "UnicodeData-3.0.1.txt";
-$Block_File   = "Blocks-3.0.1.txt";
-$EA_File      = "EastAsianWidth-3.0.0.txt";
-$LB_File      = "LineBreak-3.0.0.txt";
-$Exclude_File = "CompositionExclusions-3.0.1.txt";
-$Prop_File    = "PropList-3.0.1.txt";
+$UCD_File     = "UnicodeData-3.1.0d3.beta.txt";
+$Block_File   = "Blocks-4d2.beta.txt";
+$EA_File      = "EastAsianWidth-4d2.beta.txt";
+$LB_File      = "LineBreak-6d2.beta.txt";
+$Exclude_File = "CompositionExclusions-3d2.beta.txt";
+$Prop_File    = "PropList-3.1.0d1.beta.txt";
 $Prefix       = "./Unicode/Blocks/";
 
 ############################################################################
@@ -47,7 +47,8 @@ while(<BlockHandle>) {
 close BlockHandle;
 
 # reading data from the files...
-print "  ...properties\n";
+print "  ...compositions\n";
+my $COMP   = Compositions->new($UCD_File, $Exclude_File); print "  ...props\n";
 my $PROPS  = Props->new($Prop_File); print "  ...categories\n";
 my $CAT    = Category->new($UCD_File); print "  ...defines\n";
 my $DEF    = Defined->new($UCD_File); print "  ...combining classes\n";
@@ -63,8 +64,7 @@ my $UPPER  = Upper->new($UCD_File); print "  ...lowercase equivalents\n";
 my $LOWER  = Lower->new($UCD_File); print "  ...titlecase equivalents\n";
 my $TITLE  = Title->new($UCD_File); print "  ...linebreaking properties\n";
 my $LB     = Linebreak->new($LB_File); print "  ...EA width properties\n";
-my $EA     = EAWidth->new($EA_File); print "  ...compositions\n";
-my $COMP   = Compositions->new($UCD_File, $Exclude_File);
+my $EA     = EAWidth->new($EA_File);
 
 print "Creating plugins...\n";
 
@@ -113,6 +113,7 @@ foreach $block (@blocks) {
 
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
+#include <bitset>
 ", $block->filename(), $date;
 
   print PLUGIN $DEF->include($block->start(), $block->end());
@@ -144,9 +145,9 @@ namespace Babylon {
 
   printf PLUGIN "
     %s() {
-      _first_letter = %s;
-      _last_letter  = %s;
-      // _version=\"3.0.1\" // Not yet supported!
+      m_first_letter = %s;
+      m_last_letter  = %s;
+      // m_version=\"3.0.1\" // Not yet supported!
 ", $block->classname(), $block->start_string(), $block->end_string();
 
   print PLUGIN $DEF->init($block->start(), $block->end());
@@ -183,11 +184,11 @@ namespace Babylon {
 
   print PLUGIN "
     UCS4 firstLetter() {
-      return _first_letter;
+      return m_first_letter;
     }
 
     UCS4 lastLetter() {
-      return _last_letter;
+      return m_last_letter;
     }
 
     bool is_undef_block() const {
@@ -248,8 +249,9 @@ namespace Babylon {
     // functions
     %s(const %s &) {}
 
-    Babylon\:\:UCS4 _first_letter;
-    Babylon\:\:UCS4 _last_letter;
+    Babylon\:\:UCS4 m_first_letter;
+    Babylon\:\:UCS4 m_last_letter;
+    // Babylon::UCS4_string m_version;
 ", $block->classname(), $block->classname();
 
   print PLUGIN $DEF->var_def($block->start(), $block->end());

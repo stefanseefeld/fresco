@@ -26,19 +26,19 @@
 #ifndef _Berlin_Unicode_hh
 #define _Berlin_Unicode_hh
 
-#include <Prague/Unicode/Unicode.hh>
+#include <Babylon/Babylon.hh>
 #include <Warsaw/Types.hh>
 
 namespace Unicode {
+    
+    // This is ugly but necessary since Unistring does not
+    // know iterators! So I can't do decent assigment
+    // operators :-(
+    Warsaw::Unistring to_CORBA(const Babylon::String &s);
+    Warsaw::Unichar   to_CORBA(const Babylon::Char c);
 
-  // This is ugly but necessary since Unistring does not
-  // know iterators! So I can't do decent assigment
-  // operators :-(
-  Warsaw::Unistring toCORBA(const Unicode::String &s);
-  Warsaw::Unichar   toCORBA(const Unicode::Char   &c);
-
-  Unicode::String toPrague(const Warsaw::Unistring & us);
-  Unicode::Char   toPrague(const Warsaw::Unichar   & uc);
+    Babylon::String   to_internal(const Warsaw::Unistring & us);
+    Babylon::Char     to_internal(const Warsaw::Unichar uc);
 
 }; // namespace Unicode
 

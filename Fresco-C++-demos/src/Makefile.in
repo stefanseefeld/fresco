@@ -41,7 +41,7 @@ endef
 include $(cdir)/local.mk
 
 CPPFLAGS	+= @CPPFLAGS@
-LIBS		+= -lBerlin -lWarsaw -lPrague @LIBS@
+LIBS		+= -lBerlin -lWarsaw -lBabylon -lPrague @LIBS@
 
 TARGETS		:= demo canvas ggiwrapper # trafo -- doesn't work here. Anyone?
 SRC		:= Application.cc LayoutDemo.cc TextDemo.cc \

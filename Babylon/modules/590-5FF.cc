@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Wed,  6 Dec 2000 23:22:21 +0100.
+ * ftp.unicode.org on Mon,  8 Jan 2001 23:30:57 +0100.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -25,6 +25,7 @@
 
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
+#include <bitset>
 #include <map>
 
 namespace Babylon {
@@ -35,41 +36,41 @@ namespace Babylon {
     };
 
     Hebrew590() {
-      _first_letter = 0x590;
-      _last_letter  = 0x5FF;
-      // _version="3.0.1" // Not yet supported!
-      _composeMap[0x05D005B7] = 0xFB2E;
-      _composeMap[0x05D005B8] = 0xFB2F;
-      _composeMap[0x05D005BC] = 0xFB30;
-      _composeMap[0x05D105BC] = 0xFB31;
-      _composeMap[0x05D105BF] = 0xFB4C;
-      _composeMap[0x05D205BC] = 0xFB32;
-      _composeMap[0x05D305BC] = 0xFB33;
-      _composeMap[0x05D405BC] = 0xFB34;
-      _composeMap[0x05D505B9] = 0xFB4B;
-      _composeMap[0x05D505BC] = 0xFB35;
-      _composeMap[0x05D605BC] = 0xFB36;
-      _composeMap[0x05D805BC] = 0xFB38;
-      _composeMap[0x05D905B4] = 0xFB1D;
-      _composeMap[0x05D905BC] = 0xFB39;
-      _composeMap[0x05DA05BC] = 0xFB3A;
-      _composeMap[0x05DB05BC] = 0xFB3B;
-      _composeMap[0x05DB05BF] = 0xFB4D;
-      _composeMap[0x05DC05BC] = 0xFB3C;
-      _composeMap[0x05DE05BC] = 0xFB3E;
-      _composeMap[0x05E005BC] = 0xFB40;
-      _composeMap[0x05E105BC] = 0xFB41;
-      _composeMap[0x05E305BC] = 0xFB43;
-      _composeMap[0x05E405BC] = 0xFB44;
-      _composeMap[0x05E405BF] = 0xFB4E;
-      _composeMap[0x05E605BC] = 0xFB46;
-      _composeMap[0x05E705BC] = 0xFB47;
-      _composeMap[0x05E805BC] = 0xFB48;
-      _composeMap[0x05E905BC] = 0xFB49;
-      _composeMap[0x05E905C1] = 0xFB2A;
-      _composeMap[0x05E905C2] = 0xFB2B;
-      _composeMap[0x05EA05BC] = 0xFB4A;
-      _composeMap[0x05F205B7] = 0xFB1F;
+      m_first_letter = 0x590;
+      m_last_letter  = 0x5FF;
+      // m_version="3.0.1" // Not yet supported!
+      m_composeMap[make_pair(0x000005D0, 0x000005B7)] = 0xFB2E;
+      m_composeMap[make_pair(0x000005D0, 0x000005B8)] = 0xFB2F;
+      m_composeMap[make_pair(0x000005D0, 0x000005BC)] = 0xFB30;
+      m_composeMap[make_pair(0x000005D1, 0x000005BC)] = 0xFB31;
+      m_composeMap[make_pair(0x000005D1, 0x000005BF)] = 0xFB4C;
+      m_composeMap[make_pair(0x000005D2, 0x000005BC)] = 0xFB32;
+      m_composeMap[make_pair(0x000005D3, 0x000005BC)] = 0xFB33;
+      m_composeMap[make_pair(0x000005D4, 0x000005BC)] = 0xFB34;
+      m_composeMap[make_pair(0x000005D5, 0x000005B9)] = 0xFB4B;
+      m_composeMap[make_pair(0x000005D5, 0x000005BC)] = 0xFB35;
+      m_composeMap[make_pair(0x000005D6, 0x000005BC)] = 0xFB36;
+      m_composeMap[make_pair(0x000005D8, 0x000005BC)] = 0xFB38;
+      m_composeMap[make_pair(0x000005D9, 0x000005B4)] = 0xFB1D;
+      m_composeMap[make_pair(0x000005D9, 0x000005BC)] = 0xFB39;
+      m_composeMap[make_pair(0x000005DA, 0x000005BC)] = 0xFB3A;
+      m_composeMap[make_pair(0x000005DB, 0x000005BC)] = 0xFB3B;
+      m_composeMap[make_pair(0x000005DB, 0x000005BF)] = 0xFB4D;
+      m_composeMap[make_pair(0x000005DC, 0x000005BC)] = 0xFB3C;
+      m_composeMap[make_pair(0x000005DE, 0x000005BC)] = 0xFB3E;
+      m_composeMap[make_pair(0x000005E0, 0x000005BC)] = 0xFB40;
+      m_composeMap[make_pair(0x000005E1, 0x000005BC)] = 0xFB41;
+      m_composeMap[make_pair(0x000005E3, 0x000005BC)] = 0xFB43;
+      m_composeMap[make_pair(0x000005E4, 0x000005BC)] = 0xFB44;
+      m_composeMap[make_pair(0x000005E4, 0x000005BF)] = 0xFB4E;
+      m_composeMap[make_pair(0x000005E6, 0x000005BC)] = 0xFB46;
+      m_composeMap[make_pair(0x000005E7, 0x000005BC)] = 0xFB47;
+      m_composeMap[make_pair(0x000005E8, 0x000005BC)] = 0xFB48;
+      m_composeMap[make_pair(0x000005E9, 0x000005BC)] = 0xFB49;
+      m_composeMap[make_pair(0x000005E9, 0x000005C1)] = 0xFB2A;
+      m_composeMap[make_pair(0x000005E9, 0x000005C2)] = 0xFB2B;
+      m_composeMap[make_pair(0x000005EA, 0x000005BC)] = 0xFB4A;
+      m_composeMap[make_pair(0x000005F2, 0x000005B7)] = 0xFB1F;
 
     }
 
@@ -78,11 +79,11 @@ namespace Babylon {
     }
 
     UCS4 firstLetter() {
-      return _first_letter;
+      return m_first_letter;
     }
 
     UCS4 lastLetter() {
-      return _last_letter;
+      return m_last_letter;
     }
 
     bool is_undef_block() const {
@@ -96,31 +97,19 @@ namespace Babylon {
     }
 
     bool is_defined(const UCS4 uc) const {
-      return (_is_defined[uc - _first_letter]);
+      return (m_is_defined.test(uc - m_first_letter));
     }
 
     UCS4 uppercase(const UCS4 uc) const {
       return uc;
     }
 
-    bool is_Uppercase(const UCS4 uc) const {
-      return category(uc) == CAT_Lu;
-    }
-
     UCS4 lowercase(const UCS4 uc) const {
       return uc;
     }
 
-    bool is_Lowercase(const UCS4 uc) const {
-      return category(uc) == CAT_Ll;
-    }
-
     UCS4 titlecase(const UCS4 uc) const {
       return uc;
-    }
-
-    bool is_Titlecase(const UCS4 uc) const {
-      return category(uc) == CAT_Lt;
     }
 
     int dec_digit_value(const UCS4 uc) const {
@@ -150,19 +139,19 @@ namespace Babylon {
     Gen_Cat category(const UCS4 uc) const {
       if (!is_defined(uc))
         return CAT_MAX;
-      return Babylon::Gen_Cat(Hebrew590::_cat[uc - _first_letter]);
+      return Babylon::Gen_Cat(Hebrew590::_cat[uc - m_first_letter]);
     }
 
     Can_Comb_Class comb_class(const UCS4 uc) const {
       if (!is_defined(uc))
         return CC_MAX;
-      return Can_Comb_Class(Hebrew590::_comb_cl[uc - _first_letter]);
+      return Can_Comb_Class(Hebrew590::_comb_cl[uc - m_first_letter]);
     }
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
         return BIDIR_MAX;
-      return Babylon::Bidir_Props(Hebrew590::_bidir[uc - _first_letter]);
+      return Babylon::Bidir_Props(Hebrew590::m_bidir[uc - m_first_letter]);
     }
 
     Char_Decomp decomp_type(const UCS4 uc) const {
@@ -173,7 +162,7 @@ namespace Babylon {
 
     UTF32_string decompose(const UCS4 uc) const {
       UTF32_string us;
-      us.resize(1); us[0]=uc;
+      us.resize(1); us[0] = uc;
       return us;
     }
 
@@ -184,7 +173,7 @@ namespace Babylon {
     Line_Break linebreak(const UCS4 uc) const {
       if (!is_defined(uc))
         return LB_MAX;
-      return Babylon::Line_Break(Hebrew590::_lb[uc - _first_letter]);
+      return Babylon::Line_Break(Hebrew590::m_lb[uc - m_first_letter]);
     }
 
     EA_Width EA_width(const UCS4 uc) const {
@@ -193,12 +182,8 @@ namespace Babylon {
       return Babylon::EA_Width(EA_WIDTH_N);
     }
 
-    UCS4 compose (const UCS4 starter, const UCS4 last) {
-      return _composeMap[starter << 16 | last];
-    }
-
-    bool is_Zero_width(const UCS4 uc) const {
-      return 0;
+    UCS4 compose (const UCS4 start, const UCS4 last) {
+      return m_composeMap[make_pair(start, last)];
     }
 
     bool is_White_space(const UCS4 uc) const {
@@ -206,6 +191,10 @@ namespace Babylon {
     }
 
     bool is_Non_break(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Format_Control(const UCS4 uc) const {
       return 0;
     }
 
@@ -217,7 +206,7 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Format_Control(const UCS4 uc) const {
+    bool is_Other_Format_Control(const UCS4 uc) const {
       return 0;
     }
 
@@ -241,22 +230,6 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Paired_Punctuation(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Left_of_Pair(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Combining(const UCS4 uc) const {
-      return Hebrew590::_Combining[uc - _first_letter];
-    }
-
-    bool is_Non_spacing(const UCS4 uc) const {
-      return Hebrew590::_Non_spacing[uc - _first_letter];
-    }
-
     bool is_Composite(const UCS4 uc) const {
       return 0;
     }
@@ -266,30 +239,26 @@ namespace Babylon {
     }
 
     bool is_Alphabetic(const UCS4 uc) const {
-      return Hebrew590::_Alphabetic[uc - _first_letter];
+      return m_Alphabetic.test(uc - m_first_letter);
     }
 
     bool is_Diacritic(const UCS4 uc) const {
-      return Hebrew590::_Diacritic[uc - _first_letter];
+      return m_Diacritic.test(uc - m_first_letter);
     }
 
     bool is_Extender(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Identifier_Part(const UCS4 uc) const {
-      return Hebrew590::_Identifier_Part[uc - _first_letter];
+    bool is_Identifier_Part_Not_Cf(const UCS4 uc) const {
+      return m_Identifier_Part_Not_Cf.test(uc - m_first_letter);
     }
 
-    bool is_Ignorable_Control(const UCS4 uc) const {
+    bool is_Other_Uppercase(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Bidi_Hebrew_Right_to_Left(const UCS4 uc) const {
-      return Hebrew590::_Bidi_Hebrew_Right_to_Left[uc - _first_letter];
-    }
-
-    bool is_Bidi_Arabic_Right_to_Left(const UCS4 uc) const {
+    bool is_Other_Lowercase(const UCS4 uc) const {
       return 0;
     }
 
@@ -301,7 +270,7 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Not_a_Character(const UCS4 uc) const {
+    bool is_Noncharacter_Code_Point(const UCS4 uc) const {
       return ((uc & 0xFFFE) == 0xFFFE);
     }
 
@@ -317,154 +286,27 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Space(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Zs);
-    }
-
-    bool is_ISO_Control(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Cc);
-    }
-
-    bool is_Punctuation(const UCS4 uc) const {
-      return (is_defined(uc) && (category(uc) == CAT_Pc ||
-                                 category(uc) == CAT_Pd ||
-                                 category(uc) == CAT_Ps ||
-                                 category(uc) == CAT_Pe ||
-                                 category(uc) == CAT_Pi ||
-                                 category(uc) == CAT_Pf ||
-                                 category(uc) == CAT_Po)
-             );
-    }
-
-    bool is_Line_Separator(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Zl);
-    }
-
-    bool is_Paragraph_Separator(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Zp);
-    }
-
-    bool is_Currency_Symbol(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Sc);
-    }
-
-    bool is_Bidi_Left_to_Right(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_L;
-    }
-
-    bool is_Bidi_European_Digit(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_EN;
-    }
-
-    bool is_Bidi_Eur_Num_Separator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_ES;
-    }
-
-    bool is_Bidi_Eur_Num_Terminator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_ET;
-    }
-
-    bool is_Bidi_Arabic_Digit(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_AN;
-    }
-
-    bool is_Bidi_Common_Separator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_CS;
-    }
-
-    bool is_Bidi_Block_Separator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_B;
-    }
-
-    bool is_Bidi_Segment_Separator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_S;
-    }
-
-    bool is_Bidi_Whitespace(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_WS;
-    }
-
-    bool is_Bidi_Non_spacing_Mark(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_NSM;
-    }
-
-    bool is_Bidi_Boundary_Neutral(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_BN;
-    }
-
-    bool is_Bidi_PDF(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_PDF;
-    }
-
-    bool is_Bidi_Embedding_or_Override(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_LRE ||
-             bidir_props(uc) == BIDIR_RLE ||
-             bidir_props(uc) == BIDIR_LRO ||
-             bidir_props(uc) == BIDIR_RLO;
-    }
-
-    bool is_Bidi_LRE(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_LRE;
-    }
-
-    bool is_Bidi_RLE(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_RLE;
-    }
-
-    bool is_Bidi_LRO(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_LRO;
-    }
-
-    bool is_Bidi_RLO(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_RLO;
-    }
-
-    bool is_Bidi_Other_Neutral(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_ON;
-    }
-
-    bool is_Unassigned_Code_Value(const UCS4 uc) const {
-      return !is_defined(uc) && !is_Not_a_Character(uc);
-    }
-
 
   private:
     // functions
     Hebrew590(const Hebrew590 &) {}
 
-    Babylon::UCS4 _first_letter;
-    Babylon::UCS4 _last_letter;
-    static const bool _is_defined[112];
+    Babylon::UCS4 m_first_letter;
+    Babylon::UCS4 m_last_letter;
+    // Babylon::UCS4_string m_version;
+    static const bitset<112> m_is_defined;
     static const unsigned char _cat[112];
     static const unsigned char _comb_cl[112];
-    static const unsigned char _bidir[112];
-    static const unsigned char _lb[112];
-    map<UCS4, UCS4> _composeMap;
-    static const bool _Combining[112];
-    static const bool _Non_spacing[112];
-    static const bool _Alphabetic[112];
-    static const bool _Diacritic[112];
-    static const bool _Identifier_Part[112];
-    static const bool _Bidi_Hebrew_Right_to_Left[112];
+    static const unsigned char m_bidir[112];
+    static const unsigned char m_lb[112];
+    map<pair<UCS4, UCS4>, UCS4> m_composeMap;
+    static const bitset<112> m_Alphabetic;
+    static const bitset<112> m_Diacritic;
+    static const bitset<112> m_Identifier_Part_Not_Cf;
 
   }; // class Hebrew590
 
-  const bool Hebrew590::_is_defined[] = {
-    0, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 0, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 0, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 0, 0, 0, 
-    0, 0, 0, 0, 0, 0, 0, 0, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 0, 0, 0, 0, 0, 
-    1, 1, 1, 1, 1, 0, 0, 0, 
-    0, 0, 0, 0, 0, 0, 0, 0
-  };
+    const bitset<112> Hebrew590::m_is_defined(string("0000000000011111000001111111111111111111111111110000000000011111111110111111111111111111111110111111111111111110"));
 
   const unsigned char Hebrew590::_cat[] = {
     CAT_Mn, CAT_Mn, CAT_Mn, CAT_Mn, CAT_Mn, CAT_Mn, CAT_Mn, CAT_Mn, 
@@ -500,7 +342,7 @@ namespace Babylon {
     0, 0, 0, 0, 0, 0, 0, 0
   };
 
-  const unsigned char Hebrew590::_bidir[] = {
+  const unsigned char Hebrew590::m_bidir[] = {
     BIDIR_NSM, BIDIR_NSM, BIDIR_NSM, BIDIR_NSM, BIDIR_NSM, BIDIR_NSM, BIDIR_NSM, BIDIR_NSM, 
     BIDIR_NSM, BIDIR_NSM, BIDIR_NSM, BIDIR_NSM, BIDIR_NSM, BIDIR_NSM, BIDIR_NSM, BIDIR_NSM, 
     BIDIR_NSM, BIDIR_NSM, BIDIR_NSM, BIDIR_NSM, BIDIR_NSM, BIDIR_NSM, BIDIR_NSM, BIDIR_NSM, 
@@ -517,7 +359,7 @@ namespace Babylon {
     BIDIR_NSM, BIDIR_NSM, BIDIR_NSM, BIDIR_NSM, BIDIR_NSM, BIDIR_NSM, BIDIR_NSM, BIDIR_NSM
   };
 
-  const unsigned char Hebrew590::_lb[] = {
+  const unsigned char Hebrew590::m_lb[] = {
     LB_CM, LB_CM, LB_CM, LB_CM, LB_CM, LB_CM, LB_CM, LB_CM, 
     LB_CM, LB_CM, LB_CM, LB_CM, LB_CM, LB_CM, LB_CM, LB_CM, 
     LB_CM, LB_CM, LB_CM, LB_CM, LB_CM, LB_CM, LB_CM, LB_CM, 
@@ -534,107 +376,11 @@ namespace Babylon {
     LB_CM, LB_CM, LB_CM, LB_CM, LB_CM, LB_CM, LB_CM, LB_CM
   };
 
-    const bool Hebrew590::_Combining[] = {
-        0, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 0, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 0, 1, 1, 1, 0, 1, 
-        0, 1, 1, 0, 1, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
+    const bitset<112> Hebrew590::m_Alphabetic(string("0000000000000111000001111111111111111111111111110000000000000110001110111111111100000000000000000000000000000000"));
 
-    const bool Hebrew590::_Non_spacing[] = {
-        0, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 0, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 0, 1, 1, 1, 0, 1, 
-        0, 1, 1, 0, 1, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
+    const bitset<112> Hebrew590::m_Diacritic(string("0000000000000000000000000000000000000000000000000000000000000110001110111111111111111111111110111111111111111110"));
 
-    const bool Hebrew590::_Alphabetic[] = {
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 0, 0, 0, 0, 0, 
-        1, 1, 1, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
-
-    const bool Hebrew590::_Diacritic[] = {
-        0, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 0, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 0, 1, 1, 1, 0, 1, 
-        0, 1, 1, 0, 1, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
-
-    const bool Hebrew590::_Identifier_Part[] = {
-        0, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 0, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 0, 1, 1, 1, 0, 1, 
-        0, 1, 1, 0, 1, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 0, 0, 0, 0, 0, 
-        1, 1, 1, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
-
-    const bool Hebrew590::_Bidi_Hebrew_Right_to_Left[] = {
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 1, 0, 
-        1, 0, 0, 1, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 0, 0, 0, 0, 0, 
-        1, 1, 1, 1, 1, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
+    const bitset<112> Hebrew590::m_Identifier_Part_Not_Cf(string("0000000000000111000001111111111111111111111111110000000000000110001110111111111111111111111110111111111111111110"));
 
 }; // namespace Babylon
 

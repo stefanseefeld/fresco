@@ -83,13 +83,10 @@ sub function {
 
   my $tmp = "    UCS4 lowercase(const UCS4 uc) const {\n";
   if ($self->{_ATTENTION_NEEDED} == 1) {
-    $tmp .= "      return $bl_name\:\:_lower\[uc - _first_letter\];\n";
+      $tmp .= "      return $bl_name\:\:m_lower\[uc - m_first_letter\];\n";
   } else {
     $tmp .= "      return uc;\n";
   }
-  $tmp   .= "    }\n\n";
-  $tmp   .= "    bool is_Lowercase(const UCS4 uc) const {\n";
-  $tmp   .= "      return category(uc) == CAT_Ll;\n";
   $tmp   .= "    }\n\n";
 
   return $tmp;
@@ -114,9 +111,8 @@ sub var_def {
     }
   }
 
-
   if ($self->{_ATTENTION_NEEDED}) {
-    return "    static const UCS4 _lower\[$bl_length\];\n";
+    return "    static const UCS4 m_lower\[$bl_length\];\n";
   } else {
     return "";
   }
@@ -143,7 +139,7 @@ sub var {
   }
 
   if ($self->{_ATTENTION_NEEDED}) {
-    my $tmp = "  const UCS4 $bl_name\:\:_lower\[\] = {";
+    my $tmp = "  const UCS4 $bl_name\:\:m_lower\[\] = {";
     for (my $i= $bl_start; $i <= $bl_end; $i++) {
       if (($i - $bl_start) % 8 == 0) {
 	$tmp .= "\n    ";
@@ -158,7 +154,7 @@ sub var {
       }
     }
     $tmp .= "\n  };\n\n";
-    
+
     return $tmp;
   } else {
     return "";

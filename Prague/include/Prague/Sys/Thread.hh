@@ -243,6 +243,6 @@ inline unsigned long Thread::id()
   return *_id;
 }
 
-};
+}
 
 #endif /* _Prague_Thread_hh */

@@ -53,14 +53,12 @@ IPC		:= ipcbuf.cc pipebuf.cc sockbuf.cc ptybuf.cc mmapbuf.cc \
 	  	   Agent.cc Dispatcher.cc Coprocess.cc PipeAgent.cc TTYAgent.cc SocketAgent.cc
 Filter		:= gzbuf.cc# xdrbuf.cc #bzbuf.cc 
 Network		:= protocol.cc echo.cc ftp.cc smtp.cc url.cc
-Unicode		:= Unistring.cc Unichar.cc Dictionary.cc # utils.cc
 SAX		:= AttributeListImpl.cc ParserImpl.cc
 
 SRC		:= $(patsubst %, Sys/%, $(Sys))
 SRC		+= $(patsubst %, IPC/%, $(IPC))
 SRC		+= $(patsubst %, Filter/%, $(Filter))
 SRC		+= $(patsubst %, Network/%, $(Network))
-SRC		+= $(patsubst %, Unicode/%, $(Unicode))
 #SRC		+= $(patsubst %, SAX/%, $(SAX))
 DEP		:= $(patsubst %.cc, %.d, $(notdir $(SRC)))
 OBJ		:= $(patsubst %.cc, %.o, $(notdir $(SRC)))
@@ -68,12 +66,11 @@ OBJ		:= $(patsubst %.cc, %.o, $(notdir $(SRC)))
 TARGET		:= $(ldir)/libPrague.so
 #EXPAT		:= $(ldir)/libexpat.so
 
-vpath %.hh  $(hdir)/Prague/Sys $(hdir)/Prague/IPC $(hdir)/Prague/Filter $(hdir)/Prague/Network $(hdir)/Prague/Unicode# $(hdir)/Prague/SAX
+vpath %.hh  $(hdir)/Prague/Sys $(hdir)/Prague/IPC $(hdir)/Prague/Filter $(hdir)/Prague/Network # $(hdir)/Prague/SAX
 
 .PHONY: clean distclean maintainer-clean dist install
 
 all:	$(TARGET)
-	cd Unicode/Blocks; $(MAKE)
 
 $(TARGET):	$(EXPAT) $(OBJ)
 		@echo linking $(@F)
@@ -91,7 +88,6 @@ clean:
 		rm -f $(TARGET)
 		rm -f *.o *.d
 #		cd SAX/expat; $(MAKE) clean;
-		cd Unicode/Blocks; $(MAKE) clean;
 #		cd Examples; $(MAKE) clean;
 
 distclean:	clean
@@ -99,7 +95,6 @@ distclean:	clean
 			$(cdir)/Prague/config.log $(cdir)/Prague/config.status \
 			$(bdir)/Prague-config
 #		cd Examples; $(MAKE) distclean
-		cd Unicode/Blocks; $(MAKE) distclean;
 
 maintainer-clean: distclean
 		rm -f $(top_srcdir)/config/Prague/configure $(top_srcdir)/config/Prague/config.hh.in \
@@ -113,8 +108,6 @@ maintainer-clean: distclean
 	$(makedep)
 %.d:	$(srcdir)/Network/%.cc $(hdir)/Prague/Network/%.hh
 	$(makedep)
-%.d:	$(srcdir)/Unicode/%.cc $(hdir)/Prague/Unicode/%.hh
-	$(makedep)
 %.o:	$(srcdir)/Sys/%.cc
 	$(compile)
 DataTypeManager.o:	$(srcdir)/Sys/DataTypeManager.cc
@@ -125,8 +118,6 @@ DataTypeManager.o:	$(srcdir)/Sys/DataTypeManager.cc
 %.o:	$(srcdir)/Filter/%.cc
 	$(compile)
 %.o:	$(srcdir)/Network/%.cc
-	$(compile)
-%.o:	$(srcdir)/Unicode/%.cc
 	$(compile)
 
 ifeq (,$(findstring $(MAKECMDGOALS), clean distclean maintainer-clean))

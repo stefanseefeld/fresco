@@ -6,9 +6,9 @@
 
 int main (int argc, char * argv) {
     Babylon::String bs("TEST-STRING");
-    Warsaw::Unistring us;
+    Babylon::UTF8_string us;
 
-    us = Babylon::encode<Warsaw::Unistring>(bs);
+    us = Babylon::recode<Babylon::UTF8_string>(bs);
 
     for (unsigned int i = 0; i < us.length(); i++)
 	cout << char(us[i]);

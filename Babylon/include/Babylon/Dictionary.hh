@@ -29,26 +29,44 @@
 #include <Prague/Sys/Directory.hh>
 #include <Prague/Sys/DLL.hh>
 #include <Prague/Filter/gzstream.hh>
-#include <fstream>
-#include <iostream>
-#include <iomanip>
-#include <algorithm>
 
 namespace Babylon {
 
+    //. Stores character data.
     class Dictionary {
 
 	struct Guard { ~Guard() { delete Dictionary::m_dictionary;}};
 	friend struct Guard;
     
     public:
+	//. Scans a directory for modules.
 	void update(const string &);
+
+	//. Finds the current dictionary.
+	//. If no dictionary exists it will create one.
 	static Dictionary * instance();
-    
+
+	// Queries for the datastructures stored in the Dictionary:
+
+	//. Returns the first letter of the block (aka script)
+	//. the given character belongs to. It returns
+	//. UC_MAX_DEFINED if the character does not belong
+	//. to a block.
+	UCS4 first_letter_of_block(const UCS4) throw ();
+
+	//. Returns the last letter of the block (aka script)
+	//. the given character belongs to. It returns
+	//. UC_MAX_DEFINED if the character does not belong
+	//. to a block
+	UCS4 last_letter_of_block(const UCS4) throw ();
+
+	//. Returns the first letter of the next block (aka script)
+	//. defined block after the given character.
+	//. It returns UC_MAX_DEFINED if there is no block after
+	//. the character.
+	UCS4 start_of_next_block(const UCS4) throw();
+
     private:
-	Dictionary * lock() { m_rw_lock.rlock(); return this; };
-	void unlock() { m_rw_lock.unlock(); };
-    
 	// Query functions:
 	bool is_defined(const UCS4 uc)
 	    throw (Block_Error);    
@@ -61,11 +79,14 @@ namespace Babylon {
     
 	float numeric_value(const UCS4 uc)
 	    throw (Undefined_Property, Block_Error);
+	bool is_Numeric(const UCS4 uc);
 	int dec_digit_value(const UCS4 uc)
 	    throw (Undefined_Property, Block_Error);
+	bool is_Decimal_Digit(const UCS4 uc);
 	int digit_value(const UCS4 uc)
 	    throw (Undefined_Property, Block_Error);
-    
+	bool is_Digit(const UCS4 uc);
+
 	string blockname(const UCS4 uc)
 	    throw (Block_Error);
     
@@ -94,17 +115,17 @@ namespace Babylon {
 	Line_Break linebreak(const UCS4 uc)
 	    throw (Block_Error);
 
-	bool is_Zero_width(const UCS4 uc)
-	    throw (Block_Error);
 	bool is_White_space(const UCS4 uc) 
 	    throw (Block_Error);
 	bool is_Non_break(const UCS4 uc) 
+	    throw (Block_Error);
+	bool is_Format_Control(const UCS4 uc) 
 	    throw (Block_Error);
 	bool is_Bidi_Control(const UCS4 uc) 
 	    throw (Block_Error);
 	bool is_Join_Control(const UCS4 uc) 
 	    throw (Block_Error);
-	bool is_Format_Control(const UCS4 uc) 
+	bool is_Other_Format_Control(const UCS4 uc) 
 	    throw (Block_Error);
 	bool is_Dash(const UCS4 uc) 
 	    throw (Block_Error);
@@ -116,109 +137,36 @@ namespace Babylon {
 	    throw (Block_Error);
 	bool is_Math(const UCS4 uc) 
 	    throw (Block_Error);
-	bool is_Paired_Punctuation(const UCS4 uc) 
-	    throw (Block_Error);
-	bool is_Left_of_Pair(const UCS4 uc) 
-	    throw (Block_Error);
-	bool is_Combining(const UCS4 uc) 
-	    throw (Block_Error);
-	bool is_Non_spacing(const UCS4 uc) 
-	    throw (Block_Error);
-	bool is_Hex_Digit(const UCS4 uc) 
-	    throw (Block_Error);
-	bool is_Alphabetic(const UCS4 uc) 
-	    throw (Block_Error);
-	bool is_Diacritic(const UCS4 uc) 
-	    throw (Block_Error);
-	bool is_Extender(const UCS4 uc) 
-	    throw (Block_Error);
-	bool is_Identifier_Part(const UCS4 uc) 
-	    throw (Block_Error);
-	bool is_Ignorable_Control(const UCS4 uc) 
-	    throw (Block_Error);
-	bool is_Bidi_Hebrew_Right_to_Left(const UCS4 uc) 
-	    throw (Block_Error);
-	bool is_Bidi_Arabic_Right_to_Left(const UCS4 uc) 
-	    throw (Block_Error);
-	bool is_Bidi_Embedding_or_Override(const UCS4 uc) 
-	    throw (Block_Error);
-	bool is_Uppercase(const UCS4 uc) 
-	    throw (Block_Error);
-	bool is_Lowercase(const UCS4 uc) 
-	    throw (Block_Error);
-	bool is_Space(const UCS4 uc) 
-	    throw (Block_Error);
-	bool is_ISO_Control(const UCS4 uc) 
-	    throw (Block_Error);
-	bool is_Punctuation(const UCS4 uc) 
-	    throw (Block_Error);
-	bool is_Line_Separator(const UCS4 uc) 
-	    throw (Block_Error);
-	bool is_Paragraph_Separator(const UCS4 uc) 
-	    throw (Block_Error);
-	bool is_Currency_Symbol(const UCS4 uc) 
-	    throw (Block_Error);
-	bool is_Titlecase(const UCS4 uc) 
-	    throw (Block_Error);
-	bool is_Composite(const UCS4 uc) 
-	    throw (Block_Error);
-	bool is_Decimal_Digit(const UCS4 uc) 
-	    throw (Block_Error);
-	bool is_Numeric(const UCS4 uc) 
-	    throw (Block_Error);
-	bool is_Digit(const UCS4 uc)
-	    throw (Block_Error);
-	bool is_Ideographic(const UCS4 uc) 
-	    throw (Block_Error);
-	bool is_Bidi_Left_to_Right(const UCS4 uc) 
-	    throw (Block_Error);
-	bool is_Bidi_European_Digit(const UCS4 uc) 
-	    throw (Block_Error);
-	bool is_Bidi_Eur_Num_Separator(const UCS4 uc) 
-	    throw (Block_Error);
-	bool is_Bidi_Eur_Num_Terminator(const UCS4 uc) 
-	    throw (Block_Error);
-	bool is_Bidi_Arabic_Digit(const UCS4 uc) 
-	    throw (Block_Error);
-	bool is_Bidi_Common_Separator(const UCS4 uc) 
-	    throw (Block_Error);
-	bool is_Bidi_Block_Separator(const UCS4 uc) 
-	    throw (Block_Error);
-	bool is_Bidi_Segment_Separator(const UCS4 uc) 
-	    throw (Block_Error);
-	bool is_Bidi_Whitespace(const UCS4 uc) 
-	    throw (Block_Error);
-	bool is_Bidi_Non_spacing_Mark(const UCS4 uc) 
-	    throw (Block_Error);
-	bool is_Bidi_Boundary_Neutral(const UCS4 uc) 
-	    throw (Block_Error);
-	bool is_Bidi_PDF(const UCS4 uc) 
-	    throw (Block_Error);
-	bool is_Bidi_LRE(const UCS4 uc) 
-	    throw (Block_Error);
-	bool is_Bidi_RLE(const UCS4 uc) 
-	    throw (Block_Error);
-	bool is_Bidi_LRO(const UCS4 uc) 
-	    throw (Block_Error);
-	bool is_Bidi_RLO(const UCS4 uc) 
-	    throw (Block_Error);
-	bool is_Bidi_Other_Neutral(const UCS4 uc) 
-	    throw (Block_Error);
-	bool is_Private_Use(const UCS4 uc) 
-	    throw (Block_Error);
-	bool is_Not_a_Character(const UCS4 uc) 
-	    throw (Block_Error);
-	bool is_Unassigned_Code_Value(const UCS4) 
-	    throw (Block_Error);
-	bool is_Low_Surrogate(const UCS4)
-	    throw (Block_Error);
-	bool is_High_Surrogate(const UCS4)
-	    throw (Block_Error);
-	bool is_Private_Use_High_Surrogate(const UCS4)
+        bool is_Composite(const UCS4 uc) 
+            throw (Block_Error);
+        bool is_Hex_Digit(const UCS4 uc) 
+            throw (Block_Error);
+        bool is_Alphabetic(const UCS4 uc) 
+            throw (Block_Error);
+        bool is_Ideographic(const UCS4 uc) 
+            throw (Block_Error);
+        bool is_Diacritic(const UCS4 uc) 
+            throw (Block_Error);
+        bool is_Extender(const UCS4 uc) 
+            throw (Block_Error);
+        bool is_Identifier_Part_Not_Cf(const UCS4 uc) 
+            throw (Block_Error);
+        bool is_Private_Use(const UCS4 uc) 
+            throw (Block_Error);
+        bool is_Other_Uppercase(const UCS4 uc) 
+            throw (Block_Error);
+        bool is_Other_Lowercase(const UCS4 uc) 
+            throw (Block_Error);
+        bool is_Low_Surrogate(const UCS4)
+            throw (Block_Error);
+        bool is_High_Surrogate(const UCS4)
+            throw (Block_Error);
+        bool is_Private_Use_High_Surrogate(const UCS4)
+            throw (Block_Error);
+        bool is_Noncharacter_Code_Point(const UCS4)
 	    throw (Block_Error);
 
-    
-	class Block {
+    	class Block {
 	    // This class is subclassed by plugin libraries.
 	    // No method bodies here!!
 
@@ -244,9 +192,14 @@ namespace Babylon {
 	    virtual UCS4 uppercase(const UCS4) const = 0;
 	    virtual UCS4 lowercase(const UCS4) const = 0;
 	    virtual UCS4 titlecase(const UCS4) const = 0;
+
 	    virtual float numeric_value(const UCS4) const = 0;
+	    virtual bool is_Numeric(const UCS4) const = 0;
 	    virtual int dec_digit_value(const UCS4) const = 0;
+	    virtual bool is_Decimal_Digit(const UCS4) const = 0;
 	    virtual int digit_value(const UCS4) const = 0;
+	    virtual bool is_Digit(const UCS4) const = 0;
+
 	    virtual string blockname(const UCS4) const = 0;
 	    virtual Gen_Cat category(const UCS4) const = 0;
 	    virtual Can_Comb_Class comb_class(const UCS4) const = 0;
@@ -257,67 +210,31 @@ namespace Babylon {
 	    virtual bool must_mirror(const UCS4) const = 0;
 	    virtual EA_Width EA_width(const UCS4) const = 0;
 	    virtual Line_Break linebreak(const UCS4) const = 0;
-	    virtual bool is_Zero_width(const UCS4) const = 0;
 	    virtual bool is_White_space(const UCS4) const = 0;
 	    virtual bool is_Non_break(const UCS4) const = 0;
 	    virtual bool is_Bidi_Control(const UCS4) const = 0;
 	    virtual bool is_Join_Control(const UCS4) const = 0;
 	    virtual bool is_Format_Control(const UCS4) const = 0;
+	    virtual bool is_Other_Format_Control(const UCS4) const = 0;
 	    virtual bool is_Dash(const UCS4) const = 0;
 	    virtual bool is_Hyphen(const UCS4) const = 0;
 	    virtual bool is_Quotation_Mark(const UCS4) const = 0;
 	    virtual bool is_Terminal_Punctuation(const UCS4) const = 0;
 	    virtual bool is_Math(const UCS4) const = 0;
-	    virtual bool is_Paired_Punctuation(const UCS4) const = 0;
-	    virtual bool is_Left_of_Pair(const UCS4) const = 0;
-	    virtual bool is_Combining(const UCS4) const = 0;
-	    virtual bool is_Non_spacing(const UCS4) const = 0;
+	    virtual bool is_Composite(const UCS4) const = 0;
 	    virtual bool is_Hex_Digit(const UCS4) const = 0;
 	    virtual bool is_Alphabetic(const UCS4) const = 0;
+	    virtual bool is_Ideographic(const UCS4) const = 0;
 	    virtual bool is_Diacritic(const UCS4) const = 0;
 	    virtual bool is_Extender(const UCS4) const = 0;
-	    virtual bool is_Identifier_Part(const UCS4) const = 0;
-	    virtual bool is_Ignorable_Control(const UCS4) const = 0;
-	    virtual bool is_Bidi_Hebrew_Right_to_Left(const UCS4) const = 0;
-	    virtual bool is_Bidi_Arabic_Right_to_Left(const UCS4) const = 0;
-	    virtual bool is_Bidi_Embedding_or_Override(const UCS4) const = 0;
-	    virtual bool is_Uppercase(const UCS4) const = 0;
-	    virtual bool is_Lowercase(const UCS4) const = 0;
-	    virtual bool is_Titlecase(const UCS4) const = 0;
-	    virtual bool is_Space(const UCS4) const = 0;
-	    virtual bool is_ISO_Control(const UCS4) const = 0;
-	    virtual bool is_Punctuation(const UCS4) const = 0;
-	    virtual bool is_Line_Separator(const UCS4) const = 0;
-	    virtual bool is_Paragraph_Separator(const UCS4) const = 0;
-	    virtual bool is_Currency_Symbol(const UCS4) const = 0;
-	    virtual bool is_Composite(const UCS4) const = 0;
-	    virtual bool is_Decimal_Digit(const UCS4) const = 0;
-	    virtual bool is_Digit(const UCS4) const = 0;
-	    virtual bool is_Numeric(const UCS4) const = 0;
-	    virtual bool is_Ideographic(const UCS4) const = 0;
-	    virtual bool is_Bidi_Left_to_Right(const UCS4) const = 0;
-	    virtual bool is_Bidi_European_Digit(const UCS4) const = 0;
-	    virtual bool is_Bidi_Eur_Num_Separator(const UCS4) const = 0;
-	    virtual bool is_Bidi_Eur_Num_Terminator(const UCS4) const = 0;
-	    virtual bool is_Bidi_Arabic_Digit(const UCS4) const = 0;
-	    virtual bool is_Bidi_Common_Separator(const UCS4) const = 0;
-	    virtual bool is_Bidi_Block_Separator(const UCS4) const = 0;
-	    virtual bool is_Bidi_Segment_Separator(const UCS4) const = 0;
-	    virtual bool is_Bidi_Whitespace(const UCS4) const = 0;
-	    virtual bool is_Bidi_Non_spacing_Mark(const UCS4) const = 0;
-	    virtual bool is_Bidi_Boundary_Neutral(const UCS4) const = 0;
-	    virtual bool is_Bidi_PDF(const UCS4) const = 0;
-	    virtual bool is_Bidi_LRE(const UCS4) const = 0;
-	    virtual bool is_Bidi_RLE(const UCS4) const = 0;
-	    virtual bool is_Bidi_LRO(const UCS4) const = 0;
-	    virtual bool is_Bidi_RLO(const UCS4) const = 0;
-	    virtual bool is_Bidi_Other_Neutral(const UCS4) const = 0;
+	    virtual bool is_Identifier_Part_Not_Cf(const UCS4) const = 0;
 	    virtual bool is_Private_Use(const UCS4) const = 0;
-	    virtual bool is_Not_a_Character(const UCS4) const = 0;
-	    virtual bool is_Unassigned_Code_Value(const UCS4) const = 0;
+	    virtual bool is_Other_Uppercase(const UCS4) const = 0;
+	    virtual bool is_Other_Lowercase(const UCS4) const = 0;
 	    virtual bool is_Low_Surrogate(const UCS4) const = 0;
 	    virtual bool is_High_Surrogate(const UCS4) const = 0;
 	    virtual bool is_Private_Use_High_Surrogate(const UCS4) const = 0;
+	    virtual bool is_Noncharacter_Code_Point(const UCS4) const = 0;
 
 	    virtual UCS4 firstLetter() = 0;
 	    virtual UCS4 lastLetter() = 0;
@@ -333,7 +250,22 @@ namespace Babylon {
 	    int operator < (const Data & data) const {return m_start < data.m_start;}
 	    bool m_can_remove;
 	    Prague::Plugin<Dictionary::Block> * m_block;
+
+	    Data(UCS4 start, UCS4 end) {
+		m_start = start;
+		m_end = end;
+		m_file = "";
+		m_can_remove = 0;
+		m_block = 0;
+	    }
 	}; // struct Data
+
+	class DataLess {
+	public:
+	    bool operator() (const Data & d1, const Data & d2) {
+		return d1.m_end < d2.m_start;
+	    }
+	}; // class DataLess
 
 	Prague::Plugin<Dictionary::Block> * m_undef_block;
     

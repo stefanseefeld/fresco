@@ -93,7 +93,7 @@ sub function {
   $tmp   .= "        return CAT_MAX;\n";
 
   if ($self->{_ATTENTION_NEEDED} == 1) {
-    $tmp .= "      return Babylon\:\:Gen_Cat($bl_name\:\:_cat\[uc - _first_letter\]);\n";
+    $tmp .= "      return Babylon\:\:Gen_Cat($bl_name\:\:_cat\[uc - m_first_letter\]);\n";
     $tmp .= "    }\n\n";
   } else {
     $tmp .= sprintf "      return Babylon\:\:Gen_Cat(%s);\n    }\n\n",

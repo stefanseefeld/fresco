@@ -115,7 +115,7 @@ LogoDemo::LogoDemo(Application *a)
   spec.brightness(0.5); spec._d(ToolKit::inset);
   Graphic_var foo = tools->frame(box, 10., spec, true);
   Controller_var bar = tools->group(foo);
-  application->append(bar, Unicode::String("MVC demo"));
+  application->append(bar, Babylon::String("MVC demo"));
 }
 
 Graphic_ptr LogoDemo::make_controller(BoundedValue_ptr value, const Color &color)

@@ -20,7 +20,7 @@
  * MA 02139, USA.
  */
 
-#include <Prague/Unicode/Unicode.hh>
+#include <Babylon/Babylon.hh>
 #include <Warsaw/config.hh>
 #include <Warsaw/DrawTraversal.hh>
 #include <Warsaw/DrawingKit.hh>
@@ -63,5 +63,5 @@ void DesktopImpl::key_press(const Input::Event &event)
 {
   Trace trace("DesktopImpl::key_press");
   const Input::Toggle &toggle = event[0].attr.selection();
-  if (toggle.number == Unicode::UC_ESCAPE) ServerImpl::instance()->stop();
+  if (toggle.number == Babylon::UC_ESCAPE) ServerImpl::instance()->stop();
 }

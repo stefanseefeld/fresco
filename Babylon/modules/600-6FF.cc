@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Wed,  6 Dec 2000 23:22:25 +0100.
+ * ftp.unicode.org on Mon,  8 Jan 2001 23:30:59 +0100.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -25,6 +25,7 @@
 
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
+#include <bitset>
 #include <map>
 
 namespace Babylon {
@@ -35,17 +36,17 @@ namespace Babylon {
     };
 
     Arabic600() {
-      _first_letter = 0x600;
-      _last_letter  = 0x6FF;
-      // _version="3.0.1" // Not yet supported!
-      _composeMap[0x06270653] = 0x0622;
-      _composeMap[0x06270654] = 0x0623;
-      _composeMap[0x06270655] = 0x0625;
-      _composeMap[0x06480654] = 0x0624;
-      _composeMap[0x064A0654] = 0x0626;
-      _composeMap[0x06C10654] = 0x06C2;
-      _composeMap[0x06D20654] = 0x06D3;
-      _composeMap[0x06D50654] = 0x06C0;
+      m_first_letter = 0x600;
+      m_last_letter  = 0x6FF;
+      // m_version="3.0.1" // Not yet supported!
+      m_composeMap[make_pair(0x00000627, 0x00000653)] = 0x0622;
+      m_composeMap[make_pair(0x00000627, 0x00000654)] = 0x0623;
+      m_composeMap[make_pair(0x00000627, 0x00000655)] = 0x0625;
+      m_composeMap[make_pair(0x00000648, 0x00000654)] = 0x0624;
+      m_composeMap[make_pair(0x0000064A, 0x00000654)] = 0x0626;
+      m_composeMap[make_pair(0x000006C1, 0x00000654)] = 0x06C2;
+      m_composeMap[make_pair(0x000006D2, 0x00000654)] = 0x06D3;
+      m_composeMap[make_pair(0x000006D5, 0x00000654)] = 0x06C0;
 
     }
 
@@ -54,11 +55,11 @@ namespace Babylon {
     }
 
     UCS4 firstLetter() {
-      return _first_letter;
+      return m_first_letter;
     }
 
     UCS4 lastLetter() {
-      return _last_letter;
+      return m_last_letter;
     }
 
     bool is_undef_block() const {
@@ -72,31 +73,19 @@ namespace Babylon {
     }
 
     bool is_defined(const UCS4 uc) const {
-      return (_is_defined[uc - _first_letter]);
+      return (m_is_defined.test(uc - m_first_letter));
     }
 
     UCS4 uppercase(const UCS4 uc) const {
       return uc;
     }
 
-    bool is_Uppercase(const UCS4 uc) const {
-      return category(uc) == CAT_Lu;
-    }
-
     UCS4 lowercase(const UCS4 uc) const {
       return uc;
     }
 
-    bool is_Lowercase(const UCS4 uc) const {
-      return category(uc) == CAT_Ll;
-    }
-
     UCS4 titlecase(const UCS4 uc) const {
       return uc;
-    }
-
-    bool is_Titlecase(const UCS4 uc) const {
-      return category(uc) == CAT_Lt;
     }
 
     int dec_digit_value(const UCS4 uc) const {
@@ -393,33 +382,33 @@ namespace Babylon {
     Gen_Cat category(const UCS4 uc) const {
       if (!is_defined(uc))
         return CAT_MAX;
-      return Babylon::Gen_Cat(Arabic600::_cat[uc - _first_letter]);
+      return Babylon::Gen_Cat(Arabic600::_cat[uc - m_first_letter]);
     }
 
     Can_Comb_Class comb_class(const UCS4 uc) const {
       if (!is_defined(uc))
         return CC_MAX;
-      return Can_Comb_Class(Arabic600::_comb_cl[uc - _first_letter]);
+      return Can_Comb_Class(Arabic600::_comb_cl[uc - m_first_letter]);
     }
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
         return BIDIR_MAX;
-      return Babylon::Bidir_Props(Arabic600::_bidir[uc - _first_letter]);
+      return Babylon::Bidir_Props(Arabic600::m_bidir[uc - m_first_letter]);
     }
 
     Char_Decomp decomp_type(const UCS4 uc) const {
       if (!is_defined(uc))
         return DECOMP_MAX;
-      return Babylon::Char_Decomp(Arabic600::_decomp[uc - _first_letter]);
+      return Babylon::Char_Decomp(Arabic600::_decomp[uc - m_first_letter]);
     }
 
     UTF32_string decompose(const UCS4 uc) const {
       Babylon::UTF32_string us;
       us.resize(2);
-      us[0] = Arabic600::_decompStr[uc - _first_letter][0];
-      us[1] = Arabic600::_decompStr[uc - _first_letter][1];
-      if (us[1] == 0x0000) {
+      us[0] = Arabic600::m_decompStr[uc - m_first_letter][0];
+      us[1] = Arabic600::m_decompStr[uc - m_first_letter][1];
+      if (us[1] == 0x0000u) {
         us.resize(1);
       }
 
@@ -433,7 +422,7 @@ namespace Babylon {
     Line_Break linebreak(const UCS4 uc) const {
       if (!is_defined(uc))
         return LB_MAX;
-      return Babylon::Line_Break(Arabic600::_lb[uc - _first_letter]);
+      return Babylon::Line_Break(Arabic600::m_lb[uc - m_first_letter]);
     }
 
     EA_Width EA_width(const UCS4 uc) const {
@@ -442,12 +431,8 @@ namespace Babylon {
       return Babylon::EA_Width(EA_WIDTH_N);
     }
 
-    UCS4 compose (const UCS4 starter, const UCS4 last) {
-      return _composeMap[starter << 16 | last];
-    }
-
-    bool is_Zero_width(const UCS4 uc) const {
-      return 0;
+    UCS4 compose (const UCS4 start, const UCS4 last) {
+      return m_composeMap[make_pair(start, last)];
     }
 
     bool is_White_space(const UCS4 uc) const {
@@ -455,6 +440,10 @@ namespace Babylon {
     }
 
     bool is_Non_break(const UCS4 uc) const {
+      return 0;
+    }
+
+    bool is_Format_Control(const UCS4 uc) const {
       return 0;
     }
 
@@ -466,7 +455,7 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Format_Control(const UCS4 uc) const {
+    bool is_Other_Format_Control(const UCS4 uc) const {
       return 0;
     }
 
@@ -483,31 +472,15 @@ namespace Babylon {
     }
 
     bool is_Terminal_Punctuation(const UCS4 uc) const {
-      return Arabic600::_Terminal_Punctuation[uc - _first_letter];
+      return 0;
     }
 
     bool is_Math(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Paired_Punctuation(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Left_of_Pair(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Combining(const UCS4 uc) const {
-      return Arabic600::_Combining[uc - _first_letter];
-    }
-
-    bool is_Non_spacing(const UCS4 uc) const {
-      return Arabic600::_Non_spacing[uc - _first_letter];
-    }
-
     bool is_Composite(const UCS4 uc) const {
-      return Arabic600::_Composite[uc - _first_letter];
+      return m_Composite.test(uc - m_first_letter);
     }
 
     bool is_Hex_Digit(const UCS4 uc) const {
@@ -515,31 +488,27 @@ namespace Babylon {
     }
 
     bool is_Alphabetic(const UCS4 uc) const {
-      return Arabic600::_Alphabetic[uc - _first_letter];
+      return m_Alphabetic.test(uc - m_first_letter);
     }
 
     bool is_Diacritic(const UCS4 uc) const {
-      return Arabic600::_Diacritic[uc - _first_letter];
+      return m_Diacritic.test(uc - m_first_letter);
     }
 
     bool is_Extender(const UCS4 uc) const {
-      return Arabic600::_Extender[uc - _first_letter];
-    }
-
-    bool is_Identifier_Part(const UCS4 uc) const {
-      return Arabic600::_Identifier_Part[uc - _first_letter];
-    }
-
-    bool is_Ignorable_Control(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Bidi_Hebrew_Right_to_Left(const UCS4 uc) const {
+    bool is_Identifier_Part_Not_Cf(const UCS4 uc) const {
+      return m_Identifier_Part_Not_Cf.test(uc - m_first_letter);
+    }
+
+    bool is_Other_Uppercase(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Bidi_Arabic_Right_to_Left(const UCS4 uc) const {
-      return Arabic600::_Bidi_Arabic_Right_to_Left[uc - _first_letter];
+    bool is_Other_Lowercase(const UCS4 uc) const {
+      return 0;
     }
 
     bool is_Ideographic(const UCS4 uc) const {
@@ -550,7 +519,7 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Not_a_Character(const UCS4 uc) const {
+    bool is_Noncharacter_Code_Point(const UCS4 uc) const {
       return ((uc & 0xFFFE) == 0xFFFE);
     }
 
@@ -566,177 +535,30 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Space(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Zs);
-    }
-
-    bool is_ISO_Control(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Cc);
-    }
-
-    bool is_Punctuation(const UCS4 uc) const {
-      return (is_defined(uc) && (category(uc) == CAT_Pc ||
-                                 category(uc) == CAT_Pd ||
-                                 category(uc) == CAT_Ps ||
-                                 category(uc) == CAT_Pe ||
-                                 category(uc) == CAT_Pi ||
-                                 category(uc) == CAT_Pf ||
-                                 category(uc) == CAT_Po)
-             );
-    }
-
-    bool is_Line_Separator(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Zl);
-    }
-
-    bool is_Paragraph_Separator(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Zp);
-    }
-
-    bool is_Currency_Symbol(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Sc);
-    }
-
-    bool is_Bidi_Left_to_Right(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_L;
-    }
-
-    bool is_Bidi_European_Digit(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_EN;
-    }
-
-    bool is_Bidi_Eur_Num_Separator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_ES;
-    }
-
-    bool is_Bidi_Eur_Num_Terminator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_ET;
-    }
-
-    bool is_Bidi_Arabic_Digit(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_AN;
-    }
-
-    bool is_Bidi_Common_Separator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_CS;
-    }
-
-    bool is_Bidi_Block_Separator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_B;
-    }
-
-    bool is_Bidi_Segment_Separator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_S;
-    }
-
-    bool is_Bidi_Whitespace(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_WS;
-    }
-
-    bool is_Bidi_Non_spacing_Mark(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_NSM;
-    }
-
-    bool is_Bidi_Boundary_Neutral(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_BN;
-    }
-
-    bool is_Bidi_PDF(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_PDF;
-    }
-
-    bool is_Bidi_Embedding_or_Override(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_LRE ||
-             bidir_props(uc) == BIDIR_RLE ||
-             bidir_props(uc) == BIDIR_LRO ||
-             bidir_props(uc) == BIDIR_RLO;
-    }
-
-    bool is_Bidi_LRE(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_LRE;
-    }
-
-    bool is_Bidi_RLE(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_RLE;
-    }
-
-    bool is_Bidi_LRO(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_LRO;
-    }
-
-    bool is_Bidi_RLO(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_RLO;
-    }
-
-    bool is_Bidi_Other_Neutral(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_ON;
-    }
-
-    bool is_Unassigned_Code_Value(const UCS4 uc) const {
-      return !is_defined(uc) && !is_Not_a_Character(uc);
-    }
-
 
   private:
     // functions
     Arabic600(const Arabic600 &) {}
 
-    Babylon::UCS4 _first_letter;
-    Babylon::UCS4 _last_letter;
-    static const bool _is_defined[256];
+    Babylon::UCS4 m_first_letter;
+    Babylon::UCS4 m_last_letter;
+    // Babylon::UCS4_string m_version;
+    static const bitset<256> m_is_defined;
     static const unsigned char _cat[256];
     static const unsigned char _comb_cl[256];
-    static const unsigned char _bidir[256];
+    static const unsigned char m_bidir[256];
     static const unsigned char _decomp[256];
-    static const UCS2 _decompStr[256][2];
-    static const unsigned char _lb[256];
-    map<UCS4, UCS4> _composeMap;
-    static const bool _Terminal_Punctuation[256];
-    static const bool _Combining[256];
-    static const bool _Non_spacing[256];
-    static const bool _Composite[256];
-    static const bool _Alphabetic[256];
-    static const bool _Diacritic[256];
-    static const bool _Extender[256];
-    static const bool _Identifier_Part[256];
-    static const bool _Bidi_Arabic_Right_to_Left[256];
+    static const UCS2 m_decompStr[256][2];
+    static const unsigned char m_lb[256];
+    map<pair<UCS4, UCS4>, UCS4> m_composeMap;
+    static const bitset<256> m_Composite;
+    static const bitset<256> m_Alphabetic;
+    static const bitset<256> m_Diacritic;
+    static const bitset<256> m_Identifier_Part_Not_Cf;
 
   }; // class Arabic600
 
-  const bool Arabic600::_is_defined[] = {
-    0, 0, 0, 0, 0, 0, 0, 0, 
-    0, 0, 0, 0, 1, 0, 0, 0, 
-    0, 0, 0, 0, 0, 0, 0, 0, 
-    0, 0, 0, 1, 0, 0, 0, 1, 
-    0, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 0, 0, 0, 0, 0, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 0, 0, 
-    0, 0, 0, 0, 0, 0, 0, 0, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 0, 0, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 0, 0, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 0
-  };
+    const bitset<256> Arabic600::m_is_defined(string("0111111111111111001111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111110011111111111111000000000011111111111111111111110000011111111111111111111111111010001000000000000001000000000000"));
 
   const unsigned char Arabic600::_cat[] = {
     CAT_Po, CAT_Po, CAT_Po, CAT_Po, CAT_Po, CAT_Po, CAT_Po, CAT_Po, 
@@ -808,7 +630,7 @@ namespace Babylon {
     0, 0, 0, 0, 0, 0, 0, 0
   };
 
-  const unsigned char Arabic600::_bidir[] = {
+  const unsigned char Arabic600::m_bidir[] = {
     BIDIR_CS, BIDIR_CS, BIDIR_CS, BIDIR_CS, BIDIR_CS, BIDIR_CS, BIDIR_CS, BIDIR_CS, 
     BIDIR_CS, BIDIR_CS, BIDIR_CS, BIDIR_CS, BIDIR_CS, BIDIR_CS, BIDIR_CS, BIDIR_CS, 
     BIDIR_CS, BIDIR_CS, BIDIR_CS, BIDIR_CS, BIDIR_CS, BIDIR_CS, BIDIR_CS, BIDIR_CS, 
@@ -878,74 +700,74 @@ namespace Babylon {
     DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP, DECOMP_NO_DECOMP
   };
 
-  const UCS2 Arabic600::_decompStr[][2] = {
-    { 0x0600, 0x0000 }, { 0x0601, 0x0000 }, { 0x0602, 0x0000 }, { 0x0603, 0x0000 }, 
-    { 0x0604, 0x0000 }, { 0x0605, 0x0000 }, { 0x0606, 0x0000 }, { 0x0607, 0x0000 }, 
-    { 0x0608, 0x0000 }, { 0x0609, 0x0000 }, { 0x060A, 0x0000 }, { 0x060B, 0x0000 }, 
-    { 0x060C, 0x0000 }, { 0x060D, 0x0000 }, { 0x060E, 0x0000 }, { 0x060F, 0x0000 }, 
-    { 0x0610, 0x0000 }, { 0x0611, 0x0000 }, { 0x0612, 0x0000 }, { 0x0613, 0x0000 }, 
-    { 0x0614, 0x0000 }, { 0x0615, 0x0000 }, { 0x0616, 0x0000 }, { 0x0617, 0x0000 }, 
-    { 0x0618, 0x0000 }, { 0x0619, 0x0000 }, { 0x061A, 0x0000 }, { 0x061B, 0x0000 }, 
-    { 0x061C, 0x0000 }, { 0x061D, 0x0000 }, { 0x061E, 0x0000 }, { 0x061F, 0x0000 }, 
-    { 0x0620, 0x0000 }, { 0x0621, 0x0000 }, { 0x0627, 0x0653 }, { 0x0627, 0x0654 }, 
-    { 0x0648, 0x0654 }, { 0x0627, 0x0655 }, { 0x064A, 0x0654 }, { 0x0627, 0x0000 }, 
-    { 0x0628, 0x0000 }, { 0x0629, 0x0000 }, { 0x062A, 0x0000 }, { 0x062B, 0x0000 }, 
-    { 0x062C, 0x0000 }, { 0x062D, 0x0000 }, { 0x062E, 0x0000 }, { 0x062F, 0x0000 }, 
-    { 0x0630, 0x0000 }, { 0x0631, 0x0000 }, { 0x0632, 0x0000 }, { 0x0633, 0x0000 }, 
-    { 0x0634, 0x0000 }, { 0x0635, 0x0000 }, { 0x0636, 0x0000 }, { 0x0637, 0x0000 }, 
-    { 0x0638, 0x0000 }, { 0x0639, 0x0000 }, { 0x063A, 0x0000 }, { 0x063B, 0x0000 }, 
-    { 0x063C, 0x0000 }, { 0x063D, 0x0000 }, { 0x063E, 0x0000 }, { 0x063F, 0x0000 }, 
-    { 0x0640, 0x0000 }, { 0x0641, 0x0000 }, { 0x0642, 0x0000 }, { 0x0643, 0x0000 }, 
-    { 0x0644, 0x0000 }, { 0x0645, 0x0000 }, { 0x0646, 0x0000 }, { 0x0647, 0x0000 }, 
-    { 0x0648, 0x0000 }, { 0x0649, 0x0000 }, { 0x064A, 0x0000 }, { 0x064B, 0x0000 }, 
-    { 0x064C, 0x0000 }, { 0x064D, 0x0000 }, { 0x064E, 0x0000 }, { 0x064F, 0x0000 }, 
-    { 0x0650, 0x0000 }, { 0x0651, 0x0000 }, { 0x0652, 0x0000 }, { 0x0653, 0x0000 }, 
-    { 0x0654, 0x0000 }, { 0x0655, 0x0000 }, { 0x0656, 0x0000 }, { 0x0657, 0x0000 }, 
-    { 0x0658, 0x0000 }, { 0x0659, 0x0000 }, { 0x065A, 0x0000 }, { 0x065B, 0x0000 }, 
-    { 0x065C, 0x0000 }, { 0x065D, 0x0000 }, { 0x065E, 0x0000 }, { 0x065F, 0x0000 }, 
-    { 0x0660, 0x0000 }, { 0x0661, 0x0000 }, { 0x0662, 0x0000 }, { 0x0663, 0x0000 }, 
-    { 0x0664, 0x0000 }, { 0x0665, 0x0000 }, { 0x0666, 0x0000 }, { 0x0667, 0x0000 }, 
-    { 0x0668, 0x0000 }, { 0x0669, 0x0000 }, { 0x066A, 0x0000 }, { 0x066B, 0x0000 }, 
-    { 0x066C, 0x0000 }, { 0x066D, 0x0000 }, { 0x066E, 0x0000 }, { 0x066F, 0x0000 }, 
-    { 0x0670, 0x0000 }, { 0x0671, 0x0000 }, { 0x0672, 0x0000 }, { 0x0673, 0x0000 }, 
-    { 0x0674, 0x0000 }, { 0x0627, 0x0674 }, { 0x0648, 0x0674 }, { 0x06C7, 0x0674 }, 
-    { 0x064A, 0x0674 }, { 0x0679, 0x0000 }, { 0x067A, 0x0000 }, { 0x067B, 0x0000 }, 
-    { 0x067C, 0x0000 }, { 0x067D, 0x0000 }, { 0x067E, 0x0000 }, { 0x067F, 0x0000 }, 
-    { 0x0680, 0x0000 }, { 0x0681, 0x0000 }, { 0x0682, 0x0000 }, { 0x0683, 0x0000 }, 
-    { 0x0684, 0x0000 }, { 0x0685, 0x0000 }, { 0x0686, 0x0000 }, { 0x0687, 0x0000 }, 
-    { 0x0688, 0x0000 }, { 0x0689, 0x0000 }, { 0x068A, 0x0000 }, { 0x068B, 0x0000 }, 
-    { 0x068C, 0x0000 }, { 0x068D, 0x0000 }, { 0x068E, 0x0000 }, { 0x068F, 0x0000 }, 
-    { 0x0690, 0x0000 }, { 0x0691, 0x0000 }, { 0x0692, 0x0000 }, { 0x0693, 0x0000 }, 
-    { 0x0694, 0x0000 }, { 0x0695, 0x0000 }, { 0x0696, 0x0000 }, { 0x0697, 0x0000 }, 
-    { 0x0698, 0x0000 }, { 0x0699, 0x0000 }, { 0x069A, 0x0000 }, { 0x069B, 0x0000 }, 
-    { 0x069C, 0x0000 }, { 0x069D, 0x0000 }, { 0x069E, 0x0000 }, { 0x069F, 0x0000 }, 
-    { 0x06A0, 0x0000 }, { 0x06A1, 0x0000 }, { 0x06A2, 0x0000 }, { 0x06A3, 0x0000 }, 
-    { 0x06A4, 0x0000 }, { 0x06A5, 0x0000 }, { 0x06A6, 0x0000 }, { 0x06A7, 0x0000 }, 
-    { 0x06A8, 0x0000 }, { 0x06A9, 0x0000 }, { 0x06AA, 0x0000 }, { 0x06AB, 0x0000 }, 
-    { 0x06AC, 0x0000 }, { 0x06AD, 0x0000 }, { 0x06AE, 0x0000 }, { 0x06AF, 0x0000 }, 
-    { 0x06B0, 0x0000 }, { 0x06B1, 0x0000 }, { 0x06B2, 0x0000 }, { 0x06B3, 0x0000 }, 
-    { 0x06B4, 0x0000 }, { 0x06B5, 0x0000 }, { 0x06B6, 0x0000 }, { 0x06B7, 0x0000 }, 
-    { 0x06B8, 0x0000 }, { 0x06B9, 0x0000 }, { 0x06BA, 0x0000 }, { 0x06BB, 0x0000 }, 
-    { 0x06BC, 0x0000 }, { 0x06BD, 0x0000 }, { 0x06BE, 0x0000 }, { 0x06BF, 0x0000 }, 
-    { 0x06D5, 0x0654 }, { 0x06C1, 0x0000 }, { 0x06C1, 0x0654 }, { 0x06C3, 0x0000 }, 
-    { 0x06C4, 0x0000 }, { 0x06C5, 0x0000 }, { 0x06C6, 0x0000 }, { 0x06C7, 0x0000 }, 
-    { 0x06C8, 0x0000 }, { 0x06C9, 0x0000 }, { 0x06CA, 0x0000 }, { 0x06CB, 0x0000 }, 
-    { 0x06CC, 0x0000 }, { 0x06CD, 0x0000 }, { 0x06CE, 0x0000 }, { 0x06CF, 0x0000 }, 
-    { 0x06D0, 0x0000 }, { 0x06D1, 0x0000 }, { 0x06D2, 0x0000 }, { 0x06D2, 0x0654 }, 
-    { 0x06D4, 0x0000 }, { 0x06D5, 0x0000 }, { 0x06D6, 0x0000 }, { 0x06D7, 0x0000 }, 
-    { 0x06D8, 0x0000 }, { 0x06D9, 0x0000 }, { 0x06DA, 0x0000 }, { 0x06DB, 0x0000 }, 
-    { 0x06DC, 0x0000 }, { 0x06DD, 0x0000 }, { 0x06DE, 0x0000 }, { 0x06DF, 0x0000 }, 
-    { 0x06E0, 0x0000 }, { 0x06E1, 0x0000 }, { 0x06E2, 0x0000 }, { 0x06E3, 0x0000 }, 
-    { 0x06E4, 0x0000 }, { 0x06E5, 0x0000 }, { 0x06E6, 0x0000 }, { 0x06E7, 0x0000 }, 
-    { 0x06E8, 0x0000 }, { 0x06E9, 0x0000 }, { 0x06EA, 0x0000 }, { 0x06EB, 0x0000 }, 
-    { 0x06EC, 0x0000 }, { 0x06ED, 0x0000 }, { 0x06EE, 0x0000 }, { 0x06EF, 0x0000 }, 
-    { 0x06F0, 0x0000 }, { 0x06F1, 0x0000 }, { 0x06F2, 0x0000 }, { 0x06F3, 0x0000 }, 
-    { 0x06F4, 0x0000 }, { 0x06F5, 0x0000 }, { 0x06F6, 0x0000 }, { 0x06F7, 0x0000 }, 
-    { 0x06F8, 0x0000 }, { 0x06F9, 0x0000 }, { 0x06FA, 0x0000 }, { 0x06FB, 0x0000 }, 
-    { 0x06FC, 0x0000 }, { 0x06FD, 0x0000 }, { 0x06FE, 0x0000 }, { 0x06FF, 0x0000 }
+  const UCS2 Arabic600::m_decompStr[][2] = {
+    { 0x0600u, 0x0000u }, { 0x0601u, 0x0000u }, { 0x0602u, 0x0000u }, { 0x0603u, 0x0000u }, 
+    { 0x0604u, 0x0000u }, { 0x0605u, 0x0000u }, { 0x0606u, 0x0000u }, { 0x0607u, 0x0000u }, 
+    { 0x0608u, 0x0000u }, { 0x0609u, 0x0000u }, { 0x060Au, 0x0000u }, { 0x060Bu, 0x0000u }, 
+    { 0x060Cu, 0x0000u }, { 0x060Du, 0x0000u }, { 0x060Eu, 0x0000u }, { 0x060Fu, 0x0000u }, 
+    { 0x0610u, 0x0000u }, { 0x0611u, 0x0000u }, { 0x0612u, 0x0000u }, { 0x0613u, 0x0000u }, 
+    { 0x0614u, 0x0000u }, { 0x0615u, 0x0000u }, { 0x0616u, 0x0000u }, { 0x0617u, 0x0000u }, 
+    { 0x0618u, 0x0000u }, { 0x0619u, 0x0000u }, { 0x061Au, 0x0000u }, { 0x061Bu, 0x0000u }, 
+    { 0x061Cu, 0x0000u }, { 0x061Du, 0x0000u }, { 0x061Eu, 0x0000u }, { 0x061Fu, 0x0000u }, 
+    { 0x0620u, 0x0000u }, { 0x0621u, 0x0000u }, { 0x0627u, 0x0653u }, { 0x0627u, 0x0654u }, 
+    { 0x0648u, 0x0654u }, { 0x0627u, 0x0655u }, { 0x064Au, 0x0654u }, { 0x0627u, 0x0000u }, 
+    { 0x0628u, 0x0000u }, { 0x0629u, 0x0000u }, { 0x062Au, 0x0000u }, { 0x062Bu, 0x0000u }, 
+    { 0x062Cu, 0x0000u }, { 0x062Du, 0x0000u }, { 0x062Eu, 0x0000u }, { 0x062Fu, 0x0000u }, 
+    { 0x0630u, 0x0000u }, { 0x0631u, 0x0000u }, { 0x0632u, 0x0000u }, { 0x0633u, 0x0000u }, 
+    { 0x0634u, 0x0000u }, { 0x0635u, 0x0000u }, { 0x0636u, 0x0000u }, { 0x0637u, 0x0000u }, 
+    { 0x0638u, 0x0000u }, { 0x0639u, 0x0000u }, { 0x063Au, 0x0000u }, { 0x063Bu, 0x0000u }, 
+    { 0x063Cu, 0x0000u }, { 0x063Du, 0x0000u }, { 0x063Eu, 0x0000u }, { 0x063Fu, 0x0000u }, 
+    { 0x0640u, 0x0000u }, { 0x0641u, 0x0000u }, { 0x0642u, 0x0000u }, { 0x0643u, 0x0000u }, 
+    { 0x0644u, 0x0000u }, { 0x0645u, 0x0000u }, { 0x0646u, 0x0000u }, { 0x0647u, 0x0000u }, 
+    { 0x0648u, 0x0000u }, { 0x0649u, 0x0000u }, { 0x064Au, 0x0000u }, { 0x064Bu, 0x0000u }, 
+    { 0x064Cu, 0x0000u }, { 0x064Du, 0x0000u }, { 0x064Eu, 0x0000u }, { 0x064Fu, 0x0000u }, 
+    { 0x0650u, 0x0000u }, { 0x0651u, 0x0000u }, { 0x0652u, 0x0000u }, { 0x0653u, 0x0000u }, 
+    { 0x0654u, 0x0000u }, { 0x0655u, 0x0000u }, { 0x0656u, 0x0000u }, { 0x0657u, 0x0000u }, 
+    { 0x0658u, 0x0000u }, { 0x0659u, 0x0000u }, { 0x065Au, 0x0000u }, { 0x065Bu, 0x0000u }, 
+    { 0x065Cu, 0x0000u }, { 0x065Du, 0x0000u }, { 0x065Eu, 0x0000u }, { 0x065Fu, 0x0000u }, 
+    { 0x0660u, 0x0000u }, { 0x0661u, 0x0000u }, { 0x0662u, 0x0000u }, { 0x0663u, 0x0000u }, 
+    { 0x0664u, 0x0000u }, { 0x0665u, 0x0000u }, { 0x0666u, 0x0000u }, { 0x0667u, 0x0000u }, 
+    { 0x0668u, 0x0000u }, { 0x0669u, 0x0000u }, { 0x066Au, 0x0000u }, { 0x066Bu, 0x0000u }, 
+    { 0x066Cu, 0x0000u }, { 0x066Du, 0x0000u }, { 0x066Eu, 0x0000u }, { 0x066Fu, 0x0000u }, 
+    { 0x0670u, 0x0000u }, { 0x0671u, 0x0000u }, { 0x0672u, 0x0000u }, { 0x0673u, 0x0000u }, 
+    { 0x0674u, 0x0000u }, { 0x0627u, 0x0674u }, { 0x0648u, 0x0674u }, { 0x06C7u, 0x0674u }, 
+    { 0x064Au, 0x0674u }, { 0x0679u, 0x0000u }, { 0x067Au, 0x0000u }, { 0x067Bu, 0x0000u }, 
+    { 0x067Cu, 0x0000u }, { 0x067Du, 0x0000u }, { 0x067Eu, 0x0000u }, { 0x067Fu, 0x0000u }, 
+    { 0x0680u, 0x0000u }, { 0x0681u, 0x0000u }, { 0x0682u, 0x0000u }, { 0x0683u, 0x0000u }, 
+    { 0x0684u, 0x0000u }, { 0x0685u, 0x0000u }, { 0x0686u, 0x0000u }, { 0x0687u, 0x0000u }, 
+    { 0x0688u, 0x0000u }, { 0x0689u, 0x0000u }, { 0x068Au, 0x0000u }, { 0x068Bu, 0x0000u }, 
+    { 0x068Cu, 0x0000u }, { 0x068Du, 0x0000u }, { 0x068Eu, 0x0000u }, { 0x068Fu, 0x0000u }, 
+    { 0x0690u, 0x0000u }, { 0x0691u, 0x0000u }, { 0x0692u, 0x0000u }, { 0x0693u, 0x0000u }, 
+    { 0x0694u, 0x0000u }, { 0x0695u, 0x0000u }, { 0x0696u, 0x0000u }, { 0x0697u, 0x0000u }, 
+    { 0x0698u, 0x0000u }, { 0x0699u, 0x0000u }, { 0x069Au, 0x0000u }, { 0x069Bu, 0x0000u }, 
+    { 0x069Cu, 0x0000u }, { 0x069Du, 0x0000u }, { 0x069Eu, 0x0000u }, { 0x069Fu, 0x0000u }, 
+    { 0x06A0u, 0x0000u }, { 0x06A1u, 0x0000u }, { 0x06A2u, 0x0000u }, { 0x06A3u, 0x0000u }, 
+    { 0x06A4u, 0x0000u }, { 0x06A5u, 0x0000u }, { 0x06A6u, 0x0000u }, { 0x06A7u, 0x0000u }, 
+    { 0x06A8u, 0x0000u }, { 0x06A9u, 0x0000u }, { 0x06AAu, 0x0000u }, { 0x06ABu, 0x0000u }, 
+    { 0x06ACu, 0x0000u }, { 0x06ADu, 0x0000u }, { 0x06AEu, 0x0000u }, { 0x06AFu, 0x0000u }, 
+    { 0x06B0u, 0x0000u }, { 0x06B1u, 0x0000u }, { 0x06B2u, 0x0000u }, { 0x06B3u, 0x0000u }, 
+    { 0x06B4u, 0x0000u }, { 0x06B5u, 0x0000u }, { 0x06B6u, 0x0000u }, { 0x06B7u, 0x0000u }, 
+    { 0x06B8u, 0x0000u }, { 0x06B9u, 0x0000u }, { 0x06BAu, 0x0000u }, { 0x06BBu, 0x0000u }, 
+    { 0x06BCu, 0x0000u }, { 0x06BDu, 0x0000u }, { 0x06BEu, 0x0000u }, { 0x06BFu, 0x0000u }, 
+    { 0x06D5u, 0x0654u }, { 0x06C1u, 0x0000u }, { 0x06C1u, 0x0654u }, { 0x06C3u, 0x0000u }, 
+    { 0x06C4u, 0x0000u }, { 0x06C5u, 0x0000u }, { 0x06C6u, 0x0000u }, { 0x06C7u, 0x0000u }, 
+    { 0x06C8u, 0x0000u }, { 0x06C9u, 0x0000u }, { 0x06CAu, 0x0000u }, { 0x06CBu, 0x0000u }, 
+    { 0x06CCu, 0x0000u }, { 0x06CDu, 0x0000u }, { 0x06CEu, 0x0000u }, { 0x06CFu, 0x0000u }, 
+    { 0x06D0u, 0x0000u }, { 0x06D1u, 0x0000u }, { 0x06D2u, 0x0000u }, { 0x06D2u, 0x0654u }, 
+    { 0x06D4u, 0x0000u }, { 0x06D5u, 0x0000u }, { 0x06D6u, 0x0000u }, { 0x06D7u, 0x0000u }, 
+    { 0x06D8u, 0x0000u }, { 0x06D9u, 0x0000u }, { 0x06DAu, 0x0000u }, { 0x06DBu, 0x0000u }, 
+    { 0x06DCu, 0x0000u }, { 0x06DDu, 0x0000u }, { 0x06DEu, 0x0000u }, { 0x06DFu, 0x0000u }, 
+    { 0x06E0u, 0x0000u }, { 0x06E1u, 0x0000u }, { 0x06E2u, 0x0000u }, { 0x06E3u, 0x0000u }, 
+    { 0x06E4u, 0x0000u }, { 0x06E5u, 0x0000u }, { 0x06E6u, 0x0000u }, { 0x06E7u, 0x0000u }, 
+    { 0x06E8u, 0x0000u }, { 0x06E9u, 0x0000u }, { 0x06EAu, 0x0000u }, { 0x06EBu, 0x0000u }, 
+    { 0x06ECu, 0x0000u }, { 0x06EDu, 0x0000u }, { 0x06EEu, 0x0000u }, { 0x06EFu, 0x0000u }, 
+    { 0x06F0u, 0x0000u }, { 0x06F1u, 0x0000u }, { 0x06F2u, 0x0000u }, { 0x06F3u, 0x0000u }, 
+    { 0x06F4u, 0x0000u }, { 0x06F5u, 0x0000u }, { 0x06F6u, 0x0000u }, { 0x06F7u, 0x0000u }, 
+    { 0x06F8u, 0x0000u }, { 0x06F9u, 0x0000u }, { 0x06FAu, 0x0000u }, { 0x06FBu, 0x0000u }, 
+    { 0x06FCu, 0x0000u }, { 0x06FDu, 0x0000u }, { 0x06FEu, 0x0000u }, { 0x06FFu, 0x0000u }
   };
 
-  const unsigned char Arabic600::_lb[] = {
+  const unsigned char Arabic600::m_lb[] = {
     LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, 
     LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, 
     LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, 
@@ -980,320 +802,13 @@ namespace Babylon {
     LB_NU, LB_NU, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL, LB_AL
   };
 
-    const bool Arabic600::_Terminal_Punctuation[] = {
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 1, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 1, 0, 0, 0, 1, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 1, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
+    const bitset<256> Arabic600::m_Composite(string("0000000000000000000000000000000000000000110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001111000000000000000000000000000000000000000000000000000000000000000000000000000000111110000000000000000000000000000000000"));
 
-    const bool Arabic600::_Combining[] = {
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        1, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 0, 0, 1, 
-        1, 0, 1, 1, 1, 1, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
+    const bitset<256> Arabic600::m_Alphabetic(string("0001110000000000000000011111111000011111110011111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111100000000000000000000000000011111111111111111111100000011111111111111111111111111000000000000000000000000000000000"));
 
-    const bool Arabic600::_Non_spacing[] = {
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        1, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 0, 0, 1, 
-        1, 0, 1, 1, 1, 1, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
+    const bitset<256> Arabic600::m_Diacritic(string("0000000000000000000111000110000110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011111111000000000000000000000000000000000000000000000000000000000000000000000000000"));
 
-    const bool Arabic600::_Composite[] = {
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 1, 1, 1, 1, 1, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        1, 0, 1, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 1, 1, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
-
-    const bool Arabic600::_Alphabetic[] = {
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 0, 0, 0, 0, 0, 
-        0, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 0, 1, 1, 1, 
-        1, 1, 1, 1, 1, 0, 0, 0, 
-        0, 1, 1, 1, 1, 1, 1, 1, 
-        1, 0, 0, 0, 0, 1, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 1, 1, 1, 0, 0, 0
-    };
-
-    const bool Arabic600::_Diacritic[] = {
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 1, 
-        1, 0, 0, 0, 0, 1, 1, 0, 
-        0, 0, 1, 1, 1, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
-
-    const bool Arabic600::_Extender[] = {
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        1, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
-
-    const bool Arabic600::_Identifier_Part[] = {
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 0, 0, 0, 0, 0, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 0, 0, 0, 0, 0, 0, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 0, 1, 1, 1, 
-        1, 1, 1, 1, 1, 0, 0, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 0, 1, 1, 1, 1, 0, 0, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 0, 0, 0
-    };
-
-    const bool Arabic600::_Bidi_Arabic_Right_to_Left[] = {
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 1, 0, 0, 0, 1, 
-        0, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 0, 0, 0, 0, 0, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 1, 0, 0, 
-        0, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 1, 1, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 1, 1, 1, 1, 1, 0
-    };
+    const bitset<256> Arabic600::m_Identifier_Part_Not_Cf(string("0001111111111111001111011111111110011111110011111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111100000001111111111000000000011111111111111111111100000011111111111111111111111111000000000000000000000000000000000"));
 
 }; // namespace Babylon
 

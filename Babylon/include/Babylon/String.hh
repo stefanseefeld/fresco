@@ -33,7 +33,8 @@
 
 namespace Babylon {
 
-    class String : public basic_string<Char> {
+    // g++ does not yet support char_traits :-(
+    class String : public basic_string<Babylon::Char> {
     public:
 	// CONSTRUCTORS:
 	/// Creates a string of the length 0.
@@ -57,6 +58,8 @@ namespace Babylon {
 	    throw (Trans_Error) { utf8(UTF8_string(s), norm); }
 	void utf16(const UTF16_string &, const Norm norm = NORM_NONE)
 	    throw (Trans_Error);
+	void utf16(const UCS2 * s, const Norm norm = NORM_NONE)
+	    throw (Trans_Error) { utf16(UTF16_string(s), norm); }
 	void utf32(const UTF32_string &, const Norm norm = NORM_NONE);
 	UTF8_string  utf8() const throw (Trans_Error);
 	UTF16_string utf16() const throw(Trans_Error);

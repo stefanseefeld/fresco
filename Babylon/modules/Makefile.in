@@ -35,7 +35,7 @@ endef
 
 define link
 @echo linking $(@F)
-@$(CXX) $(LDFLAGS) -o $@ $< $(LIBS)
+@$(CXX) $(LDFLAGS) -o $@ $< $(LIBS) && strip --strip-unneeded $@
 endef
 
 include $(cdir)/local.mk
@@ -140,6 +140,15 @@ SRC	+= 250-2AF.cc \
            FEFF-FEFF.cc \
            FF00-FFEF.cc \
            FFF0-FFFD.cc \
+           10300-1032F.cc \
+	   10330-1034F.cc \
+           10400-1044F.cc \
+           1D000-1D0FF.cc \
+	   1D100-1D1FF.cc \
+           1D400-1D7FF.cc \
+           20000-2A6D6.cc \
+           2F800-2FA1F.cc \
+           E0000-E007F.cc \
 	   F0000-FFFFD.cc \
 	   100000-10FFFD.cc
 endif

@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Wed,  6 Dec 2000 23:26:44 +0100.
+ * ftp.unicode.org on Mon,  8 Jan 2001 23:32:46 +0100.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -25,6 +25,7 @@
 
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
+#include <bitset>
 
 namespace Babylon {
 
@@ -34,9 +35,9 @@ namespace Babylon {
     };
 
     Enclosed_CJK_Letters_and_Months3200() {
-      _first_letter = 0x3200;
-      _last_letter  = 0x32FF;
-      // _version="3.0.1" // Not yet supported!
+      m_first_letter = 0x3200;
+      m_last_letter  = 0x32FF;
+      // m_version="3.0.1" // Not yet supported!
 
     }
 
@@ -45,11 +46,11 @@ namespace Babylon {
     }
 
     UCS4 firstLetter() {
-      return _first_letter;
+      return m_first_letter;
     }
 
     UCS4 lastLetter() {
-      return _last_letter;
+      return m_last_letter;
     }
 
     bool is_undef_block() const {
@@ -63,31 +64,19 @@ namespace Babylon {
     }
 
     bool is_defined(const UCS4 uc) const {
-      return (_is_defined[uc - _first_letter]);
+      return (m_is_defined.test(uc - m_first_letter));
     }
 
     UCS4 uppercase(const UCS4 uc) const {
       return uc;
     }
 
-    bool is_Uppercase(const UCS4 uc) const {
-      return category(uc) == CAT_Lu;
-    }
-
     UCS4 lowercase(const UCS4 uc) const {
       return uc;
     }
 
-    bool is_Lowercase(const UCS4 uc) const {
-      return category(uc) == CAT_Ll;
-    }
-
     UCS4 titlecase(const UCS4 uc) const {
       return uc;
-    }
-
-    bool is_Titlecase(const UCS4 uc) const {
-      return category(uc) == CAT_Lt;
     }
 
     int dec_digit_value(const UCS4 uc) const {
@@ -206,7 +195,7 @@ namespace Babylon {
     Gen_Cat category(const UCS4 uc) const {
       if (!is_defined(uc))
         return CAT_MAX;
-      return Babylon::Gen_Cat(Enclosed_CJK_Letters_and_Months3200::_cat[uc - _first_letter]);
+      return Babylon::Gen_Cat(Enclosed_CJK_Letters_and_Months3200::_cat[uc - m_first_letter]);
     }
 
     Can_Comb_Class comb_class(const UCS4 uc) const {
@@ -224,373 +213,373 @@ namespace Babylon {
     Char_Decomp decomp_type(const UCS4 uc) const {
       if (!is_defined(uc))
         return DECOMP_MAX;
-      return Babylon::Char_Decomp(Enclosed_CJK_Letters_and_Months3200::_decomp[uc - _first_letter]);
+      return Babylon::Char_Decomp(Enclosed_CJK_Letters_and_Months3200::_decomp[uc - m_first_letter]);
     }
 
     UTF32_string decompose(const UCS4 uc) const {
       Babylon::UTF32_string us;
       us.resize(2);
-      us[0] = Enclosed_CJK_Letters_and_Months3200::_decompStr[uc - _first_letter][0];
-      us[1] = Enclosed_CJK_Letters_and_Months3200::_decompStr[uc - _first_letter][1];
+      us[0] = Enclosed_CJK_Letters_and_Months3200::m_decompStr[uc - m_first_letter][0];
+      us[1] = Enclosed_CJK_Letters_and_Months3200::m_decompStr[uc - m_first_letter][1];
 
       switch (uc) {
 
       case 0x3200:
         us.resize(3);
-        us[2] = 0x0029;
+        us[2u] = 0x0029u;
         break;
 
       case 0x3201:
         us.resize(3);
-        us[2] = 0x0029;
+        us[2u] = 0x0029u;
         break;
 
       case 0x3202:
         us.resize(3);
-        us[2] = 0x0029;
+        us[2u] = 0x0029u;
         break;
 
       case 0x3203:
         us.resize(3);
-        us[2] = 0x0029;
+        us[2u] = 0x0029u;
         break;
 
       case 0x3204:
         us.resize(3);
-        us[2] = 0x0029;
+        us[2u] = 0x0029u;
         break;
 
       case 0x3205:
         us.resize(3);
-        us[2] = 0x0029;
+        us[2u] = 0x0029u;
         break;
 
       case 0x3206:
         us.resize(3);
-        us[2] = 0x0029;
+        us[2u] = 0x0029u;
         break;
 
       case 0x3207:
         us.resize(3);
-        us[2] = 0x0029;
+        us[2u] = 0x0029u;
         break;
 
       case 0x3208:
         us.resize(3);
-        us[2] = 0x0029;
+        us[2u] = 0x0029u;
         break;
 
       case 0x3209:
         us.resize(3);
-        us[2] = 0x0029;
+        us[2u] = 0x0029u;
         break;
 
       case 0x320A:
         us.resize(3);
-        us[2] = 0x0029;
+        us[2u] = 0x0029u;
         break;
 
       case 0x320B:
         us.resize(3);
-        us[2] = 0x0029;
+        us[2u] = 0x0029u;
         break;
 
       case 0x320C:
         us.resize(3);
-        us[2] = 0x0029;
+        us[2u] = 0x0029u;
         break;
 
       case 0x320D:
         us.resize(3);
-        us[2] = 0x0029;
+        us[2u] = 0x0029u;
         break;
 
       case 0x320E:
         us.resize(4);
-        us[2] = 0x1161;
-        us[3] = 0x0029;
+        us[2u] = 0x1161u;
+        us[3u] = 0x0029u;
         break;
 
       case 0x320F:
         us.resize(4);
-        us[2] = 0x1161;
-        us[3] = 0x0029;
+        us[2u] = 0x1161u;
+        us[3u] = 0x0029u;
         break;
 
       case 0x3210:
         us.resize(4);
-        us[2] = 0x1161;
-        us[3] = 0x0029;
+        us[2u] = 0x1161u;
+        us[3u] = 0x0029u;
         break;
 
       case 0x3211:
         us.resize(4);
-        us[2] = 0x1161;
-        us[3] = 0x0029;
+        us[2u] = 0x1161u;
+        us[3u] = 0x0029u;
         break;
 
       case 0x3212:
         us.resize(4);
-        us[2] = 0x1161;
-        us[3] = 0x0029;
+        us[2u] = 0x1161u;
+        us[3u] = 0x0029u;
         break;
 
       case 0x3213:
         us.resize(4);
-        us[2] = 0x1161;
-        us[3] = 0x0029;
+        us[2u] = 0x1161u;
+        us[3u] = 0x0029u;
         break;
 
       case 0x3214:
         us.resize(4);
-        us[2] = 0x1161;
-        us[3] = 0x0029;
+        us[2u] = 0x1161u;
+        us[3u] = 0x0029u;
         break;
 
       case 0x3215:
         us.resize(4);
-        us[2] = 0x1161;
-        us[3] = 0x0029;
+        us[2u] = 0x1161u;
+        us[3u] = 0x0029u;
         break;
 
       case 0x3216:
         us.resize(4);
-        us[2] = 0x1161;
-        us[3] = 0x0029;
+        us[2u] = 0x1161u;
+        us[3u] = 0x0029u;
         break;
 
       case 0x3217:
         us.resize(4);
-        us[2] = 0x1161;
-        us[3] = 0x0029;
+        us[2u] = 0x1161u;
+        us[3u] = 0x0029u;
         break;
 
       case 0x3218:
         us.resize(4);
-        us[2] = 0x1161;
-        us[3] = 0x0029;
+        us[2u] = 0x1161u;
+        us[3u] = 0x0029u;
         break;
 
       case 0x3219:
         us.resize(4);
-        us[2] = 0x1161;
-        us[3] = 0x0029;
+        us[2u] = 0x1161u;
+        us[3u] = 0x0029u;
         break;
 
       case 0x321A:
         us.resize(4);
-        us[2] = 0x1161;
-        us[3] = 0x0029;
+        us[2u] = 0x1161u;
+        us[3u] = 0x0029u;
         break;
 
       case 0x321B:
         us.resize(4);
-        us[2] = 0x1161;
-        us[3] = 0x0029;
+        us[2u] = 0x1161u;
+        us[3u] = 0x0029u;
         break;
 
       case 0x321C:
         us.resize(4);
-        us[2] = 0x116E;
-        us[3] = 0x0029;
+        us[2u] = 0x116Eu;
+        us[3u] = 0x0029u;
         break;
 
       case 0x3220:
         us.resize(3);
-        us[2] = 0x0029;
+        us[2u] = 0x0029u;
         break;
 
       case 0x3221:
         us.resize(3);
-        us[2] = 0x0029;
+        us[2u] = 0x0029u;
         break;
 
       case 0x3222:
         us.resize(3);
-        us[2] = 0x0029;
+        us[2u] = 0x0029u;
         break;
 
       case 0x3223:
         us.resize(3);
-        us[2] = 0x0029;
+        us[2u] = 0x0029u;
         break;
 
       case 0x3224:
         us.resize(3);
-        us[2] = 0x0029;
+        us[2u] = 0x0029u;
         break;
 
       case 0x3225:
         us.resize(3);
-        us[2] = 0x0029;
+        us[2u] = 0x0029u;
         break;
 
       case 0x3226:
         us.resize(3);
-        us[2] = 0x0029;
+        us[2u] = 0x0029u;
         break;
 
       case 0x3227:
         us.resize(3);
-        us[2] = 0x0029;
+        us[2u] = 0x0029u;
         break;
 
       case 0x3228:
         us.resize(3);
-        us[2] = 0x0029;
+        us[2u] = 0x0029u;
         break;
 
       case 0x3229:
         us.resize(3);
-        us[2] = 0x0029;
+        us[2u] = 0x0029u;
         break;
 
       case 0x322A:
         us.resize(3);
-        us[2] = 0x0029;
+        us[2u] = 0x0029u;
         break;
 
       case 0x322B:
         us.resize(3);
-        us[2] = 0x0029;
+        us[2u] = 0x0029u;
         break;
 
       case 0x322C:
         us.resize(3);
-        us[2] = 0x0029;
+        us[2u] = 0x0029u;
         break;
 
       case 0x322D:
         us.resize(3);
-        us[2] = 0x0029;
+        us[2u] = 0x0029u;
         break;
 
       case 0x322E:
         us.resize(3);
-        us[2] = 0x0029;
+        us[2u] = 0x0029u;
         break;
 
       case 0x322F:
         us.resize(3);
-        us[2] = 0x0029;
+        us[2u] = 0x0029u;
         break;
 
       case 0x3230:
         us.resize(3);
-        us[2] = 0x0029;
+        us[2u] = 0x0029u;
         break;
 
       case 0x3231:
         us.resize(3);
-        us[2] = 0x0029;
+        us[2u] = 0x0029u;
         break;
 
       case 0x3232:
         us.resize(3);
-        us[2] = 0x0029;
+        us[2u] = 0x0029u;
         break;
 
       case 0x3233:
         us.resize(3);
-        us[2] = 0x0029;
+        us[2u] = 0x0029u;
         break;
 
       case 0x3234:
         us.resize(3);
-        us[2] = 0x0029;
+        us[2u] = 0x0029u;
         break;
 
       case 0x3235:
         us.resize(3);
-        us[2] = 0x0029;
+        us[2u] = 0x0029u;
         break;
 
       case 0x3236:
         us.resize(3);
-        us[2] = 0x0029;
+        us[2u] = 0x0029u;
         break;
 
       case 0x3237:
         us.resize(3);
-        us[2] = 0x0029;
+        us[2u] = 0x0029u;
         break;
 
       case 0x3238:
         us.resize(3);
-        us[2] = 0x0029;
+        us[2u] = 0x0029u;
         break;
 
       case 0x3239:
         us.resize(3);
-        us[2] = 0x0029;
+        us[2u] = 0x0029u;
         break;
 
       case 0x323A:
         us.resize(3);
-        us[2] = 0x0029;
+        us[2u] = 0x0029u;
         break;
 
       case 0x323B:
         us.resize(3);
-        us[2] = 0x0029;
+        us[2u] = 0x0029u;
         break;
 
       case 0x323C:
         us.resize(3);
-        us[2] = 0x0029;
+        us[2u] = 0x0029u;
         break;
 
       case 0x323D:
         us.resize(3);
-        us[2] = 0x0029;
+        us[2u] = 0x0029u;
         break;
 
       case 0x323E:
         us.resize(3);
-        us[2] = 0x0029;
+        us[2u] = 0x0029u;
         break;
 
       case 0x323F:
         us.resize(3);
-        us[2] = 0x0029;
+        us[2u] = 0x0029u;
         break;
 
       case 0x3240:
         us.resize(3);
-        us[2] = 0x0029;
+        us[2u] = 0x0029u;
         break;
 
       case 0x3241:
         us.resize(3);
-        us[2] = 0x0029;
+        us[2u] = 0x0029u;
         break;
 
       case 0x3242:
         us.resize(3);
-        us[2] = 0x0029;
+        us[2u] = 0x0029u;
         break;
 
       case 0x3243:
         us.resize(3);
-        us[2] = 0x0029;
+        us[2u] = 0x0029u;
         break;
 
       case 0x32C9:
         us.resize(3);
-        us[2] = 0x6708;
+        us[2u] = 0x6708u;
         break;
 
       case 0x32CA:
         us.resize(3);
-        us[2] = 0x6708;
+        us[2u] = 0x6708u;
         break;
 
       case 0x32CB:
         us.resize(3);
-        us[2] = 0x6708;
+        us[2u] = 0x6708u;
         break;
       }
-      if (us[1] == 0x0000) {
+      if (us[1] == 0x0000u) {
         us.resize(1);
       }
 
@@ -613,11 +602,7 @@ namespace Babylon {
       return Babylon::EA_Width(EA_WIDTH_W);
     }
 
-    UCS4 compose (const UCS4 starter, const UCS4 last) {
-      return 0;
-    }
-
-    bool is_Zero_width(const UCS4 uc) const {
+    UCS4 compose (const UCS4 start, const UCS4 last) {
       return 0;
     }
 
@@ -629,6 +614,10 @@ namespace Babylon {
       return 0;
     }
 
+    bool is_Format_Control(const UCS4 uc) const {
+      return 0;
+    }
+
     bool is_Bidi_Control(const UCS4 uc) const {
       return 0;
     }
@@ -637,7 +626,7 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Format_Control(const UCS4 uc) const {
+    bool is_Other_Format_Control(const UCS4 uc) const {
       return 0;
     }
 
@@ -661,24 +650,8 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Paired_Punctuation(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Left_of_Pair(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Combining(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Non_spacing(const UCS4 uc) const {
-      return 0;
-    }
-
     bool is_Composite(const UCS4 uc) const {
-      return Enclosed_CJK_Letters_and_Months3200::_Composite[uc - _first_letter];
+      return m_Composite.test(uc - m_first_letter);
     }
 
     bool is_Hex_Digit(const UCS4 uc) const {
@@ -697,19 +670,15 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Identifier_Part(const UCS4 uc) const {
+    bool is_Identifier_Part_Not_Cf(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Ignorable_Control(const UCS4 uc) const {
+    bool is_Other_Uppercase(const UCS4 uc) const {
       return 0;
     }
 
-    bool is_Bidi_Hebrew_Right_to_Left(const UCS4 uc) const {
-      return 0;
-    }
-
-    bool is_Bidi_Arabic_Right_to_Left(const UCS4 uc) const {
+    bool is_Other_Lowercase(const UCS4 uc) const {
       return 0;
     }
 
@@ -721,7 +690,7 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Not_a_Character(const UCS4 uc) const {
+    bool is_Noncharacter_Code_Point(const UCS4 uc) const {
       return ((uc & 0xFFFE) == 0xFFFE);
     }
 
@@ -737,165 +706,23 @@ namespace Babylon {
       return 0;
     }
 
-    bool is_Space(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Zs);
-    }
-
-    bool is_ISO_Control(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Cc);
-    }
-
-    bool is_Punctuation(const UCS4 uc) const {
-      return (is_defined(uc) && (category(uc) == CAT_Pc ||
-                                 category(uc) == CAT_Pd ||
-                                 category(uc) == CAT_Ps ||
-                                 category(uc) == CAT_Pe ||
-                                 category(uc) == CAT_Pi ||
-                                 category(uc) == CAT_Pf ||
-                                 category(uc) == CAT_Po)
-             );
-    }
-
-    bool is_Line_Separator(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Zl);
-    }
-
-    bool is_Paragraph_Separator(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Zp);
-    }
-
-    bool is_Currency_Symbol(const UCS4 uc) const {
-      return (is_defined(uc) && category(uc) == CAT_Sc);
-    }
-
-    bool is_Bidi_Left_to_Right(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_L;
-    }
-
-    bool is_Bidi_European_Digit(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_EN;
-    }
-
-    bool is_Bidi_Eur_Num_Separator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_ES;
-    }
-
-    bool is_Bidi_Eur_Num_Terminator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_ET;
-    }
-
-    bool is_Bidi_Arabic_Digit(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_AN;
-    }
-
-    bool is_Bidi_Common_Separator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_CS;
-    }
-
-    bool is_Bidi_Block_Separator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_B;
-    }
-
-    bool is_Bidi_Segment_Separator(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_S;
-    }
-
-    bool is_Bidi_Whitespace(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_WS;
-    }
-
-    bool is_Bidi_Non_spacing_Mark(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_NSM;
-    }
-
-    bool is_Bidi_Boundary_Neutral(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_BN;
-    }
-
-    bool is_Bidi_PDF(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_PDF;
-    }
-
-    bool is_Bidi_Embedding_or_Override(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_LRE ||
-             bidir_props(uc) == BIDIR_RLE ||
-             bidir_props(uc) == BIDIR_LRO ||
-             bidir_props(uc) == BIDIR_RLO;
-    }
-
-    bool is_Bidi_LRE(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_LRE;
-    }
-
-    bool is_Bidi_RLE(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_RLE;
-    }
-
-    bool is_Bidi_LRO(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_LRO;
-    }
-
-    bool is_Bidi_RLO(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_RLO;
-    }
-
-    bool is_Bidi_Other_Neutral(const UCS4 uc) const {
-      return bidir_props(uc) == BIDIR_ON;
-    }
-
-    bool is_Unassigned_Code_Value(const UCS4 uc) const {
-      return !is_defined(uc) && !is_Not_a_Character(uc);
-    }
-
 
   private:
     // functions
     Enclosed_CJK_Letters_and_Months3200(const Enclosed_CJK_Letters_and_Months3200 &) {}
 
-    Babylon::UCS4 _first_letter;
-    Babylon::UCS4 _last_letter;
-    static const bool _is_defined[256];
+    Babylon::UCS4 m_first_letter;
+    Babylon::UCS4 m_last_letter;
+    // Babylon::UCS4_string m_version;
+    static const bitset<256> m_is_defined;
     static const unsigned char _cat[256];
     static const unsigned char _decomp[256];
-    static const UCS2 _decompStr[256][2];
-    static const bool _Composite[256];
+    static const UCS2 m_decompStr[256][2];
+    static const bitset<256> m_Composite;
 
   }; // class Enclosed_CJK_Letters_and_Months3200
 
-  const bool Enclosed_CJK_Letters_and_Months3200::_is_defined[] = {
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 0, 0, 0, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 0, 0, 0, 0, 
-    0, 0, 0, 0, 0, 0, 0, 0, 
-    0, 0, 0, 0, 0, 0, 0, 0, 
-    0, 0, 0, 0, 0, 0, 0, 0, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 0, 0, 0, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 0, 0, 0, 0, 0, 0, 0, 
-    0, 0, 0, 0, 0, 0, 0, 0, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 0, 0, 0, 0, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 0
-  };
+    const bitset<256> Enclosed_CJK_Letters_and_Months3200::m_is_defined(string("0111111111111111111111111111111111111111111111110000111111111111000000000000000111111111111111111111111111111111111111111111111110001111111111111111111111111111000000000000000000000000000011111111111111111111111111111111111100011111111111111111111111111111"));
 
   const unsigned char Enclosed_CJK_Letters_and_Months3200::_cat[] = {
     CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, CAT_So, 
@@ -967,107 +794,74 @@ namespace Babylon {
     DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_CIRCLE, DECOMP_NO_DECOMP
   };
 
-  const UCS2 Enclosed_CJK_Letters_and_Months3200::_decompStr[][2] = {
-    { 0x0028, 0x1100 }, { 0x0028, 0x1102 }, { 0x0028, 0x1103 }, { 0x0028, 0x1105 }, 
-    { 0x0028, 0x1106 }, { 0x0028, 0x1107 }, { 0x0028, 0x1109 }, { 0x0028, 0x110B }, 
-    { 0x0028, 0x110C }, { 0x0028, 0x110E }, { 0x0028, 0x110F }, { 0x0028, 0x1110 }, 
-    { 0x0028, 0x1111 }, { 0x0028, 0x1112 }, { 0x0028, 0x1100 }, { 0x0028, 0x1102 }, 
-    { 0x0028, 0x1103 }, { 0x0028, 0x1105 }, { 0x0028, 0x1106 }, { 0x0028, 0x1107 }, 
-    { 0x0028, 0x1109 }, { 0x0028, 0x110B }, { 0x0028, 0x110C }, { 0x0028, 0x110E }, 
-    { 0x0028, 0x110F }, { 0x0028, 0x1110 }, { 0x0028, 0x1111 }, { 0x0028, 0x1112 }, 
-    { 0x0028, 0x110C }, { 0x321D, 0x0000 }, { 0x321E, 0x0000 }, { 0x321F, 0x0000 }, 
-    { 0x0028, 0x4E00 }, { 0x0028, 0x4E8C }, { 0x0028, 0x4E09 }, { 0x0028, 0x56DB }, 
-    { 0x0028, 0x4E94 }, { 0x0028, 0x516D }, { 0x0028, 0x4E03 }, { 0x0028, 0x516B }, 
-    { 0x0028, 0x4E5D }, { 0x0028, 0x5341 }, { 0x0028, 0x6708 }, { 0x0028, 0x706B }, 
-    { 0x0028, 0x6C34 }, { 0x0028, 0x6728 }, { 0x0028, 0x91D1 }, { 0x0028, 0x571F }, 
-    { 0x0028, 0x65E5 }, { 0x0028, 0x682A }, { 0x0028, 0x6709 }, { 0x0028, 0x793E }, 
-    { 0x0028, 0x540D }, { 0x0028, 0x7279 }, { 0x0028, 0x8CA1 }, { 0x0028, 0x795D }, 
-    { 0x0028, 0x52B4 }, { 0x0028, 0x4EE3 }, { 0x0028, 0x547C }, { 0x0028, 0x5B66 }, 
-    { 0x0028, 0x76E3 }, { 0x0028, 0x4F01 }, { 0x0028, 0x8CC7 }, { 0x0028, 0x5354 }, 
-    { 0x0028, 0x796D }, { 0x0028, 0x4F11 }, { 0x0028, 0x81EA }, { 0x0028, 0x81F3 }, 
-    { 0x3244, 0x0000 }, { 0x3245, 0x0000 }, { 0x3246, 0x0000 }, { 0x3247, 0x0000 }, 
-    { 0x3248, 0x0000 }, { 0x3249, 0x0000 }, { 0x324A, 0x0000 }, { 0x324B, 0x0000 }, 
-    { 0x324C, 0x0000 }, { 0x324D, 0x0000 }, { 0x324E, 0x0000 }, { 0x324F, 0x0000 }, 
-    { 0x3250, 0x0000 }, { 0x3251, 0x0000 }, { 0x3252, 0x0000 }, { 0x3253, 0x0000 }, 
-    { 0x3254, 0x0000 }, { 0x3255, 0x0000 }, { 0x3256, 0x0000 }, { 0x3257, 0x0000 }, 
-    { 0x3258, 0x0000 }, { 0x3259, 0x0000 }, { 0x325A, 0x0000 }, { 0x325B, 0x0000 }, 
-    { 0x325C, 0x0000 }, { 0x325D, 0x0000 }, { 0x325E, 0x0000 }, { 0x325F, 0x0000 }, 
-    { 0x1100, 0x0000 }, { 0x1102, 0x0000 }, { 0x1103, 0x0000 }, { 0x1105, 0x0000 }, 
-    { 0x1106, 0x0000 }, { 0x1107, 0x0000 }, { 0x1109, 0x0000 }, { 0x110B, 0x0000 }, 
-    { 0x110C, 0x0000 }, { 0x110E, 0x0000 }, { 0x110F, 0x0000 }, { 0x1110, 0x0000 }, 
-    { 0x1111, 0x0000 }, { 0x1112, 0x0000 }, { 0x1100, 0x1161 }, { 0x1102, 0x1161 }, 
-    { 0x1103, 0x1161 }, { 0x1105, 0x1161 }, { 0x1106, 0x1161 }, { 0x1107, 0x1161 }, 
-    { 0x1109, 0x1161 }, { 0x110B, 0x1161 }, { 0x110C, 0x1161 }, { 0x110E, 0x1161 }, 
-    { 0x110F, 0x1161 }, { 0x1110, 0x1161 }, { 0x1111, 0x1161 }, { 0x1112, 0x1161 }, 
-    { 0x327C, 0x0000 }, { 0x327D, 0x0000 }, { 0x327E, 0x0000 }, { 0x327F, 0x0000 }, 
-    { 0x4E00, 0x0000 }, { 0x4E8C, 0x0000 }, { 0x4E09, 0x0000 }, { 0x56DB, 0x0000 }, 
-    { 0x4E94, 0x0000 }, { 0x516D, 0x0000 }, { 0x4E03, 0x0000 }, { 0x516B, 0x0000 }, 
-    { 0x4E5D, 0x0000 }, { 0x5341, 0x0000 }, { 0x6708, 0x0000 }, { 0x706B, 0x0000 }, 
-    { 0x6C34, 0x0000 }, { 0x6728, 0x0000 }, { 0x91D1, 0x0000 }, { 0x571F, 0x0000 }, 
-    { 0x65E5, 0x0000 }, { 0x682A, 0x0000 }, { 0x6709, 0x0000 }, { 0x793E, 0x0000 }, 
-    { 0x540D, 0x0000 }, { 0x7279, 0x0000 }, { 0x8CA1, 0x0000 }, { 0x795D, 0x0000 }, 
-    { 0x52B4, 0x0000 }, { 0x79D8, 0x0000 }, { 0x7537, 0x0000 }, { 0x5973, 0x0000 }, 
-    { 0x9069, 0x0000 }, { 0x512A, 0x0000 }, { 0x5370, 0x0000 }, { 0x6CE8, 0x0000 }, 
-    { 0x9805, 0x0000 }, { 0x4F11, 0x0000 }, { 0x5199, 0x0000 }, { 0x6B63, 0x0000 }, 
-    { 0x4E0A, 0x0000 }, { 0x4E2D, 0x0000 }, { 0x4E0B, 0x0000 }, { 0x5DE6, 0x0000 }, 
-    { 0x53F3, 0x0000 }, { 0x533B, 0x0000 }, { 0x5B97, 0x0000 }, { 0x5B66, 0x0000 }, 
-    { 0x76E3, 0x0000 }, { 0x4F01, 0x0000 }, { 0x8CC7, 0x0000 }, { 0x5354, 0x0000 }, 
-    { 0x591C, 0x0000 }, { 0x32B1, 0x0000 }, { 0x32B2, 0x0000 }, { 0x32B3, 0x0000 }, 
-    { 0x32B4, 0x0000 }, { 0x32B5, 0x0000 }, { 0x32B6, 0x0000 }, { 0x32B7, 0x0000 }, 
-    { 0x32B8, 0x0000 }, { 0x32B9, 0x0000 }, { 0x32BA, 0x0000 }, { 0x32BB, 0x0000 }, 
-    { 0x32BC, 0x0000 }, { 0x32BD, 0x0000 }, { 0x32BE, 0x0000 }, { 0x32BF, 0x0000 }, 
-    { 0x0031, 0x6708 }, { 0x0032, 0x6708 }, { 0x0033, 0x6708 }, { 0x0034, 0x6708 }, 
-    { 0x0035, 0x6708 }, { 0x0036, 0x6708 }, { 0x0037, 0x6708 }, { 0x0038, 0x6708 }, 
-    { 0x0039, 0x6708 }, { 0x0031, 0x0030 }, { 0x0031, 0x0031 }, { 0x0031, 0x0032 }, 
-    { 0x32CC, 0x0000 }, { 0x32CD, 0x0000 }, { 0x32CE, 0x0000 }, { 0x32CF, 0x0000 }, 
-    { 0x30A2, 0x0000 }, { 0x30A4, 0x0000 }, { 0x30A6, 0x0000 }, { 0x30A8, 0x0000 }, 
-    { 0x30AA, 0x0000 }, { 0x30AB, 0x0000 }, { 0x30AD, 0x0000 }, { 0x30AF, 0x0000 }, 
-    { 0x30B1, 0x0000 }, { 0x30B3, 0x0000 }, { 0x30B5, 0x0000 }, { 0x30B7, 0x0000 }, 
-    { 0x30B9, 0x0000 }, { 0x30BB, 0x0000 }, { 0x30BD, 0x0000 }, { 0x30BF, 0x0000 }, 
-    { 0x30C1, 0x0000 }, { 0x30C4, 0x0000 }, { 0x30C6, 0x0000 }, { 0x30C8, 0x0000 }, 
-    { 0x30CA, 0x0000 }, { 0x30CB, 0x0000 }, { 0x30CC, 0x0000 }, { 0x30CD, 0x0000 }, 
-    { 0x30CE, 0x0000 }, { 0x30CF, 0x0000 }, { 0x30D2, 0x0000 }, { 0x30D5, 0x0000 }, 
-    { 0x30D8, 0x0000 }, { 0x30DB, 0x0000 }, { 0x30DE, 0x0000 }, { 0x30DF, 0x0000 }, 
-    { 0x30E0, 0x0000 }, { 0x30E1, 0x0000 }, { 0x30E2, 0x0000 }, { 0x30E4, 0x0000 }, 
-    { 0x30E6, 0x0000 }, { 0x30E8, 0x0000 }, { 0x30E9, 0x0000 }, { 0x30EA, 0x0000 }, 
-    { 0x30EB, 0x0000 }, { 0x30EC, 0x0000 }, { 0x30ED, 0x0000 }, { 0x30EF, 0x0000 }, 
-    { 0x30F0, 0x0000 }, { 0x30F1, 0x0000 }, { 0x30F2, 0x0000 }, { 0x32FF, 0x0000 }
+  const UCS2 Enclosed_CJK_Letters_and_Months3200::m_decompStr[][2] = {
+    { 0x0028u, 0x1100u }, { 0x0028u, 0x1102u }, { 0x0028u, 0x1103u }, { 0x0028u, 0x1105u }, 
+    { 0x0028u, 0x1106u }, { 0x0028u, 0x1107u }, { 0x0028u, 0x1109u }, { 0x0028u, 0x110Bu }, 
+    { 0x0028u, 0x110Cu }, { 0x0028u, 0x110Eu }, { 0x0028u, 0x110Fu }, { 0x0028u, 0x1110u }, 
+    { 0x0028u, 0x1111u }, { 0x0028u, 0x1112u }, { 0x0028u, 0x1100u }, { 0x0028u, 0x1102u }, 
+    { 0x0028u, 0x1103u }, { 0x0028u, 0x1105u }, { 0x0028u, 0x1106u }, { 0x0028u, 0x1107u }, 
+    { 0x0028u, 0x1109u }, { 0x0028u, 0x110Bu }, { 0x0028u, 0x110Cu }, { 0x0028u, 0x110Eu }, 
+    { 0x0028u, 0x110Fu }, { 0x0028u, 0x1110u }, { 0x0028u, 0x1111u }, { 0x0028u, 0x1112u }, 
+    { 0x0028u, 0x110Cu }, { 0x321Du, 0x0000u }, { 0x321Eu, 0x0000u }, { 0x321Fu, 0x0000u }, 
+    { 0x0028u, 0x4E00u }, { 0x0028u, 0x4E8Cu }, { 0x0028u, 0x4E09u }, { 0x0028u, 0x56DBu }, 
+    { 0x0028u, 0x4E94u }, { 0x0028u, 0x516Du }, { 0x0028u, 0x4E03u }, { 0x0028u, 0x516Bu }, 
+    { 0x0028u, 0x4E5Du }, { 0x0028u, 0x5341u }, { 0x0028u, 0x6708u }, { 0x0028u, 0x706Bu }, 
+    { 0x0028u, 0x6C34u }, { 0x0028u, 0x6728u }, { 0x0028u, 0x91D1u }, { 0x0028u, 0x571Fu }, 
+    { 0x0028u, 0x65E5u }, { 0x0028u, 0x682Au }, { 0x0028u, 0x6709u }, { 0x0028u, 0x793Eu }, 
+    { 0x0028u, 0x540Du }, { 0x0028u, 0x7279u }, { 0x0028u, 0x8CA1u }, { 0x0028u, 0x795Du }, 
+    { 0x0028u, 0x52B4u }, { 0x0028u, 0x4EE3u }, { 0x0028u, 0x547Cu }, { 0x0028u, 0x5B66u }, 
+    { 0x0028u, 0x76E3u }, { 0x0028u, 0x4F01u }, { 0x0028u, 0x8CC7u }, { 0x0028u, 0x5354u }, 
+    { 0x0028u, 0x796Du }, { 0x0028u, 0x4F11u }, { 0x0028u, 0x81EAu }, { 0x0028u, 0x81F3u }, 
+    { 0x3244u, 0x0000u }, { 0x3245u, 0x0000u }, { 0x3246u, 0x0000u }, { 0x3247u, 0x0000u }, 
+    { 0x3248u, 0x0000u }, { 0x3249u, 0x0000u }, { 0x324Au, 0x0000u }, { 0x324Bu, 0x0000u }, 
+    { 0x324Cu, 0x0000u }, { 0x324Du, 0x0000u }, { 0x324Eu, 0x0000u }, { 0x324Fu, 0x0000u }, 
+    { 0x3250u, 0x0000u }, { 0x3251u, 0x0000u }, { 0x3252u, 0x0000u }, { 0x3253u, 0x0000u }, 
+    { 0x3254u, 0x0000u }, { 0x3255u, 0x0000u }, { 0x3256u, 0x0000u }, { 0x3257u, 0x0000u }, 
+    { 0x3258u, 0x0000u }, { 0x3259u, 0x0000u }, { 0x325Au, 0x0000u }, { 0x325Bu, 0x0000u }, 
+    { 0x325Cu, 0x0000u }, { 0x325Du, 0x0000u }, { 0x325Eu, 0x0000u }, { 0x325Fu, 0x0000u }, 
+    { 0x1100u, 0x0000u }, { 0x1102u, 0x0000u }, { 0x1103u, 0x0000u }, { 0x1105u, 0x0000u }, 
+    { 0x1106u, 0x0000u }, { 0x1107u, 0x0000u }, { 0x1109u, 0x0000u }, { 0x110Bu, 0x0000u }, 
+    { 0x110Cu, 0x0000u }, { 0x110Eu, 0x0000u }, { 0x110Fu, 0x0000u }, { 0x1110u, 0x0000u }, 
+    { 0x1111u, 0x0000u }, { 0x1112u, 0x0000u }, { 0x1100u, 0x1161u }, { 0x1102u, 0x1161u }, 
+    { 0x1103u, 0x1161u }, { 0x1105u, 0x1161u }, { 0x1106u, 0x1161u }, { 0x1107u, 0x1161u }, 
+    { 0x1109u, 0x1161u }, { 0x110Bu, 0x1161u }, { 0x110Cu, 0x1161u }, { 0x110Eu, 0x1161u }, 
+    { 0x110Fu, 0x1161u }, { 0x1110u, 0x1161u }, { 0x1111u, 0x1161u }, { 0x1112u, 0x1161u }, 
+    { 0x327Cu, 0x0000u }, { 0x327Du, 0x0000u }, { 0x327Eu, 0x0000u }, { 0x327Fu, 0x0000u }, 
+    { 0x4E00u, 0x0000u }, { 0x4E8Cu, 0x0000u }, { 0x4E09u, 0x0000u }, { 0x56DBu, 0x0000u }, 
+    { 0x4E94u, 0x0000u }, { 0x516Du, 0x0000u }, { 0x4E03u, 0x0000u }, { 0x516Bu, 0x0000u }, 
+    { 0x4E5Du, 0x0000u }, { 0x5341u, 0x0000u }, { 0x6708u, 0x0000u }, { 0x706Bu, 0x0000u }, 
+    { 0x6C34u, 0x0000u }, { 0x6728u, 0x0000u }, { 0x91D1u, 0x0000u }, { 0x571Fu, 0x0000u }, 
+    { 0x65E5u, 0x0000u }, { 0x682Au, 0x0000u }, { 0x6709u, 0x0000u }, { 0x793Eu, 0x0000u }, 
+    { 0x540Du, 0x0000u }, { 0x7279u, 0x0000u }, { 0x8CA1u, 0x0000u }, { 0x795Du, 0x0000u }, 
+    { 0x52B4u, 0x0000u }, { 0x79D8u, 0x0000u }, { 0x7537u, 0x0000u }, { 0x5973u, 0x0000u }, 
+    { 0x9069u, 0x0000u }, { 0x512Au, 0x0000u }, { 0x5370u, 0x0000u }, { 0x6CE8u, 0x0000u }, 
+    { 0x9805u, 0x0000u }, { 0x4F11u, 0x0000u }, { 0x5199u, 0x0000u }, { 0x6B63u, 0x0000u }, 
+    { 0x4E0Au, 0x0000u }, { 0x4E2Du, 0x0000u }, { 0x4E0Bu, 0x0000u }, { 0x5DE6u, 0x0000u }, 
+    { 0x53F3u, 0x0000u }, { 0x533Bu, 0x0000u }, { 0x5B97u, 0x0000u }, { 0x5B66u, 0x0000u }, 
+    { 0x76E3u, 0x0000u }, { 0x4F01u, 0x0000u }, { 0x8CC7u, 0x0000u }, { 0x5354u, 0x0000u }, 
+    { 0x591Cu, 0x0000u }, { 0x32B1u, 0x0000u }, { 0x32B2u, 0x0000u }, { 0x32B3u, 0x0000u }, 
+    { 0x32B4u, 0x0000u }, { 0x32B5u, 0x0000u }, { 0x32B6u, 0x0000u }, { 0x32B7u, 0x0000u }, 
+    { 0x32B8u, 0x0000u }, { 0x32B9u, 0x0000u }, { 0x32BAu, 0x0000u }, { 0x32BBu, 0x0000u }, 
+    { 0x32BCu, 0x0000u }, { 0x32BDu, 0x0000u }, { 0x32BEu, 0x0000u }, { 0x32BFu, 0x0000u }, 
+    { 0x0031u, 0x6708u }, { 0x0032u, 0x6708u }, { 0x0033u, 0x6708u }, { 0x0034u, 0x6708u }, 
+    { 0x0035u, 0x6708u }, { 0x0036u, 0x6708u }, { 0x0037u, 0x6708u }, { 0x0038u, 0x6708u }, 
+    { 0x0039u, 0x6708u }, { 0x0031u, 0x0030u }, { 0x0031u, 0x0031u }, { 0x0031u, 0x0032u }, 
+    { 0x32CCu, 0x0000u }, { 0x32CDu, 0x0000u }, { 0x32CEu, 0x0000u }, { 0x32CFu, 0x0000u }, 
+    { 0x30A2u, 0x0000u }, { 0x30A4u, 0x0000u }, { 0x30A6u, 0x0000u }, { 0x30A8u, 0x0000u }, 
+    { 0x30AAu, 0x0000u }, { 0x30ABu, 0x0000u }, { 0x30ADu, 0x0000u }, { 0x30AFu, 0x0000u }, 
+    { 0x30B1u, 0x0000u }, { 0x30B3u, 0x0000u }, { 0x30B5u, 0x0000u }, { 0x30B7u, 0x0000u }, 
+    { 0x30B9u, 0x0000u }, { 0x30BBu, 0x0000u }, { 0x30BDu, 0x0000u }, { 0x30BFu, 0x0000u }, 
+    { 0x30C1u, 0x0000u }, { 0x30C4u, 0x0000u }, { 0x30C6u, 0x0000u }, { 0x30C8u, 0x0000u }, 
+    { 0x30CAu, 0x0000u }, { 0x30CBu, 0x0000u }, { 0x30CCu, 0x0000u }, { 0x30CDu, 0x0000u }, 
+    { 0x30CEu, 0x0000u }, { 0x30CFu, 0x0000u }, { 0x30D2u, 0x0000u }, { 0x30D5u, 0x0000u }, 
+    { 0x30D8u, 0x0000u }, { 0x30DBu, 0x0000u }, { 0x30DEu, 0x0000u }, { 0x30DFu, 0x0000u }, 
+    { 0x30E0u, 0x0000u }, { 0x30E1u, 0x0000u }, { 0x30E2u, 0x0000u }, { 0x30E4u, 0x0000u }, 
+    { 0x30E6u, 0x0000u }, { 0x30E8u, 0x0000u }, { 0x30E9u, 0x0000u }, { 0x30EAu, 0x0000u }, 
+    { 0x30EBu, 0x0000u }, { 0x30ECu, 0x0000u }, { 0x30EDu, 0x0000u }, { 0x30EFu, 0x0000u }, 
+    { 0x30F0u, 0x0000u }, { 0x30F1u, 0x0000u }, { 0x30F2u, 0x0000u }, { 0x32FFu, 0x0000u }
   };
 
-    const bool Enclosed_CJK_Letters_and_Months3200::_Composite[] = {
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 0, 0, 0, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
+    const bitset<256> Enclosed_CJK_Letters_and_Months3200::m_Composite(string("0000000000000000000000000000000000000000000000000000111111111111000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011111111111111111111111111111111111100011111111111111111111111111111"));
 
 }; // namespace Babylon
 

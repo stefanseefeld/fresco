@@ -45,9 +45,9 @@ void TextChunk::request(Warsaw::Graphic::Requisition &r)
   r.y.align   = _yalign;
 }
 
-void TextChunk::get_text(Unicode::String &u) 
+void TextChunk::get_text(Babylon::String &u) 
 { 
-  u = Unicode::String(_char);
+  u = Babylon::String(_char);
 }
 
 unsigned long TextChunk::get_length() 

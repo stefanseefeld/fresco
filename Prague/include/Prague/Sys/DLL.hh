@@ -50,6 +50,6 @@ private:
   void *handle;
 };
 
-};
+}
 
 #endif /* _DLL_hh */

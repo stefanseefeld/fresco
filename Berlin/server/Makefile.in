@@ -32,7 +32,7 @@ include $(cdir)/local.mk
 include $(cdir)/Server/local.mk
 
 CPPFLAGS	+= -DRC_PREFIX='"$(prefix)"' -DVERSION='"$(VERSION)"'
-LIBS		+= -lBerlin -lWarsaw -lPrague -lggi
+LIBS		+= -lBerlin -lWarsaw -lBabylon -lPrague -lggi
 
 TARGETS		:= $(bdir)/server $(bdir)/kits
 
