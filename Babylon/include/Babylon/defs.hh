@@ -25,6 +25,12 @@
 #ifndef _Babylon_Defs_hh
 #define _Babylon_Defs_hh
 
+#ifdef sun
+#define u_int16_t uint16_t
+#define u_int32_t uint32_t
+#include <sys/types.h>
+#endif
+
 #include <string>
 #include <exception>
 #include <strstream>
