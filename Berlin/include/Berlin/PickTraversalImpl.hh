@@ -102,12 +102,20 @@ inline void PickTraversalImpl::pop_controller()
 
 inline void PickTraversalImpl::reinit()
 {
+  // DO NOT CALL DURING A TRAVERSAL!
+  
+  // At the end of the Traversal only the very first element is on the stack
+  // i(and we won't touch that), or this is a memento of another Traversal.
+  // In that case we own Graphic, Transformation and Allocation, so we
+  // must explicitly release them before calling pop().
   Prague::Trace trace("PickTraversal::reinit");
   _controllers.clear();
   _positions.clear();
   while (size() > 1)
     {
-      Lease_var<TransformImpl> trafo(get_transformation(size() - 1));
+      CORBA::release(get_allocation(size() - 1));
+      CORBA::release(get_graphic(size() - 1));
+      Provider<TransformImpl>::adopt(get_transformation(size() - 1));
       pop();
     }
   _cursor = 0;
