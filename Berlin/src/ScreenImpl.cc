@@ -67,7 +67,7 @@ void ScreenImpl::pick(PickTraversal_ptr traversal)
       if (!traversal->picked()) traversal->hit();
       traversal->leave_controller();
     }
-  else cout << "no intersection !" << endl;
+  else std::cout << "no intersection !" << std::endl;
 }
 
 void ScreenImpl::allocations(Allocation_ptr allocation)
@@ -76,7 +76,10 @@ void ScreenImpl::allocations(Allocation_ptr allocation)
 }
 
 void ScreenImpl::damage(Region_ptr region) { _smanager->damage(region);}
-CORBA::Boolean ScreenImpl::request_focus(Controller_ptr c, Input::Device d) { return _emanager->request_focus(c, d);}
+CORBA::Boolean ScreenImpl::request_focus(Controller_ptr c, Input::Device d)
+{
+  return _emanager->request_focus(c, d);
+}
 Region_ptr ScreenImpl::allocation() { return _region->_this();}
 Coord ScreenImpl::width() { return _region->upper.x;}
 Coord ScreenImpl::height() { return _region->upper.y;}
