@@ -27,6 +27,7 @@
 #include "Layout/Deck.hh"
 #include "Layout/LayoutManager.hh"
 #include "Warsaw/Traversal.hh"
+#include "Warsaw/Transform.hh"
 
 Deck::Deck() : requested(false) {}
 Deck::~Deck() {}

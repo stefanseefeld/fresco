@@ -22,11 +22,11 @@
 #ifndef _StageImpl_hh
 #define _StageImpl_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Stage.hh>
-#include <Warsaw/Traversal.hh>
-#include <Berlin/GraphicImpl.hh>
-#include <Berlin/QuadTree.hh>
+#include "Warsaw/config.hh"
+#include "Layout/StageImpl.hh"
+#include "Warsaw/Traversal.hh"
+#include "Berlin/GraphicImpl.hh"
+#include "Berlin/QuadTree.hh"
 #include <list>
 
 struct StageInfoImpl : Stage::Info

@@ -27,14 +27,15 @@
 #ifndef _Graphic_idl
 #define _Graphic_idl
 
-#include <Types.idl>
-#include <Region.idl>
-#include <Damage.idl>
-#include <Cloneable.idl>
+#include "Types.idl"
+#include "Cloneable.idl"
 
 interface Traversal;
 interface DrawTraversal;
 interface PickTraversal;
+interface Damage;
+interface Region;
+interface Transform;
 
 interface Allocation
 {

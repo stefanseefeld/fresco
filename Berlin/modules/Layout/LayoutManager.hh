@@ -27,7 +27,8 @@
 #ifndef _LayoutManager_hh
 #define _LayoutManager_hh
 
-#include <Warsaw/Graphic.hh>
+#include "Warsaw/Graphic.hh"
+#include "Warsaw/Region.hh"
 
 class RegionImpl;
 

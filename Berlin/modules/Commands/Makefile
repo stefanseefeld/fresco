@@ -21,63 +21,23 @@
 
 SHELL	= /bin/sh
 
-cpath	= ../../config
-ipath	= ../../include
-lpath	= ../../lib
-dpath	= dep
-opath	= obj
-gpath	= gdb
-ppath	= prf
-rpath	= $(lpath)
+top	= ../..
+cpath	= $(top)/config
+hpath	= $(top)/include/Berlin
 
 include $(cpath)/local.mk
 
 # Compilation and linking flags.
 CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw
 LDFLAGS	= -shared -rdynamic -L$(lpath)
-LIBS	= -lPrague -lBerlin $(ORBLIBS)
+LIBS	= -lnana -lPrague $(ORBLIBS)
 
-SRC	= 
+SRC 	= CommandKitImpl.cc ReactorImpl.cc
 
-DEP	= $(patsubst %.cc, $(dpath)/%.d, $(SRC))
-OBJ	= $(patsubst %.cc, $(opath)/%.o, $(SRC))
-GDB	= $(patsubst %.cc, $(gpath)/%.o, $(SRC))
-PRF	= $(patsubst %.cc, $(ppath)/%.o, $(SRC))
 TARGET	= $(lpath)/libCommand.so
 
 vpath %.d $(dpath)
 vpath %.hh  $(ipath)/Warsaw $(ipath)/Berlin $(ipath)/Command
 
-world:	$(TARGET)
+include $(cpath)/plugin.mk
 
-$(TARGET):	$(OBJ)
-		$(CXX) $(LDFLAGS) -o $@ $(OBJ) $(LIBS)
-
-$(dpath)/%.d:	%.cc $(ipath)/Command/%.hh
-		@echo making dependencies for $<
-		@if [ ! -d $(dpath) ]; then mkdir $(dpath); fi
-		@$(SHELL) -ec '$(CXX) -MM $(CXXFLAGS) $< \
-		| sed "s/$*\\.o[ :]*/$(dpath)\/$*\\.d $(opath)\/$*\\.o $(gpath)\/$*\\.o $(ppath)\/$*\\.o : /g" > $@'
-$(opath)/%.o:	%.cc
-		@if [ ! -d $(opath) ]; then mkdir $(opath); fi
-		$(CXX) $(CXXFLAGS) $(OPTFLAGS) $(SOFLAGS) -c $< -o $@
-$(gpath)/%.o:	%.cc
-		@if [ ! -d $(gpath) ]; then mkdir $(gpath); fi
-		$(CXX) $(CXXFLAGS) $(GDBFLAGS) -c $< -o $@
-$(ppath)/%.o:	%.cc
-		@if [ ! -d $(ppath) ]; then mkdir $(ppath); fi
-		$(CXX) $(CXXFLAGS) $(OPTFLAGS) $(SOFLAGS) $(PRFFLAGS) -c $< -o $@
-
-clean:	
-		rm -f $(opath)/*.o $(gpath)/*.o $(ppath)/*.o $(dpath)/*.d
-		rm -f *~ $(ipath)/Command/*~
-
-distclean:	clean
-		rm -f $(TARGET)
-		rm -rf $(opath) $(gpath) $(ppath) $(dpath)
-
-ifneq ($(MAKECMDGOALS),clean)
-ifneq ($(MAKECMDGOALS),distclean) 
--include $(DEP)
-endif 
-endif 

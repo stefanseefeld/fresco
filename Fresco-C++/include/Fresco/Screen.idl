@@ -1,3 +1,6 @@
+#ifndef _Screen_idl
+#define _Screen_idl
+
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
@@ -19,16 +22,14 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Screen_idl
-#define _Screen_idl
 
-#include <Types.idl>
-#include <Graphic.idl>
+#include "Types.idl"
+#include "Graphic.idl"
 
 interface Screen : Graphic
 {
-  Coord width();
-  Coord height();
+    Coord width();
+    Coord height();
 };
 
 #endif /* _Screen_idl */

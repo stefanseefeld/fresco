@@ -24,26 +24,23 @@
 //
 //
 
-class CloneableImpl;
 
-#include "Warsaw/CommandKit.hh"
+#include "Warsaw/config.hh"
 #include "Warsaw/Message.hh"
 #include "Berlin/CloneableImpl.hh"
+#include "Warsaw/CommandKit.hh"
+#include "Berlin/Thread.hh"
 
-#include <omnithread.h>
 #include <queue>
 #include <map>
 #include <vector>
-
 
 // this is a message listener whose behaviour you can modify by
 // binding command objects to different typecodes, where the typecode
 // is a "match" if the payload in a received message is the same as
 // the binding.
 
-class ReactorImpl : 
-  public virtual _lc_sk_Reactor,
-  public virtual CloneableImpl {
+class ReactorImpl : implements(Reactor), public virtual CloneableImpl {
   
 public: 
   virtual void accept(const Message &m);
@@ -59,7 +56,7 @@ protected:
   
   // the command dispatch table
   map< CORBA::TypeCode_var, vector<Command_var> > react_map; 
-  omni_mutex map_mutex;  
+  Mutex map_mutex;  
 };
     
 
@@ -84,7 +81,7 @@ class messageCmp {
 // won't get all tangled up in affairs it's not interested in.
 
 class AsyncReactorImpl : 
-  public virtual omni_thread,
+  public virtual Thread,
   public virtual ReactorImpl {
   
 public:
@@ -95,17 +92,13 @@ public:
   
   
 protected:
-  
-  // a helper function for debugging
-  void identifyAndLog(const char *c);
-  void identifyAndLog(string &s);
-  
+    
   // the incoming message queue
   priority_queue<Message, vector<Message>, messageCmp> react_queue; 
   
   // thread synchronization items
-  omni_mutex queue_mutex;
-  omni_condition queue_cond;
+  Mutex queue_mutex;
+  Condition queue_cond;
   
   // overrides from omnithread
   virtual void run(void* arg); 

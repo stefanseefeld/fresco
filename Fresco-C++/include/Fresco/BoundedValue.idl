@@ -25,8 +25,8 @@
 #ifndef _BoundedValue_idl
 #define _BoundedValue_idl
 
-#include <Subject.idl>
-#include <Types.idl>
+#include "Subject.idl"
+#include "Types.idl"
 
 interface BoundedValue : Subject
 {

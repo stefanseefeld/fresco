@@ -27,6 +27,7 @@
 #include "Berlin/DebugGraphic.hh"
 #include "Berlin/Math.hh"
 #include "Warsaw/Traversal.hh"
+#include "Berlin/RegionImpl.hh"
 #include <iostream>
 #include <iomanip>
 

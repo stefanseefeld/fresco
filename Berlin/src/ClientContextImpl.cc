@@ -21,12 +21,14 @@
 //
 //
 
-// this is the simple representation of a principal within the berlin security system.
-// since we don't have any security experts onboard, right now this is a skeletal
-// principal which has no checking done against it, but you could work in a pretty
-// sophisticated security system just by hacking this, sessionManager, and session
+
+// This is a handle to a client application that the display server holds. It
+// provides the display server with enough mechanisms to check to see if the
+// client is alive and to determine the client's security rights. It is
+// instantiated within the client address space.
 
 #include "Berlin/ClientContextImpl.hh"
+#include "Prague/Sys/User.hh"
 #include <iostream>
 #include <string>
 

@@ -27,6 +27,8 @@
 #include "Warsaw/Text.hh"
 #include "Berlin/GraphicImpl.hh"
 
+declare_corba_ptr_type(DrawingKit)
+
 class TextChunk : public virtual GraphicImpl {
 public:
   TextChunk(const Unistring & u);	    

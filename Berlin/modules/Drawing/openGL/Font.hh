@@ -28,12 +28,12 @@
 #include "Warsaw/config.hh"
 #include "Warsaw/Style.hh"
 #include "Warsaw/Types.hh"
-#include "Drawing/openGL/gltt/GLTTPixmapFont.h"
-#include "Drawing/openGL/gltt/FTFace.h"
-#include "Drawing/openGL/GLDrawable.hh"
 #include "Warsaw/Text.hh"
-#include "Berlin/CloneableImpl.hh"
 #include <string>
+#include <GL/gl.h>
+
+class GLTTPixmapFont;
+class FTFace;
 
 class GLFont : 
   implementsscoped(Text,BaseFont) 
@@ -52,9 +52,8 @@ class GLFont :
  protected:
   const Text::FontDescriptor myDescriptor;
   GLfloat myFontColor[4];
-  FTFace face; 
+  FTFace *face; 
   GLTTPixmapFont *font;
-  string ASCIIFY(const Unistring &u);
   
 };
 

@@ -22,7 +22,7 @@
 #ifndef _Damage_idl
 #define _Damage_idl
 
-#include <Region.idl>
+interface Region;
 
 interface Damage
 {

@@ -1,8 +1,13 @@
+#ifndef _PickTraversalImpl_hh
+#define _PickTraversalImpl_hh
+
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
+ *
  * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
  * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
+ *
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -20,20 +25,16 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _PickTraversalImpl_hh
-#define _PickTraversalImpl_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Traversal.hh>
-#include <Warsaw/Event.hh>
-#include <Warsaw/Graphic.hh>
-#include <Berlin/TraversalImpl.hh>
-#include <Berlin/RegionImpl.hh>
-#include <Berlin/Debug.hh>
+#include "Warsaw/config.hh"
+#include "Warsaw/Event.hh"
+#include "Warsaw/Graphic.hh"
+#include "Berlin/TraversalImpl.hh"
+#include "Berlin/RegionImpl.hh"
 
 /* this is a traversal which is responsible for distributing events to
    graphics.  as such, speed is somewhat important. We set everything for
-   "full throttle" */
+   "full throttle" -- everything's inline unfortunately. */
 
 class PickTraversalImpl : implements(PickTraversal), public TraversalImpl
 {

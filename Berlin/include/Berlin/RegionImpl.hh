@@ -27,8 +27,8 @@
 #ifndef _RegionImpl_hh
 #define _RegionImpl_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Region.hh>
+#include "Warsaw/config.hh"
+#include "Warsaw/Region.hh"
 
 class RegionImpl : implements(Region)
 {

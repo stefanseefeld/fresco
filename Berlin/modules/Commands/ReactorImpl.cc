@@ -25,6 +25,7 @@
 // tables: async ones have their own thread and message queue, sync
 // ones do not.
 
+#include "Berlin/Debug.hh"
 #include "Command/ReactorImpl.hh"
 #include <strstream>
 #include <algorithm>
@@ -75,10 +76,10 @@ void ReactorImpl::accept(const Message &m) {
 	typedef vector<Command_var>::iterator CI; 
 	for(CI i = commands_to_execute.begin(); i != commands_to_execute.end(); i++) {
 	    try {
-		Debug::log(Debug::reactor, "ReactorImpl::accept running command for type %s", m.payload.type()->id());
+		Debug::log(Debug::command, "ReactorImpl::accept running command for type %s", m.payload.type()->id());
 		(*i)->execute(m);
 	    } catch (...) {
-		Debug::log(Debug::reactor, "ReactorImpl::accept command failed, unbinding for %s", m.payload.type()->id());
+		Debug::log(Debug::command, "ReactorImpl::accept command failed, unbinding for %s", m.payload.type()->id());
 		this->unbind(m.payload.type(), *i);
 	    }
 	}
@@ -118,7 +119,7 @@ CORBA::Boolean AsyncReactorImpl::active() {
 // this just slots a message into the queue and wakes up the local thread.
 void AsyncReactorImpl::accept(const Message &m) {
     queue_mutex.lock();
-    identifyAndLog("received message of type" + (string)(m.payload.type()->id()));
+    Debug::log(Debug::message, "received message of type %s" ,(m.payload.type()->id()));
     react_queue.push(m);
     queue_mutex.unlock();
     queue_cond.signal();
@@ -127,14 +128,14 @@ void AsyncReactorImpl::accept(const Message &m) {
 
 void AsyncReactorImpl::run(void *arg) {
   while(true) { // thread lives in here.        
-    identifyAndLog("sleeping on message queue");
+    Debug::log(Debug::message, "sleeping on message queue");
     
     queue_cond.wait(); // this unlocks the queue atomically while it sleeps
     while(!react_queue.empty() && amRunning) { // when it wakes up, the queue is re-locked
       
       const Message m = react_queue.top();
       CORBA::TypeCode_var ty = m.payload.type();
-      identifyAndLog("processing a new message of type " + (string)(ty->id())); 
+      Debug::log(Debug::message, "processing a new message of type %s",  (ty->id())); 
       react_queue.pop();      
       queue_mutex.unlock();
       
@@ -152,8 +153,8 @@ AsyncReactorImpl::AsyncReactorImpl() : queue_mutex(), queue_cond(&queue_mutex) {
 // and 1 command reference, a binding can be made at most once.
 
 void ReactorImpl::bind(CORBA::TypeCode_ptr ty, Command_ptr c) {  
-    MutexGuard(map_mutex);
-    Debug::log( Debug::reactor, "ReactorImpl::bind binding new command to type %s ", ty->id());
+    MutexGuard guard(map_mutex);
+    Debug::log( Debug::command, "ReactorImpl::bind binding new command to type %s ", ty->id());
     CORBA::TypeCode_var newTy = ty;
     Command_var com = c;
     vector<Command_var>::iterator i = find(react_map[newTy].begin(), 
@@ -169,9 +170,9 @@ void ReactorImpl::bind(CORBA::TypeCode_ptr ty, Command_ptr c) {
 // when the command goes null and/or throws an exception
 
 void ReactorImpl::unbind(CORBA::TypeCode_ptr ty, Command_ptr c){
-    MutexGuard(map_mutex);
+    MutexGuard guard(map_mutex);
     Command_var cmd = c;
-    Debug::log(Debug::reactor, "ReactorImpl::unbind unbinding command from type %s", ty->id());
+    Debug::log(Debug::command, "ReactorImpl::unbind unbinding command from type %s", ty->id());
     std::remove(react_map[ty].begin(), react_map[ty].end(), cmd);
     // remove the vector altogether if it's empty. 
     typedef map< CORBA::TypeCode_var, vector<Command_var> >::iterator MI;      
@@ -183,7 +184,7 @@ void ReactorImpl::unbind(CORBA::TypeCode_ptr ty, Command_ptr c){
 
 
 void ReactorImpl::copy_react_map_to(Reactor_ptr r) {
-    MutexGuard(map_mutex);
+    MutexGuard guard(map_mutex);
     typedef map< CORBA::TypeCode_var, vector<Command_var> >::iterator MI;      
     typedef vector<Command_var>::iterator VI;
     for(MI i = react_map.begin(); i != react_map.end(); i++) {

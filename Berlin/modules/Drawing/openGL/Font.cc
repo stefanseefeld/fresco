@@ -1,11 +1,14 @@
 #include "Drawing/openGL/GLFont.hh"
+#include "Drawing/openGL/gltt/GLTTPixmapFont.h"
+#include "Drawing/openGL/gltt/FTFace.h"
+#include "Berlin/Debug.hh"
 #include <iostream>
 
 // this is an awful hack to make gltt start working. the correct
 // thing to do is fix gltt. there's no freakin' point in having unicode
 // in your system if the font rasterizer chops off the high bits :(
 
-string GLFont::ASCIIFY(const Unistring &u) {
+static string ASCIIFY(const Unistring &u) {
   string tmp;
   for (unsigned long i = 0; i < u.length(); i++) {
     tmp += (char)(u[i]);
@@ -19,10 +22,11 @@ GLFont::GLFont(const Text::FontDescriptor &fd, const Style::Spec &sty)
   myDescriptor(fd) {
   
   string txt = ASCIIFY(fd.name);
-  if( ! face.open(txt.c_str()) ) throw Text::NoSuchFontException();
-  font = new GLTTPixmapFont(&face); 
+  face = new FTFace();
+  if( ! face->open(txt.c_str()) ) throw Text::NoSuchFontException();
+  font = new GLTTPixmapFont(face); 
   if( ! font->create(fd.pointsize) ) throw Text::NoSuchFontException();
-  cerr << "instantiated: " << txt << " at " << fd.pointsize << "pt" <<  endl;
+  Debug::log(Debug::text, "GLFont::GLFont() : instantiated %s at %d pt", txt.c_str(), fd.pointsize);
   for (unsigned long i = 0; i < sty.length(); i++) {    
     Color *tmp;
     if (sty[i].a == Style::fillcolor) {
@@ -40,12 +44,10 @@ GLFont::~GLFont() {}
 void GLFont::drawText(const Unistring &u, const Vertex &p) {
   // ... OpenGL initialization commands... 
 
-  //  glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, myFontColor);
   glColor4d(myFontColor[0],myFontColor[1],myFontColor[2],myFontColor[3]);
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   string txt = ASCIIFY(u);
-  cerr << "drawing text: \"" << txt << "\" at point (" << p.x << "," << p.y << ") in color " << myFontColor[0] << "," << myFontColor[1] << "," << myFontColor[2]  << "," << myFontColor[3] <<  endl;
   font->output( p.x, p.y, txt.c_str()); 
 }
 

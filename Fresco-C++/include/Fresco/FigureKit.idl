@@ -25,9 +25,10 @@
 
 #include "Types.idl"
 #include "Style.idl"
-#include "Graphic.idl"
 #include "Cloneable.idl"
-#include "BoundedValue.idl"
+
+interface BoundedValue;
+interface Graphic;
 
 // This kit produces graphics with appropriate logic for rendering
 // abstract shapes.  you input paths, patches, styles (which define

@@ -27,12 +27,14 @@
 #ifndef _GraphicImpl_hh
 #define _GraphicImpl_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Graphic.hh>
-#include <Berlin/CloneableImpl.hh>
-#include <Berlin/RegionImpl.hh>
-#include <Berlin/Thread.hh>
+#include "Warsaw/config.hh"
+#include "Warsaw/Graphic.hh"
+#include "Berlin/CloneableImpl.hh"
+#include "Berlin/Thread.hh"
 #include <set>
+
+declare_corba_ptr_type(Region)
+class RegionImpl;
 
 class GraphicImpl : implements(Graphic), public virtual CloneableImpl
 {
@@ -69,7 +71,7 @@ public:
   static void requireLeadTrail(Graphic::Requirement &, Coord, Coord, Coord, Coord, Coord, Coord);
   static Graphic::Requirement *requirement(Graphic::Requisition &, Axis);
   static void defaultExtension(const Allocation::Info &, Region_ptr);
-  static RegionImpl naturalAllocation(Graphic_ptr);
+  static void naturalAllocation(Graphic_ptr, RegionImpl &);
   static void transformRequest(Graphic::Requisition &, Transform_ptr);
   static Vertex transformAllocate(RegionImpl &, const Graphic::Requisition &, Transform_ptr);
 protected:

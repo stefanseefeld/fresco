@@ -1,3 +1,6 @@
+#ifndef _ServerContextImpl_hh
+#define _ServerContextImpl_hh
+
 //
 // $Id$
 //
@@ -21,19 +24,18 @@
 //
 //
 
-#ifndef _ServerContextImpl_hh
-#define _ServerContextImpl_hh
-
 #include "Warsaw/config.hh"
-#include "Warsaw/Cloneable.hh"
 #include "Warsaw/ServerContext.hh"
-#include "Warsaw/Stage.hh"
 #include "Berlin/Thread.hh"
 #include <vector>
 #include <string>
 #include <map>
 
+declare_corba_ptr_type(Stage)
 class GenericFactory_impl;
+
+// this is an encapsulated "entry point" which a client uses to manufacture
+// new objects, look up singletons, look up the scene root, etc.
 
 class ServerContextImpl : implements(ServerContext) {
 

@@ -24,8 +24,8 @@
  * MA 02139, USA.
  */
 
-#include <CommandKit.idl>
-#include <Graphic.idl>
+#include "Cloneable.idl"
+#include "Types.idl"
 
 /** this kit is a layer on top of the Graphic interface and
     CommandKit. It is responsible for creating subjects, and binding
@@ -38,6 +38,7 @@ interface TelltaleConstraint;
 interface BoundedValue;
 interface BoundedRange;
 interface TextBuffer;
+interface Graphic;
 
 interface WidgetKit : Cloneable {
 

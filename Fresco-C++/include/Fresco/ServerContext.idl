@@ -1,3 +1,6 @@
+#ifndef _ServerContext_idl
+#define _ServerContext_idl
+
 //
 // $Id$
 //
@@ -20,10 +23,11 @@
 // Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 //
-#ifndef _ServerContext_idl
-#define _ServerContext_idl
 
-#include "LifeCycle.idl"
+module CosLifeCycle {
+  interface FactoryFinder;
+  interface LifeCycleObject;
+};
 
 interface ClientContext;
 interface Stage;
@@ -50,7 +54,7 @@ interface ServerContext {
 
     // this is the entry point to generic object creation on a server. 
     Object create(in string interfaceName) 
-	raises (SecurityException, CreationFailureException);
+      raises (SecurityException, CreationFailureException);
     
     // access to singletons (like the fontManager) this way
     void setSingleton(in string name, in CosLifeCycle::LifeCycleObject singleton) 

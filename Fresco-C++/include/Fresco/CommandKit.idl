@@ -28,12 +28,13 @@ interface Command;
 
 #include "Message.idl"
 #include "Cloneable.idl"
-#include "Text.idl"
-#include "BoundedValue.idl"
+
+interface BoundedValue;
+interface Graphic;
 
 // commands are anonymous encapsulated actions. 
 // you never know what they'll do.
-interface Command : Cloneable {	
+interface Command {	
     void execute(in Message args);
 };
 

@@ -22,6 +22,7 @@
 #include "Berlin/AllocationImpl.hh"
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/TransformImpl.hh"
+#include "Warsaw/Damage.hh"
 
 AllocationImpl::AllocationImpl()
 {

@@ -22,11 +22,11 @@
 #ifndef _Viewport_hh
 #define _Viewport_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Viewport.hh>
-#include <Warsaw/BoundedRange.hh>
-#include <Berlin/MonoGraphic.hh>
+#include "Warsaw/config.hh"
+#include "Warsaw/Viewport.hh"
+#include "Berlin/MonoGraphic.hh"
 
+declare_corba_ptr_type(BoundedRange)
 class RegionImpl;
 
 class ViewportImpl : implements(Viewport), public MonoGraphic

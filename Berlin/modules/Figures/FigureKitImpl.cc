@@ -23,6 +23,7 @@
 #include "Warsaw/config.hh"
 #include "Figure/FigureKitImpl.hh"
 #include "Berlin/Plugin.hh"
+#include "Figure/SimpleFigures.hh"
 
 FigureKitImpl::FigureKitImpl() {}
 FigureKitImpl::~FigureKitImpl() {}

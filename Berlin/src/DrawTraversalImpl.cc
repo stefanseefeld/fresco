@@ -22,6 +22,8 @@
 #include "Berlin/DrawTraversalImpl.hh"
 #include "Warsaw/Graphic.hh"
 #include "Warsaw/Drawable.hh"
+#include "Warsaw/DrawingKit.hh"
+#include "Warsaw/Region.hh"
 
 DrawTraversalImpl::DrawTraversalImpl(DrawingKit_ptr kit, Region_ptr r)
   : TraversalImpl(r)

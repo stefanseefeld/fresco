@@ -43,7 +43,7 @@ STATINT	= ClientContext.idl ServerContext.idl LifeCycle.idl Naming.idl Cloneable
 	  Grid.idl Viewport.idl Stage.idl LayoutKit.idl \
 	  CommandKit.idl \
 	  Subject.idl Telltale.idl BoundedValue.idl BoundedRange.idl TextBuffer.idl WidgetKit.idl \
-	  Metrics.idl Text.idl 
+	  Metrics.idl Text.idl TextKit.idl
 
 INT	= $(DYNINT) $(STATINT)
 DEP	= $(patsubst %.idl, $(dpath)/%.d, $(INT))

@@ -30,13 +30,12 @@
 #ifndef _FactoryFinderImpl_hh
 #define _FactoryFinderImpl_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Cloneable.hh>
-#include <Berlin/GenericFactoryImpl.hh>
-#include <Berlin/Thread.hh>
+#include "Warsaw/config.hh"
+#include "Berlin/Thread.hh"
+#include "Warsaw/LifeCycle.hh"
 
+class GenericFactoryImpl;
 class unInitializedGenericFactoryException {};
-class FactoryFinderImpl;
 
 class FactoryFinderImpl : implementsscoped(CosLifeCycle,FactoryFinder) {
   

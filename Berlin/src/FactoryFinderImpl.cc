@@ -22,6 +22,7 @@
 //
 #include "Berlin/FactoryFinderImpl.hh"
 #include "Berlin/Debug.hh"
+#include "Berlin/GenericFactoryImpl.hh"
 
 // this is the simplest factoryFinder I could think of. It's just a
 // placeholder for the time being until we come up with a better

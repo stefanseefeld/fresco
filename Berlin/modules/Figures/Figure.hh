@@ -25,7 +25,6 @@
  * MA 02139, USA.
  */
 
-
 // this file defines some common stuff which all figures have --
 // obtaining a pen given the Style::Spec, holding the style, copying
 // self to another figureKit.
@@ -35,10 +34,12 @@
 
 #include "Warsaw/config.hh"
 #include "Berlin/GraphicImpl.hh"
-#include "Warsaw/FigureKit.hh"
-#include "Warsaw/DrawingKit.hh"
+#include "Warsaw/Style.hh"
 
-class Rect;
+class Requisition;
+declare_corba_ptr_type(DrawingKit)
+declare_corba_ptr_type(FigureKit)
+declare_corba_ptr_type(Pencil)
 
 class Figure : virtual public GraphicImpl {
 

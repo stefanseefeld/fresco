@@ -41,8 +41,8 @@ public:
 
   Coord width();
   Coord height();
-  ScreenManager *Manager() { return manager;}
-  Region_ptr getRegion() {return region->_this();}
+  ScreenManager *Manager();
+  Region_ptr getRegion();
 protected:
   ScreenManager *manager;
   RegionImpl *region;

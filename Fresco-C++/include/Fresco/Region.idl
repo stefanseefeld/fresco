@@ -27,8 +27,9 @@
 #ifndef _Region_idl
 #define _Region_idl
 
-#include <Types.idl>
-#include <Transform.idl>
+#include "Types.idl"
+
+interface Transform;
 
 interface Region
 {

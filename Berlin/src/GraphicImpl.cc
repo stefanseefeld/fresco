@@ -1,7 +1,10 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
+ *
  * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1998 Graydon Hoare <graydon@pobox.com> 
+ *
  * http://www.berlin-consortium.org
  *
  * this code is based on code from Fresco.
@@ -30,6 +33,7 @@
 #include "Berlin/TransformImpl.hh"
 #include "Berlin/Math.hh"
 #include "Warsaw/Traversal.hh"
+#include "Warsaw/Damage.hh"
 
 static double tol = 0.05;
 
@@ -398,11 +402,10 @@ void GraphicImpl::defaultExtension (const Allocation::Info &a, Region_ptr r)
     }
 }
 
-RegionImpl GraphicImpl::naturalAllocation (Graphic_ptr g)
+void GraphicImpl::naturalAllocation (Graphic_ptr g, RegionImpl &nat)
 {
   Requisition r;
   GraphicImpl::initRequisition(r);
-  RegionImpl nat;
 
   g->request(r);
   if (r.x.defined)
@@ -426,7 +429,6 @@ RegionImpl GraphicImpl::naturalAllocation (Graphic_ptr g)
       nat.zalign = r.z.align;
       nat.valid = true;
     }
-  return nat;
 }
 
 void GraphicImpl::transformRequest (Graphic::Requisition& req, Transform_ptr tx)

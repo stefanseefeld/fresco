@@ -27,7 +27,7 @@
 #ifndef _Transform_idl
 #define _Transform_idl
 
-#include <Types.idl>
+#include "Types.idl"
 
 interface Transform
 {

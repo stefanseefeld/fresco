@@ -28,6 +28,7 @@
 
 #include "Berlin/ServerContextManagerImpl.hh"
 #include "Berlin/ServerContextImpl.hh"
+#include "Warsaw/Stage.hh"
 #include "Berlin/Debug.hh"
 
 ServerContextManagerImpl::ServerContextManagerImpl(GenericFactoryImpl *factory, Stage_ptr g) {

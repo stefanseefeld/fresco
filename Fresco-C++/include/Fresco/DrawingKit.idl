@@ -27,13 +27,9 @@
 #define _DrawingKit_idl
 
 #include "Types.idl"
-#include "Region.idl"
 #include "Cloneable.idl"
 #include "Style.idl"
 #include "Text.idl"
-
-// #include <Drawable.idl>
-// #include <Pencil.idl>
 
 interface Drawable;
 interface Pencil;

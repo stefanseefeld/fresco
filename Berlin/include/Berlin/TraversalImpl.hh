@@ -30,9 +30,9 @@
 #ifndef _TraversalImpl_hh
 #define _TraversalImpl_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Traversal.hh>
-#include <Berlin/TransformImpl.hh>
+#include "Warsaw/config.hh"
+#include "Warsaw/Traversal.hh"
+#include "Berlin/TransformImpl.hh"
 #include <vector>
 
 class TraversalImpl : implements(Traversal)

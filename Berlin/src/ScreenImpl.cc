@@ -60,5 +60,8 @@ void ScreenImpl::allocate(Graphic_ptr g, Allocation_ptr a)
   a->add(region->_this(), damage->_this());
 }
 
+ScreenManager *ScreenImpl::Manager() { return manager;}
+Region_ptr ScreenImpl::getRegion() {return region->_this();}
+
 Coord ScreenImpl::width() { return region->upper.x;}
 Coord ScreenImpl::height() { return region->upper.y;}

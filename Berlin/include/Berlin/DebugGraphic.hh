@@ -27,7 +27,8 @@
 #ifndef _DebugGraphic_hh
 #define _DebugGraphic_hh
 
-#include <Berlin/MonoGraphic.hh>
+#include "Berlin/MonoGraphic.hh"
+#include "Warsaw/Region.hh"
 #include <string>
 
 class DebugGraphic : public MonoGraphic

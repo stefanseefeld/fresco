@@ -24,12 +24,15 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
+
+#include "Warsaw/config.hh"
 #include "Layout/GridImpl.hh"
 #include "Layout/LayoutManager.hh"
 #include "Layout/Placement.hh"
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/TransformImpl.hh"
 #include "Berlin/Math.hh"
+#include "Warsaw/Traversal.hh"
 
 static void setSpan(GridImpl::Span &s, Coord origin, Coord length, Alignment align)
 {
@@ -495,8 +498,7 @@ SubGridImpl::SubGridImpl(Grid_ptr grid, const Grid::Range &r)
 SubGridImpl::~SubGridImpl() {}
 void SubGridImpl::request(Requisition &r) { child->requestRange(r, range);}
 
-void SubGridImpl::traverse(Traversal_ptr t)
-{
+void SubGridImpl::traverse(Traversal_ptr t) {
   t->traverseChild(child, Region::_nil(), Transform::_nil());
 }
 

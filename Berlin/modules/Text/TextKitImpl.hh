@@ -24,6 +24,7 @@
 //
 
 #include "Warsaw/config.hh"
+#include "Warsaw/TextKit.hh"
 #include "Warsaw/Text.hh"
 #include "Berlin/CloneableImpl.hh"
 

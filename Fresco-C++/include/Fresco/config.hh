@@ -18,6 +18,12 @@
 #  define implements(interface) virtual public skeletonize(interface)
 #  define implementsscoped(scope,interface) virtual public applyscope(scope,skeletonize(interface))
 #  define obtain(sc,in) applyscope(in,_narrow(sc->create(interface(in))))
+#  define declare_corba_ptr_type(foo) class foo; \
+	typedef foo* foo ##_ptr; \
+	typedef foo ##_ptr foo ##Ref; \
+	class foo ##_Helper; \
+	typedef _CORBA_ObjRef_Var<foo,foo ##_Helper> foo ##_var;
+
 #else
 #  error "sorry, currently only OMNIORB2 is supported"
 #endif

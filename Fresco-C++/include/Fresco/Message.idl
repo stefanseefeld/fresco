@@ -1,5 +1,5 @@
-#ifndef __MESSAGE__
-#define __MESSAGE__ 
+#ifndef __Message_idl
+#define __Message_idl 
 
 //
 // $Id$
@@ -24,8 +24,7 @@
 //
 //
 
-#include <Types.idl>
-#include <Cloneable.idl>
+#include "Types.idl"
 
 // a message is a prioritized payload. gets passed around between
 // various objects.  there is an additional headers field for embedding
@@ -44,7 +43,7 @@ struct Message {
 
 
 // anything which can accept a Message
-interface MessageListener : Cloneable {
+interface MessageListener {
   void accept(in Message m);
 };
 

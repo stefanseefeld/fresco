@@ -30,11 +30,10 @@
 
 #include "Warsaw/FigureKit.hh"
 #include "Warsaw/config.hh"
-#include "Figure/SimpleFigures.hh"
 #include "Berlin/CloneableImpl.hh"
 #include <vector>
 
-class Rect;
+class Figure;
 
 class FigureKitImpl : implements(FigureKit), virtual public CloneableImpl {
  public:

@@ -27,6 +27,7 @@
 #include "Berlin/MonoGraphic.hh"
 #include "Berlin/TransformImpl.hh"
 #include "Warsaw/Traversal.hh"
+#include "Berlin/RegionImpl.hh"
 
 MonoGraphic::MonoGraphic() {}
 MonoGraphic::~MonoGraphic()

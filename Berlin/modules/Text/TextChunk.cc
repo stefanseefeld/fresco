@@ -25,20 +25,21 @@
 #include "Warsaw/DrawingKit.hh"
 #include "Warsaw/Traversal.hh"
 #include <iostream>
+#include "Berlin/Debug.hh"
 
 TextChunk::TextChunk(const Unistring & u) : myText(u){
-  cerr << "made TextChunk" << endl;
 }
 
 void TextChunk::request(Requisition &r) {
-    myIdealDrawingKit->allocateText(myText, r);
+  //myIdealDrawingKit->currentFont()->allocateText(myText, r);
 }
 
+
 void TextChunk::draw(DrawTraversal_ptr dt) {
-  cerr << "in TextChunk::Draw()" << endl;
-  DrawingKit_ptr dk = dt->kit();
-  Text::Font_var f = dk->currentFont();
-  Vertex l, u, o;
-  dt->bounds(l, u, o);
-  f->drawText(myText, o);
+    Debug::note("beginning TextChunk::draw()");
+    DrawingKit_ptr dk = dt->kit();
+    Text::Font_var f = dk->currentFont();
+    Vertex l, u, o;
+    dt->bounds(l, u, o);
+    f->drawText(myText, o);
 }

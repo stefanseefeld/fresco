@@ -1,8 +1,10 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
+ *
  * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
  * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
+ *
  * http://www.berlin-consortium.org
  *
  * this code is based on code from Fresco.
@@ -29,6 +31,7 @@
 #include "Berlin/TransformImpl.hh"
 #include "Berlin/Debug.hh"
 #include "Warsaw/Graphic.hh"
+#include "Warsaw/Region.hh"
 
 TraversalImpl::TraversalImpl(Region_ptr r)
 {
