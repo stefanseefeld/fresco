@@ -40,18 +40,10 @@ AC_PROG_CXXCPP
 AC_LANG_CPLUSPLUS
 
 dnl ------------------------------------------------------------------
-dnl General flags
-dnl ------------------------------------------------------------------
-
-FRESCO_PACKAGE(Babylon, $PACKAGE_VERSION)
-CPPFLAGS="$CPPFLAGS $Babylon_CPPFLAGS"
-LIBS="$LIBS $Babylon_LIBS"
-
-FRESCO_FLAG_SO
-
-dnl ------------------------------------------------------------------
 dnl ORB
 dnl ------------------------------------------------------------------
+
+AC_CHECK_LIB(resolv, recv, [LIBS="$LIBS -lresolv"])
 
 FRESCO_LIB_ORB(mandatory)
 MAKEFILE=
@@ -60,6 +52,16 @@ if test ".$ORB" = .omniORB ; then
 elif test ".$ORB" = .TAO ; then
   MAKEFILE="Makefile.tao.in"
 fi
+
+dnl ------------------------------------------------------------------
+dnl General flags
+dnl ------------------------------------------------------------------
+
+FRESCO_PACKAGE(Babylon, $PACKAGE_VERSION)
+CPPFLAGS="$CPPFLAGS $Babylon_CPPFLAGS"
+LIBS="$LIBS $Babylon_LIBS"
+
+FRESCO_FLAG_SO
 
 dnl ------------------------------------------------------------------
 dnl Output substitution
