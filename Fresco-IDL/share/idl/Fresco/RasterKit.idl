@@ -42,14 +42,14 @@ module Fresco
   interface ImageKit : Kit
     {
       //. Create a empty Raster.
-      Raster empty();
+      Raster create_empty_raster();
       //. Create a Raster from a file. 'rasterpath' from Berlin's config file
       //. is prepended! If the file is not found a the ImageKit
       //. falls back to 'berlin-128.png' in 'rasterpath'.
       // FIXME: This should throw an exception if the file is not found.
       //        The current behaviour is not useful for real-world
       //        applications.
-      Raster create(in string file);
+      Raster create_raster(in string file);
     };
 };
 

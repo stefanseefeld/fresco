@@ -29,7 +29,6 @@
 #include <Fresco/ImageKit.hh>
 #include <Fresco/Raster.hh>
 #include <Berlin/KitImpl.hh>
-#include <vector>
 
 class RasterImpl;
 
@@ -44,8 +43,8 @@ public:
   virtual ~ImageKitImpl();
   virtual KitImpl *clone(const Fresco::Kit::PropertySeq &p) { return new ImageKitImpl(repo_id(), p);}
 
-  Fresco::Raster_ptr empty();
-  Fresco::Raster_ptr create(const char *file);
+  Fresco::Raster_ptr create_empty_raster();
+  Fresco::Raster_ptr create_raster(const char *file);
 protected:
 };
 

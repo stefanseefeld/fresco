@@ -22,7 +22,6 @@
  * MA 02139, USA.
  */
 
-#include <Prague/Sys/Tracer.hh>
 #include <Berlin/ImplVar.hh>
 #include <Berlin/RasterImpl.hh>
 #include "ImageKitImpl.hh"
@@ -37,18 +36,14 @@ ImageKitImpl::ImageKitImpl(const std::string &id,
     : KitImpl(id, p) { }
 ImageKitImpl::~ImageKitImpl() { }
 
-Raster_ptr ImageKitImpl::empty()
+Raster_ptr ImageKitImpl::create_empty_raster()
 {
-  RasterImpl *raster = new RasterImpl();
-  activate(raster);
-  return raster->_this();
+  return create<Fresco::Raster>(new RasterImpl());
 }
 
-Raster_ptr ImageKitImpl::create(const char *file)
+Raster_ptr ImageKitImpl::create_raster(const char *file)
 {
-  RasterImpl *raster = new RasterImpl(file);
-  activate(raster);
-  return raster->_this();
+  return create<Raster>(new RasterImpl(file));
 }
 
 

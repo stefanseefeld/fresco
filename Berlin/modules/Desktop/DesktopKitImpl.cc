@@ -116,11 +116,11 @@ Window_ptr DesktopKitImpl::shell(Controller_ptr g, Fresco::ClientContext_ptr n)
 
   req.z.defined = false;
 
-  Raster_var raster = _image->create("exit.png");
+  Raster_var raster = _image->create_raster("exit.png");
   Image_var exitgraphic = _figure->pixmap(raster);
   Trigger_var exitbutton = _widget->button(exitgraphic, _exit);
 
-  raster = _image->create("shade.png");
+  raster = _image->create_raster("shade.png");
   Image_var shadergraphic = _figure->pixmap(raster);
   
   RefCount_var<Fresco::Controller> shaderbutton = _widget->toggle(shadergraphic);

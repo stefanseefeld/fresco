@@ -95,10 +95,10 @@ int main(int argc, char **argv)
     daVinci::Tool *polygon = new CreateTool<PolygonCreator>();
     Unidraw::Tool_var select = unidraw->select_tool();
     Editor_var editor = unidraw->create_editor();
-    Raster_var slabel = images->create("daVinci/select.png");
-    Raster_var rlabel = images->create("daVinci/rectangle.png");
+    Raster_var slabel = images->create_raster("daVinci/select.png");
+    Raster_var rlabel = images->create_raster("daVinci/rectangle.png");
     //   Raster_var clabel = images->create("daVinci/circle.png");
-    Raster_var tlabel = images->create("daVinci/triangle.png");
+    Raster_var tlabel = images->create_raster("daVinci/triangle.png");
     Image_var simage = figures->pixmap(slabel);
     Image_var rimage = figures->pixmap(rlabel);
     //   Image_var cimage = figures->pixmap(clabel);

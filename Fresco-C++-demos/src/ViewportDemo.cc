@@ -36,7 +36,7 @@ ViewportDemo::ViewportDemo(Application *a)
   ToolKit_var tools = application->resolve<ToolKit>("IDL:fresco.org/Fresco/ToolKit:1.0");
   WidgetKit_var widgets = application->resolve<WidgetKit>("IDL:fresco.org/Fresco/WidgetKit:1.0");
 
-  Raster_var raster = images->create("landscape.png");
+  Raster_var raster = images->create_raster("landscape.png");
   Image_var pixmap = figures->pixmap(raster);
   Layout::Viewport_var viewport = layout->scrollable(pixmap);
   Controller_var panner = widgets->panner(BoundedRange_var(viewport->adjustment(xaxis)), BoundedRange_var(viewport->adjustment(yaxis)));
