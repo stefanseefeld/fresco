@@ -1,3 +1,4 @@
+# Generated automatically from Makefile.in by configure.
 # $Id$
 #
 # This source file is a part of the Berlin Project.
@@ -20,9 +21,9 @@
 # MA 02139, USA.
 
 SHELL		:= /bin/sh
-VERSION		:= @VERSION@
+VERSION		:= 0.2.2
 
-top_srcdir	:= @topdir@
+top_srcdir	:= /home/hunger/c/berlin/Berlin
 srcdir		:= $(top_srcdir)/clients/C++
 builddir	:= ../..
 cdir		:= $(builddir)/config
@@ -40,24 +41,23 @@ endef
 
 include $(cdir)/local.mk
 
-CPPFLAGS	+= @CPPFLAGS@
-LIBS		+= -lBerlin -lWarsaw -lBabylon -lPrague @LIBS@
+CPPFLAGS	+=  -pthread -pthread
+LIBS		+= -lBerlin -lWarsaw -lBabylon -lPrague  -lomnithread -ltcpwrapGK -lomniDynamic3 -lomniORB3 -pthread -ldl -pthread
 
-DEMO_SRC	:= Application.cc LayoutDemo.cc TextDemo.cc \
+TARGETS		:= demo canvas ggiwrapper pinyin_demo # trafo -- doesn't work here. Anyone?
+SRC		:= Application.cc LayoutDemo.cc TextDemo.cc \
 		   EditTextDemo.cc RasterDemo.cc TransformDemo.cc \
 		   ColorDemo.cc LogoDemo.cc FocusDemo.cc \
 		   ViewportDemo.cc DocDemo.cc TermDemo.cc demo.cc
-PINYIN_SRC	:= pinyin_demo.cc TextConvertor.cc
-DEMO_OBJ	:= $(patsubst %.cc, %.o, $(DEMO_SRC))
-PINYIN_OBJ	:= $(patsubst %.cc, %.o, $(PINYIN_SRC))
+OBJ		:= $(patsubst %.cc, %.o, $(SRC))
 
-TARGETS		:= $(bdir)/demo $(bdir)/canvas $(bdir)/ggiwrapper $(bdir)/pinyin_demo
+TARGETS		:= $(bdir)/demo $(bdir)/canvas $(bdir)/ggiwrapper
 
 all:	$(TARGETS)
 
-$(bdir)/demo:	$(DEMO_OBJ)
+$(bdir)/demo:	$(OBJ)
 	@echo linking $(@F)
-	$(CXX) $(LDFLAGS) -o $@ $(DEMO_OBJ) $(LIBS)
+	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 $(bdir)/canvas:	canvas.o
 	@echo linking $(@F)
@@ -67,9 +67,9 @@ $(bdir)/ggiwrapper:	ggiwrapper.o
 	@echo linking $(@F)
 	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-$(bdir)/pinyin_demo:	$(PINYIN_OBJ)
+$(bdir)/pinyin_demo: pinyin_demo.o TextConvertor.o
 	@echo linking $(@F)
-	$(CXX) $(LDFLAGS) -o $@ $(PINYIN_OBJ) $(LIBS)
+	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 install:
 		$(INSTALL) -m755 $(TARGETS) $(bindir)

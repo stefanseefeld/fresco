@@ -34,8 +34,8 @@ Char skip_to(Char a) {
 	return Char(0xF8FF - 1);
     if (a.value() >= 0xF0000 && a.value() < 0xFFFFD)
 	return Char(0xFFFFD - 1);
-    if (a.value() >= 0x100000 && a.value() < 0x10FFFD)
-	return Char(0x10FFFD - 1);
+//    if (a.value() >= 0x100000 && a.value() < 0x10FFFD)
+//	return Char(0x10FFFD - 1);
 
     return a;
 }
@@ -47,7 +47,7 @@ int main (int argc, char **argv) {
     cout.setf(ios::uppercase);
 
     try {
-	for (A = UCS4(UC_NULL); A < UCS4(UC_MAX_DEFINED); A++) {
+	for (A = UCS4(0x100000); A < UCS4(0x10FFFF); A++) {
 	    if (A.is_defined()) {
 		// code value
 		output_char(cout, A); cout << ";";
@@ -121,7 +121,7 @@ int main (int argc, char **argv) {
 		} else {
 		    bool needSpace = 1;
 		    switch(A.decomp_type()) {
-		    case DECOMP_NO_DECOMP: cout << ""; needSpace = 0; break;
+		    case DECOMP_CANONICAL: cout << ""; needSpace = 0; break;
 		    case DECOMP_FONT:      cout << "<font>"; break;
 		    case DECOMP_NOBREAK:   cout << "<noBreak>"; break;
 		    case DECOMP_INITIAL:   cout << "<initial>"; break;
