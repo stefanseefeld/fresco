@@ -14,5 +14,6 @@
 #define skeletonize(interfacename) _lc_sk_##interfacename
 #define implements(interface) virtual public skeletonize(interface)
 #define implementsscoped(scope, interface) virtual public applyscope(scope, skeletonize(interface))
+#define obtain(sc,in) applyscope(in,_narrow(sc->create(interface(in))))
 
 #endif /* _config_hh */

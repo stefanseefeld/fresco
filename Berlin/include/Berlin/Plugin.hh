@@ -21,34 +21,19 @@
 //
 //
 
-#ifndef _ServerContextManagerImpl_hh
-#define _ServerContextManagerImpl_hh
+#ifndef __PLUGIN__
+#define __PLUGIN__
 
-// the ServerContextManager just hands out new ServerContexts to
-// people who are connecting.  it might want to do some checking on
-// the incoming ClientContext's credentials, but at the moment it doesn't.
+#include <omniORB2/CORBA.h>
+#include "Berlin/CloneableImpl.hh"
 
-#include "Warsaw/config.hh"
-#include "Warsaw/Cloneable.hh"
-#include "Warsaw/Graphic.hh"
-#include "Berlin/FactoryFinderImpl.hh"
-#include "Berlin/GenericFactoryImpl.hh"
+// this is the measely plugin interface
+extern "C" {
+  CloneableImpl *getPlugin();
+  char *getName();
+}
 
-class ServerContextManagerImpl : implements(ServerContextManager) {
-
-public:  
-  ServerContextManagerImpl(GenericFactoryImpl *factory, Graphic_ptr g);
-  bool verify();
-
-  // declared in IDL
-  ServerContext_ptr newServerContext(ClientContext_ptr c) throw (SecurityException);
-
-protected:
-  FactoryFinderImpl *myFactoryFinder;
-  omni_mutex myMutex;
-  vector<ServerContext_var> allocatedServerContexts;
-  Graphic_var mySceneRoot;
-
-};
+#define EXPORT_PLUGIN(impl,name) \
+  CloneableImpl *getPlugin() {return new impl();} char *getName() {return name;}
 
 #endif

@@ -27,8 +27,8 @@
 #include <LifeCycle.idl>
 #include <ClientContext.idl>
 
-
 interface ServerContext;
+interface Graphic;
 
 // ths cloneable interface is the base type for most of the objects
 // you will allocate in a berlin server. It is an extended form of
@@ -36,7 +36,6 @@ interface ServerContext;
 // such as hot-swapping and reference counting (since many resources
 // are shared in berlin)
 
-interface Cloneable;
 interface Cloneable : ::CosLifeCycle::LifeCycleObject {
 
     // these are used by the various parenting operations of container
@@ -66,11 +65,8 @@ exception SingletonFailureException {};
 exception CreationFailureException {};
 
 
-
-
 // like subjobs, these two are mutually dependent interfaces so they
 // have to go in the same file. This SUCKS
-
 
 // the ServerContext is an object you pick up from the berlin
 // server's root ContextManager, and which you use to create all
@@ -84,6 +80,7 @@ exception CreationFailureException {};
 interface ServerContext {
     
     readonly attribute ClientContext myClient;
+    readonly attribute Graphic sceneRoot;
     readonly attribute ::CosLifeCycle::FactoryFinder myFactoryFinder;
 
     // this is the entry point to generic object creation on a server. 

@@ -32,10 +32,22 @@
 // static singletons mapping
 map<string, CosLifeCycle::LifeCycleObject_var> ServerContextImpl::singletons;
 omni_mutex ServerContextImpl::singletons_mutex;
+Graphic_var ServerContextImpl::ourSceneRoot;
 
-ServerContextImpl::ServerContextImpl(CosLifeCycle::FactoryFinder_ptr theFactoryFinder, ClientContext_ptr theClient) {
-  _ff = theFactoryFinder;
-  _client = theClient;
+ServerContextImpl::ServerContextImpl(CosLifeCycle::FactoryFinder_ptr theFactoryFinder, 
+				     ClientContext_ptr theClient, Graphic_ptr root) {
+    _ff = theFactoryFinder;
+    _client = theClient;
+    singletons_mutex.lock();
+    if (CORBA::is_nil(ourSceneRoot)) ourSceneRoot = root;
+    singletons_mutex.unlock();
+}
+
+Graphic_ptr ServerContextImpl::sceneRoot() {
+    singletons_mutex.lock();
+    Graphic_ptr tmp = Graphic::_duplicate(ourSceneRoot);
+    singletons_mutex.unlock();
+    return tmp;
 }
 
 CosLifeCycle::FactoryFinder_ptr ServerContextImpl::myFactoryFinder() {

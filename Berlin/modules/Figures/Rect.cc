@@ -31,25 +31,35 @@
 #include "Warsaw/Traversal.hh"
 #include "Warsaw/Pencil.hh"
 
+void Rect::request(Requisition &r)
+{
+    r.x.defined = true;
+    r.x.maximum = r.x.minimum = r.x.natural = myWidth->value();
+    r.x.align = 0.;
+    r.y.defined = true;
+    r.y.maximum = r.y.minimum = r.y.natural = myHeight->value();
+    r.y.align = 0.;
+}
+
 void Rect::draw(DrawTraversal_ptr dt) {
 
     DrawingKit_ptr dp = dt->kit();
     Pencil_ptr p = dp->solidPen();
 
     Vertex p1, p2, p3, p4;
-    p1.x = myWidth->upper();
-    p1.y = myHeight->upper();
+    p1.x = 0; 
+    p1.y = 0; 
     p1.z = 0.;
-    p2.x = myWidth->lower();
-    p2.y = myHeight->upper();
+    p2.x = myWidth->value();
+    p2.y = 0;
     p2.z = 0.;
-    p3.x = myWidth->lower();
-    p3.y = myHeight->lower();
+    p3.x = myWidth->value();
+    p3.y = myHeight->value();
     p3.z = 0.;
-    p4.x = myWidth->upper();
-    p4.y = myHeight->lower();
+    p4.x = 0;
+    p4.y = myHeight->value();
     p4.z = 0.;
-
+    
     p->drawLine(p1, p2);
     p->drawLine(p2, p3);
     p->drawLine(p3, p4);

@@ -131,7 +131,7 @@ void BoundedValueImpl::end()
     myMutex.unlock();
 }
 
-void BoundedValueImpl::set(Coord vv)
+void BoundedValueImpl::value(Coord vv)
 {
     myMutex.lock();
     if (vv > u) vv = u;
@@ -141,6 +141,15 @@ void BoundedValueImpl::set(Coord vv)
     notify();
     myMutex.unlock();
 }
+
+Coord BoundedValueImpl::value()
+{
+    myMutex.lock();
+    Coord tmp = v;
+    myMutex.unlock();
+    return v;
+}
+
 
 void BoundedValueImpl::move(Coord d)
 {

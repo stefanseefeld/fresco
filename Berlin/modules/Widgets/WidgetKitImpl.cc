@@ -66,6 +66,7 @@ BoundedValue_ptr WidgetKitImpl::range(Coord l, Coord u, Coord v, Coord s, Coord 
 {
   BoundedValueImpl *bounded = new BoundedValueImpl(l, u, v, s, p);
   bounded->_obj_is_ready(applyscope(skeletonize(WidgetKit),_boa()));
+
   return bounded->_this();  
 }
 

@@ -26,21 +26,24 @@ DIR_INCLUDES :=  -I.
 DIR_LDFLAGS  :=  -L. -L$(TOPDIR)/lib \
 		-lomniORB2 -lomnithread -lpthread -ltcpwrapGK -lomniLC -lstdc++ 
 
-ALL_SUBTARGETS := 	BoundedValue.idl   Damage.idl	   LayoutKit.idl  Pencil.idl   Telltale.idl \
-			ClientContext.idl  Drawable.idl    LifeCycle.idl  Transform.idl \
-			Cloneable.idl	   DrawingKit.idl  Message.idl	  Region.idl   Traversal.idl \
-			Graphic.idl	   Metrics.idl	  Screen.idl   Types.idl	Text.idl \
-			CommandKit.idl	   Grid.idl	   Naming.idl	  Subject.idl  WidgetKit.idl  \
-			Event.idl		FigureKit.idl
+STATIC_INTERFACES := 	BoundedValue.idl   Damage.idl	LayoutKit.idl	Pencil.idl \
+			ClientContext.idl  	Drawable.idl	LifeCycle.idl	Transform.idl \
+			Cloneable.idl	DrawingKit.idl	FigureKit.idl	Region.idl \
+			Graphic.idl	Metrics.idl	Screen.idl \
+			CommandKit.idl	Grid.idl		Naming.idl	Subject.idl \
+			Telltale.idl	Traversal.idl	Text.idl		WidgetKit.idl
 
-IDLSRCS := Naming.idl $(ALL_SUBTARGETS) 
+DYNAMIC_INTERFACES := Message.idl Event.idl Types.idl
+
+IDLSRCS := Naming.idl $(STATIC_INTERFACES) $(DYNAMIC_INTERFACES) 
+
 SO_TARGET := libWarsaw.so 
 SO_MAJOR_libWarsaw.so := 0
 SO_MINOR_libWarsaw.so := 0
 SO_PATCH_libWarsaw.so := 1
 
-CXXSRCS := $(ALL_SUBTARGETS:.idl=SK.cc) 
-CXXSRCS += $(ALL_SUBTARGETS:.idl=DynSK.cc)
+CXXSRCS := $(STATIC_INTERFACES:.idl=SK.cc) 
+CXXSRCS += $(DYNAMIC_INTERFACES:.idl=DynSK.cc) $(DYNAMIC_INTERFACES:.idl=SK.cc)
 SO_OBJS_libWarsaw.so := $(CXXSRCS:.cc=.o) 
 
 include $(TOPDIR)/config/rules.mk
