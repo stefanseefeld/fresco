@@ -60,7 +60,7 @@ AC_DEFUN([BERLIN_LIB_LIBART],[
 	CPPFLAGS="$save_CPPFLAGS"
 
 	dnl Assuming it's okay if the header was found
-	if test ".$no_libart" != yes ; then
+	if test ".$no_libart" != .yes ; then
 		ac_cv_lib_libArt=yes
 		AC_SUBST(LIBART_CPPFLAGS)
 		AC_SUBST(LIBART_LIBS)
