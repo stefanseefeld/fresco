@@ -20,6 +20,10 @@
  * MA 02139, USA.
  */
 
+#ifdef sun
+#define _POSIX_C_SOURCE 19960520L
+#endif
+
 #include "Prague/Sys/MMap.hh"
 #include <sys/stat.h>
 #include <unistd.h>
