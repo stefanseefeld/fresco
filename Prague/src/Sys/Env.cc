@@ -21,6 +21,7 @@
  */
 
 #include <Prague/Sys/Env.hh>
+#include <Prague/config.hh>
 
 bool Prague::putenv(const std::string & name, const std::string & value)
 {
