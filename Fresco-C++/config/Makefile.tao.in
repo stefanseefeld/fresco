@@ -33,7 +33,7 @@ include $(cdir)/local.mk
 
 define makestat
 @echo generating $(@F)
-$(IDLCXX) -I$(idldir) -Ge 0 -Sc -Sa -St -cs C.cc -ss S.cc $<
+$(IDLCXX) -I$(idldir) -Ge 0 -Sc -cs C.cc -ss S.cc $<
 sed -e "s|#include \"$(*F)C.h\"|#include \"Fresco/$(*F)C.h\"|" $(*F)S.h > $(h2dir)/Fresco/$(*F)S.h
 rm $(*F)S.h
 mv $(*F)C.h $(*F)S.i $(*F)C.i $(h2dir)/Fresco
