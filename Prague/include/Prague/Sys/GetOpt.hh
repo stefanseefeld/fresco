@@ -26,6 +26,7 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+#include <exception>
 
 namespace Prague
 {
@@ -39,11 +40,20 @@ public:
   //. the option type, i.e. whether an argument is required or not.
   enum type { novalue, optional, mandatory};
   enum order { inorder, require, permute};
+
+  class NoSuchOption : std::exception
+  {
+  public:
+    NoSuchOption() throw() {}
+    virtual ~NoSuchOption() throw() {}
+    virtual const char* what() const throw() { return "no such option";}
+  };
 private:
   struct cell
   {
     cell(char oo, const std::string &opt, type tt, const std::string &des)
-      : o(oo), option(opt), t(tt), description(des) {}
+      : set(false), o(oo), option(opt), t(tt), description(des) {}
+    bool        set;
     char        o;            // option char
     std::string option;       // option name
     type        t;	      // option type
@@ -63,10 +73,14 @@ public:
   int parse(char *args);
   //. register an option
   void add(char o, const std::string &option, type, const std::string & = "no description available");
-  //. get a value
-  void get(char o, std::string *) const;
-  //. get a value
-  void get(const std::string &option, std::string *) const;
+  //. return whether the option was issued
+  bool is_set(char o) const throw (NoSuchOption);
+  //. return whether the option was issued
+  bool is_set(const std::string &option) const throw (NoSuchOption);
+  //. return whether the option was issued and return a value (if any) in out parameter
+  bool get(char o, std::string *) const throw (NoSuchOption);
+  //. return whether the option was issued and return a value (if any) in out parameter
+  bool get(const std::string &option, std::string *) const throw (NoSuchOption);
 private:
   table_t table;
   const char *p;	      // program basename

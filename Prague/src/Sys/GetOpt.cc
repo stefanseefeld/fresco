@@ -33,18 +33,34 @@ void GetOpt::add(char o, const std::string &opt, type t, const std::string &desc
    table.push_back(cell(o, opt, t, desc));
 }
 
-void GetOpt::get(char o, std::string *v) const
+bool GetOpt::is_set(char o) const throw (NoSuchOption)
 {
   table_t::const_iterator i = find(o);
-  if (i == table.end()) std::cerr << "GetOpt::get unknown option -" << o << std::endl;
-  else if ((*i).value.length()) *v = (*i).value;
+  if (i == table.end()) throw NoSuchOption();
+  return (*i).set;
 }
 
-void GetOpt::get(const std::string &option, std::string *v) const
+bool GetOpt::is_set(const std::string &option) const throw (NoSuchOption)
 {
   table_t::const_iterator i = find(option);
-  if (i == table.end()) std::cerr << "GetOpt::get unknown option --" << option << std::endl;
-  else if ((*i).value.length()) *v = (*i).value;
+  if (i == table.end()) throw NoSuchOption();
+  return (*i).set;
+}
+
+bool GetOpt::get(char o, std::string *v) const throw (NoSuchOption)
+{
+  table_t::const_iterator i = find(o);
+  if (i == table.end()) throw NoSuchOption();
+  if ((*i).value.length()) *v = (*i).value;
+  return (*i).set;
+}
+
+bool GetOpt::get(const std::string &option, std::string *v) const throw (NoSuchOption)
+{
+  table_t::const_iterator i = find(option);
+  if (i == table.end()) throw NoSuchOption();
+  if ((*i).value.length()) *v = (*i).value;
+  return (*i).set;
 }
 
 int GetOpt::parse(int argc, char **argv)
@@ -78,7 +94,8 @@ size_t GetOpt::getlongopt(int argc, char **argv)
   std::string name (*argv + 2, token - *argv - 2);
   table_t::iterator i = find(name);
   if (i == table.end()) return 0;
-  if ((*i).t == novalue) (*i).value = "true";
+  (*i).set = true;
+  if ((*i).t == novalue) return 1;
   else if (*token == '=') (*i).value = token + 1;
   else if ((*i).t == mandatory) std::cerr << p << ": option '--" << (*i).option << "' requires a value" << std::endl;
   return 1;
@@ -92,9 +109,10 @@ size_t GetOpt::getopt(int argc, char **argv)
     {
       i = find(*option);
       if (i == table.end()) return 0;
-      else if ((*i).t == novalue)
+      
+      (*i).set = true;
+      if ((*i).t == novalue)
 	{
-	  (*i).value = "true";
 	  return 1;
 	}
       else if (argc > 1)
