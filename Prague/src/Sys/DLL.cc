@@ -29,7 +29,7 @@
 
 using namespace Prague;
 
-void DLL::open(const string &name, bool now = true)
+void DLL::open(const string &name, bool now)
 {
   lib = name;
   if (lib != "")
