@@ -24,8 +24,6 @@
 #define _Client_hh
 
 #include <Warsaw/config.hh>
-#include <omniORB3/CORBA.h>
-#include <omniORB3/poa.h>
 #include <Warsaw/resolve.hh>
 #include <Warsaw/exception.hh>
 #include <Warsaw/ClientContextImpl.hh>
@@ -43,7 +41,7 @@ class Berlin_Server {
 public:
     Berlin_Server(int argc, char** argv) {
 	// CORBA initialization
-	orb = CORBA::ORB_init(argc, argv, "omniORB3");
+	orb = CORBA::ORB_init(argc, argv);
 	name = resolve_init<CosNaming::NamingContext>(orb, "NameService");
 	poa = resolve_init<PortableServer::POA>(orb, "RootPOA");
 	poa_manager = poa->the_POAManager();

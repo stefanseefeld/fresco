@@ -65,7 +65,7 @@ int main(int argc, char **argv)
       std::istrstream iss(value.c_str());
       iss >> wait;
     };
-  CORBA::ORB_var orb = CORBA::ORB_init(argc, argv, "omniORB3");
+  CORBA::ORB_var orb = CORBA::ORB_init(argc, argv);
   CosNaming::NamingContext_var context = resolve_init<CosNaming::NamingContext>(orb, "NameService");
   PortableServer::POA_var poa = resolve_init<PortableServer::POA>(orb, "RootPOA");
   PortableServer::POAManager_var pman = poa->the_POAManager();

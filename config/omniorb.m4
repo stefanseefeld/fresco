@@ -65,6 +65,9 @@ dnl 	AC_noREQUIRE(BERLIN_LIB_NSL)
 	AC_ARG_WITH(omniorb-prefix,
 		[  --with-omniorb-prefix  Prefix for omniORB],[
 		omniorb_prefix="$withval"])
+	AC_ARG_WITH(omniorb-version,
+		[  --with-omniorb-version  omniORB version (3 and 4 supported)],[
+		omniorb_version="$withval"])
 
 	dnl Check for omniidl.
 	if test ".$omniorb_prefix" != "." ; then
@@ -170,7 +173,11 @@ dnl 	AC_noREQUIRE(BERLIN_LIB_NSL)
 
 		dnl Check for omniORB includes
 		CPPFLAGS="$CPPFLAGS $ORB_CPPFLAGS"
-		AC_CHECK_HEADER(omniORB3/CORBA.h,,no_omniorb=yes)
+		if test ".$omniorb_version" = ".4" ; then
+			AC_CHECK_HEADER(omniORB4/CORBA.h,,no_omniorb=yes)
+		else
+			AC_CHECK_HEADER(omniORB3/CORBA.h,,no_omniorb=yes)
+		fi
 	fi
 
 	dnl Check for omniORB libraries
@@ -180,16 +187,29 @@ dnl			omnithread.h)
 		dnl Hard to check the GateKeeper lib because of circular
 		dnl dependency between it and libomniORB3
 		ORB_LIBS="$ORB_LIBS -ltcpwrapGK"
-		BERLIN_CHECK_LIB(ORB_LIBS, omniDynamic3, [CORBA::Any_var any;],
-			omniORB3/CORBA.h)
-		BERLIN_CHECK_LIB(ORB_LIBS, omniORB3, [CORBA::ORB_var orb],
-			omniORB3/CORBA.h)
-		if test ".$berlin_cv_lib_omniORB3" = ".no" \
-			-a ".$berlin_cv_lib_omniDynamic3" = ".no" \
-			-a ".$berlin_cv_lib_omnithread" = ".no" ; then
-			no_omniorb="yes"
+		if test ".$omniorb_version" = ".4" ; then
+			BERLIN_CHECK_LIB(ORB_LIBS, omniDynamic4, [CORBA::Any_var any;],
+				omniORB4/CORBA.h)
+			BERLIN_CHECK_LIB(ORB_LIBS, omniORB4, [CORBA::ORB_var orb],
+				omniORB4/CORBA.h)
+			if test ".$berlin_cv_lib_omniORB4" = ".no" \
+				-a ".$berlin_cv_lib_omniDynamic4" = ".no" \
+				-a ".$berlin_cv_lib_omnithread" = ".no" ; then
+				no_omniorb="yes"
+			fi
+			LIBS="$ORB_LIBS $LIBS"
+		else
+			BERLIN_CHECK_LIB(ORB_LIBS, omniDynamic3, [CORBA::Any_var any;],
+				omniORB3/CORBA.h)
+			BERLIN_CHECK_LIB(ORB_LIBS, omniORB3, [CORBA::ORB_var orb],
+				omniORB3/CORBA.h)
+			if test ".$berlin_cv_lib_omniORB3" = ".no" \
+				-a ".$berlin_cv_lib_omniDynamic3" = ".no" \
+				-a ".$berlin_cv_lib_omnithread" = ".no" ; then
+				no_omniorb="yes"
+			fi
+			LIBS="$ORB_LIBS $LIBS"
 		fi
-		LIBS="$ORB_LIBS $LIBS"
 	fi
 
 dnl CPPFLAGS="$save_CPPFLAGS"
