@@ -56,29 +56,30 @@ AC_DEFUN([BERLIN_FREETYPE_CHECK],[
 		        freetype_libs=-L$freetype_prefix/lib
 		fi
 		freetype_libs="$freetype_libs -lfreetype"
-		
+
 		AC_CACHE_CHECK([for working Freetype environment],
 		ac_cv_lib_freetype, [
 		
 		save_LDFLAGS="$LDFLAGS"
 		save_CPPFLAGS="$CPPFLAGS"
-		LDFLAGS="$LDFLAGS $freetype_libs"
+		save_LIBS="$LIBS"
+		LIBS="$LIBS $freetype_libs"
+		LDFLAGS="$LDFLAGS"
 		CPPFLAGS="$CPPFLAGS $FREETYPE_INCLUDES"
 		
 		dnl Check if everything works
 		AC_TRY_RUN([
-#include <stdio.h>
 #include <freetype/freetype.h>
+#include <iostream>
 
-int
-main (int argc, char* argv[])
+int main (int argc, char* argv[])
 {
   FT_Library library;
-
-  if( FT_Init_FreeType( &library ) != 0 ) {
-    puts( "Error: Could not initialize FreeType engine!" );
-    return 1;
-  }
+  if(FT_Init_FreeType(&library) != 0)
+    {
+      cerr << "Error: Could not initialize FreeType engine!" << endl;
+      return 1;
+    }
   return 0;
 }
  			    ], ac_cv_lib_freetype=yes,
@@ -87,6 +88,7 @@ main (int argc, char* argv[])
  
  		CPPFLAGS="$save_CPPFLAGS"
  		LDFLAGS="$save_LDFLAGS"
+ 		LIBS="$save_LIBS"
  
  		]) dnl End of AC_CACHE_CHECK
  
