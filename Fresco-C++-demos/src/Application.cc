@@ -62,7 +62,7 @@ void Application::Mapper::execute(const CORBA::Any &)
 class ExitCommand : public Application::CommandImpl
 {
  public:
-  void execute(const CORBA::Any &) {}// exit(0);}
+  void execute(const CORBA::Any &) { exit(0); }
 };
 
 Application::Application(ServerContext_ptr sc)
