@@ -48,6 +48,7 @@ int main(int argc, char **argv)
   GetOpt getopt(argv[0], "a berlin client demonstrating the Canvas");
   getopt.add('h', "help", GetOpt::novalue, "help message");
   getopt.add('r', "run", GetOpt::mandatory, "the ggi program to run");
+  getopt.add('f', "frequency", GetOpt::optional, "the frequency with which to poll the ggi visual");
   getopt.parse(argc - 1, argv + 1);
   string value;
   getopt.get("help", &value);
@@ -55,7 +56,15 @@ int main(int argc, char **argv)
   value = "";  
   getopt.get("run", &value);
   if (value.empty()) { getopt.usage(); exit(0);}
-
+  std::string program = value;
+  value = "";
+  getopt.get("frequency", &value);
+  int wait = 250;
+  if (value.length())
+    {
+      std::istrstream iss(value.c_str());
+      iss >> wait;
+    };
   CORBA::ORB_var orb = CORBA::ORB_init(argc, argv, "omniORB3");
   CosNaming::NamingContext_var context = resolve_init<CosNaming::NamingContext>(orb, "NameService");
   PortableServer::POA_var poa = resolve_init<PortableServer::POA>(orb, "RootPOA");
@@ -104,13 +113,13 @@ int main(int argc, char **argv)
     {
     case -1: cerr << "can't fork !" << endl; exit(-1); break;
     case 0:
-      execlp("/bin/sh","/bin/sh","-c", value.c_str(), 0);
+      execlp("/bin/sh","/bin/sh","-c", program.c_str(), 0);
       exit(127);
     default:
       while (1)
 	{
 	  canvas->need_redraw();
-	  Thread::delay(250);
+	  Thread::delay(wait);
 	}
     }
 };
