@@ -28,19 +28,26 @@ AC_DEFUN([BERLIN_LIB_LIBART],[
 	AC_LANG_SAVE
 	AC_LANG_C
 
-	dnl First, try to pull everything out of gnome-config
-	BERLIN_PROG_GNOME_CONFIG
-	if test ".$GNOME_CONFIG" != . ; then
-		LIBART_INCLUDES=`$GNOME_CONFIG --cflags libart`
-		LIBART_LIBS=`$GNOME_CONFIG --libs libart`
+	dnl First, try to pull everything out of libart-config
+	BERLIN_PROG_LIBART_CONFIG
+	if test ".$LIBART_CONFIG" != . ; then
+		LIBART_INCLUDES=`$LIBART_CONFIG --cflags`
+		LIBART_LIBS=`$LIBART_CONFIG --libs`
+	else
+		dnl Second, try to pull everything out of gnome-config
+		BERLIN_PROG_GNOME_CONFIG
+		if test ".$GNOME_CONFIG" != . ; then
+			LIBART_INCLUDES=`$GNOME_CONFIG --cflags libart`
+			LIBART_LIBS=`$GNOME_CONFIG --libs libart`
+		fi
 	fi
 
 	AC_ARG_WITH(art-prefix,
 		[  --with-art-prefix=PFX   Prefix for libArt],[
 		art_prefix="$withval"])
 
-	dnl Check for header files if gnome-config failed
-	if test ".$LIBART_INCLUDES" = . -a ".$art_prefix" != . ; then
+	dnl Check for header files if above checks failed
+	if test ".$LIBART_LIBS" = . -a ".$art_prefix" != . ; then
 			LIBART_INCLUDES=-I$art_prefix/include
 			LIBART_LIBS=-L$art_prefix/lib
 	fi
