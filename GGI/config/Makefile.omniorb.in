@@ -1,0 +1,112 @@
+# $Id$
+#
+# This source file is a part of the Fresco Project.
+# Copyright (C) 2000 Stefan Seefeld <stefan@fresco.org> 
+# http://www.fresco.org
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Library General Public
+# License as published by the Free Software Foundation; either
+# version 2 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Library General Public License for more details.
+#
+# You should have received a copy of the GNU Library General Public
+# License along with this library; if not, write to the
+# Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
+# MA 02139, USA.
+
+SHELL		:= /bin/sh
+
+top_srcdir	:= @top_srcdir@
+srcdir		:= @srcdir@
+idldir		:= @idldir@
+abs_builddir	:= @abs_builddir@
+cdir		:= @top_builddir@/config
+
+ORB		:= @ORB@
+IDLCXX		:= @IDLCXX@
+SHORTCUT	:= @SHORTCUT@
+
+include $(cdir)/local.mk
+
+CPPFLAGS	+= -include acconfig.hh -I@FRESCO_CXX_prefix@/include/Fresco
+CXXFLAGS	+= $(SO_CXXFLAGS)
+LDFLAGS		+= $(SO_LDFLAGS)
+
+IDLCXXFLAGS	:= -bcxx -nf -C$(abs_builddir) -I$(idldir)/share/idl
+ifeq ($(SHORTCUT), yes)
+IDLCXXFLAGS	+= -Wbshortcut
+endif
+
+IDL	:= GGIKit.idl
+GENHDR	:= GGIKit.hh
+GENSRC	:= GGIKitSK.cc
+SRC	:= $(GENSRC) VisualImpl.cc GGIKitImpl.cc
+DEP	:= $(patsubst %, %.d, $(IDL) $(SRC))
+OBJ	:= $(patsubst %.cc, %.o, $(SRC))
+
+TARGET	:= ../lib/Fresco/GGIKit.so
+
+vpath %.idl $(srcdir)
+vpath %.hh $(srcdir)
+vpath %.cc $(srcdir)
+
+.FORCE:
+
+.PHONY: all install uninstall clean distclean maintainer-clean
+
+all:	$(TARGET)
+
+$(TARGET):	$(DEP) $(OBJ)
+		@echo linking $(@F)
+		$(CXX) $(LDFLAGS) $(SO_LDFLAGS) -o $@ $(OBJ) $(LIBS)
+
+depend:		$(DEP)
+
+install:	all
+		$(INSTALL) -m 755 $(TARGET) $(DESTDIR)$(libdir)/Fresco/
+
+uninstall:
+		rm -f $(DESTDIR)$(libdir)/Fresco/$(TARGET)
+
+clean:	
+		rm -f $(TARGET)
+		rm -f $(GENSRC) $(GENHDR) $(OBJ) $(DEP)
+
+distclean:	clean
+		rm -f Makefile
+
+maintainer-clean: distclean
+
+%.idl.d:	%.idl
+	@echo generating dependencies for $(<F)
+	$(SHELL) -ec '$(CXX) -x c++ $(DEPFLAGS) $(CPPFLAGS) -I$(idldir)/share/idl $< \
+	| sed "s/$*\\.idl\\.o[ :]*/$*\\.idl.d $*\\.hh $*SK\\.cc : /g" > $@'
+
+$(GENSRC): %SK.cc:	%.idl
+	@echo generating $(@F)
+	(cd $(srcdir) && $(IDLCXX) $(IDLCXXFLAGS) $<)
+
+$(GENHDR): %.hh:	%.idl
+	@echo generating $(@F)
+	(cd $(srcdir) && $(IDLCXX) $(IDLCXXFLAGS) $<)
+
+%.cc.d:	%.cc $(GENHDR)
+	@echo generating dependencies for $<
+	$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) $< | sed "s/$*\\.o[ :]*/$*\\.d $*\\.o : /g" > $@'
+
+%.o:	%.cc
+	@echo compiling $(@F)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(SO_CXXFLAGS) -c $< -o $@
+
+ifneq (,$(findstring depend, $(MAKECMDGOALS)))
+$(DEP): %.d:	.FORCE
+endif
+
+ifeq (,$(filter $(MAKECMDGOALS), depend clean distclean maintainer-clean))
+-include $(DEP)
+endif

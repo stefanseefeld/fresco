@@ -56,7 +56,7 @@ STATINT		:= RefCountBase.idl Identifiable.idl ClientContext.idl Server.idl \
 		   Widget.idl WidgetKit.idl GadgetKit.idl Raster.idl ImageKit.idl Figure.idl \
 		   Image.idl FigureKit.idl Command.idl CommandKit.idl \
 		   TextKit.idl Desktop.idl Window.idl DesktopKit.idl \
-		   DrawingKit3D.idl Primitive.idl PrimitiveKit.idl GGIKit.idl UnidrawKit.idl
+		   DrawingKit3D.idl Primitive.idl PrimitiveKit.idl UnidrawKit.idl
 
 INT		:= $(DYNINT) $(STATINT)
 
@@ -64,18 +64,18 @@ DYNSRC		:= $(patsubst %.idl, %DynSK.cc, $(DYNINT))
 DYNSTATSRC	:= $(patsubst %.idl, %SK.cc, $(DYNINT)) 
 STATSRC		:= $(patsubst %.idl, %SK.cc, $(STATINT))
 UTILSRC		:= IO.cc Unicode.cc ClientContextImpl.cc Resolve.cc
-SRC			:= $(DYNSTATSRC) $(DYNSRC) $(STATSRC)
+SRC		:= $(DYNSTATSRC) $(DYNSRC) $(STATSRC)
 
 DYNHDR		:= $(patsubst %.idl, %.hh, $(DYNINT))
 STATHDR		:= $(patsubst %.idl, %.hh, $(STATINT))
 UTILHDR		:= ImplVar.hh resolve.hh exception.hh IO.hh Unicode.hh ClientContextImpl.hh
 GENHDR		:= $(DYNHDR) $(STATHDR)
-HDR			:= $(GENHDR) $(UTILHDR)
+HDR		:= $(GENHDR) $(UTILHDR)
 
-DEP			:= $(patsubst %, %.d, $(notdir $(INT) $(SRC)))
+DEP		:= $(patsubst %, %.d, $(notdir $(INT) $(SRC)))
 
-SYN			:= $(patsubst %.idl, %.syn, $(INT))
-OBJ			:= $(patsubst %.cc, %.o, $(SRC) $(UTILSRC))
+SYN		:= $(patsubst %.idl, %.syn, $(INT))
+OBJ		:= $(patsubst %.cc, %.o, $(SRC) $(UTILSRC))
 
 TARGET		:= ../lib/libFresco.so
 

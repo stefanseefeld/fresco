@@ -74,6 +74,9 @@ else
   AC_MSG_ERROR([this package needs GGI to compile and run])
 fi
 
+FRESCO_PACKAGE(Fresco-C++, FRESCO_CXX, $PACKAGE_VERSION)
+AC_SUBST(Fresco_CXX_prefix)
+
 FRESCO_PACKAGE(Berlin, Berlin, $PACKAGE_VERSION)
 CPPFLAGS="$CPPFLAGS $Berlin_BUILD_CPPFLAGS"
 LIBS="$Berlin_BUILD_LIBS $LIBS"
@@ -90,9 +93,8 @@ AC_MSG_NOTICE([Output Substitution])
 
 AC_CONFIG_FILES(config/local.mk)
 AC_CONFIG_FILES([config/GGI.spec])
-AC_CONFIG_FILES([Makefile src/Makefile GGIKit/Makefile clients/Makefile])
-dnl don't use that yet...
-dnl AC_CONFIG_FILES([Makefile GGIKit/Makefile:config/$MAKEFILE])
+AC_CONFIG_FILES([Makefile src/Makefile clients/Makefile])
+AC_CONFIG_FILES([GGIKit/Makefile:config/$MAKEFILE])
 
 mkdir -p lib/Fresco/Console
 mkdir -p bin
