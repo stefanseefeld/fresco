@@ -43,15 +43,28 @@ AllocationImpl::~AllocationImpl()
 
 void AllocationImpl::add(Region_ptr region, Screen_ptr root)
 {
-  State state;
   Lease_var<RegionImpl> reg(Provider<RegionImpl>::provide());
   reg->copy(region);
-  state.allocation = reg._retn();
+
   Lease_var<TransformImpl> trafo(Provider<TransformImpl>::provide());
   trafo->load_identity();
-  state.transformation = trafo._retn();
-  state.root = Screen::_duplicate(root);
-  list.push_back(state);
+
+  Screen_ptr scrn = Screen::_duplicate (root);
+  try
+    {
+      list.push_back (State ());
+  
+      State &state = list.back ();
+      state.allocation = reg._retn();
+      state.transformation = trafo._retn();
+      state.root = scrn;
+      CORBA::release (scrn);
+    }
+  catch (...)
+    {
+      CORBA::release (scrn);
+      throw;
+    }
 }
 
 CORBA::Long AllocationImpl::size() { return list.size();}
