@@ -23,7 +23,7 @@ SHELL		:= /bin/sh
 
 top_srcdir	:= @top_srcdir@
 srcdir		:= @srcdir@
-idir		:= $(top_srcdir)/idl
+idir		:= @top_builddir@/share/idl
 abs_builddir	:= @abs_builddir@
 cdir		:= @top_builddir@/config
 h1dir		:= $(top_srcdir)/include/Fresco
@@ -90,6 +90,7 @@ all: $(TARGET) ../bin/Fresco-config
 # this split enforces that all idl code is translated
 # before the first source is compiled
 $(TARGET):
+	test -d $(abs_top_builddir)/share/idl || ln -s $(top_srcdir)/idl $(abs_top_builddir)/share/idl
 	@$(MAKE) sources
 	@$(MAKE) objects
 	@echo linking $(@F)

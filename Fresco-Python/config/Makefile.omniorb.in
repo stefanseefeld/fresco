@@ -21,7 +21,7 @@
 
 top_srcdir	:= @top_srcdir@
 srcdir		:= @srcdir@
-idir		:= @Fresco_prefix@/idl
+idir		:= @Fresco_prefix@/share/idl
 cdir		:= @top_builddir@/config
 
 include $(cdir)/local.mk
@@ -72,11 +72,14 @@ distclean:	clean
 cvsclean:	distclean
 
 $(STATSRC): %_idl.py:		$(idir)/Fresco/%.idl
+	@echo generating $(@F)
 	$(IDLPY) $(IDLPYFLAGS) $<
 
 $(DYNSTATSRC): %_idl.py: 	$(idir)/Fresco/%.idl
+	@echo generating $(@F)
 	$(IDLPY) $(IDLPYFLAGS) $(IDLDYNFLAGS) $<
 
 $(DYNSRC): %DynSK.py:	$(idir)/Fresco/%.idl
+	@echo generating $(@F)
 	$(IDLPY) $(IDLPYFLAGS) $(IDLDYNFLAGS) $<
 

@@ -69,6 +69,7 @@ AC_MSG_NOTICE([Output Substitution])
 
 AC_CONFIG_FILES([config/local.mk config/synopsis.py Makefile src/Makefile:config/$MAKEFILE])
 
+mkdir -p share
 mkdir -p lib
 mkdir -p bin
 
