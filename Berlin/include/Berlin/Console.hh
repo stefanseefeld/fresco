@@ -130,6 +130,11 @@ typedef ConsoleTie<GGIConsole> Console;
 
 typedef ConsoleTie<SDLConsole> Console;
 
+#  elif CONSOLE_IMPL == CAVELib
+#  include <Berlin/CAVE.hh>
+
+typedef ConsoleTie<CAVEConsole> Console;
+
 #  else
 #  warning "unknown console type defined"
 #  endif
