@@ -45,11 +45,11 @@ module Fresco
       Coord underline_offset, underline_width;
     };
 
-
+  enum SegmentType { move, line, conic, cubic };
   struct FontShapeSegment
     {
       Vertex to, control1, control2;
-      enum SegmentType { move, line, conic, cubic };
+      SegmentType type;
     };
   typedef sequence<FontShapeSegment> FontShape;
 
