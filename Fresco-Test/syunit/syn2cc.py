@@ -17,7 +17,7 @@ from cStringIO import StringIO
 # of stuff -- tag extraction, dependency checking, etc.), and then modules
 # that use this generate language- and build-system-specific harnesses.
 
-from Synopsis.Core import AST
+from Synopsis import AST
 import output  # our local copy of omniidl.output
 ExpandingStream = output.Stream
 ExpandingStringStream = output.StringStream
