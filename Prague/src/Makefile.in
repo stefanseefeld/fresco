@@ -60,6 +60,7 @@ SRC		+= $(patsubst %, IPC/%, $(IPC))
 SRC		+= $(patsubst %, Filter/%, $(Filter))
 SRC		+= $(patsubst %, Network/%, $(Network))
 #SRC		+= $(patsubst %, SAX/%, $(SAX))
+HDR		:= $(patsubst $(hdir)/%, %, $(wildcard $(hdir)/Prague/*/*.hh)) Prague/config.hh
 DEP		:= $(patsubst %.cc, %.d, $(notdir $(SRC)))
 OBJ		:= $(patsubst %.cc, %.o, $(notdir $(SRC)))
 
@@ -80,9 +81,19 @@ $(EXPAT):
 		cd SAX/expat; $(MAKE);
 
 install:
-		$(INSTALL) -m755 $(EXPAT) $(libdir)
-		$(INSTALL) -m755 $(TARGET) $(libdir)
-		$(INSTALL) -m755 $(bdir)/Prague-config $(bindir)
+#		$(INSTALL) -m 755 $(EXPAT) $(libdir)
+		$(INSTALL) -m 755 $(TARGET) $(libdir)
+		$(INSTALL) -d -m 755 $(includedir)/Prague/Sys
+		$(INSTALL) -d -m 755 $(includedir)/Prague/IPC
+		$(INSTALL) -d -m 755 $(includedir)/Prague/Filter
+		$(INSTALL) -d -m 755 $(includedir)/Prague/Network
+		headers='$(HDR)'; for header in $$headers; do \
+		  if test -f $(hdir)/$$header; then \
+		    echo "$(INSTALL) -m 644 $(hdir)/$$header $(includedir)/$$header"; \
+		    $(INSTALL) -m 644 $(hdir)/$$header $(includedir)/$$header; \
+		  else :; fi; \
+		done
+		$(INSTALL) -m 755 $(bdir)/Prague-config $(bindir)
 
 clean:	
 		rm -f $(TARGET)
