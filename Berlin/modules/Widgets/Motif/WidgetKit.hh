@@ -24,13 +24,13 @@
 
 #include "Warsaw/config.hh"
 #include "Warsaw/WidgetKit.hh"
+#include "Warsaw/CommandKit.hh"
 #include "Warsaw/LayoutKit.hh"
 #include "Warsaw/ToolKit.hh"
 #include "Berlin/KitImpl.hh"
 #include <vector>
 
 class GraphicImpl;
-class SubjectImpl;
 
 namespace Motif
 {
@@ -38,6 +38,8 @@ namespace Motif
 class WidgetKit : implements(WidgetKit), public KitImpl
 {
  public:
+  class CommandImpl : implements(Command) {};
+
   WidgetKit(KitFactory *, const PropertySeq &);
   virtual ~WidgetKit();
   virtual void bind(ServerContext_ptr sc);
@@ -50,9 +52,10 @@ class WidgetKit : implements(WidgetKit), public KitImpl
   Controller_ptr   scrollbar(BoundedRange_ptr, Axis);
  private:
   LayoutKit_var layout;
+  CommandKit_var   command;
   ToolKit_var   tool;
   vector<GraphicImpl *> graphics;
-  vector<SubjectImpl *> subjects;
+  vector<CommandImpl *> commands;
 };
 
 };

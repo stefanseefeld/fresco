@@ -23,8 +23,17 @@
 #ifndef _CommandKit_idl
 #define _CommandKit_idl
 
+#include "Types.idl"
 #include "Kit.idl"
 #include "Command.idl"
+#include "Telltale.idl"
+
+interface TelltaleConstraint;
+interface BoundedValue;
+interface BoundedRange;
+interface TextBuffer;
+interface StreamBuffer;
+interface Command;
 
 interface CommandKit : Kit
 //. the command kit is a collection of strategy objects. they form the
@@ -35,6 +44,14 @@ interface CommandKit : Kit
 {
   Command log(in string t);
   MacroCommand composite();
+  TelltaleConstraint exclusive();
+  TelltaleConstraint selectionRequired();
+  Telltale     normalTelltale();
+  Telltale     constrainedTelltale(in TelltaleConstraint c);
+  BoundedValue bvalue(in Coord l, in Coord u, in Coord v, in Coord s, in Coord p);
+  BoundedRange brange(in Coord l, in Coord u, in Coord lv, in Coord uv, in Coord s, in Coord p);
+  TextBuffer   text();
+  StreamBuffer stream();
 };
 
 #endif /* _CommandKit_idl */

@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -57,9 +57,9 @@ LogoDemo::LogoDemo(Application *a)
   FigureKit_var figure = application->figure();
   CommandKit_var command = application->command();
   
-  bv1 = tool->bvalue(0., 360., 0., 5., 5.);
-  bv2 = tool->bvalue(0., 360., 0., 5., 5.);
-  bv3 = tool->bvalue(0., 360., 0., 5., 5.);
+  bv1 = command->bvalue(0., 360., 0., 5., 5.);
+  bv2 = command->bvalue(0., 360., 0., 5., 5.);
+  bv3 = command->bvalue(0., 360., 0., 5., 5.);
   
   tx1->rotate(10., zaxis);
   tx2->rotate(-10., zaxis);

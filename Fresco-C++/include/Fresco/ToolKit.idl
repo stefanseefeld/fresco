@@ -27,16 +27,12 @@
 #include "Telltale.idl"
 #include "Kit.idl"
 
-interface TelltaleConstraint;
-interface BoundedValue;
-interface BoundedRange;
-interface TextBuffer;
-interface StreamBuffer;
 interface Graphic;
 interface View;
 interface Controller;
-interface Command;
 interface Trigger;
+interface Command;
+interface TextBuffer;
 
 interface ToolKit : Kit
 //. this kit provides common objects for very basic interaction tasks
@@ -56,14 +52,6 @@ interface ToolKit : Kit
     case colored:
       Color foreground;
     };
-  TelltaleConstraint exclusive();
-  TelltaleConstraint selectionRequired();
-  Telltale     normalTelltale();
-  Telltale     constrainedTelltale(in TelltaleConstraint c);
-  BoundedValue bvalue(in Coord l, in Coord u, in Coord v, in Coord s, in Coord p);
-  BoundedRange brange(in Coord l, in Coord u, in Coord lv, in Coord uv, in Coord s, in Coord p);
-  TextBuffer   text();
-  StreamBuffer stream();
   
   Graphic      debugger(in Graphic g, in string s);
   Graphic      rgb(in Graphic gg, in Coord r, in Coord g, in Coord b);

@@ -45,8 +45,9 @@ private:
   Axis axis;
 };
 
-Scrollbar::Scrollbar(BoundedRange_ptr v, Axis a)
+Scrollbar::Scrollbar(BoundedRange_ptr v, Axis a, const Requisition &r)
   : ControllerImpl(false),
+    requisition(r),
     redirect(new SObserver(this)),
     _drag(new SDrag(v, a)),
     range(BoundedRange::_duplicate(v)),
@@ -60,9 +61,9 @@ Scrollbar::Scrollbar(BoundedRange_ptr v, Axis a)
 
 void Scrollbar::init(Controller_ptr t)
 {
-  thumb = t;
-  t->addParent(Graphic_var(_this()), 1);
-  appendController(thumb);
+  body(t);
+  t->addParent(Graphic_var(_this()), 0);
+  appendController(t);
 }
 
 void Scrollbar::update(const CORBA::Any &any)
@@ -93,12 +94,8 @@ void Scrollbar::pick(PickTraversal_ptr traversal)
     }
 }
 
-void Scrollbar::allocate(Tag t, const Allocation::Info &info)
+void Scrollbar::allocate(Tag, const Allocation::Info &info)
 {
-  /*
-   * t == 0 is the body, t == 1 is the thumb
-   */
-  if (t == 0) return;
   Impl_var<RegionImpl> allocation(new RegionImpl(info.allocation));
   if (axis == xaxis)
     {
@@ -120,6 +117,8 @@ void Scrollbar::allocate(Tag t, const Allocation::Info &info)
 
 void Scrollbar::traverseThumb(Traversal_ptr traversal)
 {
+  Graphic_var child = body();
+  if (CORBA::is_nil(child)) return;
   Impl_var<RegionImpl> allocation(new RegionImpl(Region_var(traversal->allocation())));
   Impl_var<TransformImpl> transformation(new TransformImpl);
   if (axis == xaxis)
@@ -139,5 +138,5 @@ void Scrollbar::traverseThumb(Traversal_ptr traversal)
     }
   allocation->lower.z = allocation->upper.z = 0.;
   allocation->normalize(Transform_var(transformation->_this()));
-  traversal->traverseChild(thumb, 1, Region_var(allocation->_this()), Transform_var(transformation->_this()));
+  traversal->traverseChild(child, 0, Region_var(allocation->_this()), Transform_var(transformation->_this()));
 }

@@ -20,7 +20,7 @@
  * MA 02139, USA.
  */
 #ifndef _ToolKitImpl_hh
-#define _WidgetKitImpl_hh
+#define _ToolKitImpl_hh
 
 #include "Warsaw/config.hh"
 #include "Warsaw/ToolKit.hh"
@@ -28,21 +28,12 @@
 #include <vector>
 
 class GraphicImpl;
-class SubjectImpl;
 
 class ToolKitImpl : implements(ToolKit), public KitImpl
 {
  public:
   ToolKitImpl(KitFactory *, const PropertySeq &);
   virtual ~ToolKitImpl();
-  TelltaleConstraint_ptr exclusive();
-  TelltaleConstraint_ptr selectionRequired();
-  Telltale_ptr     constrainedTelltale(TelltaleConstraint_ptr);
-  Telltale_ptr     normalTelltale();
-  BoundedValue_ptr bvalue(Coord, Coord, Coord, Coord, Coord);
-  BoundedRange_ptr brange(Coord, Coord, Coord, Coord, Coord, Coord);
-  TextBuffer_ptr   text();
-  StreamBuffer_ptr stream();
 
   Graphic_ptr      debugger(Graphic_ptr, const char *);
   Graphic_ptr      rgb(Graphic_ptr, Coord, Coord, Coord);
@@ -60,7 +51,6 @@ class ToolKitImpl : implements(ToolKit), public KitImpl
   Controller_ptr   toggle(Graphic_ptr);
  private:
   vector<GraphicImpl *> graphics;
-  vector<SubjectImpl *> subjects;
 };
 
 #endif /* _ToolKitImpl_hh */

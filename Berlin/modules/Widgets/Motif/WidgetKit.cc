@@ -26,6 +26,7 @@
 #include "Warsaw/Server.hh"
 #include "Warsaw/resolve.hh"
 #include "Warsaw/Trigger.hh"
+#include "Warsaw/Command.hh"
 #include "Widget/Motif/WidgetKit.hh"
 #include "Widget/Motif/Gauge.hh"
 // #include "Widget/Motif/Slider.hh"
@@ -37,11 +38,41 @@ using namespace Motif;
 Motif::WidgetKit::WidgetKit(KitFactory *f, const PropertySeq &p) : KitImpl(f, p) {}
 Motif::WidgetKit::~WidgetKit() {}
 
+namespace Motif
+{
+
+template <class Observer>
+class Adapter0 : public WidgetKit::CommandImpl
+{
+public:
+  typedef void (Observer::*Method)();
+  Adapter0(typename Observer::_ptr_type o, Method m) : observer(o), method(m) {}
+  virtual void execute(const CORBA::Any &) { (observer->*method)();}
+private:
+  typename Observer::_ptr_type observer;
+  Method method;
+};
+
+// template <class Observer, class Argument>
+// class Adapter1 : public WidgetKit::CommandImpl
+// {
+// public:
+//   typedef void (Observer::*Method)();
+//   Adapter1(typename Observer::_ptr_type o, Method m) : observer(o), method(m) {}
+//   virtual void execute(const CORBA::Any &) { (observer->*method)();}
+// private:
+//   typename Observer::_ptr_type observer;
+//   Method method;
+// };
+
+};
+
 void Motif::WidgetKit::bind(ServerContext_ptr context)
 {
   KitImpl::bind(context);
   PropertySeq props;
   props.length(0);
+  command = resolve_kit<CommandKit>(context, interface(CommandKit), props);
   layout = resolve_kit<LayoutKit>(context, interface(LayoutKit), props);
   tool = resolve_kit<ToolKit>(context, interface(ToolKit), props);
 }
@@ -118,14 +149,13 @@ Controller_ptr Motif::WidgetKit::panner(BoundedRange_ptr x, BoundedRange_ptr y)
 {
   Panner *panner = new Panner(x, y);
   panner->_obj_is_ready(_boa());
-  ToolKit::FrameSpec spec1;
-  spec1.abrightness(0.5);
+  ToolKit::FrameSpec spec;
+  spec.abrightness(0.5);
   Graphic_var fixed = layout->fixedSize(Graphic_var(Graphic::_nil()), 1000., 1000.);
-  Graphic_var inset = tool->frame(fixed, 20., spec1, true);
+  Graphic_var inset = tool->frame(fixed, 20., spec, true);
   panner->body(inset);
-  ToolKit::FrameSpec spec2;
-  spec1.bbrightness(0.5);
-  Graphic_var outset = tool->frame(Graphic_var(Graphic::_nil()), 20., spec2, true);
+  spec.bbrightness(0.5);
+  Graphic_var outset = tool->frame(Graphic_var(Graphic::_nil()), 20., spec, true);
   Controller_var thumb = tool->dragger(outset, Command_var(panner->drag()));
   panner->init(thumb);
   return panner->_this();
@@ -133,8 +163,10 @@ Controller_ptr Motif::WidgetKit::panner(BoundedRange_ptr x, BoundedRange_ptr y)
 
 Controller_ptr Motif::WidgetKit::scrollbar(BoundedRange_ptr x, Axis a)
 {
-  Scrollbar *scrollbar = new Scrollbar(x, a);
-  scrollbar->_obj_is_ready(_boa());
+  ToolKit::FrameSpec spec;
+  /*
+   * the bar
+   */
   Graphic::Requirement fixed;
   Graphic::Requirement flexible;
   flexible.defined = true;
@@ -150,16 +182,47 @@ Controller_ptr Motif::WidgetKit::scrollbar(BoundedRange_ptr x, Axis a)
   Graphic::Requisition req;
   if (a == xaxis) req.x = flexible, req.y = fixed;
   else            req.x = fixed, req.y = flexible;
-  ToolKit::FrameSpec spec1;
-  spec1.abrightness(0.5);
-  Graphic_var inset = tool->frame(Graphic_var(layout->glueRequisition(req)), 20., spec1, true);
-  scrollbar->body(inset);
-  ToolKit::FrameSpec spec2;
-  spec2.bbrightness(0.5);
-  Graphic_var outset = tool->frame(Graphic_var(Graphic::_nil()), 20., spec2, true);
+  Scrollbar *scrollbar = new Scrollbar(x, a, req);
+  scrollbar->_obj_is_ready(_boa());
+  /*
+   * the thumb
+   */
+  spec.bbrightness(0.5);
+  Graphic_var outset = tool->frame(Graphic_var(Graphic::_nil()), 20., spec, true);
   Controller_var thumb = tool->dragger(outset, Command_var(scrollbar->drag()));
   scrollbar->init(thumb);
-  return scrollbar->_this();
+  /*
+   * the triangles
+   */
+  CommandImpl *backward = new Adapter0<BoundedRange>(x, &BoundedRange::backward);
+  backward->_obj_is_ready(_boa());
+  commands.push_back(backward);
+  outset = tool->frame(layout->fixedSize(Graphic_var(Graphic::_nil()), 100., 100.), 20., spec, true);
+  Controller_var lower = tool->stepper(outset, Command_var(backward->_this()));
+
+  CommandImpl *forward = new Adapter0<BoundedRange>(x, &BoundedRange::forward);
+  forward->_obj_is_ready(_boa());
+  commands.push_back(forward);
+  outset = tool->frame(layout->fixedSize(Graphic_var(Graphic::_nil()), 100., 100.), 20., spec, true);
+  Controller_var upper = tool->stepper(outset, Command_var(forward->_this()));
+
+  Graphic_var box = a == xaxis ? layout->hbox() : layout->vbox();
+  box->append(lower);
+  box->append(Controller_var(scrollbar->_this()));
+  box->append(upper);
+  /*
+   * now put it into an inset
+   */
+  spec.abrightness(0.5);
+  Graphic_var inset = tool->frame(box, 20., spec, false);
+  Controller_var root = tool->group(inset);
+  /*
+   * now wire up the control structure
+   */
+  root->appendController(lower);
+  root->appendController(Controller_var(scrollbar->_this()));
+  root->appendController(upper);
+  return root._retn();
 }
 
 extern "C" KitFactory *load()

@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.ca> 
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -20,7 +20,7 @@
  * MA 02139, USA.
  */
 
-#include "Widget/BoundedRangeImpl.hh"
+#include "Command/BoundedRangeImpl.hh"
 #include <algorithm>
 
 using namespace Prague;

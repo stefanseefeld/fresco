@@ -49,8 +49,9 @@ class Scrollbar : public ControllerImpl
   friend class SObserver;
   class Modifier : implements(Command) {};
 public:
-  Scrollbar(BoundedRange_ptr, Axis);
+  Scrollbar(BoundedRange_ptr, Axis, const Requisition &);
   void init(Controller_ptr);
+  virtual void request(Requisition &r) { r = requisition;}
   virtual void update(const CORBA::Any &);
   virtual void draw(DrawTraversal_ptr);
   virtual void pick(PickTraversal_ptr);
@@ -58,7 +59,7 @@ public:
   Command_ptr drag() { return _drag->_this();}
 private:
   void traverseThumb(Traversal_ptr);
-  Controller_var thumb;
+  Requisition requisition;
   Impl_var<SObserver> redirect;
   Impl_var<Modifier> _drag;
   BoundedRange_var range;

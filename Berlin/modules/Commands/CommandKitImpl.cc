@@ -2,6 +2,7 @@
  *
  * This source file is a part of the Berlin Project.
  * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -22,6 +23,11 @@
 
 #include <Command/CommandKitImpl.hh>
 #include <Command/CommandImpl.hh>
+#include "Command/TelltaleImpl.hh"
+#include "Command/BoundedValueImpl.hh"
+#include "Command/BoundedRangeImpl.hh"
+#include "Command/TextBufferImpl.hh"
+#include "Command/StreamBufferImpl.hh"
 
 CommandKitImpl::CommandKitImpl(KitFactory *f, const PropertySeq &p) : KitImpl(f, p) {}
 CommandKitImpl::~CommandKitImpl()
@@ -43,6 +49,71 @@ MacroCommand_ptr CommandKitImpl::composite()
   command->_obj_is_ready(_boa());
   commands.push_back(command);
   return command->_this();
+}
+
+TelltaleConstraint_ptr CommandKitImpl::exclusive()
+{
+  ExclusiveChoice *constraint = new ExclusiveChoice();
+  constraint->_obj_is_ready(_boa());
+//   subjects.push_back(constraint);
+  return constraint->_this();
+}
+
+TelltaleConstraint_ptr CommandKitImpl::selectionRequired()
+{
+  SelectionRequired *constraint = new SelectionRequired;
+  constraint->_obj_is_ready(_boa());
+//   subjects.push_back(constraint);
+  return constraint->_this();
+}
+
+Telltale_ptr CommandKitImpl::normalTelltale()
+{
+  TelltaleImpl *telltale = new TelltaleImpl(TelltaleConstraint::_nil());
+  telltale->_obj_is_ready(_boa());
+  subjects.push_back(telltale);
+  return telltale->_this();
+}
+
+Telltale_ptr CommandKitImpl::constrainedTelltale(TelltaleConstraint_ptr constraint)
+{
+    TelltaleImpl *telltale = new TelltaleImpl(constraint);
+    telltale->_obj_is_ready(_boa());
+    subjects.push_back(telltale);
+    constraint->add(telltale->_this());
+    return telltale->_this();
+}
+
+BoundedValue_ptr CommandKitImpl::bvalue(Coord l, Coord u, Coord v, Coord s, Coord p)
+{
+  BoundedValueImpl *bounded = new BoundedValueImpl(l, u, v, s, p);
+  bounded->_obj_is_ready(_boa());
+  subjects.push_back(bounded);
+  return bounded->_this();  
+}
+
+BoundedRange_ptr CommandKitImpl::brange(Coord l, Coord u, Coord lv, Coord uv, Coord s, Coord p)
+{
+  BoundedRangeImpl *bounded = new BoundedRangeImpl(l, u, lv, uv, s, p);
+  bounded->_obj_is_ready(_boa());
+  subjects.push_back(bounded);
+  return bounded->_this();  
+}
+
+TextBuffer_ptr CommandKitImpl::text()
+{
+  TextBufferImpl *buffer = new TextBufferImpl();
+  buffer->_obj_is_ready(_boa());
+  subjects.push_back(buffer);
+  return buffer->_this();  
+}
+
+StreamBuffer_ptr CommandKitImpl::stream()
+{
+  StreamBufferImpl *buffer = new StreamBufferImpl(80);
+  buffer->_obj_is_ready(_boa());
+  subjects.push_back(buffer);
+  return buffer->_this();  
 }
 
 extern "C" KitFactory *load()

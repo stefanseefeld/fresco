@@ -21,7 +21,7 @@
  */
 #include "Berlin/Vertex.hh"
 #include "Berlin/Logger.hh"
-#include "Widget/Stepper.hh"
+#include "Tool/Stepper.hh"
 
 using namespace Prague;
 

@@ -29,6 +29,7 @@
 #include <vector>
 
 class CommandImpl;
+class SubjectImpl;
 
 class CommandKitImpl : implements(CommandKit), public KitImpl
 {
@@ -37,8 +38,17 @@ class CommandKitImpl : implements(CommandKit), public KitImpl
   virtual ~CommandKitImpl();
   Command_ptr log(const char *);
   MacroCommand_ptr composite();
+  TelltaleConstraint_ptr exclusive();
+  TelltaleConstraint_ptr selectionRequired();
+  Telltale_ptr     constrainedTelltale(TelltaleConstraint_ptr);
+  Telltale_ptr     normalTelltale();
+  BoundedValue_ptr bvalue(Coord, Coord, Coord, Coord, Coord);
+  BoundedRange_ptr brange(Coord, Coord, Coord, Coord, Coord, Coord);
+  TextBuffer_ptr   text();
+  StreamBuffer_ptr stream();
  private:
   vector<CommandImpl *> commands;
+  vector<SubjectImpl *> subjects;
 };
 
 #endif

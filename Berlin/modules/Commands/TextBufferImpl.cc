@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -20,7 +20,7 @@
  * MA 02139, USA.
  */
 
-#include <Widget/TextBufferImpl.hh>
+#include <Command/TextBufferImpl.hh>
 #include <iostream>
 
 using namespace Prague;

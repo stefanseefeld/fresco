@@ -24,10 +24,10 @@
 #include "Berlin/SubjectImpl.hh"
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/Math.hh"
-#include "Warsaw/Warsaw.hh"
-#include "Warsaw/DrawTraversal.hh"
-#include "Warsaw/DrawingKit.hh"
-#include "Warsaw/PickTraversal.hh"
+#include <Warsaw/Warsaw.hh>
+#include <Warsaw/DrawTraversal.hh>
+#include <Warsaw/DrawingKit.hh>
+#include <Warsaw/PickTraversal.hh>
 #include "Berlin/ImplVar.hh"
 #include "Berlin/TransformImpl.hh"
 
@@ -38,8 +38,8 @@ static const double epsilon = 10e-6;
 class ViewportImpl::Adjustment : implements(BoundedRange), virtual public SubjectImpl
 {
  public:
-  Adjustment() : s(0.), p(0.) { settings.lower = settings.upper = settings.lvalue = settings.uvalue = 0.;}
-  virtual ~Adjustment() {}
+  Adjustment();
+  virtual ~Adjustment();
   virtual Settings getSettings();
   virtual Coord lower();
   virtual void lower(Coord);
@@ -65,6 +65,16 @@ class ViewportImpl::Adjustment : implements(BoundedRange), virtual public Subjec
   Coord s, p;
   Mutex mutex;
 };                                
+
+ViewportImpl::Adjustment::Adjustment()
+  : s(0.), p(0.)
+{
+  settings.lower = settings.upper = settings.lvalue = settings.uvalue = 0.;
+}
+
+ViewportImpl::Adjustment::~Adjustment()
+{
+}
 
 BoundedRange::Settings ViewportImpl::Adjustment::getSettings()
 {

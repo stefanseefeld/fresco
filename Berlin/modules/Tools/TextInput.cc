@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.ca> 
+ * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -22,7 +22,7 @@
 
 #include "Warsaw/config.hh"
 #include "Warsaw/Input.hh"
-#include "Widget/TextInput.hh"
+#include "Tool/TextInput.hh"
 #include "Prague/Unicode/Unicode.hh"
 #include "Warsaw/Unicode.hh"
 #include "Berlin/Logger.hh"

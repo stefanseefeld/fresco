@@ -60,7 +60,7 @@ Application::Application(Server_ptr server)
     ck(resolve_kit<CommandKit>(context, CommandKit_IntfRepoID)),
     ik(resolve_kit<ImageKit>(context, ImageKit_IntfRepoID)),
     vbox(lk->vbox()),
-    exclusive(ttk->exclusive()),
+    exclusive(ck->exclusive()),
     mapper(new Mapper(examples))
 {
   char *berlin_root = getenv("BERLIN_ROOT");

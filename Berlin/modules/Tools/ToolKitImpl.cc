@@ -24,11 +24,6 @@
 #include "Warsaw/Server.hh"
 #include "Warsaw/DrawingKit.hh"
 #include "Tool/ToolKitImpl.hh"
-#include "Tool/TelltaleImpl.hh"
-#include "Tool/BoundedValueImpl.hh"
-#include "Tool/BoundedRangeImpl.hh"
-#include "Tool/TextBufferImpl.hh"
-#include "Tool/StreamBufferImpl.hh"
 // #include "Tool/Filler.hh"
 // #include "Tool/Indicator.hh"
 #include "Tool/Frame.hh"
@@ -81,71 +76,6 @@ private:
 
 ToolKitImpl::ToolKitImpl(KitFactory *f, const PropertySeq &p) : KitImpl(f, p) {}
 ToolKitImpl::~ToolKitImpl() {}
-
-TelltaleConstraint_ptr ToolKitImpl::exclusive()
-{
-  ExclusiveChoice *constraint = new ExclusiveChoice();
-  constraint->_obj_is_ready(_boa());
-//   subjects.push_back(constraint);
-  return constraint->_this();
-}
-
-TelltaleConstraint_ptr ToolKitImpl::selectionRequired()
-{
-  SelectionRequired *constraint = new SelectionRequired;
-  constraint->_obj_is_ready(_boa());
-//   subjects.push_back(constraint);
-  return constraint->_this();
-}
-
-Telltale_ptr ToolKitImpl::normalTelltale()
-{
-  TelltaleImpl *telltale = new TelltaleImpl(TelltaleConstraint::_nil());
-  telltale->_obj_is_ready(_boa());
-  subjects.push_back(telltale);
-  return telltale->_this();
-}
-
-Telltale_ptr ToolKitImpl::constrainedTelltale(TelltaleConstraint_ptr constraint)
-{
-    TelltaleImpl *telltale = new TelltaleImpl(constraint);
-    telltale->_obj_is_ready(_boa());
-    subjects.push_back(telltale);
-    constraint->add(telltale->_this());
-    return telltale->_this();
-}
-
-BoundedValue_ptr ToolKitImpl::bvalue(Coord l, Coord u, Coord v, Coord s, Coord p)
-{
-  BoundedValueImpl *bounded = new BoundedValueImpl(l, u, v, s, p);
-  bounded->_obj_is_ready(_boa());
-  subjects.push_back(bounded);
-  return bounded->_this();  
-}
-
-BoundedRange_ptr ToolKitImpl::brange(Coord l, Coord u, Coord lv, Coord uv, Coord s, Coord p)
-{
-  BoundedRangeImpl *bounded = new BoundedRangeImpl(l, u, lv, uv, s, p);
-  bounded->_obj_is_ready(_boa());
-  subjects.push_back(bounded);
-  return bounded->_this();  
-}
-
-TextBuffer_ptr ToolKitImpl::text()
-{
-  TextBufferImpl *buffer = new TextBufferImpl();
-  buffer->_obj_is_ready(_boa());
-  subjects.push_back(buffer);
-  return buffer->_this();  
-}
-
-StreamBuffer_ptr ToolKitImpl::stream()
-{
-  StreamBufferImpl *buffer = new StreamBufferImpl(80);
-  buffer->_obj_is_ready(_boa());
-  subjects.push_back(buffer);
-  return buffer->_this();  
-}
 
 Graphic_ptr ToolKitImpl::debugger(Graphic_ptr g, const char *s)
 {

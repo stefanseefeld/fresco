@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -29,6 +29,7 @@ EditTextDemo::EditTextDemo(Application *a)
 {
   TextKit_var text = application->text();
   LayoutKit_var layout = application->layout();
+  CommandKit_var command = application->command();
   ToolKit_var tool = application->tool();
   WidgetKit_var widget = application->widget();
   Unicode::Char chars[] =
@@ -42,7 +43,7 @@ EditTextDemo::EditTextDemo(Application *a)
 
   Unicode::String str(34, chars);
     
-  TextBuffer_var buf = tool->text();
+  TextBuffer_var buf = command->text();
   Graphic_var txt = text->simpleViewer(buf);
   ToolKit::FrameSpec spec;
   spec.bbrightness(0.5);

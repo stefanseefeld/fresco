@@ -32,7 +32,8 @@ CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw $(ORBCPPFLAGS)
 LDFLAGS	= -shared -rdynamic -L$(lpath)
 LIBS	= -lPrague -lBerlin
 
-SRC 	= CommandKitImpl.cc #ReactorImpl.cc
+SRC 	= CommandKitImpl.cc BoundedValueImpl.cc BoundedRangeImpl.cc TelltaleImpl.cc TextBufferImpl.cc StreamBufferImpl.cc
+#ReactorImpl.cc
 
 TARGET	= $(mpath)/libCommand.so
 

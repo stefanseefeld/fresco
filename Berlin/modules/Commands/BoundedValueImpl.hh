@@ -1,10 +1,8 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- *
  * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
- *
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -22,26 +20,42 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _BoundedValue_idl
-#define _BoundedValue_idl
+#ifndef _BoundedValueImpl_hh
+#define _BoundedValueImpl_hh
 
-#include "Subject.idl"
-#include "Types.idl"
+#include "Warsaw/config.hh"
+#include "Warsaw/BoundedValue.hh"
+#include "Berlin/SubjectImpl.hh"
+#include "Prague/Sys/Thread.hh"
+#include <vector>
 
-interface BoundedValue : Subject
+class BoundedValueImpl : implements(BoundedValue), virtual public SubjectImpl
 {
-  attribute Coord lower;
-  attribute Coord upper;
-  attribute Coord step;
-  attribute Coord page;
-  attribute Coord value;
-  void forward();
-  void backward();
-  void fastforward();
-  void fastbackward();
-  void begin();
-  void end();
-  void adjust(in Coord d);
+ public:
+  BoundedValueImpl(Coord, Coord, Coord, Coord, Coord);
+  virtual ~BoundedValueImpl();
+  virtual Coord lower();
+  virtual void lower(Coord);
+  virtual Coord upper();
+  virtual void upper(Coord);
+  virtual Coord step();
+  virtual void step(Coord);
+  virtual Coord page();
+  virtual void page(Coord);
+  virtual Coord value();
+  virtual void value(Coord);
+
+  virtual void forward();
+  virtual void backward();
+  virtual void fastforward();
+  virtual void fastbackward();
+  virtual void begin();
+  virtual void end();
+  virtual void adjust(Coord);
+private:
+  Coord l, u, v;
+  Coord s, p;
+  Prague::Mutex mutex;
 };
 
-#endif /* _BoundedValue_idl */
+#endif /* _BoundedValueImpl_hh */

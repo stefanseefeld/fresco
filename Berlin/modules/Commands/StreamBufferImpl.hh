@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
+ * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -19,32 +19,29 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Stepper_hh
-#define _Stepper_hh
+#ifndef _StreamBufferImpl_hh
+#define _StreamBufferImpl_hh
 
-#include <Prague/Sys/Time.hh>
-#include <Prague/Sys/Timer.hh>
-#include <Tool/TriggerImpl.hh>
+#include <Warsaw/config.hh>
+#include <Warsaw/StreamBuffer.hh>
+#include <Berlin/SubjectImpl.hh>
+#include <Prague/Sys/Thread.hh>
+#include <vector>
 
-class Stepper : public TriggerImpl
-//. The Stepper class implements a button with autorepeat.
+class StreamBufferImpl : implements(StreamBuffer), public SubjectImpl
 {
-  class Notifier;
-  friend class Notifier;
-public:
-  Stepper();
-  ~Stepper();
-//protected:
-  virtual void press(PickTraversal_ptr, const Input::Event &);
-  virtual void release(PickTraversal_ptr, const Input::Event &);
-  virtual void step();
-private:
-  void start();
-  void stop();
-  Prague::Time  delay;
-  Prague::Time  delta;
-  Notifier     *notifier;
-  Prague::Timer timer;
+ public:
+  StreamBufferImpl(long l) : length(l) { buffer.reserve(length);}
+  virtual ~StreamBufferImpl() {}
+  virtual CORBA::Long size();
+  virtual CORBA::Long available();
+  virtual Data *read();
+  virtual void write(const Data &);
+  virtual void flush();
+ private:
+  size_t length;
+  vector<CORBA::Octet> buffer;
+  Prague::Mutex mutex;
 };
 
-#endif
+#endif /* _StreamBufferImpl_hh */
