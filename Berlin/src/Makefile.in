@@ -58,7 +58,8 @@ HDR	:= Console.hh Color.hh Event.hh GapBuffer.hh Geometry.hh \
 	   ScreenManager.hh EventManager.hh PositionalFocus.hh \
 	   NonPositionalFocus.hh FilterImpl.hh SubjectImpl.hh KitImpl.hh \
 	   RCManager.hh DefaultPOA.hh ObserverImpl.hh config.hh \
-           ServerContextImpl.hh ServerImpl.hh GraphDebugger.hh Dictionary.hh
+           ServerContextImpl.hh ServerImpl.hh GraphDebugger.hh \
+	   GraphicDictionary.hh
 
 CHDR	:= DirectBuffer.hh Renderer.hh GLContext.hh SHMDrawableFactory.hh GGIDrawableFactory.hh
 OBJ	:= $(patsubst %.cc, %.o, $(SRC))
