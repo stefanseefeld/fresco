@@ -25,7 +25,7 @@ prefix		:= @prefix@
 top_srcdir	:= @top_srcdir@
 srcdir          := @srcdir@
 
-subdirs	:= Fresco
+subdirs	:= src
 # insert inter-directory dependencies below
 
 # Overridden by the clean-targets, allowing the same subdirs-rule to be used
@@ -45,7 +45,7 @@ depend: #do nothing
 xref: #do nothing
 doc: #do nothing here
 
-install:
+install: all
 	./setup.py install --prefix=$(DESTDIR)$(prefix)
 
 install-doc: #do nothing here

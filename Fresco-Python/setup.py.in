@@ -6,4 +6,11 @@ setup(name="Fresco",
       version="@PACKAGE_VERSION@",
       description="Fresco Python bindings",
       url="http://www.fresco.org",
-      packages=["Fresco"])
+      package_dir = {'' : 'src'},
+      packages=["Fresco", "Fresco.Input",
+                "Layout", "Layout__POA",
+                "Figure", "Figure__POA",
+                "Primitive", "Primitive__POA",
+                "Widget", "Widget__POA",
+                "Unidraw", "Unidraw__POA",
+                "FrescoStubs"])
