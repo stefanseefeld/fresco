@@ -41,8 +41,8 @@ SDL::Drawable::Drawable(const char *display,
 
   _width = w;
   _height = h;
-  Logger::log(Logger::loader) << "setting video mode d = " << display
-                              << " w=" << w << " h= " << h << " bpp=" << bpp
+  Logger::log(Logger::loader) << "setting video mode d =" << display
+                              << " w=" << w << " h=" << h << " bpp=" << bpp
                               << std::endl;
   if (display == NULL) {
     _surface = SDL_SetVideoMode( w, h, bpp, SDL_HWSURFACE | SDL_HWPALETTE );

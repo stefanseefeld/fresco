@@ -28,6 +28,40 @@
 
 
 
+// ---------------------------------------------------------------
+// class SDL::GLExposeHandler (implementation)
+// ---------------------------------------------------------------
+void SDL::GLExposeHandler::refresh_screen()
+{
+  Prague::Trace trace("SDL::GLExposeHandler::refresh_screen()");
+  
+  /*
+  ::Console::Drawable * drawable = ::Console::instance()->drawable();
+
+  glDisable(GL_ALPHA_TEST);
+  glDisable(GL_BLEND);
+  glDisable(GL_SCISSOR_TEST);
+
+  glReadBuffer(GL_BACK);
+  glDrawBuffer(GL_FRONT);
+  glRasterPos2i(0, 0);
+
+  glCopyPixels(0, drawable->height(), drawable->width(), drawable->height(),
+  	       GL_COLOR);
+  glFlush();
+  SDL_UpdateRect(static_cast<SDL::Drawable *>(drawable)->surface(), 0, 0, 0, 0);
+
+  glEnable(GL_ALPHA_TEST);
+  glEnable(GL_BLEND);
+  glEnable(GL_SCISSOR_TEST);
+
+  glDrawBuffer(GL_BACK);
+  */
+  _glcontext->flush();
+}
+
+
+
 
 
 // ---------------------------------------------------------------
@@ -78,12 +112,15 @@ SDL::GLContext::GLContext()
       _drawable->_depth = 0;
     }
 
-  glReadBuffer(GL_FRONT);
   glDrawBuffer(GL_BACK);
 
   // setup PointerManager:
   dynamic_cast<SDL::Console *>(::Console::instance())->
     set_PointerManager(new SDL::PointerManagerT<GLPointer>);
+
+  // setup ExposeHandler:
+  dynamic_cast<SDL::Console *>(::Console::instance())->
+    set_ExposeHandler(new SDL::GLExposeHandler(this));
 }
 
 
@@ -97,10 +134,19 @@ void SDL::GLContext::flush() {
   Prague::Trace trace("SDL::GLContext::flush()");
   
   if (_isDoubleBuffered) {
+    glFlush();
     SDL_GL_SwapBuffers();
+
     glDisable(GL_ALPHA_TEST);
     glDisable(GL_BLEND);
     glDisable(GL_SCISSOR_TEST);
+
+    glReadBuffer(GL_FRONT);
+    glDrawBuffer(GL_BACK);
+    glRasterPos2i(0, 0);
+    glCopyPixels(0, _drawable->height(), _drawable->width(), _drawable->height(),
+		 GL_COLOR);
+
     glCopyPixels(0, 0, _drawable->width(), _drawable->height(),
 		 GL_COLOR);
     glEnable(GL_ALPHA_TEST);
@@ -189,10 +235,11 @@ void SDL::GLPointer::save()
 
   Warsaw::PixelCoord x = _position[0] - _origin[0];
   Warsaw::PixelCoord y = _max_y_size - _position[1] - _size[1] + _origin[1];
-  glReadBuffer(GL_FRONT);
   glDisable(GL_BLEND);
   glDisable(GL_ALPHA);
   glDisable(GL_SCISSOR_TEST);
+
+  glReadBuffer(GL_FRONT);
   glReadPixels(x, y,
 	       _size[0], _size[1],
 	       GL_RGB, GL_UNSIGNED_BYTE,
@@ -209,17 +256,18 @@ void SDL::GLPointer::restore()
 
   Warsaw::PixelCoord x = _position[0] - _origin[0];
   Warsaw::PixelCoord y = _position[1] + _size[1] - _origin[1];
-  glDrawBuffer(GL_FRONT);
   glDisable(GL_BLEND);
   glDisable(GL_ALPHA);
   glDisable(GL_SCISSOR_TEST);
+
   glRasterPos2i(x * 10, y * 10);
+  glDrawBuffer(GL_FRONT);
   glDrawPixels(_size[0], _size[1], GL_RGB, GL_UNSIGNED_BYTE, _saved_area); 
-  glDrawBuffer(GL_BACK);
-  glRasterPos2i(0, 0);
+
   glEnable(GL_BLEND);
   glEnable(GL_ALPHA);
   glEnable(GL_SCISSOR_TEST);
+  glDrawBuffer(GL_BACK);
 }
 
 
@@ -229,14 +277,15 @@ void SDL::GLPointer::draw()
 
   Warsaw::PixelCoord x = _position[0] - _origin[0];
   Warsaw::PixelCoord y = _position[1] + _size[1] - _origin[1];
-  glDrawBuffer(GL_FRONT);
   glDisable(GL_SCISSOR_TEST);
+
+  glDrawBuffer(GL_FRONT);
   glRasterPos2i(x * 10, y * 10);
   glDrawPixels(_size[0], _size[1], GL_RGBA, GL_UNSIGNED_BYTE, _cursor); 
-  glDrawBuffer(GL_BACK);
-  glRasterPos2i(0, 0);
+
   glEnable(GL_SCISSOR_TEST);
   glFlush();
+  glDrawBuffer(GL_BACK);
 }
 
 

@@ -36,13 +36,20 @@ namespace SDL
 
 
 // ---------------------------------------------------------------
-// class GL_PointerManager
+// class GLExposeHandler
 // ---------------------------------------------------------------
 
-class GL_PointerManager : public SDL::PointerManager
+class GLExposeHandler : public SDL::ExposeHandler
 {
 public:
-  SDL::Pointer * create_pointer(Warsaw::Raster_ptr);
+  GLExposeHandler(GLContext * gl) :
+    _glcontext(gl)
+  { }
+  ~GLExposeHandler() { }
+
+  void refresh_screen();
+private:
+  GLContext * _glcontext;
 };
 
 

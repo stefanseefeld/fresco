@@ -56,6 +56,11 @@ class Pointer;
 // class SDL::PointerManager declaration
 // ---------------------------------------------------------------
 
+// This class is introduced to allow for more then one Pointer
+// implementation. Without the console knowing all of them
+// beforehand. This is necessary since GLPointer depends on
+// (guess what) GL and I don't want the Console itself to
+// depend on that:-)
 class PointerManager
 {
 public:
@@ -72,6 +77,22 @@ public:
 			<SDL::Drawable *>(::Console::instance()->drawable()),
 			raster);
   }
+};
+
+
+
+
+// ---------------------------------------------------------------
+// class SDL::ExposeHandler declaration
+// ---------------------------------------------------------------
+
+// Another helper class. GL nends some magic to redraw itself after
+// its window got obscured. Another redirection so to have the Console
+// *not* depend on GL...
+class ExposeHandler
+{
+public:
+  virtual void refresh_screen() = 0;
 };
 
 
@@ -116,6 +137,7 @@ public:
   bool is_gl() const { return _is_gl;}
 
   void set_PointerManager(PointerManager *);
+  void set_ExposeHandler(ExposeHandler *);
 
 private:
 
@@ -131,6 +153,7 @@ private:
   elist_t             _modules;
 
   PointerManager    * _pointer_mgr;
+  ExposeHandler     * _expose;
   
   bool                _is_gl;
 

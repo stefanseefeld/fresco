@@ -96,8 +96,6 @@ public:
   // SDL specific:
   SDL_Surface *surface() { return _surface; }
   unsigned depth() { return _depth; }
-  unsigned width() { return _width; }
-  unsigned height() { return _height; }
   bool need_locking() { return _need_locking; }
 
   Pixel map(const Warsaw::Color &) const;

@@ -106,7 +106,8 @@ SDL::Console::Console(int &argc, char **argv) :
 #endif
   _autoplay(false),
   _is_gl(false),
-  _pointer_mgr(new PointerManagerT<nonGLPointer>)
+  _pointer_mgr(new PointerManagerT<nonGLPointer>),
+  _expose(0)
 {
   Prague::Trace trace("SDL::Console::Console");
   Logger::log(Logger::loader) << "trying to open SDL console" << endl;
@@ -213,6 +214,9 @@ Input::Event *SDL::Console::synthesize(const SDL_Event &e)
   Input::Event_var event = new Input::Event;
   switch (e.type)
     {
+    case SDL_VIDEOEXPOSE:
+      if (_expose) _expose->refresh_screen();
+      break;
     case SDL_KEYDOWN:
       {
 	Input::Toggle toggle;
@@ -285,6 +289,11 @@ Input::Event *SDL::Console::synthesize(const SDL_Event &e)
 
 void SDL::Console::set_PointerManager(PointerManager * pm) {
   _pointer_mgr = pm;
+}
+
+
+void SDL::Console::set_ExposeHandler(ExposeHandler * eh) {
+  _expose = eh;
 }
 
 
