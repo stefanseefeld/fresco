@@ -42,7 +42,7 @@ private:
 int test_random()
 {
   static Mutex mutex;
-  MutexGuard guard(mutex);
+  Prague::Guard<Mutex> guard(mutex);
   return rand();
 }
 
@@ -56,14 +56,14 @@ public:
   ~Diner() { cancel();}
   void run()
     {
-      MutexGuard guard(mutex);
+      Prague::Guard<Mutex> guard(mutex);
       running = true;
       server.start();
     }
   void cancel()
     {
       {
-	MutexGuard guard(mutex);
+	Prague::Guard<Mutex> guard(mutex);
 	running = false;
       }
       server.join(0);
@@ -136,7 +136,7 @@ void Diner::start()
 
 void Diner::remove(int i)
 {
-  MutexGuard guard(mutex);      
+  Prague::Guard<Mutex> guard(mutex);      
   delete philosophers[i];
   philosophers[i] = 0;
   occupancy--;

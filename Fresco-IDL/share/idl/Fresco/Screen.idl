@@ -25,16 +25,16 @@
 #include <Warsaw/Types.idl>
 #include <Warsaw/Controller.idl>
 
-module Warsaw
-{
-  interface DrawingKit;
-  interface Region;
-
-  interface Screen : Controller
-    {
-      Coord width();
-      Coord height();
-      void damage(in Region r);
+module Warsaw {
+    interface DrawingKit;
+    interface Region;
+    
+    interface Screen : Controller {
+	//. Get screen width.
+	Coord width();
+	//. Get screen height
+	Coord height();
+	void damage(in Region r);
     };
 };
 

@@ -25,15 +25,15 @@ using namespace Prague;
 using namespace CosTrading;
 
 TraderComponentsImpl::TraderComponentsImpl() {}
-Lookup_ptr TraderComponentsImpl::lookup_if() { MutexGuard guard(mutex); return Lookup::_duplicate(lookup);}
-Register_ptr TraderComponentsImpl::register_if() { MutexGuard guard(mutex); return Register::_duplicate(register_);}
-Link_ptr TraderComponentsImpl::link_if() { MutexGuard guard(mutex); return Link::_duplicate(link);}
-Proxy_ptr TraderComponentsImpl::proxy_if() { MutexGuard guard(mutex); return Proxy::_duplicate(proxy);}
-Admin_ptr TraderComponentsImpl::admin_if() { MutexGuard guard(mutex); return Admin::_duplicate(admin);}
+Lookup_ptr TraderComponentsImpl::lookup_if() { Prague::Guard<Mutex> guard(mutex); return Lookup::_duplicate(lookup);}
+Register_ptr TraderComponentsImpl::register_if() { Prague::Guard<Mutex> guard(mutex); return Register::_duplicate(register_);}
+Link_ptr TraderComponentsImpl::link_if() { Prague::Guard<Mutex> guard(mutex); return Link::_duplicate(link);}
+Proxy_ptr TraderComponentsImpl::proxy_if() { Prague::Guard<Mutex> guard(mutex); return Proxy::_duplicate(proxy);}
+Admin_ptr TraderComponentsImpl::admin_if() { Prague::Guard<Mutex> guard(mutex); return Admin::_duplicate(admin);}
 
-void TraderComponentsImpl::lookup_if(Lookup_ptr l) { MutexGuard guard(mutex); lookup = Lookup::_duplicate(l);}
-void TraderComponentsImpl::register_if(Register_ptr r) { MutexGuard guard(mutex); register_ = Register::_duplicate(r);}
-void TraderComponentsImpl::link_if(Link_ptr l) { MutexGuard guard(mutex); link = Link::_duplicate(l);}
-void TraderComponentsImpl::proxy_if(Proxy_ptr p) { MutexGuard guard(mutex); proxy = Proxy::_duplicate(p);}
-void TraderComponentsImpl::admin_if(Admin_ptr a) { MutexGuard guard(mutex); admin = Admin::_duplicate(a);}
+void TraderComponentsImpl::lookup_if(Lookup_ptr l) { Prague::Guard<Mutex> guard(mutex); lookup = Lookup::_duplicate(l);}
+void TraderComponentsImpl::register_if(Register_ptr r) { Prague::Guard<Mutex> guard(mutex); register_ = Register::_duplicate(r);}
+void TraderComponentsImpl::link_if(Link_ptr l) { Prague::Guard<Mutex> guard(mutex); link = Link::_duplicate(l);}
+void TraderComponentsImpl::proxy_if(Proxy_ptr p) { Prague::Guard<Mutex> guard(mutex); proxy = Proxy::_duplicate(p);}
+void TraderComponentsImpl::admin_if(Admin_ptr a) { Prague::Guard<Mutex> guard(mutex); admin = Admin::_duplicate(a);}
 

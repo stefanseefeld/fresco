@@ -226,7 +226,7 @@ void GLUTHandler::mouseMotion(int x, int y)
 void GLUTHandler::idle()
 {
     Trace trace("GLUTHandler::idle");
-    MutexGuard guard(drawable->_mutex);
+    Prague::Guard<Mutex> guard(drawable->_mutex);
     if (drawable->_dirty) {
 	drawable->_dirty = false;
 	glutPostRedisplay();
@@ -245,7 +245,7 @@ GLUTDrawable::GLUTDrawable()
 
 GLUTDrawable::~GLUTDrawable()
 {
-    MutexGuard guard(_mutex);
+    Prague::Guard<Mutex> guard(_mutex);
     glDeleteLists(_displist, 1);
     _displist = 0;
 }
@@ -286,7 +286,7 @@ void GLUTDrawable::finish()
 void GLUTDrawable::render()
 {
     Trace trace("GLUTDrawable::render");
-    MutexGuard guard(_mutex);
+    Prague::Guard<Mutex> guard(_mutex);
     
     // Call display list 
     if (_displist != 0) {

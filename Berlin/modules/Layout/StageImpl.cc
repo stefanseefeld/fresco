@@ -497,7 +497,7 @@ void StageImpl::request(Warsaw::Graphic::Requisition &r)
 void StageImpl::traverse(Traversal_ptr traversal)
 {
   Trace trace("StageImpl::traverse");
-  MutexGuard guard(_mutex);
+  Prague::Guard<Mutex> guard(_mutex);
 //   Profiler prf("StageImpl::traverse");
   RegionImpl region(Region_var(traversal->current_allocation()));
   Geometry::Rectangle<Coord> rectangle;
@@ -586,7 +586,7 @@ void StageImpl::need_resize()
 
 Region_ptr StageImpl::bbox()
 {
-  MutexGuard guard(_mutex);
+  Prague::Guard<Mutex> guard(_mutex);
   Geometry::Rectangle<Coord> bb = _tree->bbox();
   _bbregion->valid = true;
   _bbregion->lower.x = bb.l;
@@ -600,13 +600,13 @@ Region_ptr StageImpl::bbox()
 
 CORBA::Long StageImpl::layers()
 {
-  MutexGuard guard(_mutex);
+  Prague::Guard<Mutex> guard(_mutex);
   return _tree->size();
 }
 
 StageHandle_ptr StageImpl::layer(Layout::Stage::Index i)
 {
-  MutexGuard guard(_mutex);
+  Prague::Guard<Mutex> guard(_mutex);
   StageHandleImpl *handle = _children->find(i);
   return handle ? handle->_this() : StageHandle::_nil();
 }
@@ -627,7 +627,7 @@ void StageImpl::begin()
 void StageImpl::end()
 {
   Trace trace("StageImpl::end");
-  MutexGuard guard(_mutex);
+  Prague::Guard<Mutex> guard(_mutex);
   if (!--_nesting)
     {
       _tree->end();
@@ -652,7 +652,7 @@ void StageImpl::end()
 StageHandle_ptr StageImpl::insert(Graphic_ptr g, const Vertex &position, const Vertex &size, Layout::Stage::Index layer)
 {
   Trace trace("StageImpl::insert");
-  MutexGuard guard(_mutex);
+  Prague::Guard<Mutex> guard(_mutex);
   StageHandleImpl *handle = new StageHandleImpl(this, g, unique_tag(), position, size, layer);
   _tree->insert(handle);
 //   dumpQuadTree(*tree);
@@ -664,7 +664,7 @@ StageHandle_ptr StageImpl::insert(Graphic_ptr g, const Vertex &position, const V
 void StageImpl::remove(StageHandle_ptr h)
 {
   Trace trace("StageImpl::remove");
-  MutexGuard guard(_mutex);
+  Prague::Guard<Mutex> guard(_mutex);
   StageHandleImpl *handle = _children->find(h->layer());
   if (!handle) return;
   _tree->remove(handle);
@@ -680,7 +680,7 @@ void StageImpl::move(StageHandleImpl *handle, const Vertex &p)
 {
   Trace trace("StageImpl::move");
 //   Prague::Profiler prf("StageImpl::move");
-  MutexGuard guard(_mutex);
+  Prague::Guard<Mutex> guard(_mutex);
   _tree->remove(handle);
 
   damage(handle);
@@ -704,7 +704,7 @@ void StageImpl::move(StageHandleImpl *handle, const Vertex &p)
 void StageImpl::resize(StageHandleImpl *handle, const Vertex &s)
 {
   Trace trace("StageImpl::resize");
-  MutexGuard guard(_mutex);
+  Prague::Guard<Mutex> guard(_mutex);
   _tree->remove(handle);
 
   damage(handle);
@@ -723,7 +723,7 @@ void StageImpl::resize(StageHandleImpl *handle, const Vertex &s)
 void StageImpl::relayer(StageHandleImpl *handle, Layout::Stage::Index l)
 {
   Trace trace("StageImpl::relayer");
-  MutexGuard guard(_mutex);
+  Prague::Guard<Mutex> guard(_mutex);
   _children->remove(handle);
   handle->_layer = l;
   _children->insert(handle);
@@ -788,7 +788,7 @@ void StageHandleImpl::remove()
 
 Warsaw::Vertex StageHandleImpl::position()
 {
-  MutexGuard guard(_mutex);
+  Prague::Guard<Mutex> guard(_mutex);
   return _position;
 }
 
@@ -801,7 +801,7 @@ void StageHandleImpl::position(const Vertex &pp)
 
 Warsaw::Vertex StageHandleImpl::size()
 {
-  MutexGuard guard(_mutex);
+  Prague::Guard<Mutex> guard(_mutex);
   return _size;
 }
 
@@ -814,7 +814,7 @@ void StageHandleImpl::size(const Vertex &ss)
 
 Layout::Stage::Index StageHandleImpl::layer() 
 {
-  MutexGuard guard(_mutex);
+  Prague::Guard<Mutex> guard(_mutex);
   return _layer;
 }
 
@@ -827,13 +827,13 @@ void StageHandleImpl::layer(Layout::Stage::Index ll)
 
 const Geometry::Rectangle<Warsaw::Coord> &StageHandleImpl::bbox()
 {
-  MutexGuard guard(_mutex);
+  Prague::Guard<Mutex> guard(_mutex);
   return _bbox;
 }
 
 void StageHandleImpl::bbox(RegionImpl &region)
 {
-  MutexGuard guard(_mutex);
+  Prague::Guard<Mutex> guard(_mutex);
   region.valid   = true;
   region.lower.x = _bbox.l;
   region.upper.x = _bbox.r;

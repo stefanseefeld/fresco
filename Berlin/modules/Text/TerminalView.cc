@@ -62,7 +62,7 @@ void TerminalView::update(const CORBA::Any &)
 {
   Trace trace("TerminalView::update");  
   {
-//     MutexGuard guard(childMutex);
+//     Prague::Guard<Mutex> guard(childMutex);
     begin();
     if (!_lines.size())
       {

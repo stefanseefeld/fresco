@@ -38,20 +38,20 @@ public:
   void push(const T &t)
     {
       free.wait();
-      MutexGuard guard(mutex);
+      Prague::Guard<Mutex> guard(mutex);
       rep_type::push(t);
       tasks.post();
     }
   T pop()
     {
       tasks.wait();
-      MutexGuard guard(mutex);
+      Prague::Guard<Mutex> guard(mutex);
       T t = rep_type::top();
       rep_type::pop();
       free.post();
       return t;
     }
-  size_t size() { MutexGuard guard(mutex); return rep_type::size();}
+  size_t size() { Prague::Guard<Mutex> guard(mutex); return rep_type::size();}
 protected:
 private:
   Semaphore tasks;

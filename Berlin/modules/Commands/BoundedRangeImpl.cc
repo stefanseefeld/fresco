@@ -41,19 +41,19 @@ BoundedRangeImpl::~BoundedRangeImpl()
 
 BoundedRange::Settings BoundedRangeImpl::state()
 {
-  MutexGuard guard(mutex);
+  Prague::Guard<Mutex> guard(mutex);
   return settings;
 }
 
 void BoundedRangeImpl::state(const Warsaw::BoundedRange::Settings &s)
 {
-  MutexGuard guard(mutex);
+  Prague::Guard<Mutex> guard(mutex);
   settings = s;
 }
 
 Coord BoundedRangeImpl::lower()
 {
-  MutexGuard guard(mutex);
+  Prague::Guard<Mutex> guard(mutex);
   return settings.lower;
 }
 
@@ -61,7 +61,7 @@ void BoundedRangeImpl::lower(Coord l)
 {
   CORBA::Any any;
   {
-    MutexGuard guard(mutex);
+    Prague::Guard<Mutex> guard(mutex);
     if (l == settings.lower) return;
     settings.lower = l;
     settings.lvalue = max(settings.lvalue, settings.lower);
@@ -73,7 +73,7 @@ void BoundedRangeImpl::lower(Coord l)
 
 Coord BoundedRangeImpl::upper()
 {
-  MutexGuard guard(mutex);
+  Prague::Guard<Mutex> guard(mutex);
   return settings.upper;
 }
 
@@ -81,7 +81,7 @@ void BoundedRangeImpl::upper(Coord u)
 {
   CORBA::Any any;
   {
-    MutexGuard guard(mutex);
+    Prague::Guard<Mutex> guard(mutex);
     if (settings.upper == u) return;
     settings.upper = u;
     settings.lvalue = min(settings.lvalue, settings.upper);
@@ -93,25 +93,25 @@ void BoundedRangeImpl::upper(Coord u)
 
 Coord BoundedRangeImpl::step()
 {
-  MutexGuard guard(mutex);
+  Prague::Guard<Mutex> guard(mutex);
   return s;
 }
 
 void BoundedRangeImpl::step(Coord ss)
 {
-  MutexGuard guard(mutex);
+  Prague::Guard<Mutex> guard(mutex);
   s = ss;
 }
 
 Coord BoundedRangeImpl::page()
 {
-  MutexGuard guard(mutex);
+  Prague::Guard<Mutex> guard(mutex);
   return p;
 }
 
 void BoundedRangeImpl::page(Coord pp)
 {
-  MutexGuard guard(mutex);
+  Prague::Guard<Mutex> guard(mutex);
   p = pp;
 }
 
@@ -119,7 +119,7 @@ void BoundedRangeImpl::forward()
 {
   CORBA::Any any;
   {
-    MutexGuard guard(mutex);
+    Prague::Guard<Mutex> guard(mutex);
     Coord t = min(s, settings.upper - settings.uvalue);
     if (t <= 0.) return;
     settings.lvalue += t;
@@ -133,7 +133,7 @@ void BoundedRangeImpl::backward()
 {
   CORBA::Any any;
   {
-    MutexGuard guard(mutex);
+    Prague::Guard<Mutex> guard(mutex);
     Coord t = min(s, settings.lvalue - settings.lower);
     if (t <= 0.) return;
     settings.lvalue -= t;
@@ -147,7 +147,7 @@ void BoundedRangeImpl::fastforward()
 {
   CORBA::Any any;
   {
-    MutexGuard guard(mutex);
+    Prague::Guard<Mutex> guard(mutex);
     Coord t = min(p, settings.upper - settings.uvalue);
     if (t <= 0.) return;
     settings.lvalue += t;
@@ -161,7 +161,7 @@ void BoundedRangeImpl::fastbackward()
 {
   CORBA::Any any;
   {
-    MutexGuard guard(mutex);
+    Prague::Guard<Mutex> guard(mutex);
     Coord t = min(p, settings.lvalue - settings.lower);
     if (t <= 0.) return;
     settings.lvalue -= t;
@@ -175,7 +175,7 @@ void BoundedRangeImpl::begin()
 {
   CORBA::Any any;
   {
-    MutexGuard guard(mutex);
+    Prague::Guard<Mutex> guard(mutex);
     Coord t = settings.lvalue - settings.lower;
     if (t == 0.) return;
     settings.lvalue -= t;
@@ -189,7 +189,7 @@ void BoundedRangeImpl::end()
 {
   CORBA::Any any;
   {
-    MutexGuard guard(mutex);
+    Prague::Guard<Mutex> guard(mutex);
     Coord t = settings.upper - settings.uvalue;
     if (t == 0.) return;
     settings.lvalue += t;
@@ -204,7 +204,7 @@ void BoundedRangeImpl::lvalue(Coord lv)
   CORBA::Any any;
   {
     lv = min(max(settings.lower, lv), settings.upper);
-    MutexGuard guard(mutex);
+    Prague::Guard<Mutex> guard(mutex);
     if (lv == settings.lvalue) return;
     settings.lvalue = lv;
     any <<= settings;
@@ -214,7 +214,7 @@ void BoundedRangeImpl::lvalue(Coord lv)
 
 Coord BoundedRangeImpl::lvalue()
 {
-  MutexGuard guard(mutex);
+  Prague::Guard<Mutex> guard(mutex);
   return settings.lvalue;
 }
 
@@ -224,7 +224,7 @@ void BoundedRangeImpl::uvalue(Coord uv)
   CORBA::Any any;
   {
     uv = min(max(settings.lower, uv), settings.upper);
-    MutexGuard guard(mutex);
+    Prague::Guard<Mutex> guard(mutex);
     if (settings.uvalue == uv) return;
     settings.uvalue = uv;
   }
@@ -233,7 +233,7 @@ void BoundedRangeImpl::uvalue(Coord uv)
 
 Coord BoundedRangeImpl::uvalue()
 {
-  MutexGuard guard(mutex);
+  Prague::Guard<Mutex> guard(mutex);
   return settings.uvalue;
 }
 
@@ -242,7 +242,7 @@ void BoundedRangeImpl::adjust(Coord d)
 {
   CORBA::Any any;
   {
-    MutexGuard guard(mutex);
+    Prague::Guard<Mutex> guard(mutex);
     Coord t = min(max(d, settings.lower - settings.lvalue), settings.upper - settings.uvalue);
     if (t == 0.) return;
     settings.lvalue += t;

@@ -48,7 +48,7 @@ Mutex lostream::mutex;
 int test_random()
 {
   static Mutex mutex;
-  MutexGuard guard(mutex);
+  Prague::Guard<Mutex> guard(mutex);
   return rand();
 }
 

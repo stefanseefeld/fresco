@@ -92,7 +92,7 @@ void SelectionImpl::type(Warsaw::Selection::Policy) {}
 Tag SelectionImpl::add(Telltale_ptr t)
 {
   Trace trace("SelectionImpl::add");
-  MutexGuard guard(mutex);
+  Prague::Guard<Mutex> guard(mutex);
   Tag id = uniqueId();
   Observer *observer = new Observer(this, t, id);
 //   activate(observer);
@@ -105,7 +105,7 @@ Tag SelectionImpl::add(Telltale_ptr t)
 void SelectionImpl::remove(Tag t)
 {
   Trace trace("SelectionImpl::remove");
-  MutexGuard guard(mutex);
+  Prague::Guard<Mutex> guard(mutex);
   size_t i = idToIndex(t);
   if (i < items.size())
     {
@@ -118,7 +118,7 @@ void SelectionImpl::remove(Tag t)
 Selection::Items *SelectionImpl::toggled()
 {
   Trace trace("SelectionImpl::toggled");
-  MutexGuard guard(mutex);
+  Prague::Guard<Mutex> guard(mutex);
   Warsaw::Selection::Items_var ret = new Warsaw::Selection::Items;
   for (list_t::iterator i = items.begin(); i != items.end(); i++)
     if ((*i)->toggled())
@@ -143,7 +143,7 @@ void SelectionImpl::update(Tag t, bool toggled)
 void SelectionImpl::removeObserver(Tag t)
 {
   Trace trace("SelectionImpl::removeObserver");
-  MutexGuard guard(mutex);
+  Prague::Guard<Mutex> guard(mutex);
   size_t i = idToIndex(t);
   if (i < items.size()) items.erase(items.begin() + i);
 }

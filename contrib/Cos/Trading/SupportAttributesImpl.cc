@@ -26,24 +26,24 @@ using namespace CosTrading;
 using namespace CosTradingRepos;
 
 SupportAttributesImpl::SupportAttributesImpl() : modifiable(true), dynamic(true), proxy(false) {}
-CORBA::Boolean SupportAttributesImpl::supports_modifiable_properties() { MutexGuard guard(mutex); return modifiable;}
-CORBA::Boolean SupportAttributesImpl::supports_dynamic_properties() { MutexGuard guard(mutex); return dynamic;}
-CORBA::Boolean SupportAttributesImpl::supports_proxy_offers() { MutexGuard guard(mutex); return proxy;}
+CORBA::Boolean SupportAttributesImpl::supports_modifiable_properties() { Prague::Guard<Mutex> guard(mutex); return modifiable;}
+CORBA::Boolean SupportAttributesImpl::supports_dynamic_properties() { Prague::Guard<Mutex> guard(mutex); return dynamic;}
+CORBA::Boolean SupportAttributesImpl::supports_proxy_offers() { Prague::Guard<Mutex> guard(mutex); return proxy;}
 TypeRepository_ptr SupportAttributesImpl::type_repos()
 {
-  MutexGuard guard(mutex);
+  Prague::Guard<Mutex> guard(mutex);
   return TypeRepository::_duplicate(repository);
 }
 ServiceTypeRepository_ptr SupportAttributesImpl::service_type_repos()
 {
-  MutexGuard guard(mutex);
+  Prague::Guard<Mutex> guard(mutex);
   return ServiceTypeRepository::_duplicate(repository);
 }
 void SupportAttributesImpl::service_type_repos(ServiceTypeRepository_ptr r)
 {
-  MutexGuard guard(mutex); 
+  Prague::Guard<Mutex> guard(mutex); 
   repository = ServiceTypeRepository::_duplicate(r);
 }
-void SupportAttributesImpl::supports_modifiable_properties(bool m) { MutexGuard guard(mutex); modifiable = m;}
-void SupportAttributesImpl::supports_dynamic_properties(bool d) { MutexGuard guard(mutex); dynamic = d;}
-void SupportAttributesImpl::supports_proxy_offers(bool p) { MutexGuard guard(mutex); proxy = p;}
+void SupportAttributesImpl::supports_modifiable_properties(bool m) { Prague::Guard<Mutex> guard(mutex); modifiable = m;}
+void SupportAttributesImpl::supports_dynamic_properties(bool d) { Prague::Guard<Mutex> guard(mutex); dynamic = d;}
+void SupportAttributesImpl::supports_proxy_offers(bool p) { Prague::Guard<Mutex> guard(mutex); proxy = p;}

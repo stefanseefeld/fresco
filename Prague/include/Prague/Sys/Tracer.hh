@@ -48,12 +48,12 @@ class Tracer
   };
   friend class Trace;
 public:
-  static void resize(size_t s) { MutexGuard guard(mutex); events.resize(s); if (next >= s) next = 0;}
+  static void resize(size_t s) { Prague::Guard<Mutex> guard(mutex); events.resize(s); if (next >= s) next = 0;}
   static void logging(bool l) { log = l;}
   static void add(const char *n, const char *ty = "")
   {
     {
-      MutexGuard guard(mutex);
+      Prague::Guard<Mutex> guard(mutex);
       if (next == events.size()) return;
       events[next].time = Time::currentTime() - start;
       events[next].thread = Thread::self()->id();

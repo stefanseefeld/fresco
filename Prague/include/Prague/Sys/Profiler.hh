@@ -82,7 +82,7 @@ public:
   Profiler(const string &name)
     {
 #ifdef profile
-      MutexGuard guard(mutex);
+      Prague::Guard<Mutex> guard(mutex);
       child_iterator i = lookup(name);
       current = &*i;
       current->value->count++;
@@ -92,7 +92,7 @@ public:
   ~Profiler()
     {
 #ifdef profile
-      MutexGuard guard(mutex);
+      Prague::Guard<Mutex> guard(mutex);
       current->value->stop = clock();
       current->value->elapsed += (current->value->stop - current->value->start);
       up_iterator i = current->up_begin();

@@ -36,7 +36,7 @@ public:
   virtual Warsaw::Graphic_ptr child()
   {
     Trace trace("PolyGraphic::Iterator::child");
-    MutexGuard guard(_parent->_mutex);
+    Prague::Guard<Mutex> guard(_parent->_mutex);
     if (_cursor > _parent->_children.size()) return Warsaw::Graphic::_nil();
     return RefCount_var<Warsaw::Graphic>::increment(_parent->_children[_cursor].peer);
   }
@@ -58,7 +58,7 @@ public:
   {
     Trace trace("PolyGraphic::Iterator::replace");
     {
-      MutexGuard guard(_parent->_mutex);
+      Prague::Guard<Mutex> guard(_parent->_mutex);
       if (_cursor > _parent->_children.size()) return;
       Edge &edge = _parent->_children[_cursor];
       if (!CORBA::is_nil(edge.peer))
@@ -78,7 +78,7 @@ public:
   {
     Trace trace("PolyGraphic::Iterator::remove");
     {
-      MutexGuard guard(_parent->_mutex);
+      Prague::Guard<Mutex> guard(_parent->_mutex);
       if (_cursor >= _parent->_children.size()) return;
       GraphicImpl::glist_t::iterator i = _parent->_children.begin() + _cursor;
       try
@@ -103,7 +103,7 @@ PolyGraphic::PolyGraphic() {}
 PolyGraphic::~PolyGraphic()
 {
   Trace trace("PolyGraphic::~PolyGraphic");
-  MutexGuard guard(_mutex);
+  Prague::Guard<Mutex> guard(_mutex);
   for (glist_t::iterator i = _children.begin(); i != _children.end(); i++)
     {
       try
@@ -190,14 +190,14 @@ void PolyGraphic::need_resize(Tag) { GraphicImpl::need_resize();}
 
 long PolyGraphic::num_children()
 {
-  MutexGuard guard(_mutex);
+  Prague::Guard<Mutex> guard(_mutex);
   return _children.size();
 }
 
 Warsaw::Graphic::Requisition *PolyGraphic::children_requests()
 {
   Trace trace("PolyGraphic::children_requests");
-  MutexGuard guard(_mutex);
+  Prague::Guard<Mutex> guard(_mutex);
   Warsaw::Graphic::Requisition *requisitions = _pool.allocate(_children.size());
   Warsaw::Graphic::Requisition *r = requisitions;
   for (glist_t::iterator i = _children.begin(); i != _children.end(); i++)
@@ -214,13 +214,13 @@ Warsaw::Graphic::Requisition *PolyGraphic::children_requests()
 
 void PolyGraphic::deallocate_requisitions(Warsaw::Graphic::Requisition *r)
 {
-  MutexGuard guard(_mutex);
+  Prague::Guard<Mutex> guard(_mutex);
   _pool.deallocate(r);
 }
 
 void PolyGraphic::child_extension(size_t i, const Warsaw::Allocation::Info &info, Region_ptr region)
 {
-  MutexGuard guard(_mutex);
+  Prague::Guard<Mutex> guard(_mutex);
   Graphic_var child = _children[i].peer;
   if (!CORBA::is_nil(child))
     try { child->extension(info, region);}

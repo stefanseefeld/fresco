@@ -128,46 +128,46 @@ void WindowImpl::insert(Desktop_ptr desktop)
 
 Vertex WindowImpl::position()
 {
-  MutexGuard guard(_mutex);
+  Prague::Guard<Mutex> guard(_mutex);
   return _handle->position();
 }
 
 void WindowImpl::position(const Vertex &p)
 {
   Trace trace("WindowImpl::position");
-  MutexGuard guard(_mutex);
+  Prague::Guard<Mutex> guard(_mutex);
   _handle->position(p);
 }
 
 Vertex WindowImpl::size()
 {
-  MutexGuard guard(_mutex);
+  Prague::Guard<Mutex> guard(_mutex);
   return _handle->size();
 }
 
 void WindowImpl::size(const Vertex &s)
 {
   Trace trace("WindowImpl::size");
-  MutexGuard guard(_mutex);
+  Prague::Guard<Mutex> guard(_mutex);
   _handle->size(s);
 }
 
 Stage::Index WindowImpl::layer()
 {
-  MutexGuard guard(_mutex);
+  Prague::Guard<Mutex> guard(_mutex);
   return _handle->layer();
 }
 
 void WindowImpl::layer(Stage::Index l)
 {
   Trace trace("WindowImpl::layer");
-  MutexGuard guard(_mutex);
+  Prague::Guard<Mutex> guard(_mutex);
   _handle->layer(l);
 }
 
 CORBA::Boolean WindowImpl::mapped()
 {
-  MutexGuard guard(_mutex);
+  Prague::Guard<Mutex> guard(_mutex);
   return !_unmapped;
 }
 
@@ -179,7 +179,7 @@ void WindowImpl::mapped(CORBA::Boolean flag)
      * map
      */
     {
-      MutexGuard guard(_mutex);
+      Prague::Guard<Mutex> guard(_mutex);
       if (!_unmapped) return;
       Stage_var stage = _handle->parent();
       stage->begin();
@@ -193,7 +193,7 @@ void WindowImpl::mapped(CORBA::Boolean flag)
      * unmap
      */
     {
-      MutexGuard guard(_mutex);
+      Prague::Guard<Mutex> guard(_mutex);
       if (_unmapped) return;
       _unmapped = new UnmappedStageHandle(_handle);
       _handle->remove();

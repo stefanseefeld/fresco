@@ -41,7 +41,7 @@ TriggerImpl::~TriggerImpl()
 void TriggerImpl::action(Command_ptr c)
 {
   Trace trace("TriggerImpl::action");
-  MutexGuard guard(mutex);
+  Prague::Guard<Mutex> guard(mutex);
   if (!CORBA::is_nil(command))
     try { command->destroy();}
     catch (const CORBA::OBJECT_NOT_EXIST &) {}
@@ -51,7 +51,7 @@ void TriggerImpl::action(Command_ptr c)
 
 Command_ptr TriggerImpl::action()
 {
-  MutexGuard guard(mutex);
+  Prague::Guard<Mutex> guard(mutex);
   return Command::_duplicate(command);
 }
 
@@ -88,7 +88,7 @@ void TriggerImpl::keyPress(const Input::Event &event)
 void TriggerImpl::execute(const CORBA::Any &any)
 {
   Trace trace("TriggerImpl::execute");
-  MutexGuard guard(mutex);
+  Prague::Guard<Mutex> guard(mutex);
   if (!CORBA::is_nil(command))
     try { command->execute(any);}
     catch (const CORBA::OBJECT_NOT_EXIST &) { command = Warsaw::Command::_nil();}

@@ -117,7 +117,7 @@ Kit_ptr ServerContextImpl::resolve(const char *type, const Kit::PropertySeq &pro
 bool ServerContextImpl::ping()
 {
   Trace trace("ServerContextImpl::ping");
-  MutexGuard guard (mutex);
+  Prague::Guard<Mutex> guard (mutex);
   bool alive = true;
   if (CORBA::is_nil(cContext)) alive = false;
   else

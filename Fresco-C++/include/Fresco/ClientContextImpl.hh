@@ -1,4 +1,3 @@
-//
 // $Id$
 //
 // This source file is a part of the Berlin Project.

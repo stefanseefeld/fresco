@@ -69,7 +69,7 @@ inline T *Provider<T>::provide()
 {
   Prague::Trace trace("Provider<T>::provide");
   T *t = 0;
-  Prague::MutexGuard guard(mutex);
+  Prague::Guard<Prague::Mutex> guard(mutex);
   if (!pool.empty())
     {
       t = pool.top();
@@ -87,7 +87,7 @@ template <class T>
 inline void Provider<T>::adopt(T *t)
 {
   Prague::Trace trace("Provider<T>::adopt");
-  Prague::MutexGuard guard(mutex);
+  Prague::Guard<Prague::Mutex> guard(mutex);
   pool.push(t);
 }
 

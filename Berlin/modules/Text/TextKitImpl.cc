@@ -101,7 +101,7 @@ Graphic_ptr TextKitImpl::chunk(const Unistring & u)
 
 Graphic_ptr TextKitImpl::glyph(Unichar ch)
 {
-  MutexGuard guard(_mutex);
+  Prague::Guard<Mutex> guard(_mutex);
   if (_charCache.find(ch) == _charCache.end())
     {
       Graphic::Requisition r;
@@ -116,7 +116,7 @@ Graphic_ptr TextKitImpl::glyph(Unichar ch)
 
 Graphic_ptr TextKitImpl::strut()
 {
-  MutexGuard guard(_mutex);
+  Prague::Guard<Mutex> guard(_mutex);
   if (!_strut)
     {
       DrawingKit::FontMetrics metrics = _canonicalDK->font_metrics();
@@ -154,7 +154,7 @@ Graphic_ptr TextKitImpl::terminal(StreamBuffer_ptr buf)
   
 Graphic_ptr TextKitImpl::size(Graphic_ptr g, CORBA::ULong ems) 
 {
-//   MutexGuard guard(localMutex);
+//   Prague::Guard<Mutex> guard(localMutex);
 //   Impl_var<DrawDecorator<CORBA::ULong> > decor(new DrawDecorator<CORBA::ULong>(&DrawingKit::fontSize, ems));
 //   decor->body(g);
 //   allocations.push_back(decor.get());
@@ -164,7 +164,7 @@ Graphic_ptr TextKitImpl::size(Graphic_ptr g, CORBA::ULong ems)
 
 Graphic_ptr TextKitImpl::weight(Graphic_ptr g, CORBA::ULong wt) 
 {
-//   MutexGuard guard(localMutex);
+//   Prague::Guard<Mutex> guard(localMutex);
 //   Impl_var<DrawDecorator<CORBA::ULong> > decor(new DrawDecorator<CORBA::ULong>(&DrawingKit::fontWeight, wt));
 //   decor->body(g);
 //   allocations.push_back(decor.get());
@@ -174,7 +174,7 @@ Graphic_ptr TextKitImpl::weight(Graphic_ptr g, CORBA::ULong wt)
 
 Graphic_ptr TextKitImpl::family(Graphic_ptr g, const Unistring &fam)
 {
-//   MutexGuard guard(localMutex);
+//   Prague::Guard<Mutex> guard(localMutex);
 //   Impl_var<DrawDecorator<const Unistring &> > decor(new DrawDecorator<const Unistring &>(&DrawingKit::fontFamily, fam));
 //   decor->body(g);
 //   allocations.push_back(decor.get());
@@ -184,7 +184,7 @@ Graphic_ptr TextKitImpl::family(Graphic_ptr g, const Unistring &fam)
 
 Graphic_ptr TextKitImpl::subfamily(Graphic_ptr g, const Unistring &fam)
 {
-//   MutexGuard guard(localMutex);
+//   Prague::Guard<Mutex> guard(localMutex);
 //   Impl_var<DrawDecorator<const Unistring &> > decor(new DrawDecorator<const Unistring &>(&DrawingKit::fontSubFamily, fam));
 //   decor->body(g);
 //   allocations.push_back(decor.get());
@@ -194,7 +194,7 @@ Graphic_ptr TextKitImpl::subfamily(Graphic_ptr g, const Unistring &fam)
 
 Graphic_ptr TextKitImpl::fullname(Graphic_ptr g, const Unistring &name)
 {
-//   MutexGuard guard(localMutex);
+//   Prague::Guard<Mutex> guard(localMutex);
 //   Impl_var<DrawDecorator<const Unistring &> > decor(new DrawDecorator<const Unistring &>(&DrawingKit::fontFullName, name));
 //   decor->body(g);
 //   allocations.push_back(decor.get());
@@ -204,7 +204,7 @@ Graphic_ptr TextKitImpl::fullname(Graphic_ptr g, const Unistring &name)
 
 Graphic_ptr TextKitImpl::style(Graphic_ptr g, const Unistring &sty)
 {
-//   MutexGuard guard(localMutex);
+//   Prague::Guard<Mutex> guard(localMutex);
 //   Impl_var<DrawDecorator<const Unistring &> > decor(new DrawDecorator<const Unistring &>(&DrawingKit::fontStyle, sty));
 //   decor->body(g);
 //   allocations.push_back(decor.get());
@@ -214,7 +214,7 @@ Graphic_ptr TextKitImpl::style(Graphic_ptr g, const Unistring &sty)
 
 Graphic_ptr TextKitImpl::font_attribute(Graphic_ptr g, const NVPair &nvp)
 {
-//   MutexGuard guard(localMutex);
+//   Prague::Guard<Mutex> guard(localMutex);
 //   Impl_var<DrawDecorator<const NVPair &> > decor(new DrawDecorator<const NVPair &>(&DrawingKit::fontAttr, nvp));
 //   decor->body(g);
 //   allocations.push_back(decor.get());

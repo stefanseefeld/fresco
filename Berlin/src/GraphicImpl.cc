@@ -263,7 +263,7 @@ GraphicImpl::~GraphicImpl() {}
 void GraphicImpl::deactivate()
 {
   Trace trace("GraphicImpl::deactivate");
-  MutexGuard guard(_mutex);
+  Prague::Guard<Mutex> guard(_mutex);
   for (glist_t::iterator i = _parents.begin(); i != _parents.end(); ++i)
     {
       if (!CORBA::is_nil((*i).peer)) 
@@ -294,7 +294,7 @@ Tag GraphicImpl::unique_parent_id()
 Tag GraphicImpl::add_parent_graphic(Graphic_ptr parent, Tag peerId)
 {
   Trace trace("GraphicImpl::add_parent_graphic");
-  MutexGuard guard(_mutex);
+  Prague::Guard<Mutex> guard(_mutex);
   /*
    * note: we don't do ref counting on the parents to avoid cyclic dependencies.
    *       whenever a graphic node has no more parents (and no other party holding
@@ -314,7 +314,7 @@ Tag GraphicImpl::add_parent_graphic(Graphic_ptr parent, Tag peerId)
 void GraphicImpl::remove_parent_graphic(Tag localId)
 {
   Trace trace("GraphicImpl::remove_parent_graphic");
-  MutexGuard guard(_mutex);
+  Prague::Guard<Mutex> guard(_mutex);
   for (glist_t::iterator i = _parents.begin(); i != _parents.end(); ++i)
     if ((*i).localId == localId)
       {
@@ -347,7 +347,7 @@ void GraphicImpl::pick(PickTraversal_ptr) {}
 void GraphicImpl::allocate(Tag, const Allocation::Info &) {}
 void GraphicImpl::allocations(Allocation_ptr allocation)
 {
-  MutexGuard guard(_mutex);
+  Prague::Guard<Mutex> guard(_mutex);
   CORBA::Long begin = allocation->size();
   for (glist_t::iterator i = _parents.begin(); i != _parents.end(); i++)
     {
@@ -421,7 +421,7 @@ void GraphicImpl::need_redraw_region(Region_ptr region)
 
 void GraphicImpl::need_resize()
 {
-  MutexGuard guard(_mutex);
+  Prague::Guard<Mutex> guard(_mutex);
   for (glist_t::iterator i = _parents.begin(); i != _parents.end(); i++)
     try {(*i).peer->need_resize();}
     catch (const CORBA::OBJECT_NOT_EXIST &) { (*i).peer = Warsaw::Graphic::_nil();}

@@ -48,7 +48,7 @@ static bool init = false;
 void Coprocess::Reaper::notify(int)
 {
   Trace trace("Coprocess::Reaper::notify");
-  MutexGuard guard(singletonMutex);
+  Prague::Guard<Mutex> guard(singletonMutex);
   for (plist_t::iterator i = processes.begin(); i != processes.end(); i++)
     {
       int status;
@@ -57,14 +57,14 @@ void Coprocess::Reaper::notify(int)
 	{
 	  if (WIFEXITED(status))
 	    {
-	      MutexGuard guard((*i)->mutex);
+	      Prague::Guard<Mutex> guard((*i)->mutex);
 	      (*i)->id     = 0;
 	      (*i)->_state = exited;
 	      (*i)->_value = WEXITSTATUS(status);
 	    }
 	  else if (WIFSIGNALED(status))
 	    {
-	      MutexGuard guard((*i)->mutex);
+	      Prague::Guard<Mutex> guard((*i)->mutex);
 	      (*i)->id     = 0;
 	      (*i)->_state = signaled;
 	      (*i)->_value = WTERMSIG(status);
@@ -93,7 +93,7 @@ Coprocess::~Coprocess()
 
 void Coprocess::start()
 {
-  MutexGuard guard(mutex);
+  Prague::Guard<Mutex> guard(mutex);
   processes.push_back(this);
   _state = running;
   Agent::start();
@@ -107,7 +107,7 @@ void Coprocess::stop()
 bool Coprocess::process(int, iomask m)
 {
   Trace trace("Coprocess::process");
-  MutexGuard guard(mutex);
+  Prague::Guard<Mutex> guard(mutex);
   /*
    * let the client process the IO
    */

@@ -51,7 +51,7 @@ void TextViewer::update(const CORBA::Any &a)
 	case TextBuffer::insert:
 	  {
 	    Trace trace2("TextViewer::update - insert");
-	    MutexGuard guard(_mutex);
+	    Prague::Guard<Mutex> guard(_mutex);
 	    Unistring_var us = _buffer->get_chars(ch->pos, (CORBA::ULong)ch->len);
 	    CORBA::ULong len = us->length();
 	    for (unsigned long i = 0; i < len; i++)
@@ -72,7 +72,7 @@ void TextViewer::update(const CORBA::Any &a)
 	case TextBuffer::remove:
 	  {
 	    Trace trace2("TextViewer::update - remove");
-	    MutexGuard guard(_mutex);
+	    Prague::Guard<Mutex> guard(_mutex);
 	    /*
 	     * FIXME: rewrite that with iterators
 	     */
@@ -98,7 +98,7 @@ void TextViewer::activate_composite()
 {
   Trace trace("TextViewer::activate_composite");
   Composition::activate_composite();
-  MutexGuard guard(_mutex);
+  Prague::Guard<Mutex> guard(_mutex);
   Unistring_var us = _buffer->value();
   CORBA::ULong len = us->length();
   for (unsigned long i = 0; i < len; i++)

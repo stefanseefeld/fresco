@@ -43,7 +43,7 @@ void Timer::stop()
 
 void *Timer::start(void *)
 {
-  MutexGuard guard(mutex);
+  Prague::Guard<Mutex> guard(mutex);
   while (true)
     {
       if (!timers.size()) condition.wait();
@@ -78,7 +78,7 @@ void Timer::expire()
 void Timer::schedule(Timer *timer)
 {
   if (server.state() != Thread::running) server.start();
-  MutexGuard guard(mutex);
+  Prague::Guard<Mutex> guard(mutex);
   timers.push_back(timer);
   push_heap(timers.begin(), timers.end(), comp());
   condition.signal();
@@ -86,7 +86,7 @@ void Timer::schedule(Timer *timer)
 
 void Timer::cancel(Timer *timer)
 {
-  MutexGuard guard(mutex);
+  Prague::Guard<Mutex> guard(mutex);
   vector<Timer *>::iterator i = find(timers.begin(), timers.end(), timer);
   if (i != timers.end()) timers.erase(i);
   condition.signal();

@@ -42,7 +42,7 @@ ScreenManager::~ScreenManager() {}
 void ScreenManager::damage(Region_ptr r)
 {
   Trace trace("ScreenManager::damage");
-  MutexGuard guard(_mutex);
+  Prague::Guard<Mutex> guard(_mutex);
   _theDamage->merge_union(r);
   Console::wakeup();
 }

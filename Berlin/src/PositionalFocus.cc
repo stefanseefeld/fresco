@@ -79,13 +79,13 @@ void PositionalFocus::activate_composite()
 
 void PositionalFocus::grab()
 {
-//   MutexGuard guard(mutex);
+//   Prague::Guard<Mutex> guard(mutex);
   _grabbed = true;
 }
 
 void PositionalFocus::ungrab()
 {
-//   MutexGuard guard(mutex);
+//   Prague::Guard<Mutex> guard(mutex);
   _grabbed = false;
 }
 
@@ -117,7 +117,7 @@ void PositionalFocus::damage(Region_ptr region)
       _pointer->save();
       _pointer->draw();
     }
-  MutexGuard guard(_mutex);
+  Prague::Guard<Mutex> guard(_mutex);
   if (!_grabbed) return;
   Region_var allocation = _traversal->current_allocation();
   Transform_var transformation = _traversal->current_transformation();
@@ -151,7 +151,7 @@ void PositionalFocus::damage(Region_ptr region)
  */
 void PositionalFocus::dispatch(Input::Event &event)
 {
-  MutexGuard guard(_mutex);
+  Prague::Guard<Mutex> guard(_mutex);
   Trace trace("PositionalFocus::dispatch");
   Input::Position position;
   int pidx = Input::get_position(event, position);

@@ -45,7 +45,7 @@ public:
   virtual Warsaw::Controller_ptr child()
   {
     Trace trace("ControllerImpl::Iterator::child");
-    MutexGuard guard(_parent->_cmutex);
+    Prague::Guard<Mutex> guard(_parent->_cmutex);
     if (_cursor > _parent->_children.size()) return Warsaw::Controller::_nil();
     return Warsaw::Controller::_duplicate(_parent->_children[_cursor]);
   }
@@ -55,7 +55,7 @@ public:
   {
     Trace trace("ControllerImpl::Iterator::insert");
     {
-      MutexGuard guard(_parent->_cmutex);
+      Prague::Guard<Mutex> guard(_parent->_cmutex);
       if (_cursor > _parent->_children.size()) _cursor = _parent->_children.size();
       _parent->_children.insert(_parent->_children.begin() + _cursor, RefCount_var<Warsaw::Controller>::increment(child));
       child->set_parent_controller(Controller_var(_parent->_this()));
@@ -66,7 +66,7 @@ public:
   {
     Trace trace("ControllerImpl::Iterator::replace");
     {
-      MutexGuard guard(_parent->_cmutex);
+      Prague::Guard<Mutex> guard(_parent->_cmutex);
       if (_cursor > _parent->_children.size()) return;
       Controller_var old = static_cast<Controller_ptr>(_parent->_children[_cursor]);
       if (!CORBA::is_nil(old))
@@ -85,7 +85,7 @@ public:
   {
     Trace trace("ControllerImpl::Iterator::remove");
     {
-      MutexGuard guard(_parent->_cmutex);
+      Prague::Guard<Mutex> guard(_parent->_cmutex);
       if (_cursor > _parent->_children.size()) return;
       ControllerImpl::clist_t::iterator i = _parent->_children.begin() + _cursor;
       try
@@ -150,7 +150,7 @@ void ControllerImpl::append_controller(Controller_ptr c)
 {
   Trace trace("ControllerImpl::append_controller");
   if (CORBA::is_nil(c) || !CORBA::is_nil(Controller_var(c->parent_controller()))) return;
-  MutexGuard guard(_cmutex);
+  Prague::Guard<Mutex> guard(_cmutex);
   _children.push_back(RefCount_var<Warsaw::Controller>::increment(c));
   c->set_parent_controller(Controller_var(_this()));
 }
@@ -159,7 +159,7 @@ void ControllerImpl::prepend_controller(Controller_ptr c)
 {
   Trace trace("ControllerImpl::prepend_controller");
   if (CORBA::is_nil(c) || !CORBA::is_nil(Controller_var(c->parent_controller()))) return;
-  MutexGuard guard(_cmutex);
+  Prague::Guard<Mutex> guard(_cmutex);
   _children.insert(_children.begin(), RefCount_var<Warsaw::Controller>::increment(c));
   c->set_parent_controller(Controller_var(_this()));
 }
@@ -168,7 +168,7 @@ void ControllerImpl::remove_controller(Controller_ptr c)
 {
   Trace trace("ControllerImpl::remove_controller");
   if (CORBA::is_nil(c) || !CORBA::is_nil(Controller_var(c->parent_controller()))) return;
-  MutexGuard guard(_cmutex);
+  Prague::Guard<Mutex> guard(_cmutex);
   for (clist_t::iterator i = _children.begin(); i != _children.end(); ++i)
     if ((*i)->is_identical(c))
       {
@@ -181,21 +181,21 @@ void ControllerImpl::remove_controller(Controller_ptr c)
 void ControllerImpl::set_parent_controller(Controller_ptr p)
 {
   Trace trace("ControllerImpl::set_parent_controller");
-  MutexGuard guard(_pmutex);
+  Prague::Guard<Mutex> guard(_pmutex);
   _parent = Warsaw::Controller::_duplicate(p);
 }
 
 void ControllerImpl::remove_parent_controller()
 {
   Trace trace("ControllerImpl::remove_parent_controller");
-  MutexGuard guard(_pmutex);
+  Prague::Guard<Mutex> guard(_pmutex);
   _parent = Warsaw::Controller::_nil();
 }
 
 Controller_ptr ControllerImpl::parent_controller()
 {
   Trace trace("ControllerImpl::parent_controller");
-  Prague::MutexGuard guard(_pmutex);
+  Prague::Guard<Mutex> guard(_pmutex);
   return Warsaw::Controller::_duplicate(_parent);
 }
 
@@ -210,7 +210,7 @@ Warsaw::Controller::Iterator_ptr ControllerImpl::first_child_controller()
 Warsaw::Controller::Iterator_ptr ControllerImpl::last_child_controller()
 {
   Trace trace("ControllerImpl::last_child_controller");
-  Prague::MutexGuard guard(_cmutex);
+  Prague::Guard<Mutex> guard(_cmutex);
   Iterator *iterator = new Iterator(this, _children.size() - 1);
   activate(iterator);
   return iterator->_this();
@@ -245,7 +245,7 @@ CORBA::Boolean ControllerImpl::first_focus(Input::Device d)
    * if we have children, ask them if they take the focus...
    */
   {
-    MutexGuard guard(_cmutex);
+    Prague::Guard<Mutex> guard(_cmutex);
     for (clist_t::iterator i = _children.begin(); i != _children.end(); ++i)
       if ((*i)->first_focus(d)) return true;
   }
@@ -264,7 +264,7 @@ CORBA::Boolean ControllerImpl::last_focus(Input::Device d)
    * if we have children, ask them if they take the focus...
    */
   {
-    MutexGuard guard(_cmutex);
+    Prague::Guard<Mutex> guard(_cmutex);
     for (clist_t::reverse_iterator i = _children.rbegin(); i != _children.rend(); ++i)
       if ((*i)->last_focus(d)) return true;
   }
@@ -354,7 +354,7 @@ void ControllerImpl::clear(Warsaw::Telltale::Mask m)
 
 CORBA::Boolean ControllerImpl::test(Warsaw::Telltale::Mask m)
 {
-  MutexGuard guard(_mutex);
+  Prague::Guard<Mutex> guard(_mutex);
   return (_telltale & m) == m;
 }
 
@@ -362,7 +362,7 @@ void ControllerImpl::modify(Warsaw::Telltale::Mask m, CORBA::Boolean on)
 {
   unsigned long nf = on ? _telltale | m : _telltale & ~m;
   {
-    MutexGuard guard(_mutex);
+    Prague::Guard<Mutex> guard(_mutex);
     if (nf == _telltale) return;
     else _telltale = nf;
   }
@@ -373,13 +373,13 @@ void ControllerImpl::modify(Warsaw::Telltale::Mask m, CORBA::Boolean on)
 
 void ControllerImpl::constraint(TelltaleConstraint_ptr c)
 {
-  MutexGuard guard(_mutex);
+  Prague::Guard<Mutex> guard(_mutex);
   _constraint = TelltaleConstraint::_duplicate(c);
 }
 
 TelltaleConstraint_ptr ControllerImpl::constraint()
 {
-  MutexGuard guard(_mutex);
+  Prague::Guard<Mutex> guard(_mutex);
   return TelltaleConstraint::_duplicate(_constraint);
 }
 

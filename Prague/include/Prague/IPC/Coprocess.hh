@@ -58,11 +58,11 @@ public:
   //. return the command of the process being run
   const string &command() const { return path;}
   //. return the process id of the child process
-  pid_t         pid() const { MutexGuard guard(mutex); return id;}
+  pid_t         pid() const { Prague::Guard<Mutex> guard(mutex); return id;}
   //. return the state of the child process
-  state_t       state() const { MutexGuard guard(mutex); return _state;}
+  state_t       state() const { Prague::Guard<Mutex> guard(mutex); return _state;}
   //. return the return value of the child process
-  int           value() const { MutexGuard guard(mutex); return _value;}
+  int           value() const { Prague::Guard<Mutex> guard(mutex); return _value;}
   //. set timeout values used for the terminate call
   void          timeout(long t, long h, long k) { _timeout.terminate = t, _timeout.hangup = h, _timeout.kill = k;}
   virtual ipcbuf *ibuf() { return inbuf;}

@@ -31,17 +31,16 @@ using namespace Prague;
 using namespace Babylon;
 
 // static variables:
-Dictionary       *Dictionary::m_dictionary = 0;
-Dictionary::Guard Dictionary::m_guard;
-Mutex             Dictionary::m_singleton_mutex;
+Dictionary             *Dictionary::m_dictionary = 0;
+Dictionary::Dict_Guard  Dictionary::m_guard;
+Mutex                   Dictionary::m_singleton_mutex;
 
 
 bool Dictionary::is_defined(const UCS4 uc)
     throw (Block_Error) {
     bool result = 0;
-    m_rw_lock.rlock();
+    Prague::Guard<RWLock> guard(m_rw_lock);
     result = find_char(uc)->is_defined(uc);
-    m_rw_lock.unlock();
     return result;
 }
 
@@ -49,9 +48,8 @@ bool Dictionary::is_defined(const UCS4 uc)
 UCS4 Dictionary::uppercase(const UCS4 uc) 
     throw (Block_Error) {
     UCS4 result;
-    m_rw_lock.rlock();
+    Guard<RWLock> guard(m_rw_lock);
     result=find_char(uc)->uppercase(uc);
-    m_rw_lock.unlock();
     return result;
 }
 
@@ -59,9 +57,8 @@ UCS4 Dictionary::uppercase(const UCS4 uc)
 UCS4 Dictionary::lowercase(const UCS4 uc) 
     throw (Block_Error) {
     UCS4 result;
-    m_rw_lock.rlock();
+    Guard<RWLock> guard(m_rw_lock);
     result=find_char(uc)->lowercase(uc);
-    m_rw_lock.unlock();
     return result;
 }
 
@@ -69,9 +66,8 @@ UCS4 Dictionary::lowercase(const UCS4 uc)
 UCS4 Dictionary::titlecase(const UCS4 uc) 
     throw (Block_Error) {
     UCS4 result;
-    m_rw_lock.rlock();
+    Guard<RWLock> guard(m_rw_lock);
     result=find_char(uc)->titlecase(uc);
-    m_rw_lock.unlock();
     return result;
 }
 
@@ -79,13 +75,12 @@ UCS4 Dictionary::titlecase(const UCS4 uc)
 float Dictionary::numeric_value(const UCS4 uc) 
     throw (Undefined_Property, Block_Error) {
     float result;
-    m_rw_lock.rlock();
+    Guard<RWLock> guard(m_rw_lock);
     if (!find_char(uc)->is_Numeric(uc)) {
 	m_rw_lock.unlock();
 	throw Undefined_Property(uc, PROP_NUMERIC_VALUE);
     }
     result=find_char(uc)->numeric_value(uc);
-    m_rw_lock.unlock();
     return result;
 }
 
@@ -93,13 +88,12 @@ float Dictionary::numeric_value(const UCS4 uc)
 int Dictionary::dec_digit_value(const UCS4 uc) 
     throw (Undefined_Property, Block_Error) {
     int result;
-    m_rw_lock.rlock();
+    Guard<RWLock> guard(m_rw_lock);
     if (!find_char(uc)->is_Decimal_Digit(uc)) {
 	m_rw_lock.unlock();
 	throw Undefined_Property(uc, PROP_DEC_DIGIT_VALUE);
     }
     result=find_char(uc)->dec_digit_value(uc);
-    m_rw_lock.unlock();
     return result;
 }
 
@@ -107,13 +101,12 @@ int Dictionary::dec_digit_value(const UCS4 uc)
 int Dictionary::digit_value(const UCS4 uc) 
     throw (Undefined_Property, Block_Error) {
     int result;
-    m_rw_lock.rlock();
+    Guard<RWLock> guard(m_rw_lock);
     if (!(find_char(uc)->is_Digit(uc))) {
 	m_rw_lock.unlock();
 	throw Undefined_Property(uc, PROP_DIGIT_VALUE);
     }
     result=find_char(uc)->digit_value(uc);
-    m_rw_lock.unlock();
     return result;
 } 
 
@@ -121,9 +114,8 @@ int Dictionary::digit_value(const UCS4 uc)
 string Dictionary::blockname(const UCS4 uc) 
     throw (Block_Error) {
     string result;
-    m_rw_lock.rlock();
+    Guard<RWLock> guard(m_rw_lock);
     result=find_char(uc)->blockname(uc);
-    m_rw_lock.unlock();
     return result;
 }
 
@@ -131,13 +123,12 @@ string Dictionary::blockname(const UCS4 uc)
 Gen_Cat Dictionary::category(const UCS4 uc) 
     throw (Undefined_Property, Block_Error) {
     Gen_Cat result;
-    m_rw_lock.rlock();
+    Guard<RWLock> guard(m_rw_lock);
     result=find_char(uc)->category(uc);
     if (result == CAT_MAX) {
 	m_rw_lock.unlock();
 	throw Undefined_Property(uc, PROP_CHARACTER);
     }
-    m_rw_lock.unlock();
     return result;
 }
 
@@ -145,13 +136,12 @@ Gen_Cat Dictionary::category(const UCS4 uc)
 Can_Comb_Class Dictionary::comb_class(const UCS4 uc) 
     throw (Undefined_Property, Block_Error) {
     Can_Comb_Class result;
-    m_rw_lock.rlock();
+    Guard<RWLock> guard(m_rw_lock);
     result=find_char(uc)->comb_class(uc);
     if (result == CC_MAX) {
 	m_rw_lock.unlock();
 	throw Undefined_Property(uc, PROP_CHARACTER);
     }
-    m_rw_lock.unlock();
     return result;
 }
 
@@ -159,13 +149,12 @@ Can_Comb_Class Dictionary::comb_class(const UCS4 uc)
 Bidir_Props Dictionary::bidir_props(const UCS4 uc) 
     throw (Undefined_Property, Block_Error) {
     Bidir_Props result;
-    m_rw_lock.rlock();
+    Guard<RWLock> guard(m_rw_lock);
     result=find_char(uc)->bidir_props(uc);
     if (result == BIDIR_MAX) {
 	m_rw_lock.unlock();
 	throw Undefined_Property(uc, PROP_CHARACTER);
     }
-    m_rw_lock.unlock();
     return result;
 }
 
@@ -173,13 +162,12 @@ Bidir_Props Dictionary::bidir_props(const UCS4 uc)
 Char_Decomp Dictionary::decomp_type(const UCS4 uc) 
     throw (Undefined_Property, Block_Error) {
     Char_Decomp result;
-    m_rw_lock.rlock();
+    Guard<RWLock> guard(m_rw_lock);
     result=find_char(uc)->decomp_type(uc);
     if (result == DECOMP_MAX) {
 	m_rw_lock.unlock();
 	throw Undefined_Property(uc, PROP_CHARACTER);
     }
-    m_rw_lock.unlock();
     return result;
 }
 
@@ -187,9 +175,8 @@ Char_Decomp Dictionary::decomp_type(const UCS4 uc)
 UTF32_string Dictionary::decompose(const UCS4 uc) 
     throw (Block_Error) {
     UTF32_string result;
-    m_rw_lock.rlock();
+    Guard<RWLock> guard(m_rw_lock);
     result = find_char(uc)->decompose(uc);
-    m_rw_lock.unlock();
     return result;
 }
 
@@ -197,9 +184,8 @@ UTF32_string Dictionary::decompose(const UCS4 uc)
 UCS4 Dictionary::compose(const UCS4 starter, const UCS4 last) 
     throw (Block_Error) {
     UCS4 result;
-    m_rw_lock.rlock();
+    Guard<RWLock> guard(m_rw_lock);
     result=find_char(starter)->compose(starter, last);
-    m_rw_lock.unlock();
     return result;
 }
 
@@ -207,9 +193,8 @@ UCS4 Dictionary::compose(const UCS4 starter, const UCS4 last)
 bool Dictionary::must_mirror(const UCS4 uc) 
     throw (Block_Error) {
     bool result;
-    m_rw_lock.rlock();
+    Guard<RWLock> guard(m_rw_lock);
     result=find_char(uc)->must_mirror(uc);
-    m_rw_lock.unlock();
     return result;
 }
 
@@ -217,9 +202,8 @@ bool Dictionary::must_mirror(const UCS4 uc)
 EA_Width Dictionary::EA_width(const UCS4 uc) 
     throw (Block_Error) {
     EA_Width result;
-    m_rw_lock.rlock();
+    Guard<RWLock> guard(m_rw_lock);
     result=find_char(uc)->EA_width(uc);
-    m_rw_lock.unlock();
     return result;
 }
 
@@ -227,9 +211,8 @@ EA_Width Dictionary::EA_width(const UCS4 uc)
 Line_Break Dictionary::linebreak(const UCS4 uc) 
     throw (Block_Error) {
     Line_Break result;
-    m_rw_lock.rlock();
+    Guard<RWLock> guard(m_rw_lock);
     result=find_char(uc)->linebreak(uc);
-    m_rw_lock.unlock();
     return result;
 }
 
@@ -237,9 +220,8 @@ Line_Break Dictionary::linebreak(const UCS4 uc)
 bool Dictionary::is_White_space(const UCS4 uc) 
     throw (Block_Error)  {
     bool result;
-    m_rw_lock.rlock();
+    Guard<RWLock> guard(m_rw_lock);
     result = find_char(uc)->is_White_space(uc);
-    m_rw_lock.unlock();
     return result;
 }
 
@@ -247,9 +229,8 @@ bool Dictionary::is_White_space(const UCS4 uc)
 bool Dictionary::is_Non_break(const UCS4 uc) 
     throw (Block_Error) {
     bool result;
-    m_rw_lock.rlock();
+    Guard<RWLock> guard(m_rw_lock);
     result = find_char(uc)->is_Non_break(uc);
-    m_rw_lock.unlock();
     return result;
 }
 
@@ -257,9 +238,8 @@ bool Dictionary::is_Non_break(const UCS4 uc)
 bool Dictionary::is_Bidi_Control(const UCS4 uc) 
     throw (Block_Error) {
     bool result;
-    m_rw_lock.rlock();
+    Guard<RWLock> guard(m_rw_lock);
     result = find_char(uc)->is_Bidi_Control(uc);
-    m_rw_lock.unlock();
     return result;
 }
 
@@ -267,9 +247,8 @@ bool Dictionary::is_Bidi_Control(const UCS4 uc)
 bool Dictionary::is_Join_Control(const UCS4 uc) 
     throw (Block_Error) {
     bool result;
-    m_rw_lock.rlock();
+    Guard<RWLock> guard(m_rw_lock);
     result = find_char(uc)->is_Join_Control(uc);
-    m_rw_lock.unlock();
     return result;
 }
 
@@ -277,9 +256,8 @@ bool Dictionary::is_Join_Control(const UCS4 uc)
 bool Dictionary::is_Format_Control(const UCS4 uc) 
     throw (Block_Error) {
     bool result;
-    m_rw_lock.rlock();
+    Guard<RWLock> guard(m_rw_lock);
     result = find_char(uc)->is_Format_Control(uc);
-    m_rw_lock.unlock();
     return result;
 }
 
@@ -287,9 +265,8 @@ bool Dictionary::is_Format_Control(const UCS4 uc)
 bool Dictionary::is_Other_Format_Control(const UCS4 uc) 
     throw (Block_Error) {
     bool result;
-    m_rw_lock.rlock();
+    Guard<RWLock> guard(m_rw_lock);
     result = find_char(uc)->is_Format_Control(uc);
-    m_rw_lock.unlock();
     return result;
 }
 
@@ -297,9 +274,8 @@ bool Dictionary::is_Other_Format_Control(const UCS4 uc)
 bool Dictionary::is_Dash(const UCS4 uc) 
     throw (Block_Error) {
     bool result;
-    m_rw_lock.rlock();
+    Guard<RWLock> guard(m_rw_lock);
     result = find_char(uc)->is_Dash(uc);
-    m_rw_lock.unlock();
     return result;
 }
 
@@ -307,9 +283,8 @@ bool Dictionary::is_Dash(const UCS4 uc)
 bool Dictionary::is_Hyphen(const UCS4 uc) 
     throw (Block_Error) {
     bool result;
-    m_rw_lock.rlock();
+    Guard<RWLock> guard(m_rw_lock);
     result = find_char(uc)->is_Hyphen(uc);
-    m_rw_lock.unlock();
     return result;
 }
 
@@ -317,9 +292,8 @@ bool Dictionary::is_Hyphen(const UCS4 uc)
 bool Dictionary::is_Quotation_Mark(const UCS4 uc) 
     throw (Block_Error) {
     bool result;
-    m_rw_lock.rlock();
+    Guard<RWLock> guard(m_rw_lock);
     result = find_char(uc)->is_Quotation_Mark(uc);
-    m_rw_lock.unlock();
     return result;
 }
 
@@ -327,9 +301,8 @@ bool Dictionary::is_Quotation_Mark(const UCS4 uc)
 bool Dictionary::is_Terminal_Punctuation(const UCS4 uc) 
     throw (Block_Error) {
     bool result;
-    m_rw_lock.rlock();
+    Guard<RWLock> guard(m_rw_lock);
     result = find_char(uc)->is_Terminal_Punctuation(uc);
-    m_rw_lock.unlock();
     return result;
 }
 
@@ -337,9 +310,8 @@ bool Dictionary::is_Terminal_Punctuation(const UCS4 uc)
 bool Dictionary::is_Math(const UCS4 uc) 
     throw (Block_Error) {
     bool result;
-    m_rw_lock.rlock();
+    Guard<RWLock> guard(m_rw_lock);
     result = find_char(uc)->is_Math(uc);
-    m_rw_lock.unlock();
     return result;
 }
 
@@ -347,9 +319,8 @@ bool Dictionary::is_Math(const UCS4 uc)
 bool Dictionary::is_Composite(const UCS4 uc) 
     throw (Block_Error) {
     bool result;
-    m_rw_lock.rlock();
+    Guard<RWLock> guard(m_rw_lock);
     result = find_char(uc)->is_Composite(uc);
-    m_rw_lock.unlock();
     return result;
 }
 
@@ -357,9 +328,8 @@ bool Dictionary::is_Composite(const UCS4 uc)
 bool Dictionary::is_Hex_Digit(const UCS4 uc) 
     throw (Block_Error) {
     bool result;
-    m_rw_lock.rlock();
+    Guard<RWLock> guard(m_rw_lock);
     result = find_char(uc)->is_Hex_Digit(uc);
-    m_rw_lock.unlock();
     return result;
 }
 
@@ -367,9 +337,8 @@ bool Dictionary::is_Hex_Digit(const UCS4 uc)
 bool Dictionary::is_Alphabetic(const UCS4 uc) 
     throw (Block_Error) {
     bool result;
-    m_rw_lock.rlock();
+    Guard<RWLock> guard(m_rw_lock);
     result = find_char(uc)->is_Alphabetic(uc);
-    m_rw_lock.unlock();
     return result;
 }
 
@@ -377,9 +346,8 @@ bool Dictionary::is_Alphabetic(const UCS4 uc)
 bool Dictionary::is_Ideographic(const UCS4 uc) 
     throw (Block_Error) {
     bool result;
-    m_rw_lock.rlock();
+    Guard<RWLock> guard(m_rw_lock);
     result = find_char(uc)->is_Ideographic(uc);
-    m_rw_lock.unlock();
     return result;
 }
 
@@ -387,9 +355,8 @@ bool Dictionary::is_Ideographic(const UCS4 uc)
 bool Dictionary::is_Diacritic(const UCS4 uc) 
     throw (Block_Error) {
     bool result;
-    m_rw_lock.rlock();
+    Guard<RWLock> guard(m_rw_lock);
     result = find_char(uc)->is_Diacritic(uc);
-    m_rw_lock.unlock();
     return result;
 }
 
@@ -397,9 +364,8 @@ bool Dictionary::is_Diacritic(const UCS4 uc)
 bool Dictionary::is_Extender(const UCS4 uc) 
     throw (Block_Error) {
     bool result;
-    m_rw_lock.rlock();
+    Guard<RWLock> guard(m_rw_lock);
     result = find_char(uc)->is_Extender(uc);
-    m_rw_lock.unlock();
     return result;
 }
 
@@ -407,9 +373,8 @@ bool Dictionary::is_Extender(const UCS4 uc)
 bool Dictionary::is_Identifier_Part_Not_Cf(const UCS4 uc) 
     throw (Block_Error) {
     bool result;
-    m_rw_lock.rlock();
+    Guard<RWLock> guard(m_rw_lock);
     result = find_char(uc)->is_Identifier_Part_Not_Cf(uc);
-    m_rw_lock.unlock();
     return result;
 }
 
@@ -417,9 +382,8 @@ bool Dictionary::is_Identifier_Part_Not_Cf(const UCS4 uc)
 bool Dictionary::is_Private_Use(const UCS4 uc) 
     throw (Block_Error) {
     bool result;
-    m_rw_lock.rlock();
+    Guard<RWLock> guard(m_rw_lock);
     result = find_char(uc)->is_Private_Use(uc);
-    m_rw_lock.unlock();
     return result;
 }
 
@@ -427,9 +391,8 @@ bool Dictionary::is_Private_Use(const UCS4 uc)
 bool Dictionary::is_Other_Uppercase(const UCS4 uc) 
     throw (Block_Error) {
     bool result;
-    m_rw_lock.rlock();
+    Guard<RWLock> guard(m_rw_lock);
     result = find_char(uc)->is_Other_Uppercase(uc);
-    m_rw_lock.unlock();
     return result;
 }
 
@@ -437,9 +400,8 @@ bool Dictionary::is_Other_Uppercase(const UCS4 uc)
 bool Dictionary::is_Other_Lowercase(const UCS4 uc) 
     throw (Block_Error) {
     bool result;
-    m_rw_lock.rlock();
+    Guard<RWLock> guard(m_rw_lock);
     result = find_char(uc)->is_Other_Lowercase(uc);
-    m_rw_lock.unlock();
     return result;
 }
 
@@ -447,9 +409,8 @@ bool Dictionary::is_Other_Lowercase(const UCS4 uc)
 bool Dictionary::is_Low_Surrogate(const UCS4 uc) 
     throw (Block_Error) {
     bool result;
-    m_rw_lock.rlock();
+    Guard<RWLock> guard(m_rw_lock);
     result = find_char(uc)->is_Low_Surrogate(uc);
-    m_rw_lock.unlock();
     return result;
 }
 
@@ -457,9 +418,8 @@ bool Dictionary::is_Low_Surrogate(const UCS4 uc)
 bool Dictionary::is_High_Surrogate(const UCS4 uc) 
     throw (Block_Error) {
     bool result;
-    m_rw_lock.rlock();
+    Guard<RWLock> guard(m_rw_lock);
     result = find_char(uc)->is_High_Surrogate(uc);
-    m_rw_lock.unlock();
     return result;
 }
 
@@ -467,9 +427,8 @@ bool Dictionary::is_High_Surrogate(const UCS4 uc)
 bool Dictionary::is_Private_Use_High_Surrogate(const UCS4 uc) 
     throw (Block_Error) {
     bool result;
-    m_rw_lock.rlock();
+    Guard<RWLock> guard(m_rw_lock);
     result = find_char(uc)->is_Private_Use_High_Surrogate(uc);
-    m_rw_lock.unlock();
     return result;
 }
 
@@ -477,9 +436,8 @@ bool Dictionary::is_Private_Use_High_Surrogate(const UCS4 uc)
 bool Dictionary::is_Noncharacter_Code_Point(const UCS4 uc)
     throw (Block_Error) {
     bool result;
-    m_rw_lock.rlock();
+    Guard<RWLock> guard(m_rw_lock);
     result = find_char(uc)->is_Noncharacter_Code_Point(uc);
-    m_rw_lock.unlock();
     return result;
 }    
 
@@ -491,11 +449,10 @@ UCS4 Dictionary::first_letter_of_block(const UCS4 uc)
 
     vector<Data>::const_iterator b;
     Data tmp(uc, uc);
-    m_rw_lock.rlock();
+    Guard<RWLock> guard(m_rw_lock);
     b = lower_bound(m_data.begin(), m_data.end(), tmp, DataLess());
     if (b->m_start <= uc && b->m_end >= uc)
 	result = b->m_start;
-    m_rw_lock.unlock();
     return result;
 }
 
@@ -507,11 +464,10 @@ UCS4 Dictionary::last_letter_of_block(const UCS4 uc)
 
     vector<Data>::const_iterator b;
     Data tmp(uc, uc);
-    m_rw_lock.rlock();
+    Guard<RWLock> guard(m_rw_lock);
     b = lower_bound(m_data.begin(), m_data.end(), tmp, DataLess());
     if (b->m_start <= uc && b->m_end >= uc)
 	result = b->m_end;
-    m_rw_lock.unlock();
     return result;
 }
 
@@ -523,7 +479,7 @@ UCS4 Dictionary::start_of_next_block(const UCS4 uc)
 
     vector<Data>::const_iterator b;
     Data tmp(uc, uc);
-    m_rw_lock.rlock();
+    Guard<RWLock> guard(m_rw_lock);
     b = lower_bound(m_data.begin(), m_data.end(), tmp, DataLess()); 
     if (b != m_data.end()) {
 	if (b->m_end >= uc)
@@ -531,17 +487,15 @@ UCS4 Dictionary::start_of_next_block(const UCS4 uc)
 	if (b != m_data.end())
 	    result = b->m_start;
     }
-    m_rw_lock.unlock();
     return result;
 }
 
 Dictionary * Dictionary::instance() {
     // Create Dictionary just once
     {
-	MutexGuard guard(m_singleton_mutex);
+	Prague::Guard<Mutex> guard(m_singleton_mutex);
 	if (!m_dictionary) m_dictionary = new Dictionary;
     }
-    
     return m_dictionary;
 } // instance
 
@@ -551,26 +505,22 @@ UTF32_string Dictionary::recursive_decompose(const bool compat, const UCS4 uc)
     UTF32_string decomp;
     UTF32_string result;
     
-    m_rw_lock.rlock();
-    try {
-	if (find_char(uc)->decomp_type(uc) == DECOMP_COMPAT && !compat) {
-	    decomp.resize(1); decomp[0] = uc;
-	    return decomp;
-	}
-	
+    if (decomp_type(uc) == DECOMP_COMPAT && !compat) {
+	decomp.resize(1); decomp[0] = uc;
+	return decomp;
+    }
+   
+    {
+	Guard<RWLock> guard(m_rw_lock);
 	decomp = decompose(uc);
-	if(decomp[0] != uc && !(compat && decomp_type(uc) == DECOMP_COMPAT))
-	    for (UTF32_string::const_iterator i = decomp.begin();
-		 i != decomp.end();
-		 i++)
-		result += recursive_decompose(compat, *i);
-	else
-	    result = decomp;
     }
-    catch (const Babylon::Block_Error & Except) {
-	m_rw_lock.unlock(); throw Except;
-    }
-    m_rw_lock.unlock();
+    if(decomp[0] != uc && !(compat && decomp_type(uc) == DECOMP_COMPAT))
+	for (UTF32_string::const_iterator i = decomp.begin();
+	     i != decomp.end();
+	     i++)
+	    result += recursive_decompose(compat, *i);
+    else
+	result = decomp;
     return result;
 }
 
@@ -598,7 +548,6 @@ Dictionary::Block * Dictionary::find_char(const UCS4 uc)
 	p->m_block = new Prague::Plugin<Dictionary::Block>(p->m_file);
 	if(p->m_block == 0 || *(p->m_block) == 0) {
 	    // Failed to load the plugin for this block
-	    m_rw_lock.unlock(); // unlock for calling function...
 	    throw Block_Error(p->m_start, p->m_end, p->m_block->error());
 	}
     }
@@ -608,7 +557,7 @@ Dictionary::Block * Dictionary::find_char(const UCS4 uc)
 
 
 void Dictionary::update(const string & scanDir) {
-    m_rw_lock.wlock();
+    Guard<RWLock, WLock_Trait<RWLock> > guard(m_rw_lock);
     clean();
     
     Prague::Directory dir(scanDir, 0);
@@ -664,16 +613,16 @@ void Dictionary::update(const string & scanDir) {
     if (m_data.size() == 0) {
 	throw Block_Error(0, 0xFFFFFFFF, "No block defined.");
     }
-    
-    m_rw_lock.unlock();
 } // update_dictionary
 
 
 Dictionary::Dictionary() {
-    m_version.resize(1);
-    m_version[0] = UC_NULL;
-    m_undef_block = 0;
-
+    {
+	Guard<RWLock, WLock_Trait<RWLock> > guard(m_rw_lock);
+	m_version.resize(1);
+	m_version[0] = UC_NULL;
+	m_undef_block = 0;
+    }
     char *env = getenv("BABYLON_PATH");
     if (!env) {
 	cerr << "Please set environment variable BABYLON_PATH first" << endl;
@@ -685,9 +634,8 @@ Dictionary::Dictionary() {
 
 
 Dictionary::~Dictionary() {
-    m_rw_lock.wlock();
+    Guard<RWLock, WLock_Trait<RWLock> > guard(m_rw_lock);
     clean();
-    m_rw_lock.unlock();
 } // Dictionary::~Dictionary()
 
 

@@ -69,7 +69,7 @@ struct CP_find : public unary_function<Profiler::CheckPoint, bool>
 
 void Profiler::dump(ostream &os)
 {
-  MutexGuard guard(mutex);
+  Prague::Guard<Mutex> guard(mutex);
   chart scopes;
   for (ntree<CheckPoint *>::iterator i = table->begin(); i != table->end(); i++)
     {
@@ -105,7 +105,7 @@ void Profiler::dump(ostream &os)
 
 void Profiler::dump(ostream &os)
 {
-  MutexGuard guard(mutex);
+  Prague::Guard<Mutex> guard(mutex);
   dump(os, *current, 0);
 }
 

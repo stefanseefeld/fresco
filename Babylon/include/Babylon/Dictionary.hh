@@ -35,8 +35,10 @@ namespace Babylon {
     //. Stores character data.
     class Dictionary {
 
-	struct Guard { ~Guard() { delete Dictionary::m_dictionary;}};
-	friend struct Guard;
+    struct Dict_Guard {
+	~Dict_Guard() { delete Dictionary::m_dictionary; }
+    };
+    friend struct Dict_Guard;
     
     public:
 	//. Scans a directory for modules.
@@ -278,7 +280,7 @@ namespace Babylon {
 	void clean();
     
 	static Dictionary * m_dictionary;
-	static Guard m_guard;
+	static Dict_Guard  m_guard;
 	static Prague::Mutex m_singleton_mutex;
     
 	vector<Data> m_data;

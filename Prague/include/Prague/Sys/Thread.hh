@@ -2,6 +2,7 @@
  *
  * This source file is a part of the Berlin Project.
  * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
+ * Copyright (C) 2001 Tobias Hunger <tobias@berlin-consortium.org>
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -54,15 +55,54 @@ public:
   pthread_mutex_t impl;
 };
 
-class MutexGuard
+//. semaphores are used to limit the number of concurrent accesses to some resource.
+class Semaphore
 {
 public:
-  MutexGuard(Mutex &m) : mutex(m) { mutex.lock();}
-  ~MutexGuard() { mutex.unlock();}
+  Semaphore(unsigned int v = 0) { sem_init(&impl, 0, v);}
+  ~Semaphore() { sem_destroy(&impl);}
+  void wait() { sem_wait(&impl);}
+  bool trywait() { return sem_trywait(&impl);}
+  void post() { sem_post(&impl);}
+  int value() { int v; sem_getvalue(&impl, &v); return v;}
+  sem_t impl;
 private:
-  MutexGuard(const MutexGuard &);
-  MutexGuard &operator = (const MutexGuard &);
-  Mutex &mutex;
+  Semaphore(const Semaphore &);
+  Semaphore &operator = (const Semaphore &);
+};
+
+template<class T>
+class Lock_Trait {
+public:
+    void lock(T & t) { t.lock(); }
+    void unlock(T & t) { t.unlock(); }
+};
+
+template<>
+class Lock_Trait<Semaphore> {
+public:
+    void lock(Semaphore & t) { t.wait(); }
+    void unlock(Semaphore & t) { t.post(); }
+};
+
+template<class T>
+class WLock_Trait {
+public:
+    void lock(T & t) { t.wlock(); }
+    void unlock(T & t) { t.unlock(); }
+};
+
+// A helperclass
+template <class T, class L_TRAIT = Lock_Trait<T> >
+class Guard {
+public:
+    Guard(T & t) : vip(t), trait() { trait.lock(vip); }
+    ~Guard() { trait.unlock(vip); }
+private:
+    Guard(const Guard<T> &);
+    Guard & operator = (const Guard &);
+    T & vip; // Who else get's guarded?
+    L_TRAIT trait;
 };
 
 //. condition variables are used to commuicate changed conditions between threads.
@@ -87,75 +127,50 @@ private:
   Mutex &mutex;
 };
 
-//. semaphores are used to limit the number of concurrent accesses to some resource.
-class Semaphore
-{
-public:
-  Semaphore(unsigned int v = 0) { sem_init(&impl, 0, v);}
-  ~Semaphore() { sem_destroy(&impl);}
-  void wait() { sem_wait(&impl);}
-  bool trywait() { return sem_trywait(&impl);}
-  void post() { sem_post(&impl);}
-  int value() { int v; sem_getvalue(&impl, &v); return v;}
-  sem_t impl;
-private:
-  Semaphore(const Semaphore &);
-  Semaphore &operator = (const Semaphore &);
-};
-
-//. guards a semaphore over its whole lifetime
-class SemaphoreGuard
-{
-public:
-    SemaphoreGuard(Semaphore &s) : semaphore(s) { semaphore.wait();}
-    ~SemaphoreGuard() { semaphore.post();}
-private:
-  SemaphoreGuard(const SemaphoreGuard &);
-  SemaphoreGuard &operator = (const SemaphoreGuard &);
-  Semaphore &semaphore;
-};
-
 #if 0
 
-class RWLock
-{
+class RWLock {
 public:
-  class Attribute
-  {
-  public:
-    Attribute() { pthread_rwlockattr_init (&impl);}
-    ~Attribute() { pthread_rwlockattr_destroy(&impl);}
-    pthread_rwlockattr_t impl;
-  };
-  RWLock() { pthread_rwlock_init(&impl, 0);}
-  ~RWLock() { pthread_rwlock_destroy(&impl);}
-  void rlock() { pthread_rwlock_rdlock(&impl);}
-  void wlock() { pthread_rwlock_wrlock(&impl);}
-  void unlock() { pthread_rwlock_unlock(&impl);}
-  bool tryrlock() { return pthread_rwlock_tryrdlock(&impl);}
-  bool trywlock() { return pthread_rwlock_trywrlock(&impl);}
-  pthread_rwlock_t impl;
+    class Attribute {
+    public:
+	Attribute() { pthread_rwlockattr_init (&impl);}
+	~Attribute() { pthread_rwlockattr_destroy(&impl);}
+	pthread_rwlockattr_t impl;
+    };
+    RWLock() { pthread_rwlock_init(&impl, 0);}
+    ~RWLock() { pthread_rwlock_destroy(&impl);}
+    void rlock() { pthread_rwlock_rdlock(&impl);}
+    void wlock() { pthread_rwlock_wrlock(&impl);}
+    void unlock() { pthread_rwlock_unlock(&impl);}
+    bool tryrlock() { return pthread_rwlock_tryrdlock(&impl);}
+    bool trywlock() { return pthread_rwlock_trywrlock(&impl);}
+    pthread_rwlock_t impl;
 };
 
 #else
 
-class RWLock
-{
+class RWLock {
 public:
-  RWLock() {}
-  ~RWLock() {}
-  void rlock() {}
-  void wlock() {}
-  void unlock() {}
-  bool tryrlock() { return false;}
-  bool trywlock() { return false;}
+    RWLock() {}
+    ~RWLock() {}
+    void rlock() {}
+    void wlock() {}
+    void unlock() {}
+    bool tryrlock() { return false;}
+    bool trywlock() { return false;}
 private:
-  Mutex mutex;
-  Semaphore readers;
-  Semaphore writers;
+    Mutex mutex;
+    Semaphore readers;
+    Semaphore writers;
 };
 
 #endif
+
+template <> class Lock_Trait<RWLock> {
+public:
+    void lock(RWLock & l) { l.rlock(); }
+    void unlock(RWLock & l) { l.unlock(); }
+};
 
 //. a thread housekeeping class.
 class Thread
@@ -190,9 +205,9 @@ public:
   Thread(proc, void *, priority_t = normal);
   ~Thread();
   //. return the thread's priority
-  priority_t priority() { MutexGuard guard(mutex); return _priority;}
+  priority_t priority() { Prague::Guard<Mutex> g(mutex); return _priority;}
   //. return the thread's current state
-  state_t state() { MutexGuard guard(mutex); return _state;}
+  state_t state() { Prague::Guard<Mutex> g(mutex); return _state;}
   //. start the thread
   void start() throw (Exception);
   //. wait for the thread to finish returning its return value
@@ -239,7 +254,7 @@ inline unsigned long Thread::id()
   unsigned long *_id = reinterpret_cast<unsigned long *>(pthread_getspecific(id_key));
   if (!_id)
     {
-      MutexGuard guard(id_mutex);
+      Prague::Guard<Mutex> guard(id_mutex);
       if (!_id)
 	{
 	  _id = new unsigned long (counter++);
@@ -249,6 +264,6 @@ inline unsigned long Thread::id()
   return *_id;
 }
 
-}
+} // namespace Prague
 
 #endif

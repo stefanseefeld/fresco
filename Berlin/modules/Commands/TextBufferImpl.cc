@@ -31,20 +31,20 @@ TextBufferImpl::~TextBufferImpl() {}
 
 CORBA::Long TextBufferImpl::size()
 {
-  MutexGuard guard(mutex);
+  Prague::Guard<Mutex> guard(mutex);
   return buffer.size();
 }
 
 Unistring *TextBufferImpl::value()
 {
-  MutexGuard guard(mutex);
+  Prague::Guard<Mutex> guard(mutex);
   Unistring *us = new Unistring(buffer.size(), buffer.size(), const_cast<Unichar *>(buffer.get()), false);
   return us;
 }
 
 Unistring *TextBufferImpl::get_chars(CORBA::ULong pos, CORBA::ULong len)
 {
-  MutexGuard guard(mutex);
+  Prague::Guard<Mutex> guard(mutex);
   CORBA::ULong fin = buffer.size();
   CORBA::ULong start = pos > fin ? fin : pos;
   CORBA::ULong end = start + len > fin ? fin : start + len;
@@ -55,13 +55,13 @@ Unistring *TextBufferImpl::get_chars(CORBA::ULong pos, CORBA::ULong len)
 
 CORBA::Long TextBufferImpl::position()
 {
-  MutexGuard guard(mutex);
+  Prague::Guard<Mutex> guard(mutex);
   return buffer.position();
 }
 
 void TextBufferImpl::position(CORBA::Long p)
 {
-  MutexGuard guard(mutex);
+  Prague::Guard<Mutex> guard(mutex);
   buffer.position(p);
 }
 
@@ -69,7 +69,7 @@ void TextBufferImpl::forward()
 {
   Warsaw::TextBuffer::Change ch;  
   {
-    MutexGuard guard(mutex);
+    Prague::Guard<Mutex> guard(mutex);
     buffer.forward();
     ch.pos = buffer.position();
   }
@@ -84,7 +84,7 @@ void TextBufferImpl::backward()
 {
   Warsaw::TextBuffer::Change ch;  
   {
-    MutexGuard guard(mutex);
+    Prague::Guard<Mutex> guard(mutex);
     buffer.backward();
     ch.pos = buffer.position();
   }
@@ -99,7 +99,7 @@ void TextBufferImpl::shift(CORBA::Long d)
 {
   Warsaw::TextBuffer::Change ch;  
   {
-    MutexGuard guard(mutex);
+    Prague::Guard<Mutex> guard(mutex);
     buffer.shift(d);
     ch.pos = buffer.position();
   }
@@ -114,7 +114,7 @@ void TextBufferImpl::insert_char(Unichar u)
 {
   Warsaw::TextBuffer::Change ch;  
   {
-    MutexGuard guard(mutex);
+    Prague::Guard<Mutex> guard(mutex);
     ch.pos = buffer.position();
     buffer.insert(u);
   }
@@ -133,7 +133,7 @@ void TextBufferImpl::insert_string(const Unistring &s)
   for (long i = 0; i < ch.len; i++) u[i] = s[i];
 
   {
-    MutexGuard guard(mutex);
+    Prague::Guard<Mutex> guard(mutex);
     ch.pos = buffer.position();
     buffer.insert(u,ch.len);
   }
@@ -150,7 +150,7 @@ void TextBufferImpl::remove_backward(CORBA::Long n)
   ch.len = -n;
 
   {
-    MutexGuard guard(mutex);
+    Prague::Guard<Mutex> guard(mutex);
     ch.pos = buffer.position();
     buffer.remove_backward(n);
   }
@@ -167,7 +167,7 @@ void TextBufferImpl::remove_forward(CORBA::Long n)
   ch.len = n;
 
   {
-    MutexGuard guard(mutex);
+    Prague::Guard<Mutex> guard(mutex);
     ch.pos = buffer.position();
     buffer.remove_forward(n);
   }

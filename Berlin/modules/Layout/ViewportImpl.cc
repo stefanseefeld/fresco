@@ -81,19 +81,19 @@ ViewportImpl::Adjustment::~Adjustment()
 
 Warsaw::BoundedRange::Settings ViewportImpl::Adjustment::state()
 {
-  MutexGuard guard(mutex);
+  Prague::Guard<Mutex> guard(mutex);
   return settings;
 }
 
 void ViewportImpl::Adjustment::state(const Warsaw::BoundedRange::Settings &s)
 {
-  MutexGuard guard(mutex);
+  Prague::Guard<Mutex> guard(mutex);
   settings = s;
 }
 
 Coord ViewportImpl::Adjustment::lower()
 {
-  MutexGuard guard(mutex);
+  Prague::Guard<Mutex> guard(mutex);
   return settings.lower;
 }
 
@@ -101,7 +101,7 @@ void ViewportImpl::Adjustment::lower(Coord l)
 {
   CORBA::Any any;
   {
-    MutexGuard guard(mutex);
+    Prague::Guard<Mutex> guard(mutex);
     if (l == settings.lower) return;
     settings.lower = l;
     settings.lvalue = max(settings.lvalue, settings.lower);
@@ -113,7 +113,7 @@ void ViewportImpl::Adjustment::lower(Coord l)
 
 Coord ViewportImpl::Adjustment::upper()
 {
-  MutexGuard guard(mutex);
+  Prague::Guard<Mutex> guard(mutex);
   return settings.upper;
 }
 
@@ -121,7 +121,7 @@ void ViewportImpl::Adjustment::upper(Coord u)
 {
   CORBA::Any any;
   {
-    MutexGuard guard(mutex);
+    Prague::Guard<Mutex> guard(mutex);
     if (settings.upper == u) return;
     settings.upper = u;
     settings.lvalue = min(settings.lvalue, settings.upper);
@@ -133,25 +133,25 @@ void ViewportImpl::Adjustment::upper(Coord u)
 
 Coord ViewportImpl::Adjustment::step()
 {
-  MutexGuard guard(mutex);
+  Prague::Guard<Mutex> guard(mutex);
   return s;
 }
 
 void ViewportImpl::Adjustment::step(Coord ss)
 {
-  MutexGuard guard(mutex);
+  Prague::Guard<Mutex> guard(mutex);
   s = ss;
 }
 
 Coord ViewportImpl::Adjustment::page()
 {
-  MutexGuard guard(mutex);
+  Prague::Guard<Mutex> guard(mutex);
   return p;
 }
 
 void ViewportImpl::Adjustment::page(Coord pp)
 {
-  MutexGuard guard(mutex);
+  Prague::Guard<Mutex> guard(mutex);
   p = pp;
 }
 
@@ -159,7 +159,7 @@ void ViewportImpl::Adjustment::forward()
 {
   CORBA::Any any;
   {
-    MutexGuard guard(mutex);
+    Prague::Guard<Mutex> guard(mutex);
     Coord t = min(s, settings.upper - settings.uvalue);
     if (t <= 0.) return;
     settings.lvalue += t;
@@ -173,7 +173,7 @@ void ViewportImpl::Adjustment::backward()
 {
   CORBA::Any any;
   {
-    MutexGuard guard(mutex);
+    Prague::Guard<Mutex> guard(mutex);
     Coord t = min(s, settings.lvalue - settings.lower);
     if (t <= 0.) return;
     settings.lvalue -= t;
@@ -187,7 +187,7 @@ void ViewportImpl::Adjustment::fastforward()
 {
   CORBA::Any any;
   {
-    MutexGuard guard(mutex);
+    Prague::Guard<Mutex> guard(mutex);
     Coord t = min(p, settings.upper - settings.uvalue);
     if (t <= 0.) return;
     settings.lvalue += t;
@@ -201,7 +201,7 @@ void ViewportImpl::Adjustment::fastbackward()
 {
   CORBA::Any any;
   {
-    MutexGuard guard(mutex);
+    Prague::Guard<Mutex> guard(mutex);
     Coord t = min(p, settings.lvalue - settings.lower);
     if (t <= 0.) return;
     settings.lvalue -= t;
@@ -215,7 +215,7 @@ void ViewportImpl::Adjustment::begin()
 {
   CORBA::Any any;
   {
-    MutexGuard guard(mutex);
+    Prague::Guard<Mutex> guard(mutex);
     Coord t = settings.lvalue - settings.lower;
     if (t == 0.) return;
     settings.lvalue -= t;
@@ -229,7 +229,7 @@ void ViewportImpl::Adjustment::end()
 {
   CORBA::Any any;
   {
-    MutexGuard guard(mutex);
+    Prague::Guard<Mutex> guard(mutex);
     Coord t = settings.upper - settings.uvalue;
     if (t == 0.) return;
     settings.lvalue += t;
@@ -244,7 +244,7 @@ void ViewportImpl::Adjustment::lvalue(Coord lv)
   CORBA::Any any;
   {
     lv = min(max(settings.lower, lv), settings.upper);
-    MutexGuard guard(mutex);
+    Prague::Guard<Mutex> guard(mutex);
     if (lv == settings.lvalue) return;
     settings.lvalue = lv;
     any <<= settings;
@@ -254,7 +254,7 @@ void ViewportImpl::Adjustment::lvalue(Coord lv)
 
 Coord ViewportImpl::Adjustment::lvalue()
 {
-  MutexGuard guard(mutex);
+  Prague::Guard<Mutex> guard(mutex);
   return settings.lvalue;
 }
 
@@ -264,7 +264,7 @@ void ViewportImpl::Adjustment::uvalue(Coord uv)
   CORBA::Any any;
   {
     uv = min(max(settings.lower, uv), settings.upper);
-    MutexGuard guard(mutex);
+    Prague::Guard<Mutex> guard(mutex);
     if (settings.uvalue == uv) return;
     settings.uvalue = uv;
     any <<= settings;
@@ -274,7 +274,7 @@ void ViewportImpl::Adjustment::uvalue(Coord uv)
 
 Coord ViewportImpl::Adjustment::uvalue()
 {
-  MutexGuard guard(mutex);
+  Prague::Guard<Mutex> guard(mutex);
   return settings.uvalue;
 }
 
@@ -283,7 +283,7 @@ void ViewportImpl::Adjustment::adjust(Coord d)
 {
   CORBA::Any any;
   {
-    MutexGuard guard(mutex);
+    Prague::Guard<Mutex> guard(mutex);
     Coord t = min(max(d, settings.lower - settings.lvalue), settings.upper - settings.uvalue);
     if (t == 0.) return;
     settings.lvalue += t;

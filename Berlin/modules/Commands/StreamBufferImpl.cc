@@ -27,13 +27,13 @@ using namespace Warsaw;
 
 CORBA::Long StreamBufferImpl::size()
 {
-  MutexGuard guard(mutex);
+  Prague::Guard<Mutex> guard(mutex);
   return length;
 }
 
 CORBA::Long StreamBufferImpl::available()
 {
-  MutexGuard guard(mutex);
+  Prague::Guard<Mutex> guard(mutex);
   return buffer.size();
 }
 
@@ -41,7 +41,7 @@ void StreamBufferImpl::write(const Warsaw::StreamBuffer::Data &data)
 {
   bool overflow = false;
   {
-    MutexGuard guard(mutex);
+    Prague::Guard<Mutex> guard(mutex);
     unsigned long l = data.length();
     unsigned long s = buffer.size();
     if (s + l > buffer.capacity()) buffer.reserve(s + l);
@@ -59,7 +59,7 @@ void StreamBufferImpl::flush()
 {
   bool overflow = false;
   {
-    MutexGuard guard(mutex); 
+    Prague::Guard<Mutex> guard(mutex); 
     if (buffer.size()) overflow = true;
   }
   if (overflow)
@@ -71,7 +71,7 @@ void StreamBufferImpl::flush()
 
 Warsaw::StreamBuffer::Data *StreamBufferImpl::read()
 {
-  MutexGuard guard(mutex);
+  Prague::Guard<Mutex> guard(mutex);
   Warsaw::StreamBuffer::Data_var data = new Warsaw::StreamBuffer::Data;
   data->length(buffer.size());
   for (unsigned long i = 0; i != buffer.size(); i++) data[i] = buffer[i];

@@ -35,7 +35,7 @@ static Mutex mutex;
 
 ServerImpl *ServerImpl::instance()
 {
-  MutexGuard guard(mutex);
+  Prague::Guard<Mutex> guard(mutex);
   if (!_server) _server = new ServerImpl();
   return _server;
 }
@@ -45,10 +45,11 @@ ServerImpl::ServerImpl() : _thread(&ServerImpl::run, this) {}
 //. no pretense of having security, we take over and handle security manually
 //. once you've found the server. It allocates contexts. It's pretty simple.
 
+//. This is called by the client to get it's server context!
 ServerContext_ptr ServerImpl::create_server_context(ClientContext_ptr c) throw (SecurityException)
 {
   Trace trace("ServerImpl::create_server_context");
-  MutexGuard guard (_mutex);
+  Prague::Guard<Mutex> guard (_mutex);
   Impl_var<ServerContextImpl> sc(new ServerContextImpl(this, c));
   _contexts.push_back(sc);
   return sc._retn()->_this();
@@ -57,14 +58,14 @@ ServerContext_ptr ServerImpl::create_server_context(ClientContext_ptr c) throw (
 void ServerImpl::set_singleton(const char *name, CORBA::Object_ptr singleton) 
   throw (SecurityException, SingletonFailureException)
 {
-  MutexGuard guard (_mutex);
+  Prague::Guard<Mutex> guard (_mutex);
   _singletons[name] = singleton;
 }
 
 void ServerImpl::remove_singleton(const char *name) 
   throw (SecurityException, SingletonFailureException)
 {
-  MutexGuard guard (_mutex);
+  Prague::Guard<Mutex> guard (_mutex);
   smap_t::iterator p = _singletons.find(name);
   if (p != _singletons.end()) _singletons.erase(p);
 }
@@ -72,7 +73,7 @@ void ServerImpl::remove_singleton(const char *name)
 CORBA::Object_ptr ServerImpl::get_singleton(const char *name) 
   throw (SecurityException, SingletonFailureException)
 {
-  MutexGuard guard (_mutex);
+  Prague::Guard<Mutex> guard (_mutex);
   smap_t::iterator p = _singletons.find(name);
   if (p != _singletons.end()) return CORBA::Object::_duplicate(p->second);
   throw SingletonFailureException();
@@ -86,7 +87,7 @@ void ServerImpl::start()
 void ServerImpl::stop()
 {
   Trace trace("ServerImpl::stop");
-  MutexGuard guard (_mutex);
+  Prague::Guard<Mutex> guard (_mutex);
   for (clist_t::iterator i = _contexts.begin(); i != _contexts.end(); i++)
     ServerImpl::destroy_context(*i);
   _contexts.clear();
@@ -96,17 +97,19 @@ void ServerImpl::stop()
 void ServerImpl::ping()
 {
   Trace trace("ServerImpl::ping");
-  MutexGuard guard (_mutex);
+  Prague::Guard<Mutex> guard (_mutex);
   clist_t tmp;
   for (clist_t::iterator i = _contexts.begin(); i != _contexts.end(); i++)
-    if ((*i)->ping()) tmp.push_back(*i);	    
-    else destroy_context(*i);
+    if ((*i)->ping())
+	tmp.push_back(*i);
+    else
+	destroy_context(*i);
   _contexts = tmp;
 };
 
 void ServerImpl::scan(const string &name)
 {
-  MutexGuard guard(_mutex);
+  Prague::Guard<Mutex> guard(_mutex);
   /*
    * load all files in <name> according to the regexp '\\.so'
    */
@@ -132,7 +135,7 @@ void ServerImpl::scan(const string &name)
 void ServerImpl::clear()
 //. hope you know what you are doing if you call this...
 {
-  MutexGuard guard(_mutex);
+  Prague::Guard<Mutex> guard(_mutex);
   for (fmap_t::iterator i = _factories.begin(); i != _factories.end(); i++) delete (*i).second;
   _factories.clear();
 }

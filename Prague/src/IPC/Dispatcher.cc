@@ -46,13 +46,13 @@ struct SignalNotifier : Signal::Notifier
 
 Dispatcher::Cleaner::~Cleaner()
 {
-//   MutexGuard guard(singletonMutex);
+//   Prague::Guard<Mutex> guard(singletonMutex);
   delete dispatcher;
 }
 
 Dispatcher *Dispatcher::instance()
 {
-  MutexGuard guard(singletonMutex);
+  Prague::Guard<Mutex> guard(singletonMutex);
   if (!dispatcher) dispatcher = new Dispatcher;
   return dispatcher;
 }
@@ -91,7 +91,7 @@ void Dispatcher::bind(Agent *agent, int fd, Agent::iomask mask)
       rfds.set(wakeup[0]);
       server.start();
     }
-  MutexGuard guard(mutex);
+  Prague::Guard<Mutex> guard(mutex);
   if (find(agents.begin(), agents.end(), agent) == agents.end())
     {
       agents.push_back(agent);
@@ -148,7 +148,7 @@ void Dispatcher::release(Agent *agent, int fd)
   /*
    * release file descriptors
    */
-  MutexGuard guard(mutex);
+  Prague::Guard<Mutex> guard(mutex);
   for (repository_t::iterator i = rchannel.begin(); i != rchannel.end(); i++)
     if ((*i).second->agent == agent && (fd == -1 || fd == (*i).second->fd))
       {
@@ -212,7 +212,7 @@ void Dispatcher::process(task *t)
   bool done = !agent->process(t->fd, t->mask);
   agent->remove_ref();
   // now look whether the agent is released and the task should be deleted
-  MutexGuard guard(mutex);
+  Prague::Guard<Mutex> guard(mutex);
   if (!done)
     {
       if (t->released) delete t;
@@ -264,7 +264,7 @@ void Dispatcher::wait()
     }
   else if (nsel > 0 && fdsize)
     {
-      MutexGuard guard(mutex);
+      Prague::Guard<Mutex> guard(mutex);
       for (repository_t::iterator i = rchannel.begin(); i != rchannel.end(); i++)
 	if (tmprfds.isset((*i).first))
 	  dispatch((*i).second);

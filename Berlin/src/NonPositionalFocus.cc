@@ -99,7 +99,7 @@ void NonPositionalFocus::dispatch(Input::Event &event)
 {
   Trace trace("NonPositionalFocus::dispatch");
   CORBA::Boolean done = false;
-  MutexGuard guard(_mutex);
+  Prague::Guard<Mutex> guard(_mutex);
   for (int i = _controllers.size() - 1; i >= 0 && !done; --i)
     {
       try { done = _controllers [i]->handle_non_positional(event);}

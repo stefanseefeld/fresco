@@ -1,50 +1,60 @@
+# Generated automatically from Makefile.in by configure.
+# $Id$
 #
-# This builds the berlin documentation in HTML and optionally PDF
-# it uses files found _within_ the berlin tree to save you the hassle
-# of installing all the supporting machinery yourself. You will need
-# jade, dia, jadetex/pdfjadetex, mogrify (imagemagick) and epstopdf 
-# installed, however, as they're a little big to be distributing
-# in our archive.
+# This source file is a part of the Berlin Project.
+# Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
+# http://www.berlin-consortium.org
 #
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Library General Public
+# License as published by the Free Software Foundation; either
+# version 2 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Library General Public License for more details.
+#
+# You should have received a copy of the GNU Library General Public
+# License along with this library; if not, write to the
+# Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
+# MA 02139, USA.
 
-STYLESHEET := stylesheets/berlin.dsl
-JADE_FLAGS := -c sgml.catalog
-JADE_HTML_FLAGS := -V %use-id-as-filename% -ihtml -D ../ -d $(STYLESHEET)\#html $(JADE_FLAGS) -t sgml
-JADE_TEX_FLAGS := -d $(STYLESHEET)\#print $(JADE_FLAGS) -t tex
-BOOK_FILES := $(wildcard src/*.sgm)
-HTML_OUTPUT := $(addprefix html/, $(notdir $(BOOK_FILES:.sgm=.html)))
-PRINT_OUTPUT := $(addprefix print/, $(notdir $(BOOK_FILES:.sgm=.pdf)))
-FIGURES := $(wildcard figures/*.dia)
-FIGURE_VERSIONS := $(FIGURES:.dia=.pdf) $(FIGURES:.dia=.jpg)
+SHELL		:= /bin/sh
 
-all: figures html print
+top_srcdir	:= /home/hunger/c/berlin/Berlin
+cdir		:= ../config
 
-figures: $(FIGURE_VERSIONS)
+subdirs		:=  Tutorial
 
-html: $(HTML_OUTPUT)
+# Overridden by the clean-targets, allowing the same subdirs-rule to be used
+# for everything.
+action	:= all
 
-print: $(PRINT_OUTPUT)
+.PHONY: all $(subdirs)
+.PHONY: depclean clean distclean maintainer-clean dist clean
 
-%.eps: %.dia
-	dia --export=$@ $< 
+all:	$(subdirs)
 
-%.jpg: %.eps
-	mogrify -format jpg -geometry 55%x55% $<
+$(subdirs):
+	@echo making $(action) in $@
+	$(MAKE) -C $@ $(action)
 
-figures/%.pdf: figures/%.eps
-	cd figures; epstopdf $(notdir $<); cd ..;
+depclean:
+	find -name '*.d' -exec rm -f \{\} \;
 
-html/%.html: src/%.sgm $(BOOK_FILES)
-	cd html; jade $(JADE_HTML_FLAGS) $<; cd ../;
+clean:
+	$(MAKE) all action="clean"
 
-print/%.tex: src/%.sgm $(BOOK_FILES)
-	jade $(JADE_TEX_FLAGS) -o $@ $< 
+distclean:
+	@echo 'This command removes Makefiles and auxiliary files;'
+	@echo 'run configure to regenerate them.'
+	$(MAKE) all action="distclean"
+	rm -f Makefile config.cache config.log config.status
 
-print/%.pdf: print/%.tex
-	cd print; pdfjadetex $(notdir $<); cd ..;
-
-clean:	
-	rm -f html/*.html figures/*.jpg figures/*.pdf figures/*.eps print/*.pdf print/*.aux print/*.log
-
-# Dummy distclean target. This needs to be here.
-distclean: clean
+maintainer-clean:
+	@echo 'This command is intended for maintainers to use;'
+	@echo 'it deletes configure and auxiliary files;'
+	@echo 'run autogen.sh to regenerated them.'
+	$(MAKE) all action="maintainer-clean"
+	rm -f Makefile $(cdir)/Docs/local.mk config.cache config.log config.status

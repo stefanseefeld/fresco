@@ -56,7 +56,7 @@ ipcbuf::ipcbuf(const ipcbuf &ipc)
   : streambuf(ipc), data(ipc.data)
 {
   Trace trace("ipcbuf::ipcbuf");
-  MutexGuard guard(data->mutex);
+  Prague::Guard<Mutex> guard(data->mutex);
   data->count++;
 }
 
@@ -65,7 +65,7 @@ ipcbuf::~ipcbuf()
   Trace trace("ipcbuf::~ipcbuf");
   overflow(EOF); // flush write buffer
   {
-    MutexGuard guard(data->mutex);
+    Prague::Guard<Mutex> guard(data->mutex);
     if (--data->count) return;
   }
   delete [] pbase();
@@ -84,7 +84,7 @@ ipcbuf &ipcbuf::operator = (const ipcbuf &ipc)
       // the streambuf::operator = (const streambuf&) is assumed
       // to have handled pbase () and gbase () correctly.
       data  = ipc.data;
-      MutexGuard guard(data->mutex);
+      Prague::Guard<Mutex> guard(data->mutex);
       data->count++;
     }
   return *this;

@@ -75,7 +75,7 @@ Thread::~Thread()
 
 void Thread::start() throw (Exception)
 {
-  MutexGuard guard(mutex);
+  Prague::Guard<Mutex> guard(mutex);
   if ((_state) != ready) throw Exception("thread already running");
   if (pthread_create(&thread, 0, &start, this) != 0) throw Exception("can't create thread");
   else _state = running;
@@ -84,7 +84,7 @@ void Thread::start() throw (Exception)
 void Thread::join(void **status) throw (Exception)
 {
   {
-    MutexGuard guard(mutex);
+    Prague::Guard<Mutex> guard(mutex);
     if (_state == joined || _state == canceled || _state == ready) return;
     if (this == self()) throw Exception("can't join thread 'self'");
     if (detached) throw Exception("can't join detached thread");
@@ -94,7 +94,7 @@ void Thread::join(void **status) throw (Exception)
   pthread_join(thread, &s);
   if (s == PTHREAD_CANCELED)
     {
-      MutexGuard guard(mutex);
+      Prague::Guard<Mutex> guard(mutex);
       _state = canceled;
     }
   if (status) *status = s;
@@ -119,7 +119,7 @@ void Thread::exit(void *r)
   Thread *me = self();
   if (me)
     {
-      MutexGuard guard(me->mutex);  
+      Prague::Guard<Mutex> guard(me->mutex);  
       me->_state = terminated;
     }
   pthread_exit(r);
