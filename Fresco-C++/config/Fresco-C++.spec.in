@@ -18,7 +18,7 @@ interfaces and C++ runtime library for Fresco
 %package devel
 Summary: Libraries, includes, etc. to develop applications with Fresco
 Group: Development/Libraries
-Requires: Fresco = %{version}
+Requires: Fresco-IDL = %{version}
 Requires: Prague-devel = %{version}
 Requires: Babylon-devel = %{version}
 

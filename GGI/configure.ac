@@ -31,7 +31,7 @@ AC_REVISION($Revision$)
 AC_INIT(Berlin-GGI, M1, devel@fresco.org)
 AC_CONFIG_SRCDIR(LICENSE)
 AC_CONFIG_AUX_DIR(config)
-AC_CONFIG_HEADER(GGIKit/acconfig.hh:config/acconfig.hh.in)
+AC_CONFIG_HEADER(include/Fresco/acconfig.hh:config/acconfig.hh.in)
 
 AC_PROG_MAKE_SET
 AC_PROG_INSTALL

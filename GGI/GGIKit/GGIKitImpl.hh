@@ -22,8 +22,8 @@
 #ifndef _GGIKitImpl_hh
 #define _GGIKitImpl_hh
 
-#include "acconfig.hh"
-#include "GGIKit.hh"
+#include <Fresco/acconfig.hh>
+#include <Fresco/GGIKit.hh>
 #include <Berlin/KitImpl.hh>
 #include <vector>
 

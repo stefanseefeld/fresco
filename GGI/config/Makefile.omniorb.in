@@ -26,6 +26,8 @@ srcdir		:= @srcdir@
 idldir		:= @idldir@
 abs_builddir	:= @abs_builddir@
 cdir		:= @top_builddir@/config
+h1dir		:= @FRESCO_CXX_prefix@/include/Fresco
+h2dir		:= @top_builddir@/include
 
 ORB		:= @ORB@
 IDLCXX		:= @IDLCXX@
@@ -33,11 +35,11 @@ SHORTCUT	:= @SHORTCUT@
 
 include $(cdir)/local.mk
 
-CPPFLAGS	+= -include acconfig.hh -I@FRESCO_CXX_prefix@/include/Fresco
+CPPFLAGS	+= -include $(h2dir)/Fresco/acconfig.hh -I$(h2dir)/Fresco -I$(h1dir)
 CXXFLAGS	+= $(SO_CXXFLAGS)
 LDFLAGS		+= $(SO_LDFLAGS)
 
-IDLCXXFLAGS	:= -bcxx -nf -C$(abs_builddir) -I$(idldir)/share/idl
+IDLCXXFLAGS	:= -bcxx -nf -Wbkeep_inc_path -C$(abs_builddir) -I$(idldir)/share/idl
 ifeq ($(SHORTCUT), yes)
 IDLCXXFLAGS	+= -Wbshortcut
 endif
@@ -52,7 +54,7 @@ OBJ	:= $(patsubst %.cc, %.o, $(SRC))
 TARGET	:= ../lib/Fresco/GGIKit.so
 
 vpath %.idl $(srcdir)
-vpath %.hh $(srcdir)
+vpath %.hh $(h2dir)/Fresco
 vpath %.cc $(srcdir)
 
 .FORCE:
@@ -62,16 +64,24 @@ vpath %.cc $(srcdir)
 all:	$(TARGET)
 
 $(TARGET):	$(DEP) $(OBJ)
-		@echo linking $(@F)
-		$(CXX) $(LDFLAGS) $(SO_LDFLAGS) -o $@ $(OBJ) $(LIBS)
+	@echo linking $(@F)
+	$(CXX) $(LDFLAGS) $(SO_LDFLAGS) -o $@ $(OBJ) $(LIBS)
 
 depend:		$(DEP)
 
 install:	all
-		$(INSTALL) -m 755 $(TARGET) $(DESTDIR)$(libdir)/Fresco/
+	$(INSTALL) -m 755 $(TARGET) $(DESTDIR)$(libdir)/Fresco/
+	$(INSTALL) -d -m 755 $(DESTDIR)$(includedir)/Fresco
+	if ! cmp -s $(h2dir)/Fresco/GGIKit.hh $(DESTDIR)$(includedir)/Fresco/GGIKit.hh 2>/dev/null; then \
+     echo "$(INSTALL) -m 644 $(h2dir)/Fresco/GGIKit.hh $(DESTDIR)$(includedir)/Fresco/GGIKit.hh"; \
+     $(INSTALL) -m 644 $(h2dir)/Fresco/GGIKit.hh $(DESTDIR)$(includedir)/Fresco/GGIKit.hh; \
+   else \
+     echo "$(DESTDIR)$(includedir)/Fresco/GGIKit.hh is up to date"; \
+   fi
 
 uninstall:
 		rm -f $(DESTDIR)$(libdir)/Fresco/$(TARGET)
+		rm -f $(DESTDIR)$(includedir)/Fresco/GGIKit.hh
 
 clean:	
 		rm -f $(TARGET)
@@ -90,10 +100,14 @@ maintainer-clean: distclean
 $(GENSRC): %SK.cc:	%.idl
 	@echo generating $(@F)
 	(cd $(srcdir) && $(IDLCXX) $(IDLCXXFLAGS) $<)
+   # what a hack...
+	sed s%$(idldir)/share/idl/%%g $*.hh > $(h2dir)/Fresco/$*.hh && rm $*.hh
 
 $(GENHDR): %.hh:	%.idl
 	@echo generating $(@F)
 	(cd $(srcdir) && $(IDLCXX) $(IDLCXXFLAGS) $<)
+   # what a hack...
+	sed s%$(idldir)/share/idl/%%g $*.hh > $(h2dir)/Fresco/$*.hh && rm $*.hh
 
 %.cc.d:	%.cc $(GENHDR)
 	@echo generating dependencies for $<

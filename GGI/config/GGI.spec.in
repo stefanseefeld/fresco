@@ -14,6 +14,17 @@ Requires: Berlin = %{version}
 %description
 a GGI console for the fresco display server
 
+%package devel
+Summary: Libraries, includes, etc. to develop applications with Fresco and the GGIKit extension
+Group: Development/Libraries
+Requires: Prague-devel = %{version}
+Requires: Babylon-devel = %{version}
+Requires: Fresco-IDL = %{version}
+Requires: Berlin-devel = %{version}
+
+%description devel
+all you need to develop Fresco applications with the GGIKit extension
+
 %prep
 %setup -q
 
@@ -51,5 +62,10 @@ rm -rf $RPM_BUILD_ROOT
 
 %{prefix}/lib/*
 %{prefix}/bin/*
+
+%files devel
+%defattr(-, root, root)
+
+%{prefix}/include/Fresco/GGIKit.hh
 
 %changelog

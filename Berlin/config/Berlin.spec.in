@@ -11,7 +11,7 @@ Prefix: %{_prefix}
 Docdir: %{_docdir}
 Requires: Prague = %{version}
 Requires: Babylon = %{version}
-Requires: Fresco = %{version}
+Requires: Fresco-C++ = %{version}
 
 %description
 the Berlin display server and utilities
@@ -22,7 +22,7 @@ Group: Development/Libraries
 Requires: Berlin = %{version}
 Requires: Prague-devel = %{version}
 Requires: Babylon-devel = %{version}
-Requires: Fresco-devel = %{version}
+Requires: Fresco-C++-devel = %{version}
 
 %description devel
 
