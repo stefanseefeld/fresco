@@ -36,6 +36,7 @@ interface PickTraversal;
 interface Damage;
 interface Region;
 interface Transform;
+interface DrawingKit;
 
 interface Allocation
 {
@@ -74,7 +75,9 @@ interface Graphic : Cloneable
   void removeParent(in Graphic g);
 
   /*
-   * layout related methods
+   * layout related methods. These take an additional DrawingKit parameter 
+   * in order to allow the Graphic to extract (if it so requires) device-specific
+   * information relevant to its layout, such as device DPI and fonts.
    */
   Transform transformation();
   void request(out Requisition r);
