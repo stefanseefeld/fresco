@@ -83,7 +83,7 @@ $(MANUAL):	$(HSYN)
 	$(SYNOPSIS) -c ../config/synopsis.py -Wc,formatter=HTML -o $@ $(HSYN)
 	touch $@
 
-install:	# not yet
+install: all
 
 install-doc: # not yet
 
