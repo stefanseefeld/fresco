@@ -189,7 +189,8 @@ public:
     static DrawableTie<Drawable> * create_drawable(Drawable *);
     static Warsaw::Drawable_ptr activate_drawable(DrawableTie<DirectFBDrawable> *);
     static DrawableTie<Drawable> * reference_to_servant(Warsaw::Drawable_ptr);
-    
+
+    void device_info(std::ostream &);
     Warsaw::Input::Event *next_event();
     void wakeup();
     void activate_autoplay() {

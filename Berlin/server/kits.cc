@@ -63,15 +63,10 @@ int main(int argc, char **argv)
   size_t argo = getopt.parse(argc, argv);
   argc -= argo;
   argv += argo;
+  if (getopt.is_set("version")) { std::cout << "version is " << version << std::endl; exit(0);}
+  if (getopt.is_set("help")) { getopt.usage(); exit(0);}
   std::string value;
-  getopt.get("version", &value);
-  if (value == "true") { std::cout << "version is " << version << std::endl; exit(0);}
-  value = "";
-  getopt.get("help", &value);
-  if (value == "true") { getopt.usage(); exit(0);}
-  value = "";
-  getopt.get("resource", &value);
-  if (!value.empty()) RCManager::read(Prague::Path::expand_user(value));
+  if (getopt.get("resource", &value)) RCManager::read(Prague::Path::expand_user(value));
 
   ServerImpl *server = ServerImpl::instance();
 

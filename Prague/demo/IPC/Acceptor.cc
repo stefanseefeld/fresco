@@ -35,9 +35,7 @@ int main (int argc, char **argv)
   GetOpt getopt(argv[0], "an async (unix) socket client");
   getopt.add('t', "trace", GetOpt::novalue, "switch tracing on");
   getopt.parse(argc, argv);
-  std::string value;
-  getopt.get("trace", &value);
-  if (value == "true") Tracer::logging(true);
+  if (getopt.is_set("trace")) Tracer::logging(true);
   sockunixbuf *socket = new sockunixbuf(sockbuf::sock_stream);
   std::string name = File::tmp();
   socket->bind(name);

@@ -38,19 +38,15 @@ int main (int argc, char **argv)
   getopt.add('t', "trace", GetOpt::novalue, "switch tracing on");
   getopt.add('a', "address", GetOpt::mandatory, "peer address (path)");
   getopt.parse(argc, argv);
-  std::string value;
-  getopt.get("help", &value);
-  if (value == "true")
+  if (getopt.is_set("help"))
     {
       getopt.usage();
       return 0;
     }
-  value = "";
-  getopt.get("trace", &value);
-  if (value == "true") Tracer::logging(true);
-  value = "";
+  if (getopt.is_set("trace")) Tracer::logging(true);
+  std::string value;
   getopt.get("address", &value);
-  if (value == "")
+  if (value.empty())
     {
       getopt.usage();
       return 1;

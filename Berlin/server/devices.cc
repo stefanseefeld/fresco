@@ -49,12 +49,8 @@ int main(int argc, char **argv)
   size_t argo = getopt.parse(argc, argv);
   argc -= argo;
   argv += argo;
-  std::string value;
-  getopt.get("version", &value);
-  if (value == "true") { cout << "version is " << version << endl; return 0;}
-  value = "";
-  getopt.get("help", &value);
-  if (value == "true") { getopt.usage(); return 0;}
+  if (getopt.is_set("version")) { cout << "version is " << version << endl; return 0;}
+  if (getopt.is_set("help")) { getopt.usage(); return 0;}
   Console::open(argc, argv, PortableServer::POA::_nil());
   Console::device_info(std::cout);
   return 0;

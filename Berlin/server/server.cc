@@ -150,18 +150,11 @@ int main(int argc, char **argv)
   size_t argo = getopt.parse(argc, argv);
   argc -= argo;
   argv += argo;
+  if (getopt.is_set("version")) { cout << "version is " << version << endl; return 0;}
+  if (getopt.is_set("help")) { getopt.usage(); return 0;}
   std::string value;
-  getopt.get("version", &value);
-  if (value == "true") { cout << "version is " << version << endl; return 0;}
-  value = "";
-  getopt.get("help", &value);
-  if (value == "true") { getopt.usage(); return 0;}
-  value = "";
-  getopt.get("resource", &value);
-  if (!value.empty()) RCManager::read(Prague::Path::expand_user(value));
-  value = "";  
-  getopt.get("logging", &value);
-  if (value == "true")
+  if (getopt.get("resource", &value)) RCManager::read(Prague::Path::expand_user(value));
+  if (getopt.is_set("logging"))
     {
       Logger::set(Logger::corba);
       Logger::set(Logger::focus);
@@ -178,9 +171,7 @@ int main(int argc, char **argv)
     }
 
 #ifdef JPROF
-  value = "";
-  getopt.get("profiling", &value);
-  if (value == "true") setupProfilingStuff();
+  if (getopt.is_set("profiling")) setupProfilingStuff();
 #endif
 
   /*

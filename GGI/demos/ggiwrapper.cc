@@ -50,10 +50,8 @@ int main(int argc, char **argv)
   getopt.add('w', "width", GetOpt::mandatory, "the width of the visual");
   getopt.add('h', "height", GetOpt::mandatory, "the height of the visual");
   getopt.parse(argc - 1, argv + 1);
+  if (getopt.is_set("help")) { getopt.usage(); exit(0);}
   string value;
-  getopt.get("help", &value);
-  if (value == "true") { getopt.usage(); exit(0);}
-  value = "";
   getopt.get("run", &value);
   if (value.empty()) { getopt.usage(); exit(0);}
   string program = value;

@@ -188,6 +188,17 @@ DirectFBConsole::DirectFBConsole(int &argc,
 	s_dfb->Release(s_dfb);
 	exit(-5);
     }
+
+    ret = m_keyboard->AttachInputBuffer(m_keyboard, m_mouse_buf);
+    if (ret) {
+	DirectFBError("DirectFB: AttachInputBuffer failed", ret);
+	Logger::log(Logger::drawing) << "DirectFB: AttachInputBuffer failed (" << ret << ")" << endl;
+	m_mouse_buf->Release(m_mouse_buf);
+	m_keyboard->Release(m_keyboard);
+	m_mouse->Release(m_mouse);
+	s_dfb->Release(s_dfb);
+	exit(-6);
+    }
     
     Logger::log(Logger::loader) << "DirectFBConsole: Got input devices." << endl;
     
@@ -320,6 +331,11 @@ static void writeEvent(DFBInputEvent &e) {
 	<< endl;
 }
 */
+
+void DirectFBConsole::device_info(std::ostream &os) {
+  os << "sorry, device info isn't available for DirectFB at this time" << std::endl;
+}
+
 
 Input::Event * DirectFBConsole::next_event() {
     Prague::Trace trace("DirectFB::Console::next_event()");
