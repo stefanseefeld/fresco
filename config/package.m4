@@ -27,8 +27,6 @@ AC_DEFUN(FRESCO_PACKAGE,
 dnl Get the cppflags and libraries from the package-config script
 dnl
 
-dnl echo "FRESCO_PACKAGE called with args $1-config $2-config"
-
 dnl
 dnl if the distribution ships the requested package, all is simple:
 dnl we know where to find it (${top_srcdir}/$1) and we don't need any
@@ -54,14 +52,13 @@ dnl
     $2_BUILD_LIBS="`$$2_LOCAL_BUILD_CONFIG --libs`"
     $2_prefix="`$$2_LOCAL_BUILD_CONFIG --prefix`"
   else
-    AC_ARG_WITH($1-prefix, AC_HELP_STRING([--with-$2-prefix],
+    AC_ARG_WITH($2-prefix, AC_HELP_STRING([--with-$2-prefix],
                                           [Prefix where $1 is installed]),
                 $2_prefix="$withval", $2_prefix="")
-    AC_ARG_WITH($1-exec-prefix, AC_HELP_STRING([--with-$2-exec-prefix],
+    AC_ARG_WITH($2-exec-prefix, AC_HELP_STRING([--with-$2-exec-prefix],
                                                [Exec prefix where $1 is installed]),
                 $2_exec_prefix="$withval", $2_exec_prefix="")
 
-    echo "PREFIX is $$2_prefix"
     if test x$$2_exec_prefix != x ; then
       ac_$2_args="$ac_$2_args --exec-prefix=$$2_exec_prefix"
       if test x${$2_CONFIG+set} != xset ; then
@@ -74,9 +71,6 @@ dnl
         $2_CONFIG=$$2_prefix/bin/$1-config
       fi
     fi
-    echo "CONFIG is $$2_CONFIG"
-    echo "checking for $$1-config"
-    echo "checking in $$2_prefix/bin$PATH_SEPARATOR$PATH"
     dnl Work around some strange quoting issue:
     AC_PATH_PROG($2_CONFIG, $1-config, no, $$2_prefix/bin$PATH_SEPARATOR$PATH)
     min_$2_version=ifelse([$3], ,1.0.0,$3)
@@ -195,7 +189,7 @@ dnl
 AC_DEFUN(FRESCO_IDL_PATH,
 [dnl 
 
-  AC_ARG_WITH(Fresco-IDL-prefix, AC_HELP_STRING([--with-Fresco-IDL-prefix],
+  AC_ARG_WITH(Fresco_IDL-prefix, AC_HELP_STRING([--with-Fresco_IDL-prefix],
                                                 [Prefix where the Fresco interfaces are installed]),
               Fresco_IDL_prefix="$withval", Fresco_IDL_prefix="")
 
