@@ -1,8 +1,8 @@
 /*$Id$
  *
- * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
- * http://www.berlin-consortium.org
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,36 +22,36 @@
 
 #include "Prague/config.hh"
 #include "Prague/Sys/DLL.hh"
-#if defined(HAVE_DLFCN)
+#if defined(HAVE_DLFCN_H)
 #include <dlfcn.h>
-#elif defined(HAVE_DLAIX)
+#elif defined(HAVE_DL_H)
 #include <dl.h>
 #endif
 
 using namespace Prague;
 
 DLL::DLL(const std::string &name, bool now) throw(std::runtime_error, std::logic_error)
-  : _name(name)
+  : my_name(name)
 {
-  if (!_name.empty())
+  if (!my_name.empty())
     {
-#if defined(HAVE_DLFCN)
+#if defined(HAVE_DLOPEN)
       int flags = now ? RTLD_NOW : RTLD_LAZY;
       flags |= RTLD_GLOBAL;
-      _handle = dlopen(_name.c_str(), flags);
-      if (!_handle)
+      my_handle = dlopen(my_name.c_str(), flags);
+      if (!my_handle)
       {
-	  std::string message = "Failed to load " + _name + ": " + dlerror();
+	  std::string message = "Failed to load " + my_name + ": " + dlerror();
           throw std::runtime_error(message);
       }
-#elif defined(HAVE_DLAIX)
-      shl_t shl_handle = shl_load (_name.c_str(), (now ? BIND_DEFERRED : BIND_IMMEDIATE) | BIND_NONFATAL | BIND_VERBOSE, 0);
+#elif defined(HAVE_SHL_LOAD)
+      shl_t shl_handle = shl_load(my_name.c_str(), (now ? BIND_DEFERRED : BIND_IMMEDIATE) | BIND_NONFATAL | BIND_VERBOSE, 0);
       if (!shl_handle)
       {
-	  std::string message = "Failed to load " + _name + ": " + strerror(errno);
+	  std::string message = "Failed to load " + my_name + ": " + strerror(errno);
 	  throw std::runtime_error(message);
       }
-      else _handle = shl_handle;
+      else my_handle = shl_handle;
 #endif
     }
   else throw std::logic_error("empty filename");
@@ -59,31 +59,31 @@ DLL::DLL(const std::string &name, bool now) throw(std::runtime_error, std::logic
 
 DLL::~DLL() throw()
 {
-#if defined(HAVE_DLFCN)
-  dlclose(_handle);
-#elif defined(HAVE_AIX)
-  shl_unload (reinterpret_cast<shl_t>(_handle));
+#if defined(HAVE_DLCLOSE)
+  dlclose(my_handle);
+#elif defined(HAVE_SHL_UNLOAD)
+  shl_unload (reinterpret_cast<shl_t>(my_handle));
 #endif
 }
 
 void *DLL::resolve(const std::string &symbol) throw(std::runtime_error)
 {
-#if defined(HAVE_DLFCN)
-  void *tmp = dlsym(_handle, symbol.c_str());
+#if defined(HAVE_DLSYM)
+  void *tmp = dlsym(my_handle, symbol.c_str());
   if (!tmp)
   {
       std::string message = "Failed to resolve \"" + symbol +
-	                    "\" in loaded file \"" + _name +
+	                    "\" in loaded file \"" + my_name +
 			    "\": " + dlerror();
       throw std::runtime_error(message);
   }
-#elif defined(HAVE_DLAIX)
+#elif defined(HAVE_SHL_FINDSYM)
   void *tmp;
-  if (shl_findsym(reinterpret_cast<shl_t *>(&_handle), symbol.c_str(), TYPE_UNDEFINED, &tmp) != 0 || _handle == 0 || tmp == 0)
+  if (shl_findsym(reinterpret_cast<shl_t *>(&my_handle), symbol.c_str(), TYPE_UNDEFINED, &tmp) != 0 || my_handle == 0 || tmp == 0)
   {
-    istd:string message = "Failed to resolve \"" + symbol +
-		          "\" in loaded file \"" + _name +
-			  "\": " + strerror(errno);
+    std:string message = "Failed to resolve \"" + symbol +
+		         "\" in loaded file \"" + my_name +
+		         "\": " + strerror(errno);
     throw std::runtime_error(message);
   }
 #endif

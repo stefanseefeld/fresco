@@ -18,7 +18,7 @@ inline const char *strsignal(int signo) { return sys_siglist[signo];}
 #  else
 inline const char *strsignal(int signo) { return _sys_siglist[signo];}
 #  endif
-#elif NEED_DECLARATION_strsignal
+#elif !HAVE_DECL_STRSIGNAL
 extern "C" const char *strsignal(int);
 #endif
 

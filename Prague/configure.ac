@@ -55,7 +55,7 @@ AC_ARG_ENABLE(tracer,
 AC_MSG_NOTICE([platform specific system utilities])
 AC_CHECK_FUNCS(strsignal)
 AC_CHECK_HEADERS(string.h)
-AC_NEED_DECLARATION(strsignal)
+AC_CHECK_DECLS([strsignal])
 AC_HEADER_SYS_WAIT
 
 AC_SEARCH_LIBS(recv, [socket resolv])
@@ -76,46 +76,29 @@ dnl Plugin support
 dnl ------------------------------------------------------------------
 
 AC_MSG_NOTICE([Dynamic Loading Implementation])
-AC_CHECK_HEADERS(dlfcn.h dl.h)
+AC_CHECK_HEADERS([dlfcn.h dl.h])
 AC_CHECK_LIB(dl, dlopen)
 AC_LANG(C)
-AC_CHECK_FUNCS(dlopen dlsym dlclose shl_load)
+AC_CHECK_FUNCS([dlopen dlsym dlclose])
+AC_CHECK_FUNCS([shl_load shl_unload shl_findsym])
 AC_LANG(C++)
-
-AC_MSG_NOTICE([plugin method :])
-
-AC_IFALLYES([header:dlfcn.h func:dlopen func:dlsym func:dlclose],
-  [AC_DEFINE(HAVE_DLFCN, 1, [Define if you have the dlfcn family of functions.]) AC_MSG_RESULT([use dlopen family of functions for plugins])])
-AC_IFALLYES([header:dl.h func:shl_load],
-  [AC_DEFINE(HAVE_DLAIX, 1, [Define if you have the AIX family of functions.]) AC_MSG_RESULT([use AIX shm_load for plugins])])
 
 dnl ------------------------------------------------------------------
 dnl IPC support
 dnl ------------------------------------------------------------------
 
 AC_MSG_NOTICE([IPC Implementation])
-FRESCO_LIB_SOCKET
-AC_CHECK_LIB(util, login, LIBS="$LIBS -lutil")
+AC_CHECK_HEADERS([sys/socket.h select.h sys/select.h netinet/in_systm.h netinet/ip.h])
 AC_CHECK_HEADERS([pty.h sys/stropts.h libutil.h])
+AC_CHECK_HEADERS([arpa/inet.h sys/un.h])
+AC_CHECK_TYPES([socklen_t])
+AC_SEARCH_LIBS(socket, [socket])
+AC_SEARCH_LIBS(inet_aton, [socket resolv])
+AC_SEARCH_LIBS(login, [util])
 AC_LANG(C)
 AC_CHECK_FUNCS([openpty _getpty])
 AC_LANG(C++)
 
-dnl won't work without AC_CANONICAL_HOST
-dnl 
-dnl case "$host" in
-dnl *-*-linux*)
-dnl 	no_dev_ptmx=1
-dnl 	;;
-dnl *-*-sco3.2v4*)
-dnl 	no_dev_ptmx=1
-dnl 	;;
-dnl *-*-sco3.2v5*)
-dnl 	no_dev_ptmx=1
-dnl 	;;
-dnl esac
-dnl 
-dnl complete disable
 no_dev_ptmx=1
 
 if test -z "$no_dev_ptmx" ; then

@@ -38,10 +38,10 @@ public:
   //. resolve the given symbol
   void *resolve(const std::string &) throw(std::runtime_error);
   //. return the library's name
-  const std::string &name() const throw() { return _name;}
+  const std::string &name() const throw() { return my_name;}
 private:
-  std::string _name;
-  void       *_handle;
+  std::string my_name;
+  void       *my_handle;
 };
 
 }
