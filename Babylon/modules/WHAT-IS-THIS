@@ -1,0 +1,6 @@
+These files are machine generated from the unicode data files
+available at ftp://ftp.unicode.org/
+
+They contain the definitions of all unicode characters in the range
+given in the filename. After building they get installed into
+modules/Babylon.

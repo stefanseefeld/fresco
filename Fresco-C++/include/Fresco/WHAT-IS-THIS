@@ -1,0 +1,4 @@
+Warsaw contains the CORBA stubs used to connect the client to the server.
+This is the C++ version of Warsaw. Other languages will need to have their
+own version of Warsaw generated from the idl-files. That is a automaitc
+process done by a tool that should come with your prefered ORB.

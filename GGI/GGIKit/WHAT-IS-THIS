@@ -1,0 +1,4 @@
+The GGIKit implementation (source files)
+
+The GGIKit 'exports' a GGI visual to a client application. That
+way GGI applications can run inside Berlin.

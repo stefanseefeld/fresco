@@ -1,0 +1,4 @@
+Prague is a library containing various C++ wrappers to low-level
+OS-specific functions like threading, file access, user ids, ...
+
+This library is not Berlin specific.

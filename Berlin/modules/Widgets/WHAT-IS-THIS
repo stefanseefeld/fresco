@@ -1,0 +1,4 @@
+The WdgetKit implementation (source files)
+
+The WidgetKit is Berlin's equivalent to a ToolKit. There are diffrent
+flavors of the WidgetKit, each stored in its own subdirectory.

@@ -1,0 +1,4 @@
+The CommandKit implementation (source files)
+
+The CommandKit contains simple Commands (Graphics that can
+react to events) used to build Widgets with.

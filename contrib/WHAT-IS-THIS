@@ -1,0 +1,5 @@
+This directory contains code from third parties by
+by Berlin or it's libraries. Currently none of this
+is used by default. You should be able to activate
+JProf by configuring Berlin with --enable-profiling
+though.
