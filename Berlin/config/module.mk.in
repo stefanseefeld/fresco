@@ -61,11 +61,11 @@ $(TARGET):	$(DEP) $(OBJ)
 		$(CXX) $(LDFLAGS) $(SO_LDFLAGS) -o $@ $(OBJ) $(LIBS)
 		strip --strip-unneeded $@
 
-doc:	../share/doc/Berlin-$(MODULE)/html
+doc:	$(abs_top_builddir)/share/doc/Berlin-$(MODULE)/html
 
-../share/doc/Berlin-$(MODULE)/html:	$(SYN)
+$(abs_top_builddir)/share/doc/Berlin-$(MODULE)/html:	$(SYN)
 	@echo formatting $(@F)
-	$(SYNOPSIS) -c $(cdir)/synopsis.py -Wc,parser=Kit,formatter=KitHTML -o $@ $(SYN)
+	$(SYNOPSIS) -c $(cdir)/synopsis.py -Wc,formatter=KitHTML -o $@ $(SYN)
 	touch $@
 
 install:	all
@@ -95,7 +95,7 @@ maintainer-clean: distclean
 
 %.syn:	%.hh
 	@echo parsing $(^F)
-	$(SYNOPSIS) -c $(cdir)/synopsis.py $(patsubst -I%, -I%, $(CPPFLAGS)) -Wc,parser=Kit,linker=Berlin $(SFLAGS) -o $@ $?
+	$(SYNOPSIS) -c $(cdir)/synopsis.py -I$(top_builddir)/include $(patsubst -I%, -I%, $(CPPFLAGS)) -Wc,parser=Berlin,linker=Berlin $(SFLAGS) -o $@ $?
 
 ifeq (,$(findstring $(MAKECMDGOALS), clean distclean maintainer-clean))
 -include $(DEP)

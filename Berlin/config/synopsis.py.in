@@ -2,7 +2,8 @@
 
 from Synopsis.Config import Base
 
-top_srcdir = '@top_srcdir@'
+top_srcdir = '@abs_top_srcdir@'
+top_builddir = '@abs_top_builddir@'
 
 class Config(Base):
 
@@ -13,18 +14,14 @@ class Config(Base):
 	    main_file = 1
 	    preprocessor = 'gcc'
 	    extract_tails = 1
-	    include_path = ['../include', top_srcdir + '/include']
+	    include_path = [top_builddir + '/include', top_srcdir + '/include']
 	    basename = top_srcdir + '/include/'
 	
         class KitCXX(CXX):
             "Extends CXX parser with an extra ../ in the include path"
-            include_path = ['../../include', top_srcdir + '/include']
+            include_path = [top_builddir + '/include', top_srcdir + '/include']
 	
-        class SubKitCXX(CXX):
-            "Extends CXX parser with an extra ../../ in the include path"
-            include_path = ['../../../include', top_srcdir + '/include']
-	
-        modules = {'Berlin' : CXX, 'Kit' : KitCXX, 'SubKit' : 'SubKitCXX'}
+        modules = {'Berlin' : CXX}
 
     class Linker (Base.Linker):
 
@@ -43,37 +40,25 @@ class Config(Base):
 	    stylesheet_file = top_srcdir + '/config/manual.css'
 	    file_layout = 'Synopsis.Formatter.HTML.FileLayout.NestedFileLayout'
 	    tree_formatter = 'TreeFormatterJS.TreeFormatterJS'
-	    toc_out = '../share/doc/Berlin/html/Berlin.toc'
 	
         class Berlin(HTML):
-	    toc_out = '../share/doc/Berlin/html/Berlin.toc'
+	    toc_out = top_builddir + '/share/doc/Berlin/html/Berlin.toc'
 	    toc_in = [
 		'@Prague_prefix@/share/doc/Prague/html/Prague.toc|../../Prague/html',
 		'@Babylon_prefix@/share/doc/Babylon/html/Babylon.toc|../../Babylon/html',
 		'@Fresco_prefix@/share/doc/Fresco/html/Fresco.toc|../../Fresco/html'
 	    ]
 	
-        class KitHTML(HTML):
+        class Kit(HTML):
 	    "HTML formatter for all kits"
 	    toc_in = [
-		'../../Prague/Prague.toc|../../Prague',
-		'../../Babylon/Babylon.toc|../../Babylon',
-		'../../Fresco/Fresco.toc|../../Fresco',
-		'../../Berlin/Berlin.toc|../../Berlin',
+		'@Prague_prefix@/share/doc/Prague/html/Prague.toc|../../Prague',
+		'@Babylon_prefix@/share/doc/Babylon/html/Babylon.toc|../../Babylon',
+		'@Fresco_prefix@/share/doc/Fresco/html/Fresco.toc|../../Fresco',
+		top_builddir + '/share/doc/Berlin/html/Berlin.toc|../../Berlin',
 	    ]
-
-	class SubKitHTML(HTML):
-	    "HTML formatter for sub kits (extra ../)"
-	    toc_in = [
-		'../../../Prague/Prague.toc|../../../Prague',
-		'../../../Babylon/Babylon.toc|../../../Babylon',
-		'../../../Fresco/Fresco.toc|../../../Fresco',
-		'../../../Berlin/Berlin.toc|../../../Berlin',
-	    ]
-
 
 	# Here we extend the base modules, so you can still use DUMP, ASCII etc
 	modules = Base.Formatter.modules
-	modules['HTML'] = HTML
-	modules['KitHTML'] = KitHTML
-	modules['SubKitHTML'] = SubKitHTML
+	modules['HTML'] = Berlin
+	modules['KitHTML'] = Kit
