@@ -75,7 +75,19 @@ void GLUnifont::drawText(const Unistring &u, const Vertex &p)
   glColor4d(myColor.red,myColor.green,myColor.blue,myColor.alpha); // load color
   glPixelStorei(GL_UNPACK_ROW_LENGTH,0);
   glPixelStorei(GL_UNPACK_ALIGNMENT,1); // set to byte-aligned unpacking
+#if 0
+  glDisable(GL_CLIP_PLANE0);
+  glDisable(GL_CLIP_PLANE1);
+  glDisable(GL_CLIP_PLANE2);
+  glDisable(GL_CLIP_PLANE3);
+#endif
   glRasterPos2i((int)(p.x),(int)(p.y));  // position pen
+#if 0
+  glEnable(GL_CLIP_PLANE0);
+  glEnable(GL_CLIP_PLANE1);
+  glEnable(GL_CLIP_PLANE2);
+  glEnable(GL_CLIP_PLANE3);
+#endif
   GLushort idx[u.length()];
   
   for(unsigned long i = 0; i < u.length(); i++) {

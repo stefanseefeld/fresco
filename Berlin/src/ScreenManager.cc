@@ -57,10 +57,10 @@ void ScreenManager::damage(Region_ptr r)
   MutexGuard guard(mutex);
   RegionImpl *region = new RegionImpl(r, Transform_var(Transform::_nil()));
 
-//   region->upper.x += 0.5;
-//   region->upper.y += 0.5;
-//   region->lower.x -= 0.5;
-//   region->lower.y -= 0.5;
+  region->upper.x += 0.5;
+  region->upper.y += 0.5;
+  region->lower.x -= 0.5;
+  region->lower.y -= 0.5;
 
   region->_obj_is_ready(CORBA::BOA::getBOA());
   damages.push_back(region);

@@ -25,38 +25,17 @@
 #include <Warsaw/config.hh>
 #include <Warsaw/Raster.hh>
 #include <vector>
-
-struct GLRaster
+#include <GL/gl.h>
+class GLRaster
 {
+public:
   GLRaster(Raster_var);
+  ~GLRaster();
   Raster_var remote;
   PixelCoord width;
   PixelCoord height;
+  GLuint texture;
   vector<char> data;
 };
-
-inline GLRaster::GLRaster(Raster_var r)
-  : remote(r)
-{
-  Raster::Info info = remote->header();
-  Raster::ColorSeq_var pixels;
-  Raster::Index lower, upper;
-  lower.x = lower.y = 0;
-  upper.x = info.width, upper.y = info.height;
-  remote->storePixels(lower, upper, pixels);
-  width = info.width;
-  height = info.height;
-  data.resize(4*width*height);
-  vector<char>::iterator pixel = data.begin();
-  for (int y = height - 1; y >= 0; y--)
-    for (int x = 0; x != width; x++)
-      {
-	Color &color = pixels[y * info.width + x];
-	*pixel++ = static_cast<char>(color.red * 256);
-	*pixel++ = static_cast<char>(color.green * 256);
-	*pixel++ = static_cast<char>(color.blue * 256);
-	*pixel++ = static_cast<char>(color.alpha * 256);
-      }
-}
 
 #endif /* _GLRaster_hh */

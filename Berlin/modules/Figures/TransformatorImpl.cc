@@ -61,3 +61,8 @@ void TransformatorImpl::traverse(Traversal_ptr traversal)
   if (CORBA::is_nil(child)) return;
   traversal->traverseChild(child, 0, Region::_nil(), Transform_var(transform->_this()));
 }
+
+void TransformatorImpl::allocate(Tag, const Allocation::Info &info)
+{
+  info.transformation->premultiply(Transform_var(transform->_this()));
+}

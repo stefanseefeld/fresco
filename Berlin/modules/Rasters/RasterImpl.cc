@@ -28,7 +28,7 @@ RasterImpl::RasterImpl() : rows(0) {}
 RasterImpl::RasterImpl(const char *file) : rows(0)
 {
   rows = png.read(file);
-  if (!rows) rows = png.read("../etc/PNG/berlin-100.png");
+  if (!rows) rows = png.read("../etc/PNG/berlin-128.png");
 }
 RasterImpl::~RasterImpl() {}
 

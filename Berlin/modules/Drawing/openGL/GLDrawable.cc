@@ -21,6 +21,7 @@
  */
 #include "Drawing/openGL/GLDrawable.hh"
 #include "Berlin/RegionImpl.hh"
+#include "Berlin/ImplVar.hh"
 extern "C" {
 #include "ggi/ggi.h"
 }
@@ -116,13 +117,10 @@ GLDrawable::GLDrawable()
   // glEnable( GL_DEPTH_TEST ); 
    glFrontFace(GL_CW); 
 //   glShadeModel(GL_FLAT);
-//    glEnable(GL_CLIP_PLANE0);
-//    glEnable(GL_CLIP_PLANE1);
-//    glEnable(GL_CLIP_PLANE2);
-//    glEnable(GL_CLIP_PLANE3);
    glEnable(GL_ALPHA_TEST);
    glEnable(GL_SCISSOR_TEST);
    glEnable(GL_BLEND);
+//    glEnable(GL_TEXTURE_2D);
    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
@@ -163,60 +161,16 @@ PixelCoord GLDrawable::toPixels(Coord c, Axis axis) { return static_cast<long>(c
 
 void GLDrawable::pushClipping(Region_ptr region, Transform_ptr transformation)
 {
-  RegionImpl *clip = new RegionImpl(region, transformation);
-  clip->_obj_is_ready(CORBA::BOA::getBOA());
-  //  if (clipping.size()) clip->mergeIntersect(Region_var(clipping.top()->_this()));
-  clipping.push(clip);
+  Impl_var<RegionImpl> clip(new RegionImpl(region, Transform_var(Transform::_nil())));
   makeCurrent();
-
-   PixelCoord x, y, w, h;
-   x = (long)(clip->lower.x);
-   y = (long)(height() - clip->upper.y);
-   w = (long)(clip->upper.x - clip->lower.x);
-   h = (long)(clip->upper.y - clip->lower.y);
-   glScissor((GLint)x,(GLint)y,(GLsizei)w,(GLsizei)h);
-   //   cout << "set clipping region to: " << x << " " << y << " " << w << " " << h << endl;
-
-   //   cout << "GLDrawable::pushClipping " << *clip << '\n';
-//   double cp0[] = {1., 0., 0., -clip->lower.x};
-//   double cp1[] = {0.,  1., 0., -clip->lower.y};
-//   double cp2[] = {-1., 0., 0., clip->upper.x};
-//   double cp3[] = {0., -1., 0., clip->upper.y};
-  //  cout << "GLDrawable::pushClipping " << *clip << endl;
-//   glClipPlane(GL_CLIP_PLANE0, cp0);
-//   glClipPlane(GL_CLIP_PLANE1, cp1);
-//   glClipPlane(GL_CLIP_PLANE2, cp2);
-//   glClipPlane(GL_CLIP_PLANE3, cp3);
+  PixelCoord x, y, w, h;
+  x = (long)(clip->lower.x);
+  y = (long)(height() - clip->upper.y);
+  w = (long)(clip->upper.x - clip->lower.x);
+  h = (long)(clip->upper.y - clip->lower.y);
+  glScissor((GLint)x,(GLint)y,(GLsizei)w,(GLsizei)h);
 }
 
 void GLDrawable::popClipping()
 {
-  if (clipping.size())
-    {
-      RegionImpl *clip = clipping.top();
-      clip->_dispose();
-      clipping.pop();
-      if (!clipping.size()) return;
-      clip = clipping.top();
-      makeCurrent();
-
-   PixelCoord x, y, w, h;
-   x = (long)(clip->lower.x);
-   y = (long)(height() - clip->upper.y);
-   w = (long)(clip->upper.x - clip->lower.x);
-   h = (long)(clip->upper.y - clip->lower.y);
-   glScissor((GLint)x,(GLint)y,(GLsizei)w,(GLsizei)h);
-   //   cout << "set clipping region to: " << x << " " << y << " " << w << " " << h << endl;
-
-
-//       double cp0[] = {1., 0., 0., -clip->lower.x};
-//       double cp1[] = {0., 1., 0., -clip->lower.y};
-//       double cp2[] = {-1., 0., 0., clip->upper.x};
-//       double cp3[] = {0., -1., 0., clip->upper.y};
-//       cout << "GLDrawable::pushClipping " << *clip << endl;
-//       glClipPlane(GL_CLIP_PLANE0, cp0);
-//       glClipPlane(GL_CLIP_PLANE1, cp1);
-//       glClipPlane(GL_CLIP_PLANE2, cp2);
-//       glClipPlane(GL_CLIP_PLANE3, cp3);
-    }
 }

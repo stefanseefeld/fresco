@@ -43,7 +43,7 @@ CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw
 LDFLAGS	= -shared -rdynamic -L$(lpath)
 LIBS	= -lPrague -lBerlin -lGLtt -lttf -lGL -lGLU -ldb2++
 
-SRC	= Pointer.cc GLDrawable.cc GLPencil.cc GLDrawingKit.cc GLFont.cc GLUnifont.cc
+SRC	= Pointer.cc GLRaster.cc GLFont.cc GLUnifont.cc GLDrawable.cc GLPencil.cc GLDrawingKit.cc
 
 TARGET	= $(lpath)/libDrawing.so
 

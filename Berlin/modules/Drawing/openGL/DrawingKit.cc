@@ -31,6 +31,7 @@ extern "C" {
 #include "ggi/ggi.h"
 }
 
+#include <GL/glu.h>
 #include <strstream>
 #include <iostream>
 
@@ -114,68 +115,49 @@ Pencil_ptr GLDrawingKit::getPencil(const Style::Spec &sty)
 // lower.x, lower.y, upper.x, upper.y
 void GLDrawingKit::clear(Coord l, Coord t, Coord r, Coord b)
 {
-  glColor4d(0, 0, 0, 1.0);      
-  //cout << "clearing region: " << (GLint)l << " " << (GLint)(height() - b) << " " << (GLsizei)(r-l) << " " << (GLsizei)(b-t) << "(" << width() << "x" << height() << ")" << endl;
-  //  glScissor((GLint)l,(GLint)(t),(GLsizei)(r-l),(GLsizei)(b-t)); //((height() - b))
-  //glClearColor(1.0,0,0,1.0);
-  //  glClear(GL_COLOR_BUFFER_BIT);
-  
+  glColor4d(1., 0., 0., 1.);      
+  glRectf(l, t, r, b);
+  glFlush();
+  char c;
+  cout << "GLDrawingKit::clear: enter key to continue :"; cin >> c;
+  glColor4d(0., 0., 0., 1.);      
   glRectf(l, t, r, b);
 }
 
-/*
- * FIXME !!!: drawing transformed rasters doesn't work
- *
- * - if the transform only translates we can use glDrawPixels as is
- * - if the transform only scales we can use glDrawPixels with zoom factors
- * - else we can use glDrawPixels with zoom factors
- *      -stefan
- */
 void GLDrawingKit::image(Raster_ptr raster, Transform_ptr transform)
 {
   GLRaster *glraster = rasters.lookup(Raster::_duplicate(raster));
-#if 1
-  translatedImage(glraster, transform);
-#else
-  if (transform->Identity()) translatedImage(glraster, transform);
-  else transformedImage(glraster, transform);
-#endif
+  transformedImage(glraster, transform);
 }
 
 /*
- * openGL requires glTexImageXX to take width and height in the form 2^k
+ * openGL requires glTexImage2D to take width and height in the form 2^k
  * se we extract the exponent here and the residue
  */
-inline void logbase2(unsigned int n, unsigned int &k, unsigned int &r)
+inline void logbase2(unsigned int n, unsigned int &v, float &r)
 {
-  unsigned int i = 1;
-  k = 0;
-  while (n >= i)
-    {
-      i <<= 1;
-      k++;
-    }
-  i >>= 1;
-  r = n - i;
+  unsigned int k;
+  for (k = 0; n >>= 1; k++);
+  v = 1 << (k + 1), r = v - n;
 }
 
 void GLDrawingKit::transformedImage(const GLRaster *raster, Transform_ptr transform)
 {
   glEnable(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D, raster->texture);
+  glColor4f(1., 1., 1., 1.);
   glBegin(GL_POLYGON);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, raster->width, raster->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, raster->data.begin());
   Path path;
-  path.p.length(5);
+  path.p.length(4);
   path.p[0].x = path.p[0].y = path.p[0].z = 0.;
   path.p[1].x = raster->width, path.p[1].y = path.p[1].z = 0.;
   path.p[2].x = raster->width, path.p[2].y = raster->height, path.p[2].z = 0.;
   path.p[3].x = 0, path.p[3].y = raster->height, path.p[3].z = 0.;
-  path.p[4].x = path.p[4].y = path.p[4].z = 0.;
-  for (unsigned int i = 0; i != 5; i++) transform->transformVertex(path.p[i]);
-  glTexCoord3f(0.0f, 1.0f, 0.0f); glVertex3f(path.p[0].x, path.p[0].y, path.p[0].z);
-  glTexCoord3f(1.0f, 1.0f, 0.0f); glVertex3f(path.p[0].x, path.p[0].y, path.p[0].z);
-  glTexCoord3f(1.0f, 0.0f, 0.0f); glVertex3f(path.p[0].x, path.p[0].y, path.p[0].z);
-  glTexCoord3f(0.0f, 0.0f, 0.0f); glVertex3f(path.p[0].x, path.p[0].y, path.p[0].z);
+  for (unsigned int i = 0; i != 4; i++) transform->transformVertex(path.p[i]);
+  glTexCoord2f(0., 0.);              glVertex3f(path.p[3].x, path.p[3].y, path.p[3].z);
+  glTexCoord2f(1., 0.);              glVertex3f(path.p[2].x, path.p[2].y, path.p[2].z);
+  glTexCoord2f(1., 1.);              glVertex3f(path.p[1].x, path.p[1].y, path.p[1].z);
+  glTexCoord2f(0., 1.);              glVertex3f(path.p[0].x, path.p[0].y, path.p[0].z);
   glEnd();
   glDisable(GL_TEXTURE_2D);
 }
@@ -191,19 +173,5 @@ void GLDrawingKit::translatedImage(const GLRaster *raster, Transform_ptr transfo
   transform->transformVertex(origin);
   glRasterPos2d(origin.x, origin.y + raster->height);
   glPixelStorei(GL_UNPACK_ROW_LENGTH, raster->width);
-  //  cout << "current clip planes :" << endl;
-  double tmp[4];
-  glGetClipPlane(GL_CLIP_PLANE0, tmp);
-  //  cout << tmp[0] << ' ' << tmp[1] << ' ' << tmp[2] << ' ' << tmp[3] << endl;
-  glGetClipPlane(GL_CLIP_PLANE1, tmp);
-  //  cout << tmp[0] << ' ' << tmp[1] << ' ' << tmp[2] << ' ' << tmp[3] << endl;
-  glGetClipPlane(GL_CLIP_PLANE2, tmp);
-  //  cout << tmp[0] << ' ' << tmp[1] << ' ' << tmp[2] << ' ' << tmp[3] << endl;
-  glGetClipPlane(GL_CLIP_PLANE3, tmp);
-  //  cout << tmp[0] << ' ' << tmp[1] << ' ' << tmp[2] << ' ' << tmp[3] << endl;
-  //  cout << "glDrawPixels at " << origin << endl;
   glDrawPixels(raster->width, raster->height, GL_RGBA, GL_UNSIGNED_BYTE, raster->data.begin());
-  //  sync();
-  //  char c;
-  //  cout << "enter any character to continue :"; cin >> c;
 }
