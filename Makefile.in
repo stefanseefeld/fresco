@@ -93,15 +93,32 @@ maintainer-clean:
 
 ifneq ($(findstring Prague, $(subdirs)),)
 Prague	:= --with-Prague-prefix=$(builddir)/Prague
+
+Babylon:	Prague
+Berlin:		Prague
+Clients-C++:	Prague
 endif
 ifneq ($(findstring Babylon, $(subdirs)),)
 Babylon	:= --with-Babylon-prefix=$(builddir)/Babylon
+
+Fresco:		Babylon
+Berlin:		Babylon
+Clients-C++:	Babylon
 endif
 ifneq ($(findstring Fresco, $(subdirs)),)
 Fresco	:= --with-Fresco-prefix=$(builddir)/Fresco
+
+Berlin:		Fresco
+Clients-C++:	Fresco
+Clients-Python:	Fresco
+Clients-Perl:	Fresco
 endif
 ifneq ($(findstring Berlin, $(subdirs)),)
 Berlin	:= --with-Berlin-prefix=$(builddir)/Berlin
+
+GGI:		Berlin
+SDL:		Berlin
+Clients-C++:	Berlin #this has to go !
 endif
 
 Babylon/Makefile: override configure_args	+= $(Prague)
