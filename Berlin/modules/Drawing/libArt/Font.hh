@@ -46,6 +46,9 @@ public:
   virtual Unistring *style() = 0;
   virtual DrawingKit::FontMetrics metrics() = 0;
   virtual DrawingKit::GlyphMetrics metrics(Unichar &) = 0;
+  // this method returns true if the font will handle the trafo internally,
+  // false otherwise
+  virtual bool transform(double trafo[4]) { return false; };
   virtual void allocateChar(const Unichar ch, Graphic::Requisition &) = 0;
   virtual void getPixBuf(const Unichar ch, ArtPixBuf *&) = 0;
 };

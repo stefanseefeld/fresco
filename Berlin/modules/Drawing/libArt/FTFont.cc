@@ -27,6 +27,7 @@
 #include <map>
 #include <string>
 #include <cstdlib>
+#include <freetype/ftglyph.h>
 
 #define FLOOR(x)  ((x) & -64)
 #define CEIL(x)   (((x)+63) & -64)
@@ -71,6 +72,12 @@ LibArtFTFont::LibArtFTFont(GGI::Drawable *drawable) :
   myFaceMetricsCache(FaceMetricsFactory(this,&myLibrary),64),
   myGlyphMetricsCache(GlyphMetricsFactory(this,&myLibrary),256)
 {
+
+  matrix_.xx = 0x10000;
+  matrix_.xy = 0x00000;
+  matrix_.yx = 0x00000;
+  matrix_.yy = 0x10000;
+
   if (FT_Init_FreeType( &myLibrary )) {
       cerr << "failed to open freetype library" << endl;
       exit(-1);    
@@ -187,7 +194,7 @@ DrawingKit::GlyphMetrics LibArtFTFont::metrics(Unichar &uc)
 }
 
 void LibArtFTFont::getPixBuf(const Unichar ch, ArtPixBuf *&pb) {
-  GlyphSpec key(ch,FaceSpec(mySize,FamStyle(myFam,myStyle)));
+  TGlyphSpec key(matrix_, GlyphSpec(ch,FaceSpec(mySize,FamStyle(myFam,myStyle))));
   myGlyphCache.get(key,pb);
 }
 
@@ -208,63 +215,40 @@ void LibArtFTFont::setup_size(FT_Face &f) {
       (unsigned int)ydpi ); // vertical device resolution      
 }
 
-bool LibArtFTFont::load_glyph(Unichar c, FT_Face &f) {
+ bool LibArtFTFont::load_glyph(Unichar c, FT_Face &f) {
 
-  FT_CharMap  found = 0;
-  FT_CharMap  charmap;  
-  for (int n = 0; n < f->num_charmaps; n++ ){
-      charmap = f->charmaps[n];
-      if (charmap->encoding == ft_encoding_unicode) {	
-	found = charmap;
-	break;
-      }
-  }
-  if (!found) { 
-    // no way of translating!
-    return false; 
-  }
+   FT_CharMap  found = 0;
+   FT_CharMap  charmap;  
+   for (int n = 0; n < f->num_charmaps; n++ ){
+       charmap = f->charmaps[n];
+       if (charmap->encoding == ft_encoding_unicode) {	
+ 	found = charmap;
+ 	break;
+       }
+   }
+   if (!found) { 
+  //     no way of translating!
+     return false; 
+   }
+   /* now, select the charmap for the face object */
+   if (FT_Set_Charmap( f, found )) return false;
+   int idx = FT_Get_Char_Index(f,(unsigned char)c);
+   if (FT_Load_Glyph (f,idx,0)) {
+     return false;
+   }
+   return true;
+}
 
-  /* now, select the charmap for the face object */
-  if (FT_Set_Charmap( f, found )) return false;
-  int idx = FT_Get_Char_Index(f,(unsigned char)c);
-  if (FT_Load_Glyph (f,idx,0)) {
-    return false;
-  }
+bool LibArtFTFont::transform(double trafo[4]) {
+  matrix_.xx = (FT_Fixed)(trafo[0] * 0x10000);
+  matrix_.xy = (FT_Fixed)(trafo[1] * 0x10000);
+  matrix_.yx = (FT_Fixed)(trafo[2] * 0x10000);
+  matrix_.yy = (FT_Fixed)(trafo[3] * 0x10000);
+//   cerr << matrix_.xx << ' ' << matrix_.xy << ' ' << matrix_.yx << ' ' << matrix_.yy << endl;
   return true;
 }
+
   
-static inline bool render_pixbuf(ArtPixBuf *pb, 
-				  FT_GlyphSlot &glyph,
-				  FT_Library &library) {
-    
-  // first, render the glyph into an intermediate buffer  
-  if ( glyph->format != ft_glyph_format_outline ) return false;
-  int size = pb->width * pb->height;
-  memset(pb->pixels,0,size);      
-  FT_Bitmap  bit;
-  bit.width      = pb->width;
-  bit.rows       = pb->height;
-  bit.pitch      = pb->width;
-  bit.pixel_mode = ft_pixel_mode_grays;
-  bit.buffer     = pb->pixels;      
-
-  int left  = FLOOR( glyph->metrics.horiBearingX );
-  int bottom = FLOOR( glyph->metrics.horiBearingY - glyph->metrics.height );
-  FT_Outline_Translate(&glyph->outline, -left, -bottom );    
-  if (FT_Outline_Get_Bitmap( library, &glyph->outline, &bit)) return false;
-  return true;
-}
-
-
-// void LibArtFTFont::getMetrics(const Unichar ch, FT_Glyph_Metrics &m) {
-//   FT_Face newface;
-//   setup_face(newface);
-//   setup_size(newface);
-//   FT_GlyphSlot glyph = newface->glyph;
-//   if (!load_glyph(ch,newface)) return;       
-//   m = glyph->metrics;
-// }
-
 LibArtFTFont::atom LibArtFTFont::Atomizer::atomize(
 Unicode::String &u) {
   map<Unicode::String,atom>::iterator i;
@@ -279,7 +263,6 @@ Unicode::String &u) {
 
 void LibArtFTFont::allocateChar(Unichar ch, Graphic::Requisition &r) {
   DrawingKit::GlyphMetrics gm = metrics(ch);
-
   r.x.natural = r.x.minimum = r.x.maximum = ((double)(gm.horiAdvance >> 6)) / xres; 
   r.x.defined = true;
   r.x.align = 0.;
@@ -287,37 +270,45 @@ void LibArtFTFont::allocateChar(Unichar ch, Graphic::Requisition &r) {
   r.y.defined = true;
   r.y.align = (gm.height == 0) ? 0. : 
     ((double)gm.horiBearingY)/((double)gm.height); 
-
-//   FT_Face newface;
-//   setup_face(newface);
-//   setup_size(newface);
-//   FT_GlyphSlot glyph = newface->glyph;
-//   if (!load_glyph(ch,newface)) return;
-//   r.x.natural = r.x.minimum = r.x.maximum = ((double)(glyph->metrics.horiAdvance >> 6)) / xres;
-//   r.x.defined = true;
-//   r.x.align = 0.;
-//   r.y.natural = r.y.minimum = r.y.maximum = ((double)(glyph->metrics.height >> 6)) / yres; 
-//   r.y.defined = true;
-//   r.y.align = (glyph->metrics.height == 0) ? 0. : 
-//     ((double)glyph->metrics.horiBearingY)/((double)glyph->metrics.height); 
 }
 
 
 ArtPixBuf * 
-LibArtFTFont::GlyphFactory::produce(const LibArtFTFont::GlyphSpec &gs)
+LibArtFTFont::GlyphFactory::produce(const LibArtFTFont::TGlyphSpec &gs)
 {
-  FT_Face newface;
-  font_->setup_face(newface);
-  font_->setup_size(newface);  
-  Unichar ch = gs.first;
+
+  FT_Face face;
+  FT_Glyph glyph;
+  font_->setup_face(face);
+  font_->setup_size(face);  
+  Unichar ch = gs.second.first;
+
   DrawingKit::GlyphMetrics gm = font_->metrics(ch);
-  int width = (int) (gm.width >> 6);
-  int height = (int) (gm.height >> 6);
+    
+  // loads the TRUNCATED char index! note: only works on indicies < 256
+  FT_Load_Char( face, (char)(ch), FT_LOAD_DEFAULT );
+  FT_Get_Glyph( face->glyph, &glyph );
+  FT_Matrix matrix = gs.first;
+  FT_Glyph_Transform( glyph, &matrix, 0 );
+  FT_Glyph_To_Bitmap( &glyph, ft_render_mode_normal, 0,  1 );
+  
+  FT_BitmapGlyph bglyph = (FT_BitmapGlyph)glyph;
+  int height = bglyph->bitmap.rows;
+  int width = bglyph->bitmap.width;
+  int pitch = bglyph->bitmap.pitch;
+  
   art_u8 *pixels = new art_u8[width * height]; 
+
+  if (width != pitch) {
+    for (int i = 0; i < height; ++i)
+      memcpy(pixels + (width * i), (bglyph->bitmap.buffer) + (pitch * i), width);
+  } else {
+    memcpy(pixels, bglyph->bitmap.buffer, (width*height));
+  }
+
   // this is a lie -- we're going to use it as a greymap
   ArtPixBuf *pb = art_pixbuf_new_rgb (pixels, width, height, width);  
-  font_->load_glyph(ch,newface);
-  render_pixbuf(pb,newface->glyph,*lib_);      
+  FT_Done_Glyph(glyph);
   return pb;
 }
 
@@ -341,12 +332,12 @@ DrawingKit::GlyphMetrics
 LibArtFTFont::GlyphMetricsFactory::produce(const LibArtFTFont::GlyphSpec &cs) 
 {
   DrawingKit::GlyphMetrics gm;
-  FT_Face newface;
-  font_->setup_face(newface);
-  font_->setup_size(newface);
-  Unichar uc = cs.first;
-  if (!font_->load_glyph(uc, newface)) return gm;
-  FT_GlyphSlot glyph = newface->glyph;
+  FT_Face face;
+  font_->setup_face(face);
+  font_->setup_size(face);
+  Unichar ch = cs.first;
+  if (!font_->load_glyph(ch, face)) return gm;
+  FT_GlyphSlot glyph = face->glyph;
   gm.width = glyph->metrics.width;
   gm.height = glyph->metrics.height;
   gm.horiBearingX = glyph->metrics.horiBearingX;

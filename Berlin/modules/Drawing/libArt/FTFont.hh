@@ -55,13 +55,13 @@ public:
   virtual DrawingKit::FontMetrics metrics();
   virtual DrawingKit::GlyphMetrics metrics(Unichar &);
   virtual void getPixBuf(const Unichar ch, ArtPixBuf *&);
-//   void getGlyphMetrics(const Unichar ch, FT_Glyph_Metrics &);
-//   void getFontMetrics(FT_Size_Metrics &);
+  virtual bool transform(double trafo[4]);
   virtual void allocateChar(Unichar ch, Graphic::Requisition &);
 
   void setup_face(FT_Face &f);
   void setup_size(FT_Face &f);
   bool load_glyph(Unichar c, FT_Face &f);
+  void matrix(FT_Matrix &m) {m = matrix_;}
   
 protected:
   
@@ -78,9 +78,27 @@ protected:
     
   double xres, yres, xdpi, ydpi;  
   typedef unsigned int PtSize;
+  FT_Matrix matrix_;
   typedef pair<atom,atom> FamStyle;
   typedef pair<PtSize,FamStyle> FaceSpec;
-  typedef pair<Unichar,FaceSpec> GlyphSpec;
+  typedef pair<Unichar,FaceSpec>  GlyphSpec;
+  typedef pair<FT_Matrix, GlyphSpec>  TGlyphSpec;
+
+  class TGlyphSpec_cmp {
+  public:
+    bool operator ()(const TGlyphSpec &a, const TGlyphSpec &b) {
+      return 
+	// this is why a generalized product type constructor is better than
+	// ad-hoc memory structure definition. *sigh*
+	((a.first.xx < b.first.xx)) ||
+	((a.first.xx == b.first.xx) && (a.first.xy < b.first.xy)) ||
+	((a.first.xx == b.first.xx) && (a.first.xy == b.first.xy) && (a.first.yx < b.first.yx)) ||
+	((a.first.xx == b.first.xx) && (a.first.xy == b.first.xy) && (a.first.yx == b.first.yx) && (a.first.yy < b.first.yy)) ||
+	((a.first.xx == b.first.xx) && (a.first.xy == b.first.xy) && (a.first.yx == b.first.yx) && (a.first.yy == b.first.yy) &&
+	 (a.second < b.second))
+	;      
+    }
+  };
 
   class GlyphMetricsFactory {
   private:
@@ -108,7 +126,7 @@ protected:
     FT_Library *lib_;
   public:
     GlyphFactory(LibArtFTFont *f, FT_Library *l) : font_(f), lib_(l) {};
-    ArtPixBuf *produce(const GlyphSpec &cs);
+    ArtPixBuf *produce(const TGlyphSpec &cs);
     void recycle(ArtPixBuf *pb) {art_pixbuf_free(pb);};
   };
    
@@ -120,7 +138,7 @@ protected:
   map<FamStyle,FT_Face> myFaceMap;
 
   // caches!
-  LRUCache<GlyphSpec,ArtPixBuf *, GlyphFactory> myGlyphCache;
+  LRUCache<TGlyphSpec,ArtPixBuf *, GlyphFactory, map<TGlyphSpec,ArtPixBuf *,TGlyphSpec_cmp> > myGlyphCache;
   LRUCache<FaceSpec,DrawingKit::FontMetrics, FaceMetricsFactory> myFaceMetricsCache;
   LRUCache<GlyphSpec,DrawingKit::GlyphMetrics, GlyphMetricsFactory> myGlyphMetricsCache;   
 

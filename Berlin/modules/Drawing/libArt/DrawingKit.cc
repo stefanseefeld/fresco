@@ -451,21 +451,29 @@ void LibArtDrawingKit::drawChar(Unichar c)
       height = (int) (gm.height >> 6);
     }
   
-  affine[4] -= (r.y.maximum * r.y.align * affine[2]);
-  affine[5] -= (r.y.maximum * r.y.align * affine[3]);        
-
   ArtPixBuf *pb;
-  if (c > 127) unifont->getPixBuf(c,pb);
-  else font->getPixBuf(c,pb);
+  int transformed = false;
+  double matrix[4];
+  for (int i = 0; i < 4; ++i) matrix[i] = affine[i];
 
-  if (affine[0] == 1 &&
-      affine[1] == 0 &&
-      affine[2] == 0 &&
-      affine[3] == 1) {
-    identityPixbuf(pb);
+  if (c > 127) {
+    transformed = unifont->transform(matrix);
+    unifont->getPixBuf(c,pb);
+  } else {  
+    transformed = font->transform(matrix);
+    font->getPixBuf(c,pb);
+  }
 
+  if (transformed || (affine[0] == 1 &&
+		      affine[1] == 0 &&
+		      affine[2] == 0 &&
+		      affine[3] == 1)) {
+    affine[5] -= (r.y.maximum * r.y.align * affine[3]);        
+    identityPixbuf(pb);      
   } else {   
     // *sigh* use primitive libart pixel functions
+    affine[4] -= (r.y.maximum * r.y.align * affine[2]);
+    affine[5] -= (r.y.maximum * r.y.align * affine[3]);        
     int pix = 4;
     int row = width * pix; 
     int size = height * row;
