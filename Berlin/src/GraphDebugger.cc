@@ -176,8 +176,7 @@ Berlin::GraphDebugger::find_or_insert(Fresco::Graphic_ptr g)
 	 i != my_known_graphics.end();
 	 ++i)
 	if (hash == i->hash &&
-	    (p == i->impl ||
-	     g->is_identical(i->graphic)))
+	    g->_is_equivalent(i->graphic))
 		return *i; // we allready know this one
 
     // the graphic is unknown: register it and return a reference to it.
