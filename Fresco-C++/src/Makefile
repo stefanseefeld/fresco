@@ -104,13 +104,27 @@ $(STATHDR): $(ipath)/Warsaw/%.hh:	$(wpath)/%.idl
 $(DYNHDR): $(ipath)/Warsaw/%.hh:	$(wpath)/%.idl
 		$(IDL) $(IDLFLAGS) $(DYNIDLFLAGS) $<
 		mv $(@F) $(ipath)/Warsaw
-$(STATSRC): %SK.cc:		$(wpath)/%.idl
+# added dependencies at the end aren't there because of any actual dependency;
+# they prevent race conditions during a multithreaded make. Before, make would
+# try to build Foo.hh at the same time as FooSK.cc, so it would run omniidl2
+# twice, each would create a Foo.hh (overwriting each other), one of them
+# would move it to $(ipath)/Warsaw, then the other would try to mv it too but
+# would error out because it no longer existed.
+# By adding these dependencies we prohibit make building Foo.hh and FooSK.cc
+# at the same time.
+# An alternate solution would be to put - in front of all the mv invocations,
+# so errors would be ignored, but that could conceal true errors.
+# This solution, while it could cause make to build a bit more than it
+# actually has to, will never be wrong.  Besides, Foo{.hh,SK.cc, DynSK.cc}
+# all have the same dependencies anyway, so if one is rebuilt then they're
+# all going to be rebuilt anyway.
+$(STATSRC): %SK.cc:		$(wpath)/%.idl     $(ipath)/Warsaw/%.hh
 		$(IDL) $(IDLFLAGS) $<
 		mv $(basename $(<F)).hh $(ipath)/Warsaw
-$(DYNSTATSRC): %SK.cc: 	$(wpath)/%.idl
+$(DYNSTATSRC): %SK.cc: 	$(wpath)/%.idl             $(ipath)/Warsaw/%.hh
 		$(IDL) $(IDLFLAGS) $(DYNIDLFLAGS) $<
 		mv $(basename $(<F)).hh $(ipath)/Warsaw
-$(DYNSRC): %DynSK.cc:	$(wpath)/%.idl
+$(DYNSRC): %DynSK.cc:	$(wpath)/%.idl             %SK.cc
 		$(IDL) $(IDLFLAGS) $(DYNIDLFLAGS) $<
 		mv $(basename $(<F)).hh $(ipath)/Warsaw
 $(opath)/%.o:	%.cc
