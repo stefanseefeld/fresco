@@ -257,7 +257,7 @@ void SDL::GLPointer::restore()
   glDisable(GL_ALPHA);
   glDisable(GL_SCISSOR_TEST);
 
-  glRasterPos2i(x * _scale[0], y * _scale[1]);
+  glRasterPos2i((int)(x * _scale[0]), (int)(y * _scale[1]));
   glDrawBuffer(GL_FRONT);
   glDrawPixels(_size[0], _size[1], GL_RGB, GL_UNSIGNED_BYTE, _saved_area); 
 
@@ -277,7 +277,7 @@ void SDL::GLPointer::draw()
   glDisable(GL_SCISSOR_TEST);
 
   glDrawBuffer(GL_FRONT);
-  glRasterPos2i(x * _scale[0], y * _scale[1]);
+  glRasterPos2i((int)(x * _scale[0]), (int)(y * _scale[1]));
   glDrawPixels(_size[0], _size[1], GL_RGBA, GL_UNSIGNED_BYTE, _cursor); 
 
   glEnable(GL_SCISSOR_TEST);
