@@ -26,12 +26,10 @@
 #include <Warsaw/config.hh>
 #include <Warsaw/Traversal.hh>
 #include <Warsaw/Graphic.hh>
-#include <Warsaw/Region.hh>
 #include <Berlin/ServantBase.hh>
+#include <Berlin/RegionImpl.hh>
 #include <Berlin/TransformImpl.hh>
 #include <vector>
-
-class RegionImpl;
 
 //. TraversalImpl keeps a stack of context information for
 //. the Graphic nodes it visits. Use push and pop to add/remove
@@ -48,11 +46,11 @@ class TraversalImpl : public virtual POA_Warsaw::Traversal,
   struct State
   {
     State() : id(0), transformation(0) {}
-    State(Warsaw::Graphic_ptr g, Warsaw::Tag i, Warsaw::Region_ptr a, TransformImpl *t)
+    State(Warsaw::Graphic_ptr g, Warsaw::Tag i, RegionImpl *a, TransformImpl *t)
       : graphic(g), id(i), allocation(a), transformation(t) {}
     Warsaw::Graphic_ptr      graphic;
     Warsaw::Tag              id;
-    Warsaw::Region_ptr       allocation;
+    RegionImpl              *allocation;
     TransformImpl           *transformation;    
   };
   typedef std::vector<State> stack_t;
@@ -76,10 +74,10 @@ protected:
   //. push puts the actual trail values on a stack. They are *not* reference counted,
   //. it is assumed that pop is called in the same scope.
   //. Alternatively, values not removed from the stack are deallocated in the destructor.
-  void push(Warsaw::Graphic_ptr, Warsaw::Tag, Warsaw::Region_ptr, TransformImpl *);
+  void push(Warsaw::Graphic_ptr, Warsaw::Tag, RegionImpl *, TransformImpl *);
   void pop();
   size_t size() const { return _stack.size();}
-  Warsaw::Region_ptr get_allocation(size_t i) { return _stack[i].allocation;}
+  RegionImpl    *get_allocation(size_t i) { return _stack[i].allocation;}
   TransformImpl *get_transformation(size_t i) { return _stack[i].transformation;}
   Warsaw::Graphic_ptr get_graphic(size_t i) { return _stack[i].graphic;}
 private:

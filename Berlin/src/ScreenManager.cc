@@ -70,6 +70,7 @@ void ScreenManager::repair()
   _theDamage->clear();
   _mutex.unlock();
   // _emanager->restore(Region_var(_tmpDamage->_this()));
+  _traversal->damage(Region_var(_tmpDamage->_this()));
   _traversal->init();
   _drawing->start_traversal();
   mid = myclock();
@@ -111,7 +112,7 @@ void ScreenManager::run()
   _theDamage = new RegionImpl;
   _tmpDamage = new RegionImpl;
   _traversal = new DrawTraversalImpl(_screen,
-				     Region_var(_tmpDamage->_this()),
+				     Region::_nil(),
 				     Transform::_nil(),
 				     _drawing);
   Prague::Time last;

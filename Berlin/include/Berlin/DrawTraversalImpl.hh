@@ -48,6 +48,11 @@ public:
   DrawTraversalImpl(const DrawTraversalImpl &);
   virtual ~DrawTraversalImpl();
 
+  //. This method is called by the ScreenManager just before a traversal.
+  //. This means the stack contains a single entry. It is this entry which
+  //. this method modifies...
+  void damage(Warsaw::Region_ptr);
+
   virtual CORBA::Boolean intersects_allocation();
   virtual CORBA::Boolean intersects_region(Warsaw::Region_ptr);
 

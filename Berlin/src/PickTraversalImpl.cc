@@ -71,7 +71,7 @@ PickTraversal_ptr PickTraversalImpl::_this()
 Region_ptr PickTraversalImpl::current_allocation()
 {
   Trace trace("PickTraversalImpl::current_allocation");
-  return Region::_duplicate(get_allocation(_cursor));
+  return get_allocation(_cursor)->_this();
 }
 
 Transform_ptr PickTraversalImpl::current_transformation() 
@@ -90,10 +90,12 @@ void PickTraversalImpl::traverse_child(Graphic_ptr child, Tag tag, Region_ptr re
 {
   Trace trace("PickTraversalImpl::traverse_child");
   if (CORBA::is_nil(region)) region = Region_var(current_allocation());
+  Lease_var<RegionImpl> allocation(Provider<RegionImpl>::provide());
+  allocation->copy(region);
   Lease_var<TransformImpl> cumulative(Provider<TransformImpl>::provide());
   *cumulative = *get_transformation(_cursor);
   if (!CORBA::is_nil(transform)) cumulative->premultiply(transform);
-  push(child, tag, region, cumulative); // Keep ownership of cumulative!
+  push(child, tag, allocation, cumulative); // Keep ownership of cumulative!
   _cursor++;
   try
     {

@@ -113,8 +113,8 @@ inline void PickTraversalImpl::reinit()
   _positions.clear();
   while (size() > 1)
     {
-      CORBA::release(get_allocation(size() - 1));
       CORBA::release(get_graphic(size() - 1));
+      Provider<RegionImpl>::adopt(get_allocation(size() - 1));
       Provider<TransformImpl>::adopt(get_transformation(size() - 1));
       pop();
     }

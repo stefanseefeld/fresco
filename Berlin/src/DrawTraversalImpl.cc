@@ -36,26 +36,29 @@ using namespace Warsaw;
 DrawTraversalImpl::DrawTraversalImpl(Graphic_ptr g, Region_ptr r, Transform_ptr t, DrawingKit_ptr kit)
   : TraversalImpl(g, r, t),
     _drawing(DrawingKit::_duplicate(kit)),
-    _clipping(Region::_duplicate(r)),
+    _clipping(Region_var(current_allocation())),
     _id(new TransformImpl)
 {
   Trace trace("DrawTraversalImpl::DrawTraversalImpl");
-}
-
-void DrawTraversalImpl::init()
-{
-  Trace trace("DrawTraversalImpl::init");
-  __this = _this();
-  /*
-   * initialize the different drawing kit attributes
-   */
-  _drawing->clipping(_clipping);
   Color fg = {0., 0., 0., 1.};
   _drawing->foreground(fg);
   Color white = {1., 1., 1., 1.};
   _drawing->lighting(white);
   _drawing->transformation(Transform_var(_id->_this()));
   _drawing->surface_fillstyle(DrawingKit::solid);
+}
+
+void DrawTraversalImpl::damage(Warsaw::Region_ptr d)
+{
+  assert(size() == 1);
+  get_allocation(0)->copy(d);
+  _drawing->clipping(_clipping);
+}
+
+void DrawTraversalImpl::init()
+{
+  Trace trace("DrawTraversalImpl::init");
+  __this = _this();
   _drawing->save();
   Vertex l, u;
   _clipping->bounds(l, u);
@@ -113,6 +116,8 @@ void DrawTraversalImpl::traverse_child(Graphic_ptr child, Tag tag, Region_ptr re
 {
   Trace trace("DrawTraversalImpl::traverse_child");
   if (CORBA::is_nil(region)) region = Region_var(current_allocation());
+  Lease_var<RegionImpl> allocation(Provider<RegionImpl>::provide());
+  allocation->copy(region);
   Lease_var<TransformImpl> cumulative(Provider<TransformImpl>::provide());
 #if 0
   *cumulative = *get_transformation(size() - 1);
@@ -127,7 +132,7 @@ void DrawTraversalImpl::traverse_child(Graphic_ptr child, Tag tag, Region_ptr re
 #endif
   _drawing->transformation(Transform_var(cumulative->_this()));
   // drawable->clipping(region, Transform_var(tx->_this()));
-  push(child, tag, region, cumulative); // Keep ownership of cumulative!
+  push(child, tag, allocation, cumulative); // Keep ownership of cumulative!
   try
     {
       child->traverse(__this);
