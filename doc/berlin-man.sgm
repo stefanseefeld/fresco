@@ -20,7 +20,6 @@
     <author>
 
       <firstname>Graydon</firstname> <surname>Hoare</surname>
-
       <!-- additional authors, please insert your names here -->
 
     </author>
@@ -31,7 +30,12 @@
     <legalnotice>
       <para>
       Released under the terms of the GNU General Public License,
-      version 2.0 or greater.</para>
+      version 2.0 or greater. This document has been prepared for printing
+    and the web using SGML &amp; DocBook. It will be available online
+    at <ulink url="http://www.berlin-consortium.org">http://www.berlin-consortium.org</ulink>
+ in HTML, PDF, and postscript. Comments, additions,
+    and discussion are welcome, and best directed towards the mailing
+    list.</para>
     </legalnotice>
   </bookinfo>
 

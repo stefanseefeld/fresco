@@ -2,13 +2,13 @@
   <title>Threads</title>
   <para>
       Threads in a UI normally sit in loops of some sort, either
-      polling (yech) or sleeping between "events". You have two
+      polling (yecch) or sleeping between "events". You have two
       choices as to what happens when a thread receives an event:
     </para>
   
   <orderedlist>
     <listitem><para>it does everything it's asked to until all logical
-      consequences of the event have occured, at which point it sleeps
+      consequences of the event have occurred, at which point it sleeps
       again</para></listitem>
     
     <listitem><para>it does some small, local task which represents the limit of
@@ -30,7 +30,7 @@
     </para>
   
   <para>
-      Since almost every case in a UI is a special case, warsaw has
+      Since almost every case in a UI is a special case, Warsaw has
       been constructed in a way which facilitates both of these
       responses to events naturally, and in varying mixtures. The base
       class from which most UI elements will be derived is "widget",
@@ -52,7 +52,7 @@
     <orderedlist>
       <listitem><para>
 	You can construct a new thread and insert it into the
-	command, detatch the thread, then immediately return to
+	command, detach the thread, then immediately return to
 	processing inside the reactor </para></listitem>
 	
       <listitem><para>
@@ -77,7 +77,7 @@
       pressing a key) the order of message-passing is most likely
       reversed: the outermost container passes the event down to the
       children only if it wants to, or if the children have indicated
-      an intrest in seeing the events. If you think about this for a
+      an interest in seeing the events. If you think about this for a
       while, you'll see that it's quite powerful and flexible, but
       only if you have control over which commands get run on arrival
       of which message. This is exactly what the reactor class allows
@@ -86,9 +86,9 @@
     </para>
 
     <para>
-      "hrm" you say, "Sounds slow. Ponderously slow. Lots of copying.
+      "Hrm" you say, "Sounds slow. Ponderously slow. Lots of copying.
       Probably hard to debug too". Indeed, these are hard issues to face. 
-      The fact is, if you can't guarantee certain behaviour, or at
+      The fact is, if you can't guarantee certain behavior, or at
       least the presence of certain interface methods, your
       program might make some very flawed uses of the components it's
       built out of. The solution, which is a compromise, is to support 
@@ -119,7 +119,7 @@
       calling. If you think about it, 10ms is like tens of millions of pipelined
       instructions on a modern CPU. So it's a <emphasis>big</emphasis> command. The
       intent of the above discussion is simply to drive home a point:
-      <emphasis>It's bad etiquitte for a public method to gobble up a calling
+      <emphasis>It's bad etiquette for a public method to gobble up a calling
 	thread for a really long time</emphasis>. The only public methods you
       should be implementing are those which have performance
       guarantees well within this guideline, such as get/set type
