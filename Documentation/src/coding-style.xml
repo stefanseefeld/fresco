@@ -1,0 +1,689 @@
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.0//EN"
+                  "http://www.oasis-open.org/docbook/xml/4.0/docbookx.dtd">
+
+<article>
+  <articleinfo>
+    <title>Draft coding guidelines for Fresco (C++)</title>
+    <authorgroup>
+      <author>Nathaniel Smith</author>
+    </authorgroup>
+    <copyright>
+      <year>2002</year>
+      <holder>Nathaniel Smith</holder>
+    </copyright>
+    <legalnotice>
+  This document may be redistributed and modified without restriction
+  -- feel free to steal and/or adapt it for other projects.
+    </legalnotice>
+  </articleinfo>
+  <abstract>
+  The latest version can be found at: [[FIXME]]
+  Indent rules implementing these guidelines can be found at: [[FIXME]]
+  An Emacs style implementing these guidelines can be found at: [[FIXME]]
+  A Vim style implementing these guidelines can be found at: [[FIXME]]
+
+  If you configure some other editor or tool to follow these guidelines,
+  you can mail them to [[FIXME]] for inclusion here.
+  </abstract>
+  <section>
+  <title>Rule Number One : Be sensible</title>
+  <para>
+    Justification: These coding guidelines are just that --
+    guidelines.  Furthermore, they don't cover every case, and don't
+    even try to.  They have two related goals:
+    <itemizedlist>
+      <listitem>
+        <para>
+          Ensure consistency: Reading code that switches back and forth
+          between 2 space indentation with K&amp;R braces and 8 space
+          indentation with GNU braces (with weird hybrid portions all
+          over the place) frankly sucks.  Code that keeps to a single,
+          readable, standard, is much nicer to deal with.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          Give some general, "official" defaults: It's not obvious what
+          makes one brace style "better" than another, etc.  So rather
+          than have to think about the best way to format an
+          initializer list when you're trying to code, these serve as a
+          list of principles you can fall back on instead of thinking.
+          Similarly, if you're mucking about in someone else's code,
+          and their indentation is weird, don't worry about
+          reformatting it to match the standard; no-one will complain
+          if you do.  (And if they do, you can point them at this standard.)
+        </para>
+      </listitem>
+    </itemizedlist>
+      Let's face it, there will never be a list of rules of the form "do
+      X, Y, Z, but never W" that teach you how to write good, clear,
+      readable code.  If you want to write good code, there are lots of
+      things to read -- the references at the end of this document will
+      get you started.  All these guidelines try to do is give a little
+      boost in that direction.  Always strive for clarity.
+    </para>
+  </section>
+  <section>
+    <title>Formatting</title>
+    <para>
+      <itemizedlist>
+        <listitem>
+          <para>4 space indentation</para>
+          <para>Justification: 8 is too big, 2 is too small.</para>
+        </listitem>
+        <listitem>
+          <para>
+            Use those 4 spaces everywhere, except for inside namespaces,
+            where 2 spaces of indentation should be used.  Eg.:
+    <programlisting>
+     namespace Blah
+     {
+       class Foo
+       {
+           ....
+       };
+     }
+    </programlisting>
+   </para>
+   <para>
+   Justification: Namespaces tend to wrap a whole file; it's silly to
+    have _all_ your actual code indented a bunch just because you use
+    namespaces.
+</para>
+        </listitem>
+        <listitem>
+          <para>Maximum line width 78 characters.</para>
+          <para>
+
+   Justification: This is standard, and code should be made
+    readable/editable by anyone.
+</para>
+        </listitem>
+        <listitem>
+          <para>Braces like:
+    <programlisting>
+    if (foo)
+    {
+        ...
+    }
+    </programlisting>
+    </para>
+    <para>
+   Justification:  Uses more vertical space than K&amp;R style (that's
+    where you go:
+    <programlisting>
+      if (foo) {
+          ...
+      }
+    </programlisting>
+    ) but sufficiently more readable to be worth it.  The GNU style is
+    the worst:
+    <programlisting>
+     if (foo)
+       {
+         ...
+       }
+    </programlisting>
+    </para>
+    <para>
+    I find it totally unreadable, and gratuitously hard to
+    match closing braces with the statements that started them
+    (especially when there's nesting, multiple blocks closing at the
+    same time, etc.).
+    </para>
+        </listitem>
+        <listitem>
+          <para>Else clauses should look like:
+    <programlisting>
+    if (foo)
+    {
+        ...
+    }
+    else
+    {
+        ...
+    }
+    </programlisting>
+    </para>
+    <para>
+   Justification: Only reasonable option, given our brace style.  It's
+    readable.
+</para>
+        </listitem>
+        <listitem>
+<para>
+ If you leave off braces on 1 line for/if/while's, then put
+     everything on one line, like so:
+    <programlisting>
+     if (foo) break;
+    </programlisting>
+   If it won't all fit on one line, then use braces.
+</para>
+<para>
+   Justification: Readability.
+</para>
+        </listitem>
+        <listitem>
+<para>
+ do-while loops should look like:
+    <programlisting>
+    do
+    {
+        ...
+    }
+    while (blah);
+    </programlisting>
+</para>
+<para>
+   Justification: I think that
+    <programlisting>
+     do
+     {
+         ...
+     } while (blah);
+    </programlisting>
+    is harder to read, when there are long lines inside the block
+    jammed up against the while.
+</para>
+        </listitem>
+        <listitem>
+<para>
+ If you have empty for/while loops, then put a {} on the same line
+    (preferred), or a ; on the next line.  The important thing is to
+    make it obvious that the loop body is empty.  So this is correct:
+    <programlisting>
+     <![CDATA[ for (i = 0; i < 10; a[i++] = 0) {} ]]>                              
+    </programlisting>
+    as is this:
+    <programlisting>
+     <![CDATA[ for (i = 0; i < 10; a[i++] = 0)
+         ;
+     ]]>
+    </programlisting>
+    If you don't know what to do, use the first.
+</para>
+<para>
+   Justification: The assumption is that whatever comes after a "for"
+    is inside the loop body.  If you violate that assumption, you want
+    to make it obvious.
+</para>
+<para>
+    The reason for the equivocation is that "{}" is slightly clearer,
+    but harder to enter when using a good editor (eg, emacs will
+    auto-insert line breaks around the braces).  Besides, these rules
+    aren't meant to be a long list of things you must
+    memorize-or-else, but rather minimal rules for good and consistent
+    code.
+</para>
+        </listitem>
+        <listitem>
+<para>
+  Comments with // if only a few lines.  For biggish comments, use
+    <programlisting>
+     /*
+      * This style.
+      */
+    </programlisting>
+    or
+    <programlisting>
+     /* This style.
+      *
+      * (more lines here)
+      */
+    </programlisting>
+</para>
+<para>
+   Justification:
+    <programlisting>
+     /* This is uglier and harder to read,
+        when there are multiple lines involved.
+      */
+    </programlisting>
+    <programlisting>
+     /*
+        This is definitely harder to read, because that comment start
+        is just floating out there in space -- the '*'s make it clear
+        visually that the current text is comment text.
+      */
+    </programlisting>
+    <programlisting>
+     /*
+      This just looks weird.
+      (IMHO)
+      */
+    </programlisting>
+</para>
+        </listitem>
+        <listitem>
+<para>
+  No spaces between function names and their arguments.
+    So you call foo(bar), and you declare foo(int bar).
+</para>
+<para>
+   Justification: Calling foo (bar) is silly, and makes it less
+    obvious that you're actually calling a function.
+</para>
+        </listitem>
+        <listitem>
+<para>
+  Spaces between if/while/for/etc. and their condition.
+</para>
+<para>
+   Justification: Readability.
+</para>
+        </listitem>
+        <listitem>
+<para> 
+ Use spaces and parentheses liberally for readability --
+    <programlisting>
+     (a+i)>j?i++:j                                         
+    </programlisting>
+    is much harder to read than, say,
+    <programlisting>
+     ( (a+i) > j ) ? i++ : j         
+    </programlisting>
+    .  Use as much vertical whitespace as helps.  Use your judgement.
+</para>
+        </listitem>
+        <listitem>
+<para>
+ Return type and function name on separate lines
+    <programlisting>
+     void
+     foo(int bar)
+    </programlisting>
+    rather than       
+    <programlisting>
+     void foo(int bar)
+    </programlisting>
+</para>
+<para>
+   Justification: Return types in C++ can be pretty long; this reduces
+     wrapping and is easier to read to boot.
+</para>
+<para>
+     It also means that you can more easily grep for definitions.  Eg,
+     to find the definition of "foo", use:
+       grep -r '^foo(' .
+     If you want to include the type as well, use:
+       grep -r -B1 '^foo(' .
+     If you want to see all the function definitions in foo.cc, use:
+       grep -E '^[^[:space:]]+\(' foo.cc
+     and so on.
+</para>
+        </listitem>
+        <listitem>
+<para>
+  Always use spaces, never use tabs.
+</para>
+<para>
+   Justification: Tabs have no standard width, and therefore are
+    inappropriate for lining things up.  Other people's editors may
+    have different tab widths set, and then things may break.  It
+    makes everyone's life easier to just not use them.
+</para>
+        </listitem>
+        <listitem>
+<para>
+  If you have to use preprocessor conditionals, indent them
+    appropriately, with 2 spaces.  The '#' always goes in column 0,
+    but the rest can be indented.  Eg:                             
+    <programlisting>
+     #ifdef M68K                      
+     #  if BIG_ENDIAN
+      ...            
+     #  else           // !BIG_ENDIAN
+      ...                            
+     #  endif          // !BIG_ENDIAN
+     #endif            // M68K
+    </programlisting>
+    As a special case, don't mark the #endif of header guards with the
+    actual macro, but just "// header guard".  Ie:
+     RIGHT:
+      #endif           // header guard
+     WRONG:
+      #endif           // _FOO_H_GUARD_
+</para>
+<para>
+   Justification: Readability.  For the header guard special case,
+    putting the macro name down there is one more thing that has to be
+    changed if the file gets renamed, and besides, "header guard" is
+    more directly informative anyway.
+</para>
+        </listitem>
+        <listitem>
+<para>
+  Special rules apply inside class declarations, where the emphasis
+    is on defining an interface, not an implementation.  If you have
+    an inline method, only embed the code in the class declaration if
+    the method body is 1 line or less (not including member
+    initializers, if this is a constructor).  When you do embed the
+    code in the declaration, put the braces and the code all on the
+    same line.
+</para>
+<para>
+    If you have an initializer list, put the ':' after the closing ')'
+    of the parameter section and start a new line.  If the
+    initializers all fit on a single line, put them on a single line;
+    otherwise put each on a separate line.  [[FIXME: rewrite this
+    rule, and break it into multiple sub-rules]]
+    So:
+    <programlisting>
+     class Foo
+     {
+         // Correct:
+         Foo() :
+             my_bar(0), my_baz(0)
+             {}
+         Foo(int super_special_long_named_variable) :
+             my_bar(0),
+             my_baz(new baz_type(super_special_long_named_variable))
+             {}
+         int
+         bar() { return my_bar; };
+         void
+         baz_incr()
+             { if (my_baz) my_baz->references++; };
+         void
+         quux() {}
+         inline void
+         blargle();
+         // Incorrect:
+         void
+         baz_incr2()
+         {
+             if (my_baz) my_baz->references += (::should_do_it ? 1 : 0);
+         }
+         ...
+     };
+    </programlisting>
+    Anything longer should go after the class declaration:
+    <programlisting>
+     inline void
+     Foo::blargle()
+     {
+         ...
+     }
+    </programlisting>
+</para>
+<para>
+   Justification: Don't clutter up declarations with code, unless the
+    functions are so trivial that it doesn't matter.
+</para>
+        </listitem>
+        <listitem>
+<para>
+  Class access labels (private, public, etc.) should be indented 2
+    spaces relative to the start of the class.  Eg:
+    <programlisting>
+     class Foo
+     {
+       public:
+         Foo();
+         ~Foo();
+       private:
+         ...
+     };
+    </programlisting>
+</para>
+<para>
+   Justification: Members are logically contained by the class
+    declaration, so should be indented 4 spaces relative to that.
+    Access labels should be indented intermediate between the class
+    and the members.  Hence, 2 spaces.
+</para>
+        </listitem>
+        <listitem>
+<para>
+  Inside a class declaration declare things in the order:
+     1. public
+     2. protected
+     3. private
+    Conceptually, friend operators are probably public, and internal
+    friend classes are probably private.  Use your judgement.
+</para>
+<para>
+   Justification: The more likely people are to need something, the
+    closer it should be to the top of the list.
+</para>
+        </listitem>
+        <listitem>
+<para>
+  Inside a class access label, declare things in the order:
+     1. type declarations
+     2. static methods
+     3. ordinary methods
+     4. static member variables
+     5. ordinary member variables
+</para>
+<para>
+   Justification: Consistency mostly; it's good if you know where to
+    find things.
+    </para>
+        </listitem>
+        </itemizedlist>
+</para>
+  </section>
+  <section>
+    <title>Naming</title>
+    <para>
+    Name classes and namespace portions LikeThis (StudlyCaps, with the
+     first letter capitalized). Eg:
+    <programlisting>
+      class FooBar {};
+      namespace FooBar::BazQuux {}
+    </programlisting>
+    Name everything else like_this, with underscores separating words.
+     Eg:
+    <programlisting>
+      int FooBar::baz_quux() {};
+      static int foo_bar;
+    </programlisting>
+    Constant variables and macros (which you will never use) should be
+    capitalized, LIKE_THIS.  This includes enum values. Eg:
+    <programlisting>
+      static const int FOO_BAR = 1;
+    </programlisting>
+    Private variables should have "my_" prepended to them.  Private
+     methods should have "_" prepended to them.
+
+   Justification: It's much more readable than theStupidJavaWay, etc.
+    See http://www.berlin-consortium.org/review.html for justification
+    on the my_ convention, and more notes on meaningful naming.
+    [[FIXME: should be merged in here at some point.]]
+    </para>
+  </section>
+  <section>
+    <title>Actual code</title>
+    <para>
+    <itemizedlist>
+      <listitem>
+ <para> Do not use macros, unless you have permission, in writing, in
+    triplicate, from Stefan.
+</para>
+ <para>
+   Justification: Macros are weird, wild, and generally have better
+    replacements in C++.  Stefan is a member of the Holy Order of Foo,
+    an organization dedicated to the everlasting preservation of the
+    safety of defenseless types.  It works out.
+</para>
+      </listitem>
+      <listitem>
+ <para>Be const correct.  This includes at least:
+    <itemizedlist>
+      <listitem>
+<para>
+      using const in parameter lists when appropriate:
+    <programlisting>
+         void
+         foo(const char *blah)
+    </programlisting>
+    </para>
+      </listitem>
+      <listitem>
+<para>
+      using const on class accessors:
+    <programlisting>
+         int
+         foo() const { return my_foo; }
+    </programlisting>
+</para>
+</listitem>
+      <listitem>
+     <para>if you have a pointer p that is itself const, which points to
+       a non-const instance of type foo_t, the declaration is:
+    <programlisting>
+         foo_t *const p;
+    </programlisting>
+</para>
+<para>
+   Justification: General cleanness, plus it can allow extra
+    optimizations.
+</para>
+</listitem>
+      <listitem>
+<para>
+  Never, ever, use old-style casts.  Always use static_cast&lt;&gt;,
+    const_cast&lt;&gt;, etc.  See
+     <ulink url="http://cpptips.hyperformix.com/cpptips/cast_overview"></ulink>
+    for an overview.
+</para>
+<para>
+   Justifications: Myriad.
+    </para>
+</listitem>
+    </itemizedlist>
+    </para>
+      </listitem>
+    </itemizedlist>
+</para>
+  </section>
+  <section>
+    <title>Commenting</title>
+    <para>
+This is not a comprehensive list; comment your code whenever you think
+it needs it, or whenever you think your reader needs it.  But there are
+a few things worth special note.
+    <itemizedlist>
+      <listitem>
+        <para>
+  Put Synopsis comments on everything!  [[FIXME: are there any
+    docs anywhere on how to format Synopsis comments?  Does
+    Synopsis support @return and the like?  This section should be
+    fleshed in with a description of how to actually write these
+    comments... or a link to such documentation, if it exists.]]
+</para>
+<para>
+   Justification: You want people to know (at least roughly) what
+    every bit of code you write does, and without looking at the
+    source -- because they're going to have to use it, and pulling up
+    source files every time you want to use some code sucks.
+</para>
+</listitem>
+      <listitem>
+        <para>
+
+   Comment your preprocessor statements.  Include the sense -- eg, in
+    the above example, the !BIG_ENDIAN comments are correct; saying
+    BIG_ENDIAN alone would have been wrong.
+</para>
+<para>
+   Justification: Understandability.
+</para>
+</listitem>
+      <listitem>
+        <para>
+  Put a comment starting with "FIXME:" if you are using a weak way to
+    do something, like not checking for the existance of files, code
+    that breaks in cornercases, etc.
+</para>
+<para>
+
+    Do try *not* to put FIXME:'s into your code, Do try to remove
+    other people's FIXME:'s.
+</para>
+<para>
+
+    Mark code that is used to work around a compiler limitation (like
+    functionality that is given in the C++ standard to be there but is
+    missing from your compiler with a comment starting with
+    WORKAROUND: if this workaround is so ugly that it should be fixed
+    once a compliant version of your compiler gets out.
+</para>
+<para>
+
+   Justification: later grepping, etc.  Someone should create a
+    synopsis plugin that scans the source for these sorts of comments,
+    puts them on a web-page somewhere, with context and links to the
+    actual source...
+
+    </para>
+</listitem>
+</itemizedlist>
+</para>
+  </section>
+  <section>
+    <title>Using our Versioning System</title>
+    <para>
+
+  Make sure your changes compile with gcc 2.95 at least, and
+    preferably also 3.2, before committing it or sending a patch to
+    the list. Make sure all demos that get build as part of the
+    Clients-C++ work and do the right thing.
+ </para>
+<para>                
+   Justification: Makes live easier for all of us:-)
+</para>
+  </section>
+  <bibliography>
+    <title>References</title>
+    <biblioentry>
+<title>The latest version of this document can be found at: <ulink url="">[[FIXME]]</ulink></title>
+</biblioentry>
+    <biblioentry>
+<title>Indent rules implementing these guidelines can be found at: <ulink url="">[[FIXME]]</ulink></title>
+    </biblioentry>
+    <biblioentry>
+<title>An Emacs style implementing these guidelines can be found at: <ulink url="">[[FIXME]]</ulink></title>
+    </biblioentry>
+    <biblioentry>
+<title>A Vim style implementing these guidelines can be found at: <ulink url="">[[FIXME]]</ulink></title>
+    </biblioentry>
+    <biblioentry>
+
+If you configure some other editor or tool to follow these guidelines,
+you can mail them to [[FIXME]] for inclusion here.
+
+    </biblioentry>
+    <biblioentry>
+<title><ulink url="http://cpptips.hyperformix.com/cpptips">cpptips</ulink></title>
+    </biblioentry>
+    <biblioentry>
+<title><ulink url="http://hem.fyristorg.com/erny/industrial"></ulink></title>
+    </biblioentry>
+    <biblioentry>
+<title><ulink url="http://directory.google.com/Top/Computers/Programming/Languages/C++/Style"></ulink></title>
+    </biblioentry>
+    <biblioentry>
+<title><ulink url="http://www.berlin-consortium.org/review.html">
+  [[FIXME: update to point to fresco.org]]</ulink></title>
+    </biblioentry>
+    <biblioentry>
+<title><ulink url="http://www.possibility.com/Cpp/CppCodingStandard.html"></ulink></title>
+    </biblioentry>
+    <biblioentry>
+
+<title>The discussion that started this document:
+ <ulink url="http://lists.fresco.org/pipermail/fresco-devel/2002-May/018558.html"></ulink></title>
+    </biblioentry>
+    <biblioentry>
+<title>More discussion:
+  <ulink url="http://lists.fresco.org/pipermail/fresco-devel/2002-June/018585.html"></ulink></title>
+    </biblioentry>
+    <biblioentry>
+<title>More discussion:
+  <ulink url="http://issues.fresco.org/task8"></ulink></title>
+    </biblioentry>
+
+  </bibliography>
+</article>
