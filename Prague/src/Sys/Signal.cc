@@ -19,7 +19,9 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
+#include "Prague/Sys/config.hh"
 #include "Prague/Sys/Signal.hh"
+#include <cstring>
 #include <algorithm>
 #include <cstdio>
 
@@ -48,7 +50,6 @@ using namespace Prague;
 Signal::dict_t     Signal::notifiers;
 Thread::Queue<int> Signal::queue(32);
 Thread             Signal::server(&Signal::run, 0);
-extern "C" char *strsignal(int signo);
 
 bool Signal::set (int signum, Signal::Notifier *notifier)
 {
@@ -173,7 +174,7 @@ bool Signal::ispending (int signo)
   return false;
 }
 
-char *Signal::name(int signum)
+const char *Signal::name(int signum)
 {
   return strsignal(signum);
 }

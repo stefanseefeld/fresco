@@ -70,7 +70,7 @@ public:
   static sigset_t pending ();
   //. is there any pending signal (while being blocked)
   static void sysresume (int, bool);
-  static char *name(int);
+  static const char *name(int);
   //. returns the signal name of signum if nonzero or of the last signal beeing catched
 
   class Guard

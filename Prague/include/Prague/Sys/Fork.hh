@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * this file is based on code from the socket++ library
@@ -26,7 +26,6 @@
 #ifndef _Fork_hh
 #define _Fork_hh
 
-#include <Prague/Sys/config.hh>
 #include <Prague/Sys/Signal.hh>
 #include <unistd.h>
 #include <sys/types.h>
@@ -52,4 +51,4 @@ class Fork
 
 };
 
-#endif /* _Fork_hh */
+#endif

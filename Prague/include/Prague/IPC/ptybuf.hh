@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -28,10 +28,6 @@
 namespace Prague
 {
 
-/* @Class{ptybuf : public ipcbuf}
- *
- * @Description{a streambuf which uses a pty for communication. Reading is done via fgets since tty use line buffered mode normally.}
- */
 class ptybuf : public ipcbuf
 {
   class backup;
@@ -52,4 +48,4 @@ private:
 
 };
 
-#endif /* _ptybuf_hh */
+#endif
