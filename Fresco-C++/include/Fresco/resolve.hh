@@ -22,24 +22,25 @@
 #ifndef _resolve_hh
 #define _resolve_hh
 
-#include <Types.hh>
+#include <ServerContext.hh>
 #include <exception.hh>
 
 template <class T>
-typename T::_ptr_type resolve_init(CORBA::ORB_ptr orb, const char *id)
+typename T::_ptr_type resolve_init(CORBA::ORB_ptr orb, const char *name)
 {
   CORBA::Object_var object;
   try
     {
-      object = orb->resolve_initial_references(id);
+      object = orb->resolve_initial_references(name);
     }
   catch (const CORBA::ORB::InvalidName &e)
     {
+      cerr << "Invalid Name : " << name << endl;
       throw;
     }
   catch (const CORBA::Exception &e)
     {
-      cerr << "Cannot get initial reference for " << id << ": " << e << endl;
+      cerr << "Cannot get initial reference for " << name << ": " << e << endl;
       throw 0;
     }
   assert(!CORBA::is_nil(object));
@@ -51,19 +52,19 @@ typename T::_ptr_type resolve_init(CORBA::ORB_ptr orb, const char *id)
     }
   catch (const CORBA::Exception &e)
     {
-      cerr << "Cannot downcast reference for " << id << ": " << e << endl;
+      cerr << "Cannot downcast reference for " << name << ": " << e << endl;
       throw 0;
     }
   if (CORBA::is_nil(reference))
     {
-      cerr << "Incorrect type of reference for " << id << endl;
+      cerr << "Incorrect type of reference for " << name << endl;
       throw 0;
     }
   return reference._retn();
 }
 
 template <class T>
-typename T::ptr_type resolve_name(CosNaming::NamingContext_ptr context, const CosNaming::Name &name)
+typename T::_ptr_type resolve_name(CosNaming::NamingContext_ptr context, const CosNaming::Name &name)
 {
   CORBA::Object_var object;
   try
@@ -103,7 +104,17 @@ typename T::ptr_type resolve_name(CosNaming::NamingContext_ptr context, const Co
   return reference._retn();
 }
 
-void bind_name(CORBA::ORB_ptr orb, CORBA::Object_ptr object, const char *name)
+template <class T>
+typename T::_ptr_type resolve_name(CosNaming::NamingContext_ptr context, const char * name)
+{
+  CosNaming::Name cosname;
+  cosname.length(1);
+  cosname[0].id   = name; 
+  cosname[0].kind = "Object"; // string_dup ?? 
+  return resolve_name<T>(context, cosname);
+}
+
+inline void bind_name(CORBA::ORB_ptr orb, CORBA::Object_ptr object, const char *name)
 {
   CosNaming::NamingContext_var context = resolve_init<CosNaming::NamingContext>(orb, "NamingContext");
   CosNaming::Name cosname;
@@ -112,5 +123,38 @@ void bind_name(CORBA::ORB_ptr orb, CORBA::Object_ptr object, const char *name)
   cosname[0].kind = "Object"; // string_dup ?? 
   context->rebind(cosname, object);
 }
+
+template <class T>
+typename T::_ptr_type resolve(ServerContext_ptr context, const char *name)
+{
+  CORBA::Object_ptr object;
+  try
+    {
+      //       context->resolve(name);
+      object = context->create(name);
+    }
+  catch(const CORBA::Exception &e)
+    {
+      cerr << "Cannot resolve reference for " << name << ": " << e << endl;
+      return T::_nil();
+    }
+  typename T::_var_type reference;
+  try
+    {
+      reference = T::_narrow(object);
+    }
+  catch (const CORBA::Exception &e)
+    {
+      cerr << "Cannot narrow reference: " << e << endl;
+      throw 0;
+    }
+  if (CORBA::is_nil(reference))
+    {
+      cerr << "Reference has incorrect type" << endl;
+      throw 0;
+    }
+  return reference._retn();
+}
+
 
 #endif /* _resolve_hh */
