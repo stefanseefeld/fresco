@@ -46,7 +46,7 @@ class ServerContextImpl : implements(ServerContext)
   CosLifeCycle::FactoryFinder_ptr factoryFinder();
   CORBA::Object_ptr create(const char *)
     throw (SecurityException, CreationFailureException);
-  void setSingleton(const char *, CORBA::Object_ptr singleton) 
+  void setSingleton(const char *, CORBA::Object_ptr) 
     throw (SecurityException, SingletonFailureException);
   void delSingleton(const char *) 
     throw (SecurityException, SingletonFailureException);
