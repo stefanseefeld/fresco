@@ -24,7 +24,8 @@
 #include <Warsaw/config.hh>
 #include <Warsaw/resolve.hh>
 #include <Warsaw/LayoutKit.hh>
-#include <Warsaw/WidgetKit.hh>
+// #include <Warsaw/WidgetKit.hh>
+#include <Warsaw/ToolKit.hh>
 #include <Warsaw/DrawingKit.hh>
 #include <Berlin/ScreenImpl.hh>
 #include <Berlin/ScreenManager.hh>
@@ -156,11 +157,16 @@ int main(int argc, char **argv)
   ScreenImpl *screen = new ScreenImpl(drawing);
   screen->_obj_is_ready(boa);
   
+  props.length(0);
+  ToolKit_var tools = server->resolve<ToolKit>(interface(ToolKit), props);
   DesktopImpl *desktop = new DesktopImpl;
   desktop->_obj_is_ready(boa);
+//   ToolKit::FrameSpec spec;
+//   Color color = {0.7, 1.0, 0.7, 1.0};
+//   spec.foreground(color);
+//   screen->body(Graphic_var(tools->frame(Desktop_var(desktop->_this()), 10., spec, true)));
   screen->body(Desktop_var(desktop->_this()));
   screen->appendController(Desktop_var(desktop->_this()));
-  props.length(0);
   LayoutKit_var layout = server->resolve<LayoutKit>(interface(LayoutKit), props);
   Stage_var stage = layout->createStage();
   desktop->init(stage);

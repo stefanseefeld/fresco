@@ -67,6 +67,32 @@ Unistring *LibArtUnifont::subfamily() { return 0;}
 Unistring *LibArtUnifont::fullname() { return 0;}
 Unistring *LibArtUnifont::style() { return new Unistring(Unicode::toCORBA(Unicode::String("monospace")));}
 
+DrawingKit::FontMetrics LibArtUnifont::metrics()
+{
+  DrawingKit::FontMetrics fm;
+  fm.ascender = 16 << 6;
+  fm.descender = 0;
+  fm.height = 16 << 6;
+  fm.max_advance = 16 << 6;
+  return fm;
+}
+
+DrawingKit::GlyphMetrics LibArtUnifont::metrics(Unichar &uc)
+{
+  unsigned char *glyphs = (unsigned char *)glyphmap->addr();  
+
+  DrawingKit::GlyphMetrics gm;
+  gm.width = (glyphs[uc * 33] == (unsigned char)0xFF) ? 8  << 6: 16 << 6;
+  gm.height = 16 << 6;
+  gm.horiBearingX = 0;
+  gm.horiBearingY = gm.height;
+  gm.horiAdvance =  gm.width;
+  gm.vertBearingX = 0;
+  gm.vertBearingY = 0;
+  gm.vertAdvance = gm.height;
+  return gm;
+}
+
 void LibArtUnifont::getPixBuf(const Unichar ch, ArtPixBuf &pb) {
   glyph2pixels(ch,pb.pixels);
 }

@@ -70,7 +70,8 @@ public:
   virtual Unistring *fontSubFamily() { return font->subfamily();}
   virtual Unistring *fontFullName() { return font->fullname();}
   virtual Unistring *fontStyle() { return font->style();}
-  virtual FontMetrics metrics() { return FontMetrics();}
+  virtual FontMetrics fmetrics() { return font->metrics();}
+  virtual GlyphMetrics gmetrics(Unichar uc) { return font->metrics(uc);}
   virtual CORBA::Any *getFontAttr(const Unistring & name) { return new CORBA::Any();}
 
 //   virtual CORBA::ULong fontSize() { return fontServer.size();}

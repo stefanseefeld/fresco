@@ -380,24 +380,28 @@ void LibArtDrawingKit::drawText(const Unistring &u)
   // presently disabled. should delegate to drawChar
 }
 
-void LibArtDrawingKit::drawChar(Unichar c) {
+void LibArtDrawingKit::drawChar(Unichar c)
+{
   double x0 = affine[4];
   double y0 = affine[5];
   int width;
   int height;
   Graphic::Requisition r;
-
-  if (c > 127) {
-    unifont->allocateChar(c,r);
-    width = (int) (r.x.maximum * xres);
-    height = (int) (r.y.maximum * yres);
-  } else {
-    font->allocateChar(c,r);
-    FT_Glyph_Metrics metrics;
-    font->getMetrics(c,metrics);
-    width = (int) (metrics.width >> 6);
-    height = (int) (metrics.height >> 6);
-  }
+  
+  if (c > 127)
+    {
+      unifont->allocateChar(c,r);
+      width = (int) (r.x.maximum * xres);
+      height = (int) (r.y.maximum * yres);
+    }
+  else
+    {
+      font->allocateChar(c,r);
+      GlyphMetrics gm = font->metrics(c);
+//       font->getMetrics(c,metrics);
+      width = (int) (gm.width >> 6);
+      height = (int) (gm.height >> 6);
+    }
   
   affine[4] -= (r.y.maximum * r.y.align * affine[2]);
   affine[5] -= (r.y.maximum * r.y.align * affine[3]);        
@@ -408,21 +412,19 @@ void LibArtDrawingKit::drawChar(Unichar c) {
   art_u8 pixels[size];
   
   // setup foreground color
-  for (int i = 0; i < row; ++i){
-    pixels[i] = (unsigned char) ((art_fg >> 24) & 0x000000ff);
-    pixels[++i] = (unsigned char) ((art_fg >> 16) & 0x000000ff);
-    pixels[++i] = (unsigned char) ((art_fg >> 8) & 0x000000ff);
-    pixels[++i] = (unsigned char) 0;
+  for (int i = 0; i < row; ++i)
+    {
+      pixels[i] =   (unsigned char) ((art_fg >> 24) & 0x000000ff);
+      pixels[++i] = (unsigned char) ((art_fg >> 16) & 0x000000ff);
+      pixels[++i] = (unsigned char) ((art_fg >> 8) & 0x000000ff);
+      pixels[++i] = (unsigned char) 0;
   }
   for (int i = 0; i < height; ++i) 
     memcpy (pixels + (i * row), pixels, row);
   
   ArtPixBuf *pb = art_pixbuf_new_const_rgba (pixels, width, height, row);  
-  if (c > 127) {
-    unifont->getPixBuf(c,*pb);
-  } else {
-    font->getPixBuf(c,*pb);
-  }
+  if (c > 127) unifont->getPixBuf(c,*pb);
+  else         font->getPixBuf(c,*pb);
   rasterizePixbuf(pb);
   art_pixbuf_free(pb);
   affine[4] = x0;

@@ -25,6 +25,7 @@
 
 #include "Warsaw/config.hh"
 #include "Warsaw/Types.hh"
+#include "Warsaw/DrawingKit.hh"
 #include <string>
 #include <vector>
 #include <art_misc.h>
@@ -43,6 +44,8 @@ public:
   virtual Unistring *subfamily() = 0;
   virtual Unistring *fullname() = 0;
   virtual Unistring *style() = 0;
+  virtual DrawingKit::FontMetrics metrics() = 0;
+  virtual DrawingKit::GlyphMetrics metrics(Unichar &) = 0;
   virtual void allocateChar(const Unichar ch, Graphic::Requisition &) = 0;
   virtual void getPixBuf(const Unichar ch, ArtPixBuf &) = 0;
 };

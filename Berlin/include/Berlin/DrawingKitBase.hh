@@ -119,7 +119,8 @@ class DrawingKitBase : implements(DrawingKit)
   virtual void fontFullName(const Unistring &);
   virtual Unistring *fontStyle() = 0;
   virtual void fontStyle(const Unistring &);
-  virtual FontMetrics metrics() = 0;
+  virtual FontMetrics fmetrics() = 0;
+  virtual GlyphMetrics gmetrics(Unichar) = 0;
   virtual CORBA::Any *getFontAttr(const Unistring & name) = 0;
   virtual void fontAttr(const NVPair &nvp);
 

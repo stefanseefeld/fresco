@@ -51,8 +51,11 @@ public:
   virtual Unistring *subfamily();
   virtual Unistring *fullname();
   virtual Unistring *style();
+  virtual DrawingKit::FontMetrics metrics();
+  virtual DrawingKit::GlyphMetrics metrics(Unichar &);
   virtual void getPixBuf(const Unichar ch, ArtPixBuf &);
-  void getMetrics(const Unichar ch, FT_Glyph_Metrics &);
+//   void getGlyphMetrics(const Unichar ch, FT_Glyph_Metrics &);
+//   void getFontMetrics(FT_Size_Metrics &);
   virtual void allocateChar(Unichar ch, Graphic::Requisition &);
 
 protected:
@@ -97,6 +100,8 @@ protected:
   PtSize mySize;
   FT_Library myLibrary;
   FT_Face myFace;
+private:
+  bool chooseFaceInteractively(const map<FamStyle,FT_Face> &, Unicode::String &, Unicode::String &);
 };
 
 #endif

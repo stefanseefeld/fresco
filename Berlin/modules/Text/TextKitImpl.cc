@@ -29,6 +29,8 @@
 #include <Warsaw/Unicode.hh>           // for toCORBA and friends
 #include <Warsaw/TextBuffer.hh>        // for TextBuffer type
 #include <Warsaw/StreamBuffer.hh>
+#include <Warsaw/IO.hh>
+#include <Berlin/GraphicImpl.hh>       // GraphicImpl::initRequisition
 #include <Text/TextKitImpl.hh>         // for our own definition
 #include <Text/TextChunk.hh>           // the chunk graphic type
 #include <Text/TextViewer.hh>          // the viewer polygraphic type
@@ -93,6 +95,7 @@ Graphic_ptr TextKitImpl::chunk(const Unistring & u)
 Graphic_ptr TextKitImpl::ch(Unichar ch) {
   if (charCache.find(ch) == charCache.end()){
     Graphic::Requisition r;
+    GraphicImpl::initRequisition(r);
     canonicalDK->allocateChar(ch,r);
     Impl_var<TextChunk> t(new TextChunk(ch, r));
     charCache[ch] = t;
@@ -103,13 +106,17 @@ Graphic_ptr TextKitImpl::ch(Unichar ch) {
 Graphic_ptr TextKitImpl::strut()
 {
   MutexGuard guard(localMutex);
-  if (! _strut) {
-    Unistring us = Unicode::toCORBA(Unicode::String("Mg"));
-    Graphic::Requisition r;
-    canonicalDK->allocateText(us, r);
-    _strut = new Strut (r);
-    _strut->_obj_is_ready(CORBA::BOA::getBOA());
-  }
+  if (! _strut)
+    {
+      DrawingKit::FontMetrics metrics = canonicalDK->fmetrics();
+      Graphic::Requisition r;
+      GraphicImpl::initRequisition(r);
+      r.y.natural = r.y.minimum = r.y.maximum = static_cast<Coord>(metrics.height >> 6) / canonicalDK->resolution(yaxis);
+      r.y.defined = true;
+      r.y.align = metrics.height == 0 ? 0.: static_cast<double>(metrics.ascender) / metrics.height; 
+      _strut = new Strut(r);
+      _strut->_obj_is_ready(CORBA::BOA::getBOA());
+    }
   return _strut->_this();
 }
 

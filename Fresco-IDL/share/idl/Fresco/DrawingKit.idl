@@ -24,7 +24,7 @@
 #define _DrawingKit_idl
 
 #include "Kit.idl"
-#include "Metrics.idl"
+// #include "Metrics.idl"
 #include "Graphic.idl"
 
 interface Transform;
@@ -33,6 +33,27 @@ interface Raster;
 
 interface DrawingKit : Kit
 {
+  struct FontMetrics
+  //.all values are in 1/64th of a pixel
+  {
+    long ascender;      /* ascender in 26.6 frac. pixels          */
+    long descender;     /* descender in 26.6 frac. pixels         */
+    long height;        /* text height in 26.6 frac. pixels       */
+    long max_advance;   /* max horizontal advance, in 26.6 pixels */
+  };
+  struct GlyphMetrics
+  //.all values are in 1/64th of a pixel
+  {
+    long width;         /* glyph width  */
+    long height;        /* glyph height */
+    long horiBearingX;  /* left side bearing in horizontal layouts */
+    long horiBearingY;  /* top side bearing in horizontal layouts  */
+    long horiAdvance;   /* advance width for horizontal layout     */
+    long vertBearingX;  /* left side bearing in vertical layouts */
+    long vertBearingY;  /* top side bearing in vertical layouts  */
+    long vertAdvance;   /* advance height for vertical layout    */
+  };
+
   enum Endstyle { butt, cap, round};
   enum Fillstyle { outlined, solid, textured, gradient};
 
@@ -59,7 +80,8 @@ interface DrawingKit : Kit
   attribute Unistring fontStyle;
 
   // detailed font state
-  readonly attribute FontMetrics metrics;
+  readonly attribute FontMetrics fmetrics;
+  GlyphMetrics gmetrics(in Unichar uc);
   void fontAttr(in NVPair nvp);
   any getFontAttr(in Unistring name);
 

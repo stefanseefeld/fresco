@@ -29,7 +29,8 @@
 
 TextChunk::TextChunk(Unichar u, const Requisition &r)
   : width(r.x.natural), height(r.y.natural), xalign(r.x.align), yalign(r.y.align), myChar(u)
-{}
+{
+}
 
 void TextChunk::request(Graphic::Requisition &r)
 {

@@ -50,7 +50,8 @@ public:
   virtual Unistring *subfamily();
   virtual Unistring *fullname();
   virtual Unistring *style();
-
+  virtual DrawingKit::FontMetrics metrics();
+  virtual DrawingKit::GlyphMetrics metrics(Unichar &);
   virtual void allocateChar(const Unichar ch, Graphic::Requisition &);
   virtual void getPixBuf(const Unichar ch, ArtPixBuf &);
 protected:

@@ -63,9 +63,9 @@ interface FigureKit : Kit
   Figures::Line line(in Coord x0, in Coord y0, in Coord x1, in Coord y1);
   //. Return a figure that draws a line from (x0,y0) to (x1,y1)
   //. using the brush and foreground color of the given style.
-  Figures::Rectangle rectangle(in Coord left, in Coord bottom, in Coord right, in Coord top);
-  //. Return a rectangle with lower-left corner (left,bottom) and
-  //. upper-right corner (right,top).  The mode parameter controls
+  Figures::Rectangle rectangle(in Coord left, in Coord top, in Coord right, in Coord bottom);
+  //. Return a rectangle with upper-left corner (left,top) and
+  //. lower-right corner (right,bottom).  The mode parameter controls
   //. whether the rectangle is filled, stroked, or both.
   //. The style parameter controls which brush and colors are used
   //. for drawing.
