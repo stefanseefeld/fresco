@@ -97,36 +97,11 @@ void GLDrawingKit::restore()
 }
 
 void GLDrawingKit::init()
-{   
-#if defined(CONSOLE_GGI)
-  _drawable = GGIConsole::instance()->drawable();
-  _context = GGIMesaCreateContext();
-  if (!_context)
-    {
-      std::cerr << "GGIMesaCreateContext() failed" << std::endl;
-      exit(4);
-    }
-  if (GGIMesaSetVisual(_context, _drawable->visual(), GL_TRUE, GL_FALSE))
-    {
-      std::cerr << "GGIMesaSetVisual() failed" << std::endl;
-      exit(7);
-    }
-  GGIMesaMakeCurrent(_context);
-  
-#elif defined(CONSOLE_SDL)
-  
-  // Do SDL-specific stuff
-  _drawable = Console::instance()->drawable();
-  
-#elif defined(CONSOLE_GLUT)
-  
-  // Do GLUT-specific stuff
-  _drawable = Console::instance()->drawable();
-  
-#else
-#  error "GLDrawingKit cannot be used with this console."
-  _drawable = Console::instance()->drawable();
-#endif
+{
+  Console *console = Console::instance();
+  _drawable = console->drawable();
+  _glcontext = console->get_extension<GLContext>("GLContext", _drawable);
+
   _font = new GLUnifont();
   _light = new Light();
   glViewport(0, 0, _drawable->width(), _drawable->height());
@@ -152,9 +127,7 @@ void GLDrawingKit::init()
 GLDrawingKit::~GLDrawingKit()
 {
   delete _font;
-#if defined(CONSOLE_GGI)
-  GGIMesaDestroyContext(_context);
-#endif
+  delete _glcontext;
 }
 
 void GLDrawingKit::set_transformation(Transform_ptr t)

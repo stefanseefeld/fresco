@@ -23,7 +23,12 @@
 #include <Prague/Sys/FdSet.hh>
 #include <Prague/Sys/Tracer.hh>
 #include "Console/GGI/GGI.hh"
+#include "Console/Renderer.hh"
+#include "Console/DirectBuffer.hh"
+#include "Console/GLContext.hh"
 #include <strstream.h>
+#include <GL/ggimesa.h>
+
 
 using namespace Prague;
 using namespace Warsaw;
@@ -79,6 +84,82 @@ void write_event(ggi_event &e)
     }
   std::cout << std::endl;
 }
+};
+
+class GGIExtension : virtual public Console::Extension
+{
+public:
+  GGIExtension(GGIDrawable *drawable) : _drawable(drawable) {}
+  GGIDrawable *drawable() { return _drawable;}
+private:
+  GGIDrawable *_drawable;
+};
+
+class GGIRenderer : public GGIExtension,
+		    virtual public Renderer
+{
+public:
+  GGIRenderer(GGIDrawable *drawable) : GGIExtension(drawable) {}
+  virtual void set_color(const Color &c)
+  {
+    ggiSetGCForeground(drawable()->visual(), drawable()->map(c));
+  }
+  virtual void draw_pixel(PixelCoord x, PixelCoord y)
+  {
+    ggiDrawPixel(drawable()->visual(), x, y);
+  }
+  virtual void draw_hline(PixelCoord x, PixelCoord y, PixelCoord w)
+  {
+    ggiDrawHLine(drawable()->visual(), x, y, w);
+  }
+  virtual void draw_vline(PixelCoord x, PixelCoord y, PixelCoord h)
+  {
+    ggiDrawVLine(drawable()->visual(), x, y, h);
+  }
+  virtual void draw_line(PixelCoord x, PixelCoord y, PixelCoord w, PixelCoord h)
+  {
+    ggiDrawLine(drawable()->visual(), x, y, x + w, y + h);
+  }
+  virtual void draw_box(PixelCoord x, PixelCoord y, PixelCoord w, PixelCoord h)
+  {
+    ggiDrawBox(drawable()->visual(), x, y, w, h);
+  }
+};
+
+class GGIDirectBuffer : public GGIExtension,
+			virtual public DirectBuffer
+{
+public:
+  GGIDirectBuffer(GGIDrawable *drawable) : GGIExtension(drawable) {}
+  virtual Guard read_buffer()
+  {
+    Guard guard(drawable(), static_cast<Console::Drawable::data_type *>(ggiDBGetBuffer(drawable()->visual(), 0)->read));
+    return guard;
+  }
+  virtual Guard write_buffer()
+  {
+    Guard guard(drawable(), static_cast<Console::Drawable::data_type *>(ggiDBGetBuffer(drawable()->visual(), 0)->write));
+    return guard;
+  }
+};
+
+class GGIGLContext : public GGIExtension,
+		     virtual public GLContext
+{
+public:
+  GGIGLContext(GGIDrawable *d)
+    : GGIExtension(d), _context(GGIMesaCreateContext())
+  {
+    if (GGIMesaSetVisual(_context, drawable()->visual(), GL_TRUE, GL_FALSE))
+      throw std::runtime_error("GGIMesaSetVisual() failed");
+    GGIMesaMakeCurrent(_context);
+  }
+  ~GGIGLContext()
+  {
+    GGIMesaDestroyContext(_context);
+  }
+private:
+  GGIMesaContext _context;  
 };
 
 GGIConsole::GGIConsole(int &argc, char **argv)
@@ -143,7 +224,7 @@ GGIDrawable *GGIConsole::create_shm_drawable(int id, PixelCoord w, PixelCoord h,
   return _drawables.back();
 }
 
-GGIDrawable *GGIConsole::reference_to_servant(Warsaw::Drawable_ptr drawable)
+GGIDrawable *GGIConsole::reference_to_servant(Drawable_ptr drawable)
 {
   Trace trace("GGIConsole::reference_to_servant");
   PortableServer::Servant servant = Console::reference_to_servant(drawable);
@@ -347,6 +428,14 @@ Input::Event *GGIConsole::synthesize(const ggi_event &e)
   return event._retn();
 }
 
+Console::Extension *GGIConsole::create_extension(const std::string &id, Drawable *drawable)
+{
+  if (id == "DirectBuffer") return new GGIDirectBuffer(static_cast<GGIDrawable *>(drawable));
+  if (id == "Renderer") return new GGIRenderer(static_cast<GGIDrawable *>(drawable));
+  if (id == "GLContext") return new GGIGLContext(static_cast<GGIDrawable *>(drawable));
+  return 0;
+}
+
 namespace
 {
 unsigned char pointerImg[256] = 
@@ -369,7 +458,7 @@ unsigned char pointerImg[256] =
 }
 
 GGIPointer::GGIPointer(GGIDrawable *d)
-  : _screen(d)
+  : _screen(d), _dbuffer(new GGIDirectBuffer(d))
 {
   _origin[0] = _origin[1] = 0;
   _position[0] = _position[1] = 8;
@@ -416,11 +505,12 @@ GGIPointer::GGIPointer(GGIDrawable *d)
 
 GGIPointer::~GGIPointer()
 {
+  delete _dbuffer;
   delete [] _image;
   delete [] _cache;
 }
 
-bool GGIPointer::intersects(Warsaw::Coord l, Warsaw::Coord r, Warsaw::Coord t, Warsaw::Coord b)
+bool GGIPointer::intersects(Coord l, Coord r, Coord t, Coord b)
 {
   return
     l/_scale[0] <= _position[0] + _size[0] &&
@@ -448,7 +538,7 @@ void GGIPointer::save()
   PixelCoord r = _screen->row_length();
   PixelCoord s = _screen->vwidth() * _screen->vheight();
   PixelCoord d = _screen->pixel_format().size >> 3;
-  GGIDrawable::Buffer buffer = _screen->read_buffer();
+  DirectBuffer::Guard buffer = _dbuffer->read_buffer();
   data_type *from = buffer.get() + y*r + x*d;
   data_type *to = _cache;
   for (PixelCoord o = 0; o != h && (y + o) * r / d + x + w < s; o++, from += r, to += d * w)
@@ -466,7 +556,7 @@ void GGIPointer::restore()
   PixelCoord s = _screen->vwidth() * _screen->vheight();
   PixelCoord d = _screen->pixel_format().size >> 3;
   data_type *from = _cache;
-  GGIDrawable::Buffer buffer = _screen->write_buffer();
+  DirectBuffer::Guard buffer = _dbuffer->write_buffer();
   data_type *to = buffer.get() + y*r + x*d;
   for (PixelCoord o = 0;
        o != h && (y + o) * r / d + x + w < s;
@@ -487,7 +577,7 @@ void GGIPointer::draw()
   PixelCoord d = _screen->pixel_format().size >> 3;
   data_type *from = _image;
   data_type *bits = _mask;
-  GGIDrawable::Buffer buffer = _screen->write_buffer();
+  DirectBuffer::Guard buffer = _dbuffer->write_buffer();
   data_type *to = buffer.get() + y * r + x * d;
   for (PixelCoord i = 0; i != h && (y + i) * r / d + x + w < s; i++, to += r - w * d)
     for (PixelCoord j = 0; j != w * d; j++, from++, bits++, to++)

@@ -31,7 +31,9 @@
 #include <Berlin/ObjectCache.hh>
 #include <Berlin/TransformImpl.hh>
 #include <Berlin/RegionImpl.hh>
-#include <Console/RichConsole.hh>
+#include <Berlin/Console.hh>
+#include <Console/Renderer.hh>
+#include <Console/DirectBuffer.hh>
 #include <Drawing/DrawingKitBase.hh>
 #include <Drawing/libArt/LibArtFTFont.hh>
 #include <Drawing/libArt/LibArtRaster.hh>
@@ -118,10 +120,11 @@ public:
   void rasterize_pixbuf(ArtPixBuf *pixbuf);
   void identity_pixbuf(ArtPixBuf *pixbuf);
 
-  RichConsole::Drawable      *_drawable;
-  RichConsole::Drawable      *_buffer;
+  Console::Drawable *_drawable;
+  Console::Drawable *_buffer;
+  Renderer          *_renderer;
+  DirectBuffer      *_direct;
   ArtIRect           _bbox;
-//   const ggi_directbuffer * buf;
   double             _xres, _yres;
   Prague::Mutex      _mutex;
 
@@ -140,8 +143,8 @@ public:
   LibArtFont            *_unifont;
   art_u8                 _alphabank[256][256];
   ArtAlphaGamma         *_agam;
+  Warsaw::Color          _con_fg;
   art_u32                _art_fg;
-  RichConsole::Drawable::Pixel    _con_fg;
   ArtIRect _screen,      _clip;
   
   ObjectCache<Warsaw::Raster_var, LibArtRaster> _rasters;

@@ -31,16 +31,21 @@
 #include <stdexcept>
 #include <iosfwd>
 
-
-
-// ---------------------------------------------------------------
-// class Console
-// ---------------------------------------------------------------
-
 //. This is an abstraction of the underlying graphics libraries Berlin uses.
 //. The DrawingKits call the methods of this object.
 class Console
 {
+public:
+  class Drawable;
+  //. Extensions are a means to provide special Drawable APIs
+  //. that are not supported on all Consoles
+  class Extension
+  {
+  public:
+    virtual ~Extension(){}
+  };
+private:
+  typedef std::vector<Extension *> elist_t;
   //. Deletes this Console in its Destrcutor.
   struct Reaper
   {
@@ -49,7 +54,6 @@ class Console
   friend struct Reaper;
 
 public:
-  class Drawable;
   class Pointer;
 
   //. A helperclass to get the Console-module into memory.
@@ -101,26 +105,36 @@ public:
   virtual void wakeup() = 0;
   //. FIXME: Missing documentation!
   virtual void activate_autoplay() = 0;
+  template <typename T>
+  T *get_extension(const std::string &id, Drawable *drawable)
+  {
+    Extension *extension = create_extension(id, drawable);
+    T *t = dynamic_cast<T *>(extension);
+    if (!t)
+      {
+	delete extension;
+	throw (std::runtime_error(id + ": no such extension"));
+      }
+    _extensions.push_back(extension);
+    return t;
+  }
 protected:
   Console() {}
   virtual ~Console() {}
 private:
+  virtual Extension      *create_extension(const std::string &, Drawable *) = 0;
   PortableServer::POA_var _poa;
   static Console         *_console;
   static Reaper           _reaper;
+  elist_t                 _extensions;
 };
-
-
-
-// ---------------------------------------------------------------
-// class Console::Drawable
-// ---------------------------------------------------------------
 
 //. This is a chunk of (video-) memory that is used to store raster data.
 class Console::Drawable : public virtual POA_Warsaw::Drawable,
 	                  public virtual PortableServer::RefCountServantBase
 {
 public:
+  typedef char data_type;
   Drawable() {}
   virtual ~Drawable() {}
 
@@ -155,16 +169,41 @@ public:
   virtual void init() = 0;
   //. Called by the server as soon as the scene finished drawing.
   virtual void finish() = 0;
+
+  //. Copy part of this Drawable to a new location in the same Drawable.
+  //. These locations may overlap.
+  virtual void blit(Warsaw::PixelCoord, //.< x position of one corner of the source area
+		    Warsaw::PixelCoord, //.< y position of one corner of the source area
+		    Warsaw::PixelCoord, //.< width of the source area
+		    Warsaw::PixelCoord, //.< height of the source area
+		    Warsaw::PixelCoord, //.< x position of correspnding corner of the
+		                        //.< destination area
+		    Warsaw::PixelCoord) = 0; //.< y position of correspnding corner
+		                             //.< of the destination area
+  //. Copy parts of the given Drawable to the specified position in this Drawable.
+  virtual void blit(const Drawable &,   //.< source Drawable
+ 		    Warsaw::PixelCoord, //.< x position of one corner of the source area
+		    Warsaw::PixelCoord, //.< y position of one corner of the source area
+		    Warsaw::PixelCoord, //.< width of the source area
+		    Warsaw::PixelCoord, //.< height of the source area
+		    Warsaw::PixelCoord, //.< x position of correspnding corner of the
+		                        //.< destination area
+		    Warsaw::PixelCoord) = 0; //.< y position of correspnding corner
+		                             //.< of the destination area
+  //. Copy parts of the given Drawable to the specified position in this Drawable
+  virtual void blit(Warsaw::Drawable_ptr, //.< source Drawable
+		    Warsaw::PixelCoord, //.< x position of one corner of the source area
+		    Warsaw::PixelCoord, //.< y position of one corner of the source area
+		    Warsaw::PixelCoord, //.< width of the source area
+		    Warsaw::PixelCoord, //.< height of the source area
+		    Warsaw::PixelCoord, //.< x position of correspnding corner of the
+		                        //.< destination area
+		    Warsaw::PixelCoord) = 0; //.< y position of correspnding corner
+		                             //.< of the destination area
 private:
   Drawable(const Drawable &);
   Drawable &operator = (const Drawable &);
 };
-
-
-
-// ---------------------------------------------------------------
-// class Console::Pointer
-// ---------------------------------------------------------------
 
 //. This class is used to render the mousepointer.
 class Console::Pointer : public virtual PortableServer::RefCountServantBase
@@ -184,12 +223,6 @@ public:
 			  Warsaw::Coord, Warsaw::Coord) = 0;
 };
 
-
-
-// ---------------------------------------------------------------
-// Template definitions:
-// ---------------------------------------------------------------
-
 template <typename T>
 class ConsoleLoader : public Console::Loader
 {
@@ -197,4 +230,4 @@ public:
   virtual T *load(int &argc, char **argv) { return new T(argc, argv);}
 };
 
-#endif /* _Console_hh */
+#endif

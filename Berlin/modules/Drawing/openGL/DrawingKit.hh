@@ -34,17 +34,7 @@
 #include <Berlin/ObjectCache.hh>
 #include <Berlin/TransformImpl.hh>
 #include <Berlin/RegionImpl.hh>
-
-#if defined(CONSOLE_GGI)
-#include <Console/GGI/GGI.hh>
-#  include <GL/ggimesa.h>
-#elif defined(CONSOLE_SDL)
-#include <Berlin/Console.hh>
-#elif defined(CONSOLE_GLUT)
-#include <Berlin/Console.hh>
-#else
-#  error "GLDrawingKit needs a OpenGL-enabled console to compile"
-#endif
+#include <Console/GLContext.hh>
 
 #include <string>
 #include <vector>
@@ -166,12 +156,8 @@ public:
  private:
   void init();
   std::stack<DrawState>                      _states;
-#if defined(CONSOLE_GGI)
-  GGIConsole::Drawable                      *_drawable;
-  GGIMesaContext                             _context;
-#else
   Console::Drawable                         *_drawable;
-#endif
+  GLContext                                 *_glcontext;
   Prague::Mutex                              _mutex;
   Warsaw::Transform_var                      _tr;
   Warsaw::Region_var                         _cl;

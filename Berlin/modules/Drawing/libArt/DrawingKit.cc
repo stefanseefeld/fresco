@@ -25,7 +25,6 @@
 #include <Warsaw/Transform.hh>
 #include <Warsaw/IO.hh>
 #include <Berlin/Provider.hh>
-#include <Console/RichConsole.hh>
 #include "Drawing/libArt/LibArtDrawingKit.hh"
 #include "Drawing/libArt/LibArtFTFont.hh"
 #include "Drawing/libArt/LibArtUnifont.hh"
@@ -69,7 +68,8 @@ KitImpl *LibArtDrawingKit::clone(const Warsaw::Kit::PropertySeq &p)
 
 void LibArtDrawingKit::init()
 {
-  _drawable = RichConsole::instance()->drawable();
+  Console *console = Console::instance();
+  _drawable = console->drawable();
   _xres = _drawable->resolution(xaxis);
   _yres = _drawable->resolution(yaxis);
   _font = new LibArtFTFont(_xres, _yres);
@@ -80,7 +80,9 @@ void LibArtDrawingKit::init()
   _screen.y1 = _drawable->height();
   
   _agam = art_alphagamma_new (2.5);
-  _buffer = RichConsole::instance()->create_drawable(_drawable->width(), _drawable->height(), 3);
+  _buffer = console->create_drawable(_drawable->width(), _drawable->height(), 3);
+  _renderer = console->get_extension<Renderer>("Renderer", _buffer);
+  _direct = console->get_extension<DirectBuffer>("DirectBuffer", _buffer);
   _bbox.x0 = _bbox.y0 = _bbox.x1 = _bbox.y1 = 0;    
   double step = 1. / 256.;
   for (int i = 0; i < 256; ++i)
@@ -147,24 +149,20 @@ void LibArtDrawingKit::set_clipping(Region_ptr r)
 void LibArtDrawingKit::set_foreground(const Color &c)
 {
   _fg = c;
-  Color tmp;
-  tmp.red   = _fg.red * _lt.red;
-  tmp.green = _fg.green * _lt.green;
-  tmp.blue  = _fg.blue * _lt.blue;
-  tmp.alpha = _fg.alpha;
-  _art_fg   = artColor(tmp);
-  _con_fg   = _buffer->map(tmp);
+  _con_fg.red   = _fg.red * _lt.red;
+  _con_fg.green = _fg.green * _lt.green;
+  _con_fg.blue  = _fg.blue * _lt.blue;
+  _con_fg.alpha = _fg.alpha;
+  _art_fg       = artColor(_con_fg);
 }
 
 void LibArtDrawingKit::set_lighting(const Color &c)
 {
   _lt = c;
-  Color tmp;
-  tmp.red   = _fg.red * _lt.red;
-  tmp.green = _fg.green * _lt.green;
-  tmp.blue  = _fg.blue * _lt.blue;
-  _art_fg   = artColor(tmp);
-  _con_fg   = _buffer->map(tmp);
+  _con_fg.red   = _fg.red * _lt.red;
+  _con_fg.green = _fg.green * _lt.green;
+  _con_fg.blue  = _fg.blue * _lt.blue;
+  _art_fg       = artColor(_con_fg);
 }
 
 void LibArtDrawingKit::set_point_size(Coord s) { _ps = s;}
@@ -223,7 +221,7 @@ void LibArtDrawingKit::draw_path(const Path &p)
   art_irect_intersect(&loc, &loc ,&_clip);
   art_irect_union(&_bbox, &_bbox, &loc);
   fix_order_of_irect(loc);
-  RichConsole::Drawable::Buffer pb_buf = _buffer->write_buffer();
+  DirectBuffer::Guard pb_buf = _direct->write_buffer();
   ArtPixBuf * pb = art_pixbuf_new_const_rgb ((art_u8 *)(pb_buf.get()),
 					     _drawable->width(),
 					     _drawable->height(),
@@ -258,15 +256,15 @@ void LibArtDrawingKit::draw_rectangle(const Vertex &bot, const Vertex &top)
       int width = (rect.x1 - rect.x0);
       int height = (rect.y1 - rect.y0);
       if ((height * width) < 1) return;
-      _buffer->set_color(_con_fg);
+      _renderer->set_color(_con_fg);
       if (_fs == Warsaw::DrawingKit::solid)
-	_buffer->draw_box(rect.x0, rect.y0, width, height);
+	_renderer->draw_box(rect.x0, rect.y0, width, height);
       else
 	{
-	  _buffer->draw_hline(rect.x0, rect.y0, width);
-	  _buffer->draw_hline(rect.x0, rect.y1, width);
-	  _buffer->draw_vline(rect.x0, rect.y0, height);
-	  _buffer->draw_vline(rect.x1, rect.y0, height);
+	  _renderer->draw_hline(rect.x0, rect.y0, width);
+	  _renderer->draw_hline(rect.x0, rect.y1, width);
+	  _renderer->draw_vline(rect.x0, rect.y0, height);
+	  _renderer->draw_vline(rect.x1, rect.y0, height);
 	}
       art_irect_union (&_bbox, &_bbox, &rect);
       return;
@@ -325,7 +323,7 @@ void LibArtDrawingKit::identity_pixbuf(ArtPixBuf *pixbuf)
 
   art_irect_intersect(&rect, &rect, &_clip);
   if (((rect.y1 - rect.y0) * (rect.x1 - rect.x0)) < 1) return;
-  RichConsole::Drawable::Buffer pb_buf = _buffer->write_buffer();
+  DirectBuffer::Guard pb_buf = _direct->write_buffer();
   ArtPixBuf * pb = art_pixbuf_new_const_rgb ((art_u8 *)(pb_buf.get()),
 					     _drawable->width(),
 					     _drawable->height(),
@@ -415,7 +413,7 @@ void LibArtDrawingKit::rasterize_pixbuf(ArtPixBuf *pixbuf)
   art_irect_union (&_bbox, &_bbox, &tsloci);
   
   // paint
-  RichConsole::Drawable::Buffer pb_buf = _buffer->write_buffer();
+  DirectBuffer::Guard pb_buf = _direct->write_buffer();
   ArtPixBuf * pb = art_pixbuf_new_const_rgb ((art_u8 *)(pb_buf.get()),
 					     _drawable->width(),
 					     _drawable->height(),
