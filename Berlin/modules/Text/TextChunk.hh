@@ -1,5 +1,3 @@
-#ifndef _TextChunk_hh
-#define _TextChunk_hh
 //
 // $Id$
 //
@@ -22,14 +20,8 @@
 // Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 //
-
-// A text chunk is constructed with a "canonical size", which is essentially its
-// requisition within the font it was constructed for, on the drawable it was
-// intended to be drawn on. This might not actually be the font it winds up
-// drawing with, nor the drawable it winds up using, but that's for its
-// container to compensate for. At this level, all the chunk needs to do is
-// store and request how big it *thinks* it should be, and ignore how large it
-// winds up being at draw-time.
+#ifndef _TextChunk_hh
+#define _TextChunk_hh
 
 #include "Warsaw/config.hh"
 #include "Berlin/GraphicImpl.hh"
@@ -38,6 +30,13 @@
 declare_corba_ptr_type(DrawingKit)
 
 class TextChunk : public virtual GraphicImpl
+//. A text chunk is constructed with a "canonical size", which is essentially its
+//. requisition within the font it was constructed for, on the drawable it was
+//. intended to be drawn on. This might not actually be the font it winds up
+//. drawing with, nor the drawable it winds up using, but that's for its
+//. container to compensate for. At this level, all the chunk needs to do is
+//. store and request how big it *thinks* it should be, and ignore how large it
+//. winds up being at draw-time.
 {
 public:
   TextChunk(const Unicode::String & u, const Requisition &);
@@ -51,7 +50,6 @@ protected:
   Alignment xalign, yalign;
   Unicode::String myText;
 };
-
 
 #endif
 
