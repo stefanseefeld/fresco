@@ -1,0 +1,24 @@
+#ifndef _config_hh
+#define _config_hh
+
+#ifdef __i386__
+#  define __x86__
+#  define __OSVERSION__ 2
+#endif
+
+/* define whether we are using omniORB2 */
+#define __OMNIORB2__
+ 
+// this cruft is intended to help handle differences in ORBs. it's sad, really.
+#ifdef __OMNIORB2__
+#  define interface(name) name##_IntfRepoID
+#  define applyscope(scope,thing) scope ## :: ## thing
+#  define skeletonize(interfacename) _lc_sk_ ## interfacename
+#  define implements(interface) virtual public skeletonize(interface)
+#  define implementsscoped(scope,interface) virtual public applyscope(scope,skeletonize(interface))
+#  define obtain(sc,in) applyscope(in,_narrow(sc->create(interface(in))))
+#else
+#  error "sorry, currently only OMNIORB2 is supported"
+#endif
+
+#endif /* _config_hh */
