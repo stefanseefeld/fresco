@@ -48,8 +48,8 @@ int main(int argc, char **argv)
   GetOpt getopt(argv[0], "a berlin client demonstrating the Canvas");
   getopt.add('h', "help", GetOpt::novalue, "help message");
   getopt.add('r', "run", GetOpt::mandatory, "the ggi program to run");
-  getopt.add('w', "width", GetOpt::mandatory, "the width of the visual");
-  getopt.add('h', "height", GetOpt::mandatory, "the height of the visual");
+  getopt.add('x', "width", GetOpt::mandatory, "the width of the visual");
+  getopt.add('y', "height", GetOpt::mandatory, "the height of the visual");
   add_resolving_options_to_getopt(getopt);
   getopt.parse(argc - 1, argv + 1);
 
