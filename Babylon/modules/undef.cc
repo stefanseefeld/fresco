@@ -57,7 +57,7 @@ namespace Babylon {
 
     // query functions:
 
-    string blockname(const UCS4 uc) const {
+    std::string blockname(const UCS4 uc) const {
       return "undefined";
     }
 
@@ -250,7 +250,6 @@ namespace Babylon {
     bool is_High_Surrogate(const UCS4 uc) const {
       return 0;
     }
-
 
   private:
     // functions

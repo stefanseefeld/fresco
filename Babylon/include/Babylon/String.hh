@@ -30,11 +30,12 @@
 
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
+#include <Babylon/Char.hh>
 
 namespace Babylon {
 
     // g++ does not yet support char_traits :-(
-    class String : public basic_string<Babylon::Char> {
+    class String : public std::basic_string<Babylon::Char> {
     public:
 	// CONSTRUCTORS:
 	/// Creates a string of the length 0.

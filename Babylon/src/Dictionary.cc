@@ -111,9 +111,9 @@ int Dictionary::digit_value(const UCS4 uc)
 } 
 
 
-string Dictionary::blockname(const UCS4 uc) 
+std::string Dictionary::blockname(const UCS4 uc) 
     throw (Block_Error) {
-    string result;
+    std::string result;
     Guard<RWLock> guard(m_rw_lock);
     result=find_char(uc)->blockname(uc);
     return result;
@@ -447,7 +447,7 @@ UCS4 Dictionary::first_letter_of_block(const UCS4 uc)
     if (uc >= UC_MAX_DEFINED)
 	return result;
 
-    vector<Data>::const_iterator b;
+    std::vector<Data>::const_iterator b;
     Data tmp(uc, uc);
     Guard<RWLock> guard(m_rw_lock);
     b = lower_bound(m_data.begin(), m_data.end(), tmp, DataLess());
@@ -462,7 +462,7 @@ UCS4 Dictionary::last_letter_of_block(const UCS4 uc)
     if (uc >= UC_MAX_DEFINED)
 	return result;
 
-    vector<Data>::const_iterator b;
+    std::vector<Data>::const_iterator b;
     Data tmp(uc, uc);
     Guard<RWLock> guard(m_rw_lock);
     b = lower_bound(m_data.begin(), m_data.end(), tmp, DataLess());
@@ -477,7 +477,7 @@ UCS4 Dictionary::start_of_next_block(const UCS4 uc)
     if (uc >= UC_MAX_DEFINED)
 	return result;
 
-    vector<Data>::const_iterator b;
+    std::vector<Data>::const_iterator b;
     Data tmp(uc, uc);
     Guard<RWLock> guard(m_rw_lock);
     b = lower_bound(m_data.begin(), m_data.end(), tmp, DataLess()); 
@@ -530,7 +530,7 @@ Dictionary::Block * Dictionary::find_char(const UCS4 uc)
     // Gets only called after the dictionary is rlocked!
 
     // Binary search version:
-    vector<Data>::iterator p = m_data.begin();
+    std::vector<Data>::iterator p = m_data.begin();
     
     // ASCII happens so often that this speeds things up a bit
     if (uc > p->m_end) {
@@ -556,7 +556,7 @@ Dictionary::Block * Dictionary::find_char(const UCS4 uc)
 } // Dictionary::find_char
 
 
-void Dictionary::update(const string & scanDir) {
+void Dictionary::update(const std::string & scanDir) {
     Guard<RWLock, WLock_Trait<RWLock> > guard(m_rw_lock);
     clean();
     
@@ -566,7 +566,7 @@ void Dictionary::update(const string & scanDir) {
     for (Prague::Directory::const_iterator dir_it = dir.begin();
 	 dir_it != dir.end();
 	 ++dir_it) {
-	string name = (*dir_it)->long_name();
+	std::string name = (*dir_it)->long_name();
 	
 	if ( !((*dir_it)->is(Prague::Directory::reg)) )
 	    continue;
@@ -625,11 +625,11 @@ Dictionary::Dictionary() {
     }
     char *env = getenv("BABYLON_PATH");
     if (!env) {
-	cerr << "Please set environment variable BABYLON_PATH first" << endl;
+	std::cerr << "Please set environment variable BABYLON_PATH first" << std::endl;
 	exit(-1);
     }
     
-    update(string(env));
+    update(std::string(env));
 } // Dictionary::Dictionary
 
 
@@ -641,7 +641,7 @@ Dictionary::~Dictionary() {
 
 void Dictionary::clean() {
     // gets only called in writelocked functions!
-    for (vector<Data>::const_iterator i = m_data.begin();
+    for (std::vector<Data>::const_iterator i = m_data.begin();
 	 i != m_data.end();
 	 ++i)
 	if (i->m_block)

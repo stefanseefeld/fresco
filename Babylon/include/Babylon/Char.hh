@@ -174,7 +174,7 @@ namespace Babylon {
 	//.          if the block containing the character
 	//.          could not get loaded.
 	//.          THIS SHOULD NEVER HAPPEN!
-	string blockname() const throw (Block_Error) {
+	std::string blockname() const throw (Block_Error) {
 	    return Dictionary::instance()->blockname(m_value);
 	}
     

@@ -231,5 +231,5 @@ Babylon::String Babylon::String::norm(Babylon::Norm norm) const {
 
 void Babylon::String::erase() {
     m_current_norm = Babylon::NORM_NONE;
-    basic_string<Char>::erase();
+    std::basic_string<Char>::erase();
 }

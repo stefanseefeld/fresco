@@ -46,9 +46,9 @@ namespace Babylon {
     typedef char UCS1; // has to be char
     typedef u_int16_t UCS2;
     typedef u_int32_t UCS4;
-    typedef basic_string<UCS1> UTF8_string;
-    typedef basic_string<UCS2> UTF16_string;
-    typedef basic_string<UCS4> UTF32_string;
+    typedef std::basic_string<UCS1> UTF8_string;
+    typedef std::basic_string<UCS2> UTF16_string;
+    typedef std::basic_string<UCS4> UTF32_string;
 
     // These classes are defined in Char.hh and String.hh
     class Char;
@@ -355,15 +355,15 @@ namespace Babylon {
 	UCS4 m_error_uc;
 	Char_Props m_error_prop;
 	
-	Undefined_Property(const UCS4 uc,
+	Undefined_Property(UCS4 uc,
 			   const Char_Props prop) {
 	    m_error_uc = uc;
 	    m_error_prop = prop;
 	}
 
 	const char * what() const throw() {
-	    strstream res;
-	    res << setw(4) << setfill('0') << hex; 
+	    std::strstream res;
+	    res << std::setw(4) << std::setfill('0') << std::hex; 
 	    switch (m_error_prop) {
 	    case PROP_CHARACTER:
 		res << "(" <<  m_error_uc << " Character is undefined";
@@ -432,46 +432,46 @@ namespace Babylon {
 	}
     }; // class Undefined_Property
     
-    class Transfer_Error : std::exception {
-    public:
-	Trans_Error error;
-	
-	Transfer_Error(const Trans_Error transError) {
-	    error   = transError;
+  class Transfer_Error : std::exception
+  {
+  public:
+    Trans_Error error;
+    Transfer_Error(Trans_Error transError) : error(transError) {}
+    ~Transfer_Error() throw() {}
+    const char * what() const throw()
+    {
+      switch (error)
+	{
+	case TRANS_CAN_NOT_ENCODE:
+	  return("Can not encode from Babylon to foreign format.");
+	default:
+	  return("Can not decode from foreign format to Babylon.");
 	}
+    }
+  }; // Transfer_Error
 
-	const char * what() const throw() {
-	    switch (error) {
-	    case TRANS_CAN_NOT_ENCODE:
-		return("Can not encode from Babylon to foreign format.");
-	    default:
-		return("Can not decode from foreign format to Babylon.");
-	    }
-	}
-    }; // Transfer_Error
-
-    class Block_Error : std::exception {
-    public:
-	UCS4 m_block_start;
-	UCS4 m_block_end;
-	string m_error_message;
-	
-	Block_Error(const UCS4 startUC,
-		    const UCS4 endUC,
-		    const string em) {
-	    m_block_start = startUC;
-	    m_block_end = endUC;
-	    m_error_message = em;
-	}
-
-	const char * what() const throw() {
-	    strstream res;
-	    res << hex << setw(4) << setfill('0');
-	    res << "(" << m_block_start << "-" << m_block_end << "): "
-		<< m_error_message;
-	    return res.str();
-	}
-    }; // class Block_Error
+  class Block_Error : std::exception
+  {
+  public:
+    UCS4 m_block_start;
+    UCS4 m_block_end;
+    std::string m_error_message;
+    Block_Error(UCS4 startUC, UCS4 endUC, const std::string &em)
+    {
+      m_block_start = startUC;
+      m_block_end = endUC;
+      m_error_message = em;
+    }
+    ~Block_Error() throw() {}
+    const char * what() const throw()
+    {
+      std::strstream res;
+      res << std::hex << std::setw(4) << std::setfill('0');
+      res << "(" << m_block_start << "-" << m_block_end << "): "
+	  << m_error_message;
+      return res.str();
+    }
+  }; // class Block_Error
     
 } // namespace Babylon;
 
