@@ -24,6 +24,7 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
+#include "Berlin/TraversalImpl.hh"
 #include "Layout/Placement.hh"
 #include "Layout/LayoutManager.hh"
 
@@ -65,23 +66,24 @@ void Placement::allocateChild(Graphic::AllocationInfo &a)
 
 void Placement::traverse(Traversal_ptr t)
 {
-//   Region_var given = t->allocation();
-//   if (!CORBA::is_nil(given))
-//     {
-//       result->copy(given);
-//       Graphic::Requisition r;
-//       GraphicImpl::initRequisition(r);
-//       MonoGraphic::request(r);
-//       layout->allocate(1, &r, given, &result);
-//       TransformImpl tx;
-//       normalTransform(result, &tx);
-//       Painter_var p = t->current_painter();
-//       p->push_matrix();
-//       p->premultiply(&tx);
-//       t->traverse_child(offset_, result_);
-//       p->pop_matrix();
-//     }
-//   else MonoGraphic::traverse(t);
+  Region_var given = t->allocation();
+  if (!CORBA::is_nil(given))
+    {
+      RegionImpl *result = new RegionImpl;
+      result->_obj_is_ready(_boa());
+      result->copy(given);
+      Graphic::Requisition r;
+      GraphicImpl::initRequisition(r);
+      MonoGraphic::request(r);
+      layout->allocate(1, &r, given, &result);
+      TransformImpl *tx = new TransformImpl;
+      tx->_obj_is_ready(_boa());
+      normalTransform(result, tx);
+      t->traverseChild(offset, result->_this(), tx->_this());
+      tx->_dispose();
+      result->_dispose();
+    }
+  else MonoGraphic::traverse(t);
 }
 
 void Placement::normalOrigin(RegionImpl *r, Vertex &o)
