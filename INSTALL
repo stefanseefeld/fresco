@@ -1,5 +1,7 @@
 These are instructions for the configuration, building, and installation
-of the Berlin windowing system.
+of the Berlin/Fresco windowing system.
+
+
 
 Prerequisites
 =============
@@ -7,11 +9,17 @@ Prerequisites
 Berlin uses a number of third party libraries, which you will need to
 have installed before you can proceed. Please see at
 
-http://www.berlin-consortium.org/dependencies.html
+http://www.fresco.org/dependencies.html
 
 for a complete list. Unfortunately, quite a number of them are still
 in heavy development, so you may need to get the sources and compile
-them yourself. Respective rpm and deb packages may *not* be enough !
+them yourself. Respective rpm and deb packages may *not* be enough!
+
+You might want to try those packages first. There are even some debian
+packages of Berlin/Fresco, you might want to try those instead of building
+it yourself.
+
+
 
 Downloading
 ===========
@@ -19,7 +27,7 @@ Downloading
 There are currently three ways to download berlin. You can check out the
 sources directly from cvs, in which case you find instructions at
 
-http://www.berlin-consortium.org/cvs.html
+http://www.fresco.org/cvs.html
 
 or you can download a nightly snapshot from
 
@@ -28,6 +36,8 @@ ftp://berlin.sourceforge.net/pub/berlin/
 or you can get release packages at
 
 http://sourceforge.net/projects/berlin/
+
+
 
 Configuration
 =============
@@ -51,22 +61,64 @@ this will set up the build tree and check for the available packages.
 Here is a list of the available options:
 
   --enable-docs          Build the documentation
+                         You will need synopsis (http://www.synopsis.org/)
+                         to build the Reference Manuals and XML processing
+                         tools (for example: http://www.4suite.org/(
+
   --enable-tracer        Compile with tracer support
+                         This produces tons of debugging output: A big help
+                         if you want to debug the server or report
+                         bugs.
+
   --with-omniorb-prefix  Prefix for omniORB
+                         Only needed if omniORB is not found automatically.
+
   --with-omniorb-version omniORB version (3 and 4 supported)
+                         Only needed if your ORB version is not autodetected.
+
   --with-freetype-prefix Prefix where freetype is installed (optional)
+                         Only needed if freetype is not found automatically.
+
   --with-console         Specify which Console to use (GGI, SDL, DirectFB)
+                         By default all consoles supported by your
+                         environment are build.
+
   --with-ggi-prefix      Prefix for GGI
+                         This is only needed if you want the GGI console and
+                         the GGI libraries are not found automatically.
+
   --with-sdl-prefix      Prefix where SDL is installed (optional)
-  --with-directfb-prefix Prefix for DirectFb (console DirectFB)
+                         This is only needed if you want the SDL console and
+                         the SDL libraries are not found automatically.
+
+  --with-directfb-prefix Prefix for DirectFb
+                         This is only needed if you want the DirectFB console
+                         and the DirectFB libraries are not found automatically.
+
   --with-art-prefix=PFX  Prefix for libArt
+                         This is only needed if you want the libArt DrawingKit
+                         and libArt is not found automatically.
+
   --with-ggimesa-prefix  Prefix for GGIMesa
+                         This is only needed if you want to run the GLDrawingKit
+                         on GGI (no acceleration!) and GGIMesa is not found
+                         automatically.
+
   --with-mesa-prefix     Prefix for Mesa
+                         Only needed if you want to build the GLDrawingKit and
+                         have your GL library is not found automatically.
+
   --enable-jprof   	 enable profiling with the jprof tool
+                         This is only needed for people wanting to improve
+                         the performance of the server.
+
   --enable-lclog   	 enable lifecycle logging
+                         Another debugging option.
 
 [ Add support for interactive configuration and document the options
   here]
+
+
 
 Building
 ========
@@ -77,36 +129,84 @@ so you can keep track of things:
 
 > make -s
 
-Testing
-=======
+Please note that running multiple instances of make at once (-j) will
+cause problems.
 
-you should now find some libraries in $berlin-build/lib, modules in
+
+
+Testing and First Steps
+=======================
+
+You should now find some libraries in $berlin-build/lib, modules in
 $berlin-build/module, and binaries in $berlin-build/bin. If you want
 to run berlin at this place, you have to tell the loader where to look
 for the libraries, and, in case you use the python environment, tell
 python where to find the berlin modules:
 
+csh style:
+
 > setenv LD_LIBRARY_PATH $berlin-build/lib:$LD_LIBRARY_PATH
-> setenv PYTHONPATH $berlin-build/lib/python:$PYTHONPATH
 > setenv BABYLON_PATH $berlin-build/modules/Babylon
+> setenv PYTHON_PATH $berlin-build/lib/python:$PYTHON_PATH
 
-or similar depending on your shell.
-The berlin server is in $berlin-build/bin/server, and to tell him about
-the current (temporary) location of the resources (fonts, modules, rasters, ...)
-you have to provide him with a resource file containing the paths:
+bash-like style:
 
-> bin/server -r config/berlinrc
+> export LD_LIBRARY_PATH=$berlin-build/lib:$LD_LIBRARY_PATH
+> export BABYLON_PATH=$berlin-build/modules/Babylon
+> export PYTHON_PATH=$berlin-build/lib/python:$PYTHON_PATH
 
-Voila ! That should run the server.
+The berlin server is in $berlin-build/bin/server, and now you should be
+able to start it. The only mandatory parameter is the location of the
+config file, which contains the (temporary) paths of the resources
+needed by berlin (fonts, modules, rasters, ...):
 
-other options that you may use when invoking the server:
+> $berlin-build/bin/server -r $berlin-build/config/berlinrc
+
+and voila! that should start the server.
+
+Of course a berlin server without clients is just a bit more exciting
+than a X server without clients (mainly because the "I built all this
+myself!" factor). To start a client with the server you need to tell it
+its location (starting now the $berlin-build stuff will be assumed)
+using the -e (execute) flag:
+
+> bin/server -r config/berlinrc -e bin/demo
+
+The demo program is a set of small applications showing some berlin
+possibilities (new demos are welcome!).
+
+In order to run the other C++ demo available, demo3D, you need to pass
+some more information to the server. First you need to use a console
+with a GLContext extension. You have two options here, use the SDL
+console built with 3D support or the GGI console with ggimesa support,
+both actived in compile time (Note: installing ggimesa may break you
+hardware accelerated 3D setup, you're warned). Then you need to use a
+3D capable DrawingKit. The default DrawingKit, LibArtDrawingKit has no
+3D support, so you have to tell berlin to use another DrawingKit
+(namely GLDrawingKit).
+
+In short:
+
+> bin/server -r config/berlinrc -e bin/demo3D -c SDL -d GLDrawingKit
+
+for SDL console or
+
+> bin/server -r config/berlinrc -e bin/demo3D -c GGI -d GLDrawingKit
+
+for GGI console.
+
+(Note: the GGI/Mesa console isn't hardware accelerated, so if you
+have a good video card use the SDL console instead).
+
+If you're brave you can check http://www.fresco.org/contrib.html to find "real" applications
+to run under Berlin (they may be broken, or not, contact their authors for more information).
+
+Finally here they are other options you may use when invoking the server:
 
 -l --logger [list of groups to log]: log messages (the special group 'lifecycle' requires configuration with --enable-lclog)
 -t --tracer :                        trace method calls (requires configuration with --enable-tracer)
 -p --profiler :                      use jprof profiler (requires configuration with --enable-jprof)
 
-Of course, the server is a bit boring without clients. You'll find some (the C++ clients)
-in $berlin-build/bin/, the python clients are in the src tree in $berlin-src/clients/python/
 
 
 Installing
@@ -114,19 +214,21 @@ Installing
 
 Sorry, the install target isn't finished yet, we are working on it.
 
+
+
 Troubleshooting
 ===============
 
 There are a couple of places which are frequently subject to problems.
 Please consult the FAQ at
 
-http://www2.berlin-consortium.org/wiki/html/Berlin/FAQ.htm
+http://wiki.fresco.org/index.cgi/ProblemsWithRunningBerlin
+http://wiki.fresco.org/index.cgi/FAQ
 
 please be sure that third party libraries are correctly installed before
-you post about a bug. For example, the by far most frequent problem encountered
-is reported by people who forgot to start the name server or have it
-misconfigured. A good way to test the nameserver is 'nameclt list'. That
-should not give you a timeout nor any error message.
+you post about a bug. For example, THE MOST FREQUENT PROBLEM reported
+is a broken omniORB configuration.  You need to have the nameserver
+configured and RUNNING. A good way to test the nameserver is 'nameclt list'.
+This should return no error message and terminate immediantly.
 
-Good luck,
-		Stefan <stefan@berlin-consortium.org>
+Good luck!
