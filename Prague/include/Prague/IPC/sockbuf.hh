@@ -129,59 +129,61 @@ class sockbuf : public ipcbuf
 public:
   enum domain
   {
-    af_unix	        = AF_UNIX,
-    af_inet4	        = AF_INET,
+    af_unix	       = AF_UNIX,
+    af_inet4       = AF_INET,
 #ifdef AF_INET6
-    af_inet6	        = AF_INET6,
+    af_inet6	    = AF_INET6,
 #endif
-    af_ipx	        = AF_IPX,
+#ifdef AF_IPX
+    af_ipx	       = AF_IPX,
+#endif
 #ifdef AF_NETLINK
-    af_netlink          = AF_NETLINK,
+    af_netlink     = AF_NETLINK,
 #endif
 #ifdef AF_X25
-    af_x25              = AF_X25,
+    af_x25         = AF_X25,
 #endif
 #ifdef AF_AX25
-    af_ax25             = AF_AX25,
+    af_ax25        = AF_AX25,
 #endif
 #ifdef AF_ATMPVC
-    af_atmpvc           = AF_ATMPVC,
+    af_atmpvc      = AF_ATMPVC,
 #endif
 #ifdef AF_PACKET
-    af_packet           = AF_PACKET,
+    af_packet      = AF_PACKET,
 #endif
-    af_appletalk        = AF_APPLETALK
+    af_appletalk   = AF_APPLETALK
   };
   enum type
   {
-    sock_stream	        = SOCK_STREAM,
-    sock_dgram	        = SOCK_DGRAM,
-    sock_raw	        = SOCK_RAW,
-    sock_rdm	        = SOCK_RDM,
-    sock_seqpacket      = SOCK_SEQPACKET
+    sock_stream    = SOCK_STREAM,
+    sock_dgram	    = SOCK_DGRAM,
+    sock_raw       = SOCK_RAW,
+    sock_rdm       = SOCK_RDM,
+    sock_seqpacket = SOCK_SEQPACKET
   };
   enum option
   {
-    so_debug	        = SO_DEBUG,
+    so_debug      = SO_DEBUG,
     so_reuseaddr	= SO_REUSEADDR,
     so_keepalive	= SO_KEEPALIVE,
     so_dontroute	= SO_DONTROUTE,
     so_broadcast	= SO_BROADCAST,
-    so_linger	        = SO_LINGER,
+    so_linger     = SO_LINGER,
     so_oobinline	= SO_OOBINLINE,
     so_sndbuf		= SO_SNDBUF,
     so_rcvbuf		= SO_RCVBUF,
     so_error		= SO_ERROR,
-    so_type		= SO_TYPE
+    so_type	      = SO_TYPE
   };	
   enum level
   {
-    sol_socket          = SOL_SOCKET
+    sol_socket    = SOL_SOCKET
   };
   enum msgflag
   {
-    msg_oob		= MSG_OOB,
-    msg_peek	        = MSG_PEEK,
+    msg_oob	      = MSG_OOB,
+    msg_peek      = MSG_PEEK,
     msg_dontroute	= MSG_DONTROUTE,
 	
     msg_maxiovlen	= MSG_MAXIOVLEN

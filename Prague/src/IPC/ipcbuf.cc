@@ -110,7 +110,7 @@ int ipcbuf::sync()
   return 0;
 }
 
-int ipcbuf::showmanyc() const
+int ipcbuf::showmanyc()
 {
   if (gptr() && gptr() < egptr()) return egptr() - gptr();
   return 0;
@@ -134,8 +134,8 @@ ipcbuf::int_type ipcbuf::underflow()
   switch (rlen)
     {
     case 0: _eofbit = true;
-    case EOF: return EOF; break;
-    default: setg(eback(), eback(), eback() + rlen); return *gptr(); break;
+    case EOF: return EOF;
+    default: setg(eback(), eback(), eback() + rlen); return *gptr();
     }
 }
 

@@ -22,8 +22,7 @@
 #ifndef _Prague_ipcbuf_hh
 #define _Prague_ipcbuf_hh
 
-#include <Prague/Sys/Tracer.hh>
-#include <Prague/Sys/Thread.hh>
+#include <ios>
 #include <streambuf>
 
 namespace Prague
@@ -76,7 +75,7 @@ public:
   //. flush the buffer
   virtual int        sync();
   //. return the number of chars in the input sequence
-  virtual int        showmanyc() const;
+  virtual int        showmanyc();
   //. if pbase () == 0, no write is allowed and thus return EOF.
   //. if c == EOF, we sync the output and return 0.
   //. if pptr () == epptr (), buffer is full and thus sync the output, insert c into buffer, and return c.
@@ -94,6 +93,6 @@ private:
   bool  _eofbit : 1; // connection closed
 };
 
-};
+}
 
 #endif
