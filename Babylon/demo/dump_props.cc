@@ -28,518 +28,523 @@
 
 using namespace Babylon;
 
-class Property
-{
-  public:
-    virtual std::string property() = 0;
-    virtual bool get(Char) = 0;
-};
-
-// Properties
-class White_Space : public Property
-{
-  public:
-    std::string property() { return std::string("White_Space"); }
-    bool get(Char a) { return a.is_White_Space(); }
-};
-
-class Bidi_Control : public Property
-{
-  public:
-    std::string property() { return std::string("Bidi_Control"); }
-    bool get(Char a) { return a.is_Bidi_Control(); }
-};
-
-class Join_Control : public Property
-{
-  public:
-    std::string property() { return std::string("Join_Control"); }
-    bool get(Char a) { return a.is_Join_Control(); }
-};
-
-class Dash : public Property
-{
-  public:
-    std::string property() { return std::string("Dash"); }
-    bool get(Char a) { return a.is_Dash(); }
-};
-
-class Hyphen : public Property
-{
-  public:
-    std::string property() { return std::string("Hyphen"); }
-    bool get(Char a) { return a.is_Hyphen(); }
-};
-
-class Quotation_Mark : public Property
-{
-  public:
-    std::string property() { return std::string("Quotation_Mark"); }
-    bool get(Char a) { return a.is_Quotation_Mark(); }
-};
-
-class Terminal_Punctuation : public Property
-{
-  public:
-    std::string property() { return std::string("Terminal_Punctuation"); }
-    bool get(Char a) { return a.is_Terminal_Punctuation(); }
-};
-
-class Other_Math : public Property
-{
-  public:
-    std::string property() { return std::string("Other_Math"); }
-    bool get(Char a) { return a.is_Other_Math(); }
-};
-
-class Hex_Digit : public Property
-{
-  public:
-    std::string property() { return std::string("Hex_Digit"); }
-    bool get(Char a) { return a.is_Hex_Digit(); }
-};
-
-class ASCII_Hex_Digit : public Property
-{
-  public:
-    std::string property() { return std::string("ASCII_Hex_Digit"); }
-    bool get(Char a) { return a.is_ASCII_Hex_Digit(); }
-};
-
-class Other_Alphabetic : public Property
-{
-  public:
-    std::string property() { return std::string("Other_Alphabetic"); }
-    bool get(Char a) { return a.is_Other_Alphabetic(); }
-};
-
-class Ideographic : public Property
-{
-  public:
-    std::string property() { return std::string("Ideographic"); }
-    bool get(Char a) { return a.is_Ideographic(); }
-};
-
-class Diacritic : public Property
-{
-  public:
-    std::string property() { return std::string("Diacritic"); }
-    bool get(Char a) { return a.is_Diacritic(); }
-};
-
-class Extender : public Property
-{
-  public:
-    std::string property() { return std::string("Extender"); }
-    bool get(Char a) { return a.is_Extender(); }
-};
-
-class Other_Lowercase : public Property
-{
-  public:
-    std::string property() { return std::string("Other_Lowercase"); }
-    bool get(Char a) { return a.is_Other_Lowercase(); }
-};
-
-class Other_Uppercase : public Property
-{
-  public:
-    std::string property() { return std::string("Other_Uppercase"); }
-    bool get(Char a) { return a.is_Other_Uppercase(); }
-};
-
-class Noncharacter_Code_Point : public Property
-{
-  public:
-    std::string property() { return std::string("Noncharacter_Code_Point"); }
-    bool get(Char a) { return a.is_Noncharacter_Code_Point(); }
-};
-
-class Other_Grapheme_Extend : public Property
-{
-  public:
-    std::string property() { return std::string("Other_Grapheme_Extend"); }
-    bool get(Char a) { return a.is_Other_Grapheme_Extend(); }
-};
-
-class Grapheme_Link : public Property
-{
-  public:
-    std::string property() { return std::string("Grapheme_Link"); }
-    bool get(Char a) { return a.is_Grapheme_Link(); }
-};
-
-class IDS_Binary_Operator : public Property
-{
-  public:
-    std::string property() { return std::string("IDS_Binary_Operator"); }
-    bool get(Char a) { return a.is_IDS_Binary_Operator(); }
-};
-
-class IDS_Trinary_Operator : public Property
-{
-  public:
-    std::string property() { return std::string("IDS_Trinary_Operator"); }
-    bool get(Char a) { return a.is_IDS_Trinary_Operator(); }
-};
-
-class Radical : public Property
-{
-  public:
-    std::string property() { return std::string("Radical"); }
-    bool get(Char a) { return a.is_Radical(); }
-};
-
-class Unified_Ideograph : public Property
-{
-  public:
-    std::string property() { return std::string("Unified_Ideograph"); }
-    bool get(Char a) { return a.is_Unified_Ideograph(); }
-};
-
-class Other_Default_Ignorable_Code_Point : public Property
-{
-  public:
-    std::string property() { return std::string("Other_Default_Ignorable_Code_Point"); }
-    bool get(Char a) { return a.is_Other_Default_Ignorable_Code_Point(); }
-};
-
-class Deprecated : public Property
-{
-  public:
-    std::string property() { return std::string("Deprecated"); }
-    bool get(Char a) { return a.is_Deprecated(); }
-};
-
-class Soft_Dotted : public Property
-{
-  public:
-    std::string property() { return std::string("Soft_Dotted"); }
-    bool get(Char a) { return a.is_Soft_Dotted(); }
-};
-
-class Logical_Order_Exception : public Property
-{
-  public:
-    std::string property() { return std::string("Logical_Order_Exception"); }
-    bool get(Char a) { return a.is_Logical_Order_Exception(); }
-};
-
-class Other_ID_Start : public Property
-{
-  public:
-    std::string property() { return std::string("Other_ID_Start"); }
-    bool get(Char a) { return a.is_Other_ID_Start(); }
-};
-
-// Derived Properties
-class Math : public Property
-{
-  public:
-    std::string property() { return std::string("Math"); }
-    bool get(Char a) { return a.is_Math(); }
-};
-
-class Alphabetic : public Property
-{
-  public:
-    std::string property() { return std::string("Alphabetic"); }
-    bool get(Char a) { return a.is_Alphabetic(); }
-};
-
-class Lowercase : public Property
-{
-  public:
-    std::string property() { return std::string("Lowercase"); }
-    bool get(Char a) { return a.is_Lowercase(); }
-};
-
-class Uppercase : public Property
-{
-  public:
-    std::string property() { return std::string("Uppercase"); }
-    bool get(Char a) { return a.is_Uppercase(); }
-};
-
-class ID_Start : public Property
-{
-  public:
-    std::string property() { return std::string("ID_Start"); }
-    bool get(Char a) { return a.is_ID_Start(); }
-};
-
-class ID_Continue : public Property
-{
-  public:
-    std::string property() { return std::string("ID_Continue"); }
-    bool get(Char a) { return a.is_ID_Continue(); }
-};
-
-class XID_Start : public Property
-{
-  public:
-    std::string property() { return std::string("XID_Start"); }
-    bool get(Char a) { return a.is_XID_Start(); }
-};
-
-class XID_Continue : public Property
-{
-  public:
-    std::string property() { return std::string("XID_Continue"); }
-    bool get(Char a) { return a.is_XID_Continue(); }
-};
-
-class Default_Ignorable_Code_Point : public Property
-{
-  public:
-    std::string property() { return std::string("Default_Ignorable_Code_Point"); }
-    bool get(Char a) { return a.is_Default_Ignorable_Code_Point(); }
-};
-
-class Grapheme_Extend : public Property
-{
-  public:
-    std::string property() { return std::string("Grapheme_Extend"); }
-    bool get(Char a) { return a.is_Grapheme_Extend(); }
-};
-
-class Grapheme_Base : public Property
-{
-  public:
-    std::string property() { return std::string("Grapheme_Base"); }
-    bool get(Char a) { return a.is_Grapheme_Base(); }
-};
-
-class FC_NFKC_Closure : public Property
-{
-  public:
-    std::string property() { return std::string("FC_NFKC_Closure"); }
-    bool get(Char a) { return a.is_FC_NFKC_Closure(); }
-};
-
-class Full_Composition_Exclusion : public Property
-{
-  public:
-    std::string property() { return std::string("Full_Composition_Exclusion"); }
-    bool get(Char a) { return a.is_Full_Composition_Exclusion(); }
-};
-
-class NFD_QuickCheck : public Property
-{
-  public:
-    std::string property() { return std::string("NFD_QuickCheck"); }
-    bool get(Char a) { return a.is_NFD_QuickCheck(); }
-};
-
-class NFC_QuickCheck : public Property
-{
-  public:
-    std::string property() { return std::string("NFC_QuickCheck"); }
-    bool get(Char a) { return a.is_NFC_QuickCheck(); }
-};
-
-class NFKD_QuickCheck : public Property
-{
-  public:
-    std::string property() { return std::string("NFKD_QuickCheck"); }
-    bool get(Char a) { return a.is_NFKD_QuickCheck(); }
-};
-
-class NFKC_QuickCheck : public Property
-{
-  public:
-    std::string property() { return std::string("NFKC_QuickCheck"); }
-    bool get(Char a) { return a.is_NFKC_QuickCheck(); }
-};
-
-class Expands_On_NFD : public Property
-{
-  public:
-    std::string property() { return std::string("Expands_On_NFD"); }
-    bool get(Char a) { return a.is_Expands_On_NFD(); }
-};
-
-class Expands_On_NFC : public Property
-{
-  public:
-    std::string property() { return std::string("Expands_On_NFC"); }
-    bool get(Char a) { return a.is_Expands_On_NFC(); }
-};
-
-class Expands_On_NFKD : public Property
-{
-  public:
-    std::string property() { return std::string("Expands_On_NFKD"); }
-    bool get(Char a) { return a.is_Expands_On_NFKD(); }
-};
-
-class Expands_On_NFKC : public Property
-{
-  public:
-    std::string property() { return std::string("Expands_On_NFKC"); }
-    bool get(Char a) { return a.is_Expands_On_NFKC(); }
-};
-
-// Further Properties
-class Space : public Property
-{
-  public:
-    std::string property() { return std::string("Space"); }
-    bool get(Char a) { return a.is_Space(); }
-};
-
-class Punctuation : public Property
-{
-  public:
-    std::string property() { return std::string("Punctuation"); }
-    bool get(Char a) { return a.is_Punctuation(); }
-};
-
-class Line_Separator : public Property
-{
-  public:
-    std::string property() { return std::string("Line_Separator"); }
-    bool get(Char a) { return a.is_Line_Separator(); }
-};
-
-class Paragraph_Separator : public Property
-{
-  public:
-    std::string property() { return std::string("Paragraph_Separator"); }
-    bool get(Char a) { return a.is_Paragraph_Separator(); }
-};
-
-class Currency_Symbol : public Property
-{
-  public:
-    std::string property() { return std::string("Currency_Symbol"); }
-    bool get(Char a) { return a.is_Currency_Symbol(); }
-};
-
-class Bidi_Left_to_Right : public Property
-{
-  public:
-    std::string property() { return std::string("Bidi_Left_to_Right"); }
-    bool get(Char a) { return a.is_Bidi_Left_to_Right(); }
-};
-
-class Bidi_European_Digit : public Property
-{
-  public:
-    std::string property() { return std::string("Bidi_European_Digit"); }
-    bool get(Char a) { return a.is_Bidi_European_Digit(); }
-};
-
-class Bidi_Eur_Num_Separator : public Property
-{
-  public:
-    std::string property() { return std::string("Bidi_Eur_Num_Separator"); }
-    bool get(Char a) { return a.is_Bidi_Eur_Num_Separator(); }
-};
-
-class Bidi_Eur_Num_Terminator : public Property
-{
-  public:
-    std::string property() { return std::string("Bidi_Eur_Num_Terminator"); }
-    bool get(Char a) { return a.is_Bidi_Eur_Num_Terminator(); }
-};
-
-class Bidi_Arabic_Digit : public Property
-{
-  public:
-    std::string property() { return std::string("Bidi_Arabic_Digit"); }
-    bool get(Char a) { return a.is_Bidi_Arabic_Digit(); }
-};
-
-class Bidi_Common_Separator : public Property
-{
-  public:
-    std::string property() { return std::string("Bidi_Common_Separator"); }
-    bool get(Char a) { return a.is_Bidi_Common_Separator(); }
-};
-
-class Bidi_Block_Separator : public Property
-{
-  public:
-    std::string property() { return std::string("Bidi_Block_Separator"); }
-    bool get(Char a) { return a.is_Bidi_Block_Separator(); }
-};
-
-class Bidi_Segment_Separator : public Property
-{
-  public:
-    std::string property() { return std::string("Bidi_Segment_Separator"); }
-    bool get(Char a) { return a.is_Bidi_Segment_Separator(); }
-};
-
-class Bidi_Whitespace : public Property
-{
-  public:
-    std::string property() { return std::string("Bidi_Whitespace"); }
-    bool get(Char a) { return a.is_Bidi_Whitespace(); }
-};
-
-class Bidi_Non_spacing_Mark : public Property
-{
-  public:
-    std::string property() { return std::string("Bidi_Non_spacing_Mark"); }
-    bool get(Char a) { return a.is_Bidi_Non_spacing_Mark(); }
-};
-
-class Bidi_Boundary_Neutral : public Property
-{
-  public:
-    std::string property() { return std::string("Bidi_Boundary_Neutral"); }
-    bool get(Char a) { return a.is_Bidi_Boundary_Neutral(); }
-};
-
-class Bidi_PDF : public Property
-{
-  public:
-    std::string property() { return std::string("Bidi_PDF"); }
-    bool get(Char a) { return a.is_Bidi_PDF(); }
-};
-
-class Bidi_Embedding_or_Override : public Property
-{
-  public:
-    std::string property() { return std::string("Bidi_Embedding_or_Override"); }
-    bool get(Char a) { return a.is_Bidi_Embedding_or_Override(); }
-};
-
-class Bidi_Other_Neutral : public Property
-{
-  public:
-    std::string property() { return std::string("Bidi_Other_Neutral"); }
-    bool get(Char a) { return a.is_Bidi_Other_Neutral(); }
-};
-
-class Virama : public Property
-{
-  public:
-    std::string property() { return std::string("Virama"); }
-    bool get(Char a) { return a.is_Virama(); }
-};
-
-class Printable : public Property
-{
-  public:
-    std::string property() { return std::string("Printable"); }
-    bool get(Char a) { return a.is_Printable(); }
-};
-
-class Titlecase : public Property
-{
-  public:
-    std::string property() { return std::string("Titlecase"); }
-    bool get(Char a) { return a.is_Titlecase(); }
-};
-
-class Private_Use : public Property
-{
-  public:
-    std::string property() { return std::string("Private_Use"); }
-    bool get(Char a) { return a.is_Private_Use(); }
+namespace
+{
+
+  class Property
+  {
+    public:
+      virtual std::string property() = 0;
+      virtual bool get(Char) = 0;
+  };
+
+  // Properties
+  class White_Space : public Property
+  {
+    public:
+      std::string property() { return std::string("White_Space"); }
+      bool get(Char a) { return a.is_White_Space(); }
+  };
+
+  class Bidi_Control : public Property
+  {
+    public:
+      std::string property() { return std::string("Bidi_Control"); }
+      bool get(Char a) { return a.is_Bidi_Control(); }
+  };
+
+  class Join_Control : public Property
+  {
+    public:
+      std::string property() { return std::string("Join_Control"); }
+      bool get(Char a) { return a.is_Join_Control(); }
+  };
+
+  class Dash : public Property
+  {
+    public:
+      std::string property() { return std::string("Dash"); }
+      bool get(Char a) { return a.is_Dash(); }
+  };
+
+  class Hyphen : public Property
+  {
+    public:
+      std::string property() { return std::string("Hyphen"); }
+      bool get(Char a) { return a.is_Hyphen(); }
+  };
+
+  class Quotation_Mark : public Property
+  {
+    public:
+      std::string property() { return std::string("Quotation_Mark"); }
+      bool get(Char a) { return a.is_Quotation_Mark(); }
+  };
+
+  class Terminal_Punctuation : public Property
+  {
+    public:
+      std::string property() { return std::string("Terminal_Punctuation"); }
+      bool get(Char a) { return a.is_Terminal_Punctuation(); }
+  };
+
+  class Other_Math : public Property
+  {
+    public:
+      std::string property() { return std::string("Other_Math"); }
+      bool get(Char a) { return a.is_Other_Math(); }
+  };
+
+  class Hex_Digit : public Property
+  {
+    public:
+      std::string property() { return std::string("Hex_Digit"); }
+      bool get(Char a) { return a.is_Hex_Digit(); }
+  };
+
+  class ASCII_Hex_Digit : public Property
+  {
+    public:
+      std::string property() { return std::string("ASCII_Hex_Digit"); }
+      bool get(Char a) { return a.is_ASCII_Hex_Digit(); }
+  };
+
+  class Other_Alphabetic : public Property
+  {
+    public:
+      std::string property() { return std::string("Other_Alphabetic"); }
+      bool get(Char a) { return a.is_Other_Alphabetic(); }
+  };
+
+  class Ideographic : public Property
+  {
+    public:
+      std::string property() { return std::string("Ideographic"); }
+      bool get(Char a) { return a.is_Ideographic(); }
+  };
+
+  class Diacritic : public Property
+  {
+    public:
+      std::string property() { return std::string("Diacritic"); }
+      bool get(Char a) { return a.is_Diacritic(); }
+  };
+
+  class Extender : public Property
+  {
+    public:
+      std::string property() { return std::string("Extender"); }
+      bool get(Char a) { return a.is_Extender(); }
+  };
+
+  class Other_Lowercase : public Property
+  {
+    public:
+      std::string property() { return std::string("Other_Lowercase"); }
+      bool get(Char a) { return a.is_Other_Lowercase(); }
+  };
+
+  class Other_Uppercase : public Property
+  {
+    public:
+      std::string property() { return std::string("Other_Uppercase"); }
+      bool get(Char a) { return a.is_Other_Uppercase(); }
+  };
+
+  class Noncharacter_Code_Point : public Property
+  {
+    public:
+      std::string property() { return std::string("Noncharacter_Code_Point"); }
+      bool get(Char a) { return a.is_Noncharacter_Code_Point(); }
+  };
+
+  class Other_Grapheme_Extend : public Property
+  {
+    public:
+      std::string property() { return std::string("Other_Grapheme_Extend"); }
+      bool get(Char a) { return a.is_Other_Grapheme_Extend(); }
+  };
+
+  class Grapheme_Link : public Property
+  {
+    public:
+      std::string property() { return std::string("Grapheme_Link"); }
+      bool get(Char a) { return a.is_Grapheme_Link(); }
+  };
+
+  class IDS_Binary_Operator : public Property
+  {
+    public:
+      std::string property() { return std::string("IDS_Binary_Operator"); }
+      bool get(Char a) { return a.is_IDS_Binary_Operator(); }
+  };
+
+  class IDS_Trinary_Operator : public Property
+  {
+    public:
+      std::string property() { return std::string("IDS_Trinary_Operator"); }
+      bool get(Char a) { return a.is_IDS_Trinary_Operator(); }
+  };
+
+  class Radical : public Property
+  {
+    public:
+      std::string property() { return std::string("Radical"); }
+      bool get(Char a) { return a.is_Radical(); }
+  };
+
+  class Unified_Ideograph : public Property
+  {
+    public:
+      std::string property() { return std::string("Unified_Ideograph"); }
+      bool get(Char a) { return a.is_Unified_Ideograph(); }
+  };
+
+  class Other_Default_Ignorable_Code_Point : public Property
+  {
+    public:
+      std::string property() { return std::string("Other_Default_Ignorable_Code_Point"); }
+      bool get(Char a) { return a.is_Other_Default_Ignorable_Code_Point(); }
+  };
+
+  class Deprecated : public Property
+  {
+    public:
+      std::string property() { return std::string("Deprecated"); }
+      bool get(Char a) { return a.is_Deprecated(); }
+  };
+
+  class Soft_Dotted : public Property
+  {
+    public:
+      std::string property() { return std::string("Soft_Dotted"); }
+      bool get(Char a) { return a.is_Soft_Dotted(); }
+  };
+
+  class Logical_Order_Exception : public Property
+  {
+    public:
+      std::string property() { return std::string("Logical_Order_Exception"); }
+      bool get(Char a) { return a.is_Logical_Order_Exception(); }
+  };
+
+  class Other_ID_Start : public Property
+  {
+    public:
+      std::string property() { return std::string("Other_ID_Start"); }
+      bool get(Char a) { return a.is_Other_ID_Start(); }
+  };
+
+  // Derived Properties
+  class Math : public Property
+  {
+    public:
+      std::string property() { return std::string("Math"); }
+      bool get(Char a) { return a.is_Math(); }
+  };
+
+  class Alphabetic : public Property
+  {
+    public:
+      std::string property() { return std::string("Alphabetic"); }
+      bool get(Char a) { return a.is_Alphabetic(); }
+  };
+
+  class Lowercase : public Property
+  {
+    public:
+      std::string property() { return std::string("Lowercase"); }
+      bool get(Char a) { return a.is_Lowercase(); }
+  };
+
+  class Uppercase : public Property
+  {
+    public:
+      std::string property() { return std::string("Uppercase"); }
+      bool get(Char a) { return a.is_Uppercase(); }
+  };
+
+  class ID_Start : public Property
+  {
+    public:
+      std::string property() { return std::string("ID_Start"); }
+      bool get(Char a) { return a.is_ID_Start(); }
+  };
+
+  class ID_Continue : public Property
+  {
+    public:
+      std::string property() { return std::string("ID_Continue"); }
+      bool get(Char a) { return a.is_ID_Continue(); }
+  };
+
+  class XID_Start : public Property
+  {
+    public:
+      std::string property() { return std::string("XID_Start"); }
+      bool get(Char a) { return a.is_XID_Start(); }
+  };
+
+  class XID_Continue : public Property
+  {
+    public:
+      std::string property() { return std::string("XID_Continue"); }
+      bool get(Char a) { return a.is_XID_Continue(); }
+  };
+
+  class Default_Ignorable_Code_Point : public Property
+  {
+    public:
+      std::string property() { return std::string("Default_Ignorable_Code_Point"); }
+      bool get(Char a) { return a.is_Default_Ignorable_Code_Point(); }
+  };
+
+  class Grapheme_Extend : public Property
+  {
+    public:
+      std::string property() { return std::string("Grapheme_Extend"); }
+      bool get(Char a) { return a.is_Grapheme_Extend(); }
+  };
+
+  class Grapheme_Base : public Property
+  {
+    public:
+      std::string property() { return std::string("Grapheme_Base"); }
+      bool get(Char a) { return a.is_Grapheme_Base(); }
+  };
+
+  class FC_NFKC_Closure : public Property
+  {
+    public:
+      std::string property() { return std::string("FC_NFKC_Closure"); }
+      bool get(Char a) { return a.is_FC_NFKC_Closure(); }
+  };
+
+  class Full_Composition_Exclusion : public Property
+  {
+    public:
+      std::string property() { return std::string("Full_Composition_Exclusion"); }
+      bool get(Char a) { return a.is_Full_Composition_Exclusion(); }
+  };
+
+  class NFD_QuickCheck : public Property
+  {
+    public:
+      std::string property() { return std::string("NFD_QuickCheck"); }
+      bool get(Char a) { return a.is_NFD_QuickCheck(); }
+  };
+
+  class NFC_QuickCheck : public Property
+  {
+    public:
+      std::string property() { return std::string("NFC_QuickCheck"); }
+      bool get(Char a) { return a.is_NFC_QuickCheck(); }
+  };
+
+  class NFKD_QuickCheck : public Property
+  {
+    public:
+      std::string property() { return std::string("NFKD_QuickCheck"); }
+      bool get(Char a) { return a.is_NFKD_QuickCheck(); }
+  };
+
+  class NFKC_QuickCheck : public Property
+  {
+    public:
+      std::string property() { return std::string("NFKC_QuickCheck"); }
+      bool get(Char a) { return a.is_NFKC_QuickCheck(); }
+  };
+
+  class Expands_On_NFD : public Property
+  {
+    public:
+      std::string property() { return std::string("Expands_On_NFD"); }
+      bool get(Char a) { return a.is_Expands_On_NFD(); }
+  };
+
+  class Expands_On_NFC : public Property
+  {
+    public:
+      std::string property() { return std::string("Expands_On_NFC"); }
+      bool get(Char a) { return a.is_Expands_On_NFC(); }
+  };
+
+  class Expands_On_NFKD : public Property
+  {
+    public:
+      std::string property() { return std::string("Expands_On_NFKD"); }
+      bool get(Char a) { return a.is_Expands_On_NFKD(); }
+  };
+
+  class Expands_On_NFKC : public Property
+  {
+    public:
+      std::string property() { return std::string("Expands_On_NFKC"); }
+      bool get(Char a) { return a.is_Expands_On_NFKC(); }
+  };
+
+  // Further Properties
+  class Space : public Property
+  {
+    public:
+      std::string property() { return std::string("Space"); }
+      bool get(Char a) { return a.is_Space(); }
+  };
+
+  class Punctuation : public Property
+  {
+    public:
+      std::string property() { return std::string("Punctuation"); }
+      bool get(Char a) { return a.is_Punctuation(); }
+  };
+
+  class Line_Separator : public Property
+  {
+    public:
+      std::string property() { return std::string("Line_Separator"); }
+      bool get(Char a) { return a.is_Line_Separator(); }
+  };
+
+  class Paragraph_Separator : public Property
+  {
+    public:
+      std::string property() { return std::string("Paragraph_Separator"); }
+      bool get(Char a) { return a.is_Paragraph_Separator(); }
+  };
+
+  class Currency_Symbol : public Property
+  {
+    public:
+      std::string property() { return std::string("Currency_Symbol"); }
+      bool get(Char a) { return a.is_Currency_Symbol(); }
+  };
+
+  class Bidi_Left_to_Right : public Property
+  {
+    public:
+      std::string property() { return std::string("Bidi_Left_to_Right"); }
+      bool get(Char a) { return a.is_Bidi_Left_to_Right(); }
+  };
+
+  class Bidi_European_Digit : public Property
+  {
+    public:
+      std::string property() { return std::string("Bidi_European_Digit"); }
+      bool get(Char a) { return a.is_Bidi_European_Digit(); }
+  };
+
+  class Bidi_Eur_Num_Separator : public Property
+  {
+    public:
+      std::string property() { return std::string("Bidi_Eur_Num_Separator"); }
+      bool get(Char a) { return a.is_Bidi_Eur_Num_Separator(); }
+  };
+
+  class Bidi_Eur_Num_Terminator : public Property
+  {
+    public:
+      std::string property() { return std::string("Bidi_Eur_Num_Terminator"); }
+      bool get(Char a) { return a.is_Bidi_Eur_Num_Terminator(); }
+  };
+
+  class Bidi_Arabic_Digit : public Property
+  {
+    public:
+      std::string property() { return std::string("Bidi_Arabic_Digit"); }
+      bool get(Char a) { return a.is_Bidi_Arabic_Digit(); }
+  };
+
+  class Bidi_Common_Separator : public Property
+  {
+    public:
+      std::string property() { return std::string("Bidi_Common_Separator"); }
+      bool get(Char a) { return a.is_Bidi_Common_Separator(); }
+  };
+
+  class Bidi_Block_Separator : public Property
+  {
+    public:
+      std::string property() { return std::string("Bidi_Block_Separator"); }
+      bool get(Char a) { return a.is_Bidi_Block_Separator(); }
+  };
+
+  class Bidi_Segment_Separator : public Property
+  {
+  public:
+      std::string property() { return std::string("Bidi_Segment_Separator"); }
+      bool get(Char a) { return a.is_Bidi_Segment_Separator(); }
+  };
+
+  class Bidi_Whitespace : public Property
+  {
+  public:
+      std::string property() { return std::string("Bidi_Whitespace"); }
+      bool get(Char a) { return a.is_Bidi_Whitespace(); }
+  };
+
+  class Bidi_Non_spacing_Mark : public Property
+  {
+    public:
+      std::string property() { return std::string("Bidi_Non_spacing_Mark"); }
+      bool get(Char a) { return a.is_Bidi_Non_spacing_Mark(); }
+  };
+
+  class Bidi_Boundary_Neutral : public Property
+  {
+    public:
+      std::string property() { return std::string("Bidi_Boundary_Neutral"); }
+      bool get(Char a) { return a.is_Bidi_Boundary_Neutral(); }
+  };
+
+  class Bidi_PDF : public Property
+  {
+    public:
+      std::string property() { return std::string("Bidi_PDF"); }
+      bool get(Char a) { return a.is_Bidi_PDF(); }
+  };
+
+  class Bidi_Embedding_or_Override : public Property
+  {
+    public:
+      std::string property() { return std::string("Bidi_Embedding_or_Override"); }
+      bool get(Char a) { return a.is_Bidi_Embedding_or_Override(); }
+  };
+
+  class Bidi_Other_Neutral : public Property
+  {
+    public:
+      std::string property() { return std::string("Bidi_Other_Neutral"); }
+      bool get(Char a) { return a.is_Bidi_Other_Neutral(); }
+  };
+
+  class Virama : public Property
+  {
+    public:
+      std::string property() { return std::string("Virama"); }
+      bool get(Char a) { return a.is_Virama(); }
+  };
+
+  class Printable : public Property
+  {
+    public:
+      std::string property() { return std::string("Printable"); }
+      bool get(Char a) { return a.is_Printable(); }
+  };
+
+  class Titlecase : public Property
+  {
+    public:
+      std::string property() { return std::string("Titlecase"); }
+      bool get(Char a) { return a.is_Titlecase(); }
+  };
+
+  class Private_Use : public Property
+  {
+    public:
+      std::string property() { return std::string("Private_Use"); }
+      bool get(Char a) { return a.is_Private_Use(); }
+  };
+
 };
 
 Property * get_property(const std::string & p)
@@ -642,47 +647,47 @@ int main(int argc, char** argv)
 {
     try
     {
-	std::string property_str;
-	if (argc == 3)
-	{
-	    Babylon::override_path(std::string(argv[1]));
-	    property_str = argv[2];
-	}
-	else if (argc == 2)
-	    property_str = argv[1];
-	else
-	{
-	    std::cerr << "Usage: " << argv[0]
-		      << " [module_path] property" << std::endl;
-	    exit(1);
-	}
-	Property * p = get_property(property_str);
-	if (!p)
-	{
-	    std::cout << "Unknown Property!" << std::endl;
-	    exit(2);
-	}
+        std::string property_str;
+        if (argc == 3)
+        {
+            Babylon::override_path(std::string(argv[1]));
+            property_str = argv[2];
+        }
+        else if (argc == 2)
+            property_str = argv[1];
+        else
+        {
+            std::cerr << "Usage: " << argv[0]
+                      << " [module_path] property" << std::endl;
+            exit(1);
+        }
+        Property * p = get_property(property_str);
+        if (!p)
+        {
+            std::cout << "Unknown Property!" << std::endl;
+            exit(2);
+        }
 
-	Char start(UC_NULL);
-	for (Char A(UC_NULL); A.value() < 0x110000; ++A)
-	    if (p->get(A))
-	    {
-		output_char(std::cout, A);
-		std::cout << std::endl;
-	    }
+        Char start(UC_NULL);
+        for (Char A(UC_NULL); A.value() < 0x110000; ++A)
+            if (p->get(A))
+            {
+                output_char(std::cout, A);
+                std::cout << std::endl;
+            }
     }
     catch(std::runtime_error &e)
     {
-	std::cout << "Caught an runtime exception: " << e.what()
-		  << std::endl;
+        std::cout << "Caught an runtime exception: " << e.what()
+                  << std::endl;
     }
     catch(std::exception &e)
     {
-	std::cout << "Caught an exception: " << e.what()
-		  << std::endl;
+        std::cout << "Caught an exception: " << e.what()
+                  << std::endl;
     }
     catch(...)
     {
-	std::cout << "Some exception happened!" << std::endl;
+        std::cout << "Some exception happened!" << std::endl;
     }
 }
