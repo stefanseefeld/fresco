@@ -35,7 +35,7 @@ CPPFLAGS	+= -I$(hdir)
 LIBS		+= -lBerlin
 
 SRC		:= Gauge.cc Panner.cc Scrollbar.cc Slider.cc Choice.cc \
-		   Terminal.cc WidgetKit.cc
+		   Paned.cc Terminal.cc WidgetKit.cc
 
 MODULE		:= Motif
 

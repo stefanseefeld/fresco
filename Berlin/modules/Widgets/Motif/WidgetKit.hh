@@ -23,6 +23,7 @@
 #define _Motif_WidgetKitImpl_hh
 
 #include <Warsaw/config.hh>
+#include <Warsaw/Widget.hh>
 #include <Warsaw/WidgetKit.hh>
 #include <Warsaw/CommandKit.hh>
 #include <Warsaw/LayoutKit.hh>
@@ -53,11 +54,11 @@ class WidgetKit : public virtual POA_Warsaw::WidgetKit,
   Warsaw::Controller_ptr   slider(Warsaw::BoundedValue_ptr, Warsaw::Axis);
   Warsaw::Controller_ptr   panner(Warsaw::BoundedRange_ptr, Warsaw::BoundedRange_ptr);
   Warsaw::Controller_ptr   scrollbar(Warsaw::BoundedRange_ptr, Warsaw::Axis);
-  Warsaw::Choice_ptr       toggle_choice();
-  Warsaw::Choice_ptr       checkbox_choice();
-  Warsaw::Choice_ptr       toolbar();
+  Widget::Choice_ptr       toggle_choice();
+  Widget::Choice_ptr       checkbox_choice();
+  Widget::Choice_ptr       toolbar();
   Warsaw::Controller_ptr   terminal();
-
+  Widget::Paned_ptr        paned(Warsaw::Graphic_ptr, Warsaw::Graphic_ptr, Warsaw::Axis);
   Warsaw::Controller_ptr   scrollable(Warsaw::Graphic_ptr);
  private:
   RefCount_var<Warsaw::LayoutKit>  layout;

@@ -37,8 +37,11 @@
 #include "Widget/Motif/Scrollbar.hh"
 #include "Widget/Motif/Choice.hh"
 #include "Widget/Motif/Terminal.hh"
+#include "Widget/Motif/Paned.hh"
 
 using namespace Warsaw;
+using namespace Widget;
+
 namespace Motif
 {
 
@@ -297,6 +300,14 @@ Controller_ptr WidgetKit::terminal()
   Controller_var input = tool->terminal(Graphic_var(terminal->_this()), StreamBuffer_var(terminal->input()));
 //   input->appendController(Controller_var(terminal->_this()));
   return input._retn();
+}
+
+Widget::Paned_ptr WidgetKit::paned(Graphic_ptr left, Graphic_ptr right, Axis a)
+{
+  Paned *paned = new Paned(a, 0.);
+  activate(paned);
+  paned->init(left, right);
+  return paned->_this();
 }
 
 Controller_ptr WidgetKit::scrollable(Graphic_ptr g)

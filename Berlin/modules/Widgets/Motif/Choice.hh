@@ -23,7 +23,7 @@
 #define _Motif_Choice_hh
 
 #include <Warsaw/config.hh>
-#include <Warsaw/Choice.hh>
+#include <Warsaw/Widget.hh>
 #include <Warsaw/Selection.hh>
 #include <Warsaw/CommandKit.hh>
 #include <Warsaw/LayoutKit.hh>
@@ -36,7 +36,7 @@
 namespace Motif
 {
 
-class Choice : public virtual POA_Warsaw::Choice,
+class Choice : public virtual POA_Widget::Choice,
 	       public ControllerImpl
 {
  public:
@@ -45,7 +45,7 @@ class Choice : public virtual POA_Warsaw::Choice,
   virtual Warsaw::Selection_ptr state();
   virtual Warsaw::Tag append_item(Warsaw::Graphic_ptr) = 0;
   virtual Warsaw::Tag prepend_item(Warsaw::Graphic_ptr) = 0;
-  void remove_item(Warsaw::Tag) = 0;
+  virtual void remove_item(Warsaw::Tag) = 0;
  protected:
   RefCount_var<Warsaw::Selection> selection;
   RefCount_var<Warsaw::LayoutKit> layout;
