@@ -50,8 +50,7 @@ class ServerImpl : public virtual POA_Warsaw::Server,
   typedef std::multimap<std::string, Warsaw::Kit::PropertySeq_var> PluginList;
 
 public:
-  //. Singleton pattern: This makes sure that only one ServerImpl is created.
-  //. Create() can be called once only!
+  //. Create() can be called once only! It creates the one server-object.
   static ServerImpl *create(const CORBA::PolicyList &);
   //. Get a reference to the server in use.
   static ServerImpl *instance();
