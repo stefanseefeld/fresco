@@ -120,6 +120,7 @@ StageImpl::Sequence::iterator StageImpl::Sequence::lookup(Layout::Stage::Index l
       if (bdist < cdist) _cursor = size() - 1;
     }
   _cursor += layer - current()->_layer;
+  _cursor = Math::max(size_t(0), Math::min(_cursor, size()-1));
   return begin() + _cursor;
 }
 
@@ -145,6 +146,7 @@ void StageImpl::Sequence::remove(StageHandleImpl *handle)
     else _cursor--;
   for (iterator i = old++; i != end(); i++) (*i)->_layer = layer++;
   parent_t::erase(--old);
+  _cursor = Math::max(size_t(0), Math::min(_cursor, size()-1));
 }
 
 Quad::Quad(const Rectangle<Coord> &region) : parent_t(region) {}
