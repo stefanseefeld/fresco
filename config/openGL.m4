@@ -44,16 +44,16 @@ AC_DEFUN([BERLIN_LIB_MESA],[
 	dnl Check for Mesa libs
 	if test "x$no_gl" = x ; then
 
-		if test x$gl_eprefix != x ; then
-			GL_LIBS=-L$gl_eprefix/lib
+		if test x$mesa_prefix != x ; then
+			GL_LIBS=-L$mesa_prefix/lib
 		fi
 		save_LDFLAGS="$LDFLAGS"
 		LDFLAGS="$GL_LIBS $LDFLAGS"
-		AC_CHECK_LIB(GL, main, :, no_gl=yes)
+		AC_CHECK_LIB(GL, glLoadIdentity, :, no_gl=yes)
 		LDFLAGS="$save_LDFLAGS"
 	fi
 
-	if test "x$no_gl" = x ; then
+	if test "x$no_gl" = xyes ; then
 
 		ac_cv_lib_Mesa=no		
 		dnl Abort or warn?

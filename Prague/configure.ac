@@ -58,6 +58,7 @@ AC_SUBST(UNICODE_BLOCKS)
 
 AC_MSG_PART(platform specific system utilities)
 AC_CHECK_FUNCS(strsignal)
+AC_CHECK_HEADERS(string.h)
 AC_NEED_DECLARATION(strsignal)
 AC_CHECK_LIB(z, gzsetparams, AC_DEFINE(HAVE_ZLIB), AC_MSG_ERROR(update your zlib, please))
 

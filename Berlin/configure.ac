@@ -85,7 +85,7 @@ AC_MSG_PART(Text Rendering)
 dnl Dumb hard-wired check for freetype.  Change this to accept different
 dnl text rendering engines?
 
-BERLIN_LIB_FREETYPE
+AM_PATH_FREETYPE(6:1:0)
 
 dnl ------------------------------------------------------------------
 dnl Graphics environment
@@ -133,8 +133,8 @@ if test ".$enable_openGL" = .yes ; then
 		if test ".$ac_cv_lib_GGIMesa" = .yes ; then
 			tested_drawing_kits="$tested_drawing_kits Drawing/openGL"
 		fi
-	else
-		BERLIN_LIB_MESA
+	elif test ".$CON_IMPL" = .GLUT ; then
+		BERLIN_LIB_MESA(mandatory)
 		if test ".$ac_cv_lib_Mesa" = .yes ; then
 			tested_drawing_kits="$tested_drawing_kits Drawing/openGL"
 		fi
