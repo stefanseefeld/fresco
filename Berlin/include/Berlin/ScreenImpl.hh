@@ -47,6 +47,7 @@ public:
   virtual DrawingKit_ptr kit();
   virtual void damage(Region_ptr);
 
+  virtual void requestFocus(Controller_ptr, Event::Device);
   virtual CORBA::Boolean handle(PickTraversal_ptr, const CORBA::Any &);
 
   ScreenManager *manager();

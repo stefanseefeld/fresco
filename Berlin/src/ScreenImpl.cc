@@ -70,6 +70,11 @@ void ScreenImpl::allocations(Allocation_ptr allocation)
 
 void ScreenImpl::damage(Region_ptr region) { smanager->damage(region);}
 
+void ScreenImpl::requestFocus(Controller_ptr c, Event::Device d)
+{
+  emanager->requestFocus(c, d);
+}
+
 CORBA::Boolean ScreenImpl::handle(PickTraversal_ptr traversal, const CORBA::Any &any)
 {
   return false;

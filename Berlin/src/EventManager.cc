@@ -31,6 +31,13 @@ EventManager::EventManager(ScreenImpl *s)
 {}
 
 EventManager::~EventManager() {}
+
+void EventManager::requestFocus(Controller_ptr c, Event::Device d)
+{
+  if (c == 0) npfocus->request(c);
+  else pfocus->request(c);
+}
+
 void EventManager::nextEvent()
 {
   ggi_event event;

@@ -39,6 +39,7 @@ class EventManager
 public:
   EventManager(ScreenImpl *);
   ~EventManager();
+  void requestFocus(Controller_ptr, Event::Device);
   void nextEvent();
   void damage(Region_ptr);
 private:
