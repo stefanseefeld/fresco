@@ -65,7 +65,7 @@ Fresco::Server_ptr resolve_server(int argc, char *argv[], CORBA::ORB_ptr orb)
       std::cerr << "ERROR: "
                 << "Invalid method for importing server reference given.\n"
                 << "'" << reference_import_method << "' is not one of\n"
-                << "'ior', 'corbaloc' or 'nameserver'" << endl;
+                << "'ior', 'corbaloc' or 'nameserver'" << std::endl;
       exit(1);
     }
   }
@@ -84,7 +84,7 @@ Fresco::Server_ptr resolve_server(int argc, char *argv[], CORBA::ORB_ptr orb)
     {
       std::cerr << "ERROR: "
                 << "Could not contact nameserver; check it is running."
-                << endl;
+                << std::endl;
       exit(1);
     }
     try
@@ -99,7 +99,7 @@ Fresco::Server_ptr resolve_server(int argc, char *argv[], CORBA::ORB_ptr orb)
                 << "in the nameservice. Did you specify the \"nameserver\"\n"
                 << "parameter to the -R option when starting the server?\n"
                 << "If not, then you need not specify it here."
-                << endl;
+                << std::endl;
       exit(1);
     }
   }
@@ -143,7 +143,7 @@ Fresco::Server_ptr resolve_server(int argc, char *argv[], CORBA::ORB_ptr orb)
       }
       else
       {
-        std::cerr << endl
+        std::cerr << std::endl
                   << "ERROR: Cannot open '" << full_path << "'\n" 
                   << "This could signify that the server is not running\n"
                   << "or that a server is running but with a different\n"
@@ -152,7 +152,7 @@ Fresco::Server_ptr resolve_server(int argc, char *argv[], CORBA::ORB_ptr orb)
                   << "This could also signify that a server is running but\n"
                   << "its address is being published using another method -\n"
                   << "try the -R option."
-                  << endl;
+                  << std::endl;
         exit(1);
       }
     }
@@ -167,8 +167,8 @@ Fresco::Server_ptr resolve_server(int argc, char *argv[], CORBA::ORB_ptr orb)
     }
     catch (...)
     { 
-      std::cerr << endl
-                << "ERROR: Server reference is invalid." << endl;
+      std::cerr << std::endl
+                << "ERROR: Server reference is invalid." << std::endl;
       exit(1);
     }
 
@@ -177,7 +177,7 @@ Fresco::Server_ptr resolve_server(int argc, char *argv[], CORBA::ORB_ptr orb)
   // corbaloc
   if (reference_import_method == "corbaloc")
   {
-    std::cerr << "ERROR: corbaloc method not completed in clients" << endl;
+    std::cerr << "ERROR: corbaloc method not completed in clients" << std::endl;
     exit(1);
   }
   
@@ -203,7 +203,7 @@ Fresco::Server_ptr resolve_server(int argc, char *argv[], CORBA::ORB_ptr orb)
 
   if (!server_can_be_contacted)
   { 
-    std::cerr << endl
+    std::cerr << std::endl
               << "ERROR: Server reference is valid, "
               << "but this server cannot be contacted.\n"
               << "This server may have terminated or is suspended.\n"
@@ -212,7 +212,7 @@ Fresco::Server_ptr resolve_server(int argc, char *argv[], CORBA::ORB_ptr orb)
               << "may have been published using a different method or\n"
               << "in a different place - if this is the case, try using\n"
               << "different parameters to the -R or -I options."
-              << endl;
+              << std::endl;
     exit(1);
   }
   return server._retn();
