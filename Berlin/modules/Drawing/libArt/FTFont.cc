@@ -66,7 +66,10 @@ LibArtFTFont::LibArtFTFont(GGI::Drawable *drawable) :
   ydpi(96.),
   xres(drawable->resolution(xaxis)),
   yres(drawable->resolution(yaxis)),
-  mySize(14)
+  mySize(14),
+  myGlyphCache(GlyphFactory(this,&myLibrary),256),
+  myFaceMetricsCache(FaceMetricsFactory(this,&myLibrary),64),
+  myGlyphMetricsCache(GlyphMetricsFactory(this,&myLibrary),256)
 {
   if (FT_Init_FreeType( &myLibrary )) {
       cerr << "failed to open freetype library" << endl;
@@ -113,6 +116,7 @@ LibArtFTFont::LibArtFTFont(GGI::Drawable *drawable) :
       fontdirlist.close();
       Logger::log(Logger::text) << "completed scaning font directories" << endl;
       char *env = getenv("BERLIN_FONT_CHOOSER");
+      cout << env << endl;
       Unicode::String tmpFam, tmpStyle;
       if (env && chooseFaceInteractively(myFaceMap, env, tmpFam, tmpStyle))
 	{
@@ -169,36 +173,25 @@ Unistring *LibArtFTFont::style() {
 DrawingKit::FontMetrics LibArtFTFont::metrics()
 {
   DrawingKit::FontMetrics fm;
-  FT_Face newface;
-  setup_face(newface);
-  setup_size(newface);
-
-  fm.ascender = newface->size->metrics.ascender;
-  fm.descender = newface->size->metrics.descender;
-  fm.height = newface->size->metrics.height;
-  fm.max_advance = newface->size->metrics.max_advance;
+  FaceSpec key(mySize,FamStyle(myFam,myStyle));
+  myFaceMetricsCache.get(key,fm);
   return fm;
 }
+
 
 DrawingKit::GlyphMetrics LibArtFTFont::metrics(Unichar &uc)
 {
   DrawingKit::GlyphMetrics gm;
-  FT_Face newface;
-  setup_face(newface);
-  setup_size(newface);
-  if (!load_glyph(uc, newface)) return gm;
-  FT_GlyphSlot glyph = newface->glyph;
-
-  gm.width = glyph->metrics.width;
-  gm.height = glyph->metrics.height;
-  gm.horiBearingX = glyph->metrics.horiBearingX;
-  gm.horiBearingY = glyph->metrics.horiBearingY;
-  gm.horiAdvance =  glyph->metrics.horiAdvance;
-  gm.vertBearingX = glyph->metrics.vertBearingX;
-  gm.vertBearingY = glyph->metrics.vertBearingY;
-  gm.vertAdvance = glyph->metrics.vertAdvance;
+  GlyphSpec key(uc,FaceSpec(mySize,FamStyle(myFam,myStyle)));
+  myGlyphMetricsCache.get(key,gm);
   return gm;
 }
+
+void LibArtFTFont::getPixBuf(const Unichar ch, ArtPixBuf *&pb) {
+  GlyphSpec key(ch,FaceSpec(mySize,FamStyle(myFam,myStyle)));
+  myGlyphCache.get(key,pb);
+}
+
 
 void LibArtFTFont::setup_face(FT_Face &f)
 {
@@ -241,42 +234,28 @@ bool LibArtFTFont::load_glyph(Unichar c, FT_Face &f) {
   return true;
 }
   
-static inline bool render_pixbuf(ArtPixBuf &pb, 
+static inline bool render_pixbuf(ArtPixBuf *pb, 
 				  FT_GlyphSlot &glyph,
 				  FT_Library &library) {
     
   // first, render the glyph into an intermediate buffer  
   if ( glyph->format != ft_glyph_format_outline ) return false;
-  int size = pb.width * pb.height;
-  char bit_buffer[size];
-  memset(bit_buffer,0,size);      
-
+  int size = pb->width * pb->height;
+  memset(pb->pixels,0,size);      
   FT_Bitmap  bit;
-  bit.width      = pb.width;
-  bit.rows       = pb.height;
-  bit.pitch      = pb.width;
+  bit.width      = pb->width;
+  bit.rows       = pb->height;
+  bit.pitch      = pb->width;
   bit.pixel_mode = ft_pixel_mode_grays;
-  bit.buffer     = bit_buffer;      
+  bit.buffer     = pb->pixels;      
 
   int left  = FLOOR( glyph->metrics.horiBearingX );
   int bottom = FLOOR( glyph->metrics.horiBearingY - glyph->metrics.height );
   FT_Outline_Translate(&glyph->outline, -left, -bottom );    
   if (FT_Outline_Get_Bitmap( library, &glyph->outline, &bit)) return false;
-      
-  while (--size > -1) 
-    pb.pixels[(size << 2) + 3] = bit_buffer[size];
-
   return true;
 }
 
-
-void LibArtFTFont::getPixBuf(const Unichar ch, ArtPixBuf &pb) {
-  FT_Face newface;
-  setup_face(newface);
-  setup_size(newface);
-  if (!load_glyph(ch,newface)) return;
-  if (!render_pixbuf(pb,newface->glyph,myLibrary)) return;      
-}
 
 // void LibArtFTFont::getMetrics(const Unichar ch, FT_Glyph_Metrics &m) {
 //   FT_Face newface;
@@ -287,18 +266,96 @@ void LibArtFTFont::getPixBuf(const Unichar ch, ArtPixBuf &pb) {
 //   m = glyph->metrics;
 // }
 
+LibArtFTFont::atom LibArtFTFont::Atomizer::atomize(
+Unicode::String &u) {
+  map<Unicode::String,atom>::iterator i;
+  i = atomMap.find(u);
+  if (i == atomMap.end()) {	
+    atomMap[u] = ++currAtom;
+    return currAtom;
+  } else {
+    return i->second;
+  }
+}
+
 void LibArtFTFont::allocateChar(Unichar ch, Graphic::Requisition &r) {
-  FT_Face newface;
-  setup_face(newface);
-  setup_size(newface);
-  FT_GlyphSlot glyph = newface->glyph;
-  if (!load_glyph(ch,newface)) return;
-  r.x.natural = r.x.minimum = r.x.maximum = ((double)(glyph->metrics.horiAdvance >> 6)) / xres;
+  DrawingKit::GlyphMetrics gm = metrics(ch);
+
+  r.x.natural = r.x.minimum = r.x.maximum = ((double)(gm.horiAdvance >> 6)) / xres; 
   r.x.defined = true;
   r.x.align = 0.;
-  r.y.natural = r.y.minimum = r.y.maximum = ((double)(glyph->metrics.height >> 6)) / yres; 
+  r.y.natural = r.y.minimum = r.y.maximum = ((double)(gm.height >> 6)) / yres;
   r.y.defined = true;
-  r.y.align = (glyph->metrics.height == 0) ? 0. : 
-    ((double)glyph->metrics.horiBearingY)/((double)glyph->metrics.height); 
+  r.y.align = (gm.height == 0) ? 0. : 
+    ((double)gm.horiBearingY)/((double)gm.height); 
+
+//   FT_Face newface;
+//   setup_face(newface);
+//   setup_size(newface);
+//   FT_GlyphSlot glyph = newface->glyph;
+//   if (!load_glyph(ch,newface)) return;
+//   r.x.natural = r.x.minimum = r.x.maximum = ((double)(glyph->metrics.horiAdvance >> 6)) / xres;
+//   r.x.defined = true;
+//   r.x.align = 0.;
+//   r.y.natural = r.y.minimum = r.y.maximum = ((double)(glyph->metrics.height >> 6)) / yres; 
+//   r.y.defined = true;
+//   r.y.align = (glyph->metrics.height == 0) ? 0. : 
+//     ((double)glyph->metrics.horiBearingY)/((double)glyph->metrics.height); 
+}
+
+
+ArtPixBuf * 
+LibArtFTFont::GlyphFactory::produce(const LibArtFTFont::GlyphSpec &gs)
+{
+  FT_Face newface;
+  font_->setup_face(newface);
+  font_->setup_size(newface);  
+  Unichar ch = gs.first;
+  DrawingKit::GlyphMetrics gm = font_->metrics(ch);
+  int width = (int) (gm.width >> 6);
+  int height = (int) (gm.height >> 6);
+  art_u8 *pixels = new art_u8[width * height]; 
+  // this is a lie -- we're going to use it as a greymap
+  ArtPixBuf *pb = art_pixbuf_new_rgb (pixels, width, height, width);  
+  font_->load_glyph(ch,newface);
+  render_pixbuf(pb,newface->glyph,*lib_);      
+  return pb;
+}
+
+
+DrawingKit::FontMetrics 
+LibArtFTFont::FaceMetricsFactory::produce(const LibArtFTFont::FaceSpec &cs) 
+{
+  DrawingKit::FontMetrics fm;
+  FT_Face newface;
+  font_->setup_face(newface);
+  font_->setup_size(newface);
+  fm.ascender = newface->size->metrics.ascender;
+  fm.descender = newface->size->metrics.descender;
+  fm.height = newface->size->metrics.height;
+  fm.max_advance = newface->size->metrics.max_advance;
+  return fm;
+}
+
+
+DrawingKit::GlyphMetrics 
+LibArtFTFont::GlyphMetricsFactory::produce(const LibArtFTFont::GlyphSpec &cs) 
+{
+  DrawingKit::GlyphMetrics gm;
+  FT_Face newface;
+  font_->setup_face(newface);
+  font_->setup_size(newface);
+  Unichar uc = cs.first;
+  if (!font_->load_glyph(uc, newface)) return gm;
+  FT_GlyphSlot glyph = newface->glyph;
+  gm.width = glyph->metrics.width;
+  gm.height = glyph->metrics.height;
+  gm.horiBearingX = glyph->metrics.horiBearingX;
+  gm.horiBearingY = glyph->metrics.horiBearingY;
+  gm.horiAdvance =  glyph->metrics.horiAdvance;
+  gm.vertBearingX = glyph->metrics.vertBearingX;
+  gm.vertBearingY = glyph->metrics.vertBearingY;
+  gm.vertAdvance = glyph->metrics.vertAdvance;
+  return gm;
 }
 

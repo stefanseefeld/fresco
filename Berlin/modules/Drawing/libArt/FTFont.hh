@@ -26,6 +26,7 @@
 #include <Warsaw/Types.hh>
 #include <Warsaw/Graphic.hh>
 #include <Berlin/GGI.hh>
+#include <Berlin/LRUCache.hh>
 #include <Prague/Sys/MMap.hh>
 #include <Drawing/libArt/LibArtFont.hh>
 #include <freetype/freetype.h>
@@ -53,53 +54,76 @@ public:
   virtual Unistring *style();
   virtual DrawingKit::FontMetrics metrics();
   virtual DrawingKit::GlyphMetrics metrics(Unichar &);
-  virtual void getPixBuf(const Unichar ch, ArtPixBuf &);
+  virtual void getPixBuf(const Unichar ch, ArtPixBuf *&);
 //   void getGlyphMetrics(const Unichar ch, FT_Glyph_Metrics &);
 //   void getFontMetrics(FT_Size_Metrics &);
   virtual void allocateChar(Unichar ch, Graphic::Requisition &);
 
+  void setup_face(FT_Face &f);
+  void setup_size(FT_Face &f);
+  bool load_glyph(Unichar c, FT_Face &f);
+  
 protected:
   
-  typedef unsigned int atom;
-  
-  class atomizer {
+  typedef unsigned int atom;  
+  class Atomizer {
   protected:
     atom currAtom;
     map<Unicode::String,atom> atomMap;
   public:
-    atom atomize(Unicode::String &u) {
-      map<Unicode::String,atom>::iterator i;
-      i = atomMap.find(u);
-      if (i == atomMap.end()) {	
-	atomMap[u] = ++currAtom;
-	return currAtom;
-      } else {
-	return i->second;
-      }
-    }
-  };
-  
-  atomizer _a;
+    atom atomize(Unicode::String &u);
+  };  
+  Atomizer _a;
   atom atomize(Unicode::String &u) {return _a.atomize(u);}
-  void setup_face(FT_Face &f);
-  void setup_size(FT_Face &f);
-  bool load_glyph(Unichar c, FT_Face &f);
     
   double xres, yres, xdpi, ydpi;  
-  typedef pair<atom,atom> FamStyle;
   typedef unsigned int PtSize;
+  typedef pair<atom,atom> FamStyle;
   typedef pair<PtSize,FamStyle> FaceSpec;
-  typedef pair<Unichar,FaceSpec> CacheSpec;
-  typedef map<CacheSpec,ArtPixBuf *>::iterator CacheIter;
-  
-  map<CacheSpec,ArtPixBuf *> myCache;
-  map<FamStyle,FT_Face> myFaceMap;
+  typedef pair<Unichar,FaceSpec> GlyphSpec;
 
+  class GlyphMetricsFactory {
+  private:
+    LibArtFTFont *font_;
+    FT_Library *lib_;
+  public:
+    GlyphMetricsFactory(LibArtFTFont *f, FT_Library *l) : font_(f), lib_(l) {}
+    DrawingKit::GlyphMetrics produce(const GlyphSpec &cs);
+    void recycle(DrawingKit::GlyphMetrics) {};
+  };
+ 
+  class FaceMetricsFactory {
+  private:
+    LibArtFTFont *font_;
+    FT_Library *lib_;
+  public:
+    FaceMetricsFactory(LibArtFTFont *f, FT_Library *l) : font_(f), lib_(l) {}
+    DrawingKit::FontMetrics produce(const FaceSpec &fs);
+    void recycle(DrawingKit::FontMetrics) {};
+  };
+
+  class GlyphFactory {
+  private:
+    LibArtFTFont *font_;
+    FT_Library *lib_;
+  public:
+    GlyphFactory(LibArtFTFont *f, FT_Library *l) : font_(f), lib_(l) {};
+    ArtPixBuf *produce(const GlyphSpec &cs);
+    void recycle(ArtPixBuf *pb) {art_pixbuf_free(pb);};
+  };
+   
   atom myFam, myStyle;
   Unicode::String myFamStr, myStyleStr;
   PtSize mySize;
   FT_Library myLibrary;
   FT_Face myFace;
+  map<FamStyle,FT_Face> myFaceMap;
+
+  // caches!
+  LRUCache<GlyphSpec,ArtPixBuf *, GlyphFactory> myGlyphCache;
+  LRUCache<FaceSpec,DrawingKit::FontMetrics, FaceMetricsFactory> myFaceMetricsCache;
+  LRUCache<GlyphSpec,DrawingKit::GlyphMetrics, GlyphMetricsFactory> myGlyphMetricsCache;   
+
 private:
   bool chooseFaceInteractively(const map<FamStyle,FT_Face> &, const char *, Unicode::String &, Unicode::String &);
 };

@@ -332,7 +332,7 @@ void LibArtDrawingKit::identityPixbuf(ArtPixBuf *pixbuf) {
   art_irect_intersect(&rect,&rect,&clip);
   if (((rect.y1 - rect.y0) * (rect.x1 - rect.x0)) < 1) return;
   art_u8 *dst = pb->pixels + rect.y0 * pb->rowstride + rect.x0 * 3;
-  art_u8 *src = pixbuf->pixels + dy * pixbuf->rowstride + dx * 4 + 3;
+  art_u8 *src = pixbuf->pixels + dy * pixbuf->rowstride + dx;
   int width = (rect.x1 - rect.x0);
   int height = (rect.y1 - rect.y0);  
   art_u8 *atab = alphabank[(art_u8)(art_fg & 0xff)];
@@ -342,11 +342,12 @@ void LibArtDrawingKit::identityPixbuf(ArtPixBuf *pixbuf) {
 
   int t;
   int dst_skip = pb->rowstride - width * 3;
-  int src_skip = pixbuf->rowstride - width * 4;
+  int src_skip = pixbuf->rowstride - width;
   art_u8 *ptab;
 
+
   for (int row = 0; row < height; ++row, dst += dst_skip, src += src_skip) {
-    for (int col = 0; col < width; ++col, dst += 3, src += 4) {            
+    for (int col = 0; col < width; ++col, dst += 3, ++src) {            
       ptab = alphabank[*src];
       dst[0]=t=dst[0] + atab[rtab[*src]] - atab[ptab[dst[0]]]; 
       t&=0x100; t>>=8; t-=1; t=~t; dst[0] |= (t & 0xff);
@@ -453,34 +454,37 @@ void LibArtDrawingKit::drawChar(Unichar c)
   affine[4] -= (r.y.maximum * r.y.align * affine[2]);
   affine[5] -= (r.y.maximum * r.y.align * affine[3]);        
 
-  int pix = 4;
-  int row = width * pix; 
-  int size = height * row;
-  art_u8 pixels[size];
-  
-  // setup foreground color
-  for (int i = 0; i < row; ++i)
-    {
-      pixels[i] =   (unsigned char) ((art_fg >> 24) & 0x000000ff);
-      pixels[++i] = (unsigned char) ((art_fg >> 16) & 0x000000ff);
-      pixels[++i] = (unsigned char) ((art_fg >> 8) & 0x000000ff);
-      pixels[++i] = (unsigned char) 0;
-  }
-  for (int i = 0; i < height; ++i) 
-    memcpy (pixels + (i * row), pixels, row);
-  
-  ArtPixBuf *pb = art_pixbuf_new_const_rgba (pixels, width, height, row);  
-  if (c > 127) unifont->getPixBuf(c,*pb);
-  else         font->getPixBuf(c,*pb);
+  ArtPixBuf *pb;
+  if (c > 127) unifont->getPixBuf(c,pb);
+  else font->getPixBuf(c,pb);
+
   if (affine[0] == 1 &&
       affine[1] == 0 &&
       affine[2] == 0 &&
       affine[3] == 1) {
     identityPixbuf(pb);
+
   } else {   
-    rasterizePixbuf(pb);
+    // *sigh* use primitive libart pixel functions
+    int pix = 4;
+    int row = width * pix; 
+    int size = height * row;
+    art_u8 pixels[size];    
+    //setup foreground color
+    for (int i = 0; i < row; ++i)
+      {
+	pixels[i] =   (unsigned char) ((art_fg >> 24) & 0x000000ff);
+	pixels[++i] = (unsigned char) ((art_fg >> 16) & 0x000000ff);
+	pixels[++i] = (unsigned char) ((art_fg >> 8) & 0x000000ff);
+	pixels[++i] = (unsigned char) 0;
+      }
+    for (int i = 0; i < height; ++i) memcpy (pixels + (i * row), pixels, row);
+    for (int i = 0; i < (width * height); ++i) pixels[pix*i + 3] = pb->pixels[i];    
+    ArtPixBuf *pb2 = art_pixbuf_new_const_rgba (pixels, width, height, row);  
+    rasterizePixbuf(pb2);
+    art_pixbuf_free(pb2);
   }
-  art_pixbuf_free(pb);
+  
   affine[4] = x0;
   affine[5] = y0;
 }

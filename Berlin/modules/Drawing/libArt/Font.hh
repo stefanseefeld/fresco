@@ -47,7 +47,7 @@ public:
   virtual DrawingKit::FontMetrics metrics() = 0;
   virtual DrawingKit::GlyphMetrics metrics(Unichar &) = 0;
   virtual void allocateChar(const Unichar ch, Graphic::Requisition &) = 0;
-  virtual void getPixBuf(const Unichar ch, ArtPixBuf &) = 0;
+  virtual void getPixBuf(const Unichar ch, ArtPixBuf *&) = 0;
 };
 
 #endif

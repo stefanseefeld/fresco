@@ -57,9 +57,10 @@ LibArtUnifont::LibArtUnifont(GGI::Drawable *drawable) :
       }
     string glyphDB = string(env) + "/etc/glyph.dat";
     glyphmap = new MMap(glyphDB, -1, MMap::read, MMap::shared, 0, 0);
+    myPixBuf = art_pixbuf_new_rgb (slab, 16, 16, 16);  
 }
 
-LibArtUnifont::~LibArtUnifont() { delete glyphmap ;}
+LibArtUnifont::~LibArtUnifont() { delete glyphmap ; art_pixbuf_free(myPixBuf);}
 unsigned long LibArtUnifont::size() { return 16;}
 unsigned long LibArtUnifont::weight() { return 100;}
 Unistring *LibArtUnifont::family() { return new Unistring(Unicode::toCORBA(Unicode::String("GNU Unifont")));}
@@ -93,8 +94,13 @@ DrawingKit::GlyphMetrics LibArtUnifont::metrics(Unichar &uc)
   return gm;
 }
 
-void LibArtUnifont::getPixBuf(const Unichar ch, ArtPixBuf &pb) {
-  glyph2pixels(ch,pb.pixels);
+void LibArtUnifont::getPixBuf(const Unichar ch, ArtPixBuf *&pb) {
+  unsigned char *glyphs = (unsigned char *)glyphmap->addr();  
+  int width = (glyphs[ch * 33] == (unsigned char)0xFF) ? 8 : 16;  
+  memset(slab,0,16*16);
+  glyph2pixels(ch,slab);
+  myPixBuf->width = myPixBuf->rowstride = width;
+  pb = myPixBuf;
 }
 
 void LibArtUnifont::glyph2pixels(const Unichar ch, unsigned char pix[]) {
@@ -106,7 +112,7 @@ void LibArtUnifont::glyph2pixels(const Unichar ch, unsigned char pix[]) {
   unsigned int cols = is_halfwidth ? 1 : 2; 
   const unsigned int rows = 16;
   const unsigned int bitsinbyte = 8;
-  const unsigned int pixsz = 4;
+  const unsigned int pixsz = 1;
 
 #define GLYPHBYTE(row,col) (glyphs[base + ((rows-(row+1))*cols) + col])
 #define IS_SET(bit,byt) (byt & (1 << (bitsinbyte-(bit+1))))
@@ -115,7 +121,7 @@ void LibArtUnifont::glyph2pixels(const Unichar ch, unsigned char pix[]) {
     for (int col = 0; col < cols; ++col) {
       for (int bit = 0; bit < bitsinbyte; ++bit, pix += pixsz) {
 	if (IS_SET(bit, GLYPHBYTE(row,col))) {
-	  *(pix + 3) = 0xff;
+	  *(pix) = 0xff;
 	}
       }
     }

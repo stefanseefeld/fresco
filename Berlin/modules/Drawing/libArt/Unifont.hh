@@ -53,12 +53,14 @@ public:
   virtual DrawingKit::FontMetrics metrics();
   virtual DrawingKit::GlyphMetrics metrics(Unichar &);
   virtual void allocateChar(const Unichar ch, Graphic::Requisition &);
-  virtual void getPixBuf(const Unichar ch, ArtPixBuf &);
+  virtual void getPixBuf(const Unichar ch, ArtPixBuf *&);
 protected:
   void glyph2pixels(const Unichar ch, unsigned char *pix);
   double xres, yres;  
 
-  map<Unichar,ArtPixBuf *> cache;
+  unsigned char slab[16*16];
+  ArtPixBuf *myPixBuf;
+//   map<Unichar,ArtPixBuf *> cache;
   MMap *glyphmap;
 };
 
