@@ -37,6 +37,11 @@
 #include <Prague/Sys/Profiler.hh>
 #include <Prague/Sys/Timer.hh>
 
+#ifdef JPROF
+// probably need to change include path
+#include "jprof.h"
+#endif
+
 using namespace Prague;
 
 struct Dump : Signal::Notifier 
@@ -86,6 +91,11 @@ int main(int argc, char **argv)
   Logger::set(Logger::traversal);
   Logger::set(Logger::widget);
 #endif
+
+#ifdef JPROF
+  setupProfilingStuff();
+#endif
+
   CORBA::ORB_ptr orb = CORBA::ORB_init(argc,argv,"omniORB2");
   CORBA::BOA_ptr boa = orb->BOA_init(argc,argv,"omniORB2_BOA");
   boa->impl_is_ready(0,1);
