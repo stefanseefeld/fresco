@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -27,6 +27,12 @@
 #include <sys/stat.h>
 #include <termios.h>
 #include <Prague/Sys/Thread.hh>
+
+#if defined(__linux__) || defined(__FreeBSD__) // XXX: should use configure
+#  define __bsd44__
+#elif defined(__irix__)
+#  define __svr4__
+#endif
 
 using namespace Prague;
 
@@ -88,7 +94,7 @@ void ptybuf::setup()
   if (!save) save = new backup(fd());
 }
 
-#if defined(__linux__) || defined(__FreeBSD__) // XXX: should use configure
+#if defined __bsd44__
 #include "ptybuf.bsd44.cc"
 #elif defined __svr4__
 #include "ptybuf.svr4.cc"
