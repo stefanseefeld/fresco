@@ -317,6 +317,6 @@ void PostScript::DrawingKit::copy_drawable(Drawable_ptr d, PixelCoord x, PixelCo
 
 extern "C" KitImpl *load()
 {
-  static std::string properties[] = {"implementation", "DrawingKit"};
+  static std::string properties[] = {"implementation", "PSDrawingKit"};
   return create_kit<PostScript::DrawingKit> ("IDL:fresco.org/Fresco/DrawingKit:1.0", properties, 2);
 }
