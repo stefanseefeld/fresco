@@ -60,7 +60,8 @@ interface DrawTraversal : Traversal
 
 interface PickTraversal : Traversal
 {
-   void pick(in Graphic g);
+ //   void pick(in Graphic g);
+   readonly attribute any event;
 };
 
 #endif /* _Traversal_idl */

@@ -20,9 +20,9 @@
  * MA 02139, USA.
  */
 
-#include "Berlin/ScreenManager.hh"
-#include "Berlin/DrawTraversalImpl.hh"
-#include "Berlin/PickTraversalImpl.hh"
+#include <Berlin/ScreenManager.hh>
+#include <Berlin/DrawTraversalImpl.hh>
+#include <Berlin/PickTraversalImpl.hh>
 
 ScreenManager::ScreenManager(ScreenImpl *s, GLDrawingKit *d)
   : screen(s), drawing(d), visual(drawing->getVisual())
@@ -65,13 +65,51 @@ void ScreenManager::nextEvent()
   ggiEventPoll(visual, mask, 0);
   ggi_event event;
   ggiEventRead(visual, &event, mask);
+
+  CORBA::Any a;
+
+  switch (event.any.type) {
+  case evKeyPress:
+  case evKeyRepeat: {      
+      Event::Key ke;
+      ke.theChar = event.key.sym;
+      a <<= ke;
+      cerr << "k";
+      break;
+  }
+  
+  case evPtrAbsolute: {
+      ptrPositionX = event.pmove.x;
+      ptrPositionY = event.pmove.y;
+      // absence of break statement here is intentional
+  }
+  case evPtrButtonPress:
+  case evPtrButtonRelease: {
+      Event::Pointer pe;	  
+      pe.location.x = ptrPositionX;
+      pe.location.y = ptrPositionY;	  
+      pe.location.z = 0; // time being we're using non-3d mice.
+      pe.buttonNumber = event.pbutton.button;	  
+      pe.whatHappened = 
+	  event.any.type == evPtrAbsolute ? Event::hold :
+	  event.any.type == evPtrButtonPress ? Event::press :
+	  event.any.type == evPtrButtonRelease ? Event::release : Event::hold;
+      cerr << "m";
+      a <<= pe;
+      break;
+  }
+  }
+  PickTraversalImpl *traversal = new PickTraversalImpl(a, screen->getRegion());
+  traversal->_obj_is_ready(CORBA::BOA::getBOA());
+  screen->traverse(traversal);
+  traversal->_dispose();
 }
 
 void ScreenManager::run()
 {
   while (true)
     {
-      if (damages.size()) repair();
-      nextEvent();
+	if (damages.size()) repair();
+	nextEvent();
     }
 }

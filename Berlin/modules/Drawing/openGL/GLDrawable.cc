@@ -61,11 +61,12 @@ GLDrawable::GLDrawable()
   //  }
 
   // Configure the mode struct.
-  mode.visible.x = GGI_AUTO;
-  mode.visible.y = GGI_AUTO;
-  mode.virt.x = GGI_AUTO;
-  mode.virt.y = GGI_AUTO;
+  mode.visible.x = mode.visible.y = GGI_AUTO;
+  mode.virt.x = mode.virt.y = GGI_AUTO;
+  mode.size.x = mode.size.y = GGI_AUTO;
+  mode.dpp.x = mode.dpp.y = 1;
   mode.graphtype = GT_AUTO;
+  mode.frames = 2;
   // Open the default visual --
   visual = ggiOpen( NULL );
   if ( visual == NULL ) {
@@ -76,7 +77,9 @@ GLDrawable::GLDrawable()
   // We've acquired a visual, now let's decide on a mode. See libggi docs
   // on the format of the environment variable GGI_DEFMODE, which we use to
   // get all of our mode preferences.
+
   if( ggiCheckMode( visual, &mode ) == 0 ) {
+      
     // The mode works! We try to set it....
     if( ggiSetMode( visual, &mode ) != 0 ) {
       cerr << "Cannot set visual, even though GGI says it's ok???\n";
@@ -116,9 +119,9 @@ GLDrawable::GLDrawable()
     exit( 7 );
     // exit code 7. Cannot set visual for GGIMesa.
   }
+
   GGIMesaMakeCurrent(context);
   reshape( mode.visible.x, mode.visible.y );
-
 
   // initialize some friendly OpenGL states
   static GLfloat white[4] = {0.1, 0.1, 0.1, 0.1 };
@@ -130,9 +133,9 @@ GLDrawable::GLDrawable()
   glFrontFace(GL_CW); 
   glShadeModel(GL_FLAT);
 
-
   clip = new RegionImpl;
   clip->_obj_is_ready(_boa());
+
 }
 
 // this is just a utility function for reshaping.

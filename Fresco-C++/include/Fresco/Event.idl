@@ -49,6 +49,7 @@ module Event {
     };
     
     struct Pointer {
+	Vertex location;
 	ActuationType whatHappened;
 	unsigned long buttonNumber;
     };

@@ -1,7 +1,10 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
+ *
  * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
+ *
  * http://www.berlin-consortium.org
  *
  * this code is based on code from Fresco.
@@ -63,17 +66,17 @@ TraversalImpl::~TraversalImpl()
     }
 }
 
-Region_ptr TraversalImpl::allocation()
+Region_ptr TraversalImpl::allocation() 
 {
   return stack.back().allocation;
 }
 
-Transform_ptr TraversalImpl::transformation()
+Transform_ptr TraversalImpl::transformation() 
 {
   return stack.back().transformation;
 }
 
-CORBA::Boolean TraversalImpl::bounds(Vertex &lower, Vertex &upper, Vertex &origin)
+CORBA::Boolean TraversalImpl::bounds(Vertex &lower, Vertex &upper, Vertex &origin) 
 {
   bool b = false;
   State &state = stack.back();
@@ -87,10 +90,10 @@ CORBA::Boolean TraversalImpl::bounds(Vertex &lower, Vertex &upper, Vertex &origi
   return b;
 }
 
-CORBA::Boolean visible()
-{
-  return true;
-}
+// CORBA::Boolean visible() 
+// {
+//   return true;
+// }
 
 void TraversalImpl::traverseChild(GraphicOffset_ptr o, Region_ptr allocation, Transform_ptr transformation)
 {

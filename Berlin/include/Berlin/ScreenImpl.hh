@@ -31,7 +31,7 @@
 
 class ScreenManager;
 
-class ScreenImpl : implements(Screen), public PolyGraphic
+class ScreenImpl : implements(Screen), virtual public PolyGraphic
 {
 public:
   ScreenImpl(GLDrawingKit *, Coord, Coord);
@@ -40,6 +40,7 @@ public:
   Coord width();
   Coord height();
   ScreenManager *Manager() { return manager;}
+  Region_ptr getRegion() {return region->_this();}
 protected:
   ScreenManager *manager;
   RegionImpl *region;

@@ -37,6 +37,8 @@ public:
   void nextEvent();
   void run();
 private:
+  long ptrPositionX;
+  long ptrPositionY;
   ScreenImpl *screen;
   GLDrawingKit *drawing;
   ggi_visual_t visual;

@@ -35,7 +35,7 @@ class PolyGraphicOffset;
 
 typedef vector<PolyGraphicOffset *> PolyGraphicOffsetList;
 
-class PolyGraphic : public GraphicImpl
+class PolyGraphic : virtual public GraphicImpl
 {
   friend class PolyGraphicOffset;
 public:

@@ -28,7 +28,7 @@
 #include <Berlin/TraversalImpl.hh>
 #include <vector>
 
-class DrawTraversalImpl : implements(DrawTraversal), public TraversalImpl
+class DrawTraversalImpl : implements(DrawTraversal), virtual public TraversalImpl
 {
 public:
   DrawTraversalImpl(DrawingKit_ptr, Region_ptr);
