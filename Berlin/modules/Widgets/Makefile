@@ -32,7 +32,7 @@ CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw
 LDFLAGS	= -shared -rdynamic -L$(lpath)
 LIBS	= -lPrague -lBerlin #$(ORBLIBS)
 
-SRC	= BoundedValueImpl.cc BoundedRangeImpl.cc TelltaleImpl.cc TextBufferImpl.cc \
+SRC	= BoundedValueImpl.cc BoundedRangeImpl.cc TelltaleImpl.cc TextBufferImpl.cc StreamBufferImpl.cc\
 	  ControllerImpl.cc Bevel.cc Frame.cc Filler.cc WidgetKitImpl.cc
 
 TARGET	= $(lpath)/libWidget.so

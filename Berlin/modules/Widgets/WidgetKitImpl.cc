@@ -26,6 +26,7 @@
 #include "Widget/BoundedValueImpl.hh"
 #include "Widget/BoundedRangeImpl.hh"
 #include "Widget/TextBufferImpl.hh"
+#include "Widget/StreamBufferImpl.hh"
 #include "Widget/ControllerImpl.hh"
 #include "Widget/Frame.hh"
 #include "Berlin/Plugin.hh"
@@ -90,6 +91,14 @@ BoundedRange_ptr WidgetKitImpl::brange(Coord l, Coord u, Coord lv, Coord uv, Coo
 TextBuffer_ptr WidgetKitImpl::text()
 {
   TextBufferImpl *buffer = new TextBufferImpl();
+  buffer->_obj_is_ready(applyscope(skeletonize(WidgetKit),_boa()));
+  subjects.push_back(buffer);
+  return buffer->_this();  
+}
+
+StreamBuffer_ptr WidgetKitImpl::stream()
+{
+  StreamBufferImpl *buffer = new StreamBufferImpl(80);
   buffer->_obj_is_ready(applyscope(skeletonize(WidgetKit),_boa()));
   subjects.push_back(buffer);
   return buffer->_this();  

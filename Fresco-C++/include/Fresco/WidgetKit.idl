@@ -37,6 +37,7 @@ interface TelltaleConstraint;
 interface BoundedValue;
 interface BoundedRange;
 interface TextBuffer;
+interface StreamBuffer;
 interface Graphic;
 interface View;
 interface Controller;
@@ -50,6 +51,7 @@ interface WidgetKit : Cloneable
   BoundedValue bvalue(in Coord l, in Coord u, in Coord v, in Coord s, in Coord p);
   BoundedRange brange(in Coord l, in Coord u, in Coord lv, in Coord uv, in Coord s, in Coord p);
   TextBuffer text();
+  StreamBuffer stream();
   
   Graphic inset(in Graphic g, in Color c);
   Graphic outset(in Graphic g, in Color c);

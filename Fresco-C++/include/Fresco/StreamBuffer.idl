@@ -19,23 +19,19 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _TextBuffer_idl
-#define _TextBuffer_idl
+#ifndef _StreamBuffer_idl
+#define _StreamBuffer_idl
 
 #include <Subject.idl>
 #include <Types.idl>
 
-interface TextBuffer : Subject
+interface StreamBuffer : Subject
 {
+  typedef sequence<octet> Data;
   readonly attribute long size;
-  attribute long position;
-  void forward();
-  void backward();
-  void shift(in long d);
-  void insertChar(in Unichar u);
-  void insertString(in Unistring u);
-  void removeLeft(in long d);
-  void removeRight(in long d);
+  readonly attribute long available;
+  void write(in Data d);
+  Data read();
 };
 
-#endif /* _TextBuffer_idl */
+#endif /* _StreamBuffer_idl */

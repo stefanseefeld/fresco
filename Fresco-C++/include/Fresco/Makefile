@@ -42,7 +42,7 @@ STATINT	= ClientContext.idl ServerContext.idl LifeCycle.idl Naming.idl Cloneable
 	  FigureKit.idl \
 	  Grid.idl Viewport.idl Stage.idl LayoutKit.idl \
 	  CommandKit.idl \
-	  Subject.idl Controller.idl Telltale.idl BoundedValue.idl BoundedRange.idl TextBuffer.idl View.idl WidgetKit.idl \
+	  Subject.idl Controller.idl Telltale.idl BoundedValue.idl BoundedRange.idl TextBuffer.idl StreamBuffer.idl View.idl WidgetKit.idl \
 	  Metrics.idl Text.idl TextKit.idl
 
 INT	= $(DYNINT) $(STATINT)
