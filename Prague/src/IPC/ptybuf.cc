@@ -44,6 +44,10 @@ using namespace Prague;
 # include <sys/stropts.h>
 #endif
 
+#if defined (HAVE_LIBUTIL_H)
+# include <libutil.h>
+#endif
+
 //inline char ctrl(char c) { return c & 0x1f;}
 
 ptybuf::ptybuf()

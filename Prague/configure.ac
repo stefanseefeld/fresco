@@ -97,7 +97,7 @@ dnl ------------------------------------------------------------------
 AC_MSG_NOTICE([IPC Implementation])
 FRESCO_LIB_SOCKET
 AC_CHECK_LIB(util, login, LIBS="$LIBS -lutil")
-AC_CHECK_HEADERS([pty.h sys/stropts.h])
+AC_CHECK_HEADERS([pty.h sys/stropts.h libutil.h])
 AC_LANG(C)
 AC_CHECK_FUNCS([openpty _getpty])
 AC_LANG(C++)
