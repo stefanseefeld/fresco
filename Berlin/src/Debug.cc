@@ -23,20 +23,19 @@
 
 #include "Berlin/Debug.hh"
 
-vector<bool> debug::activeDebugGroups;
+vector<bool> debug::activeDebugGroups(12, false);
 Mutex debug::cerrMutex;
   
-void debug::log(string msg, debugGroup g) {
-  // XXX - Fixme - this should be initted early on to prevent this
-  if ((signed)activeDebugGroups.size() < g)
-    activeDebugGroups = vector<bool>(12, true);
+void debug::log(string msg, debugGroup g)
+{
   MutexGuard guard(cerrMutex);
-  if (activeDebugGroups[g])
-    cerr << msg << endl;
+  if (activeDebugGroups[g])  cerr << msg << endl;
 }
 
 void debug::set(debugGroup g) { activeDebugGroups[g] = true; }
 void debug::clear(debugGroup g) { activeDebugGroups[g] = false; }
-void debug::setall() {
-  activeDebugGroups = vector<bool>(12, true);
+void debug::setall()
+{
+  for (vector<bool>::iterator i = activeDebugGroups.begin(); i != activeDebugGroups.end(); i++)
+    *i = true;
 }
