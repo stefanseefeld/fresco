@@ -39,7 +39,7 @@ CPPFLAGS	+= -DVERSION='"$(VERSION)"'
 endif
 LIBS		+= -L../lib -L../../lib -lBerlin -lFresco -lBabylon -lPrague
 
-TARGETS		:= ../bin/server ../bin/kits ../bin/devices
+TARGETS		:= ../bin/berlin ../bin/kits ../bin/devices
 
 ifeq ($(JPROF),yes)
 JPROFTARGETS	:= ../lib/libjprof.so ../bin/jprof
@@ -69,7 +69,7 @@ ifeq ($(JPROF),yes)
 
 endif
 
-../bin/server:	ServerImpl.o ServerContextImpl.o server.o
+../bin/berlin:	ServerImpl.o ServerContextImpl.o server.o
 	@echo linking $(@F)
 	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
