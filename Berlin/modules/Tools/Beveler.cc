@@ -44,7 +44,8 @@ void rect(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, con
   DrawingKit_var drawing = traversal->drawing();
   drawing->save();
   Path path;
-  path.length(5);
+  path.nodes.length(5);
+  path.shape = convex;
   Vertex lower = {left, top, 0.};
   Vertex upper = {right, bottom, 0.};
 
@@ -70,18 +71,18 @@ void rect(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, con
     }
   else
     {
-      path[0].x = left, path[0].y = top, path[0].z = 0.;
-      path[1].x = left, path[1].y = bottom, path[1].z = 0.;
-      path[2].x = lefti, path[2].y = bottomi, path[2].z = 0.;
-      path[3].x = lefti, path[3].y = topi, path[3].z = 0.;
-      path[4].x = left, path[4].y = top, path[4].z = 0.;
+      path.nodes[0].x = left, path.nodes[0].y = top, path.nodes[0].z = 0.;
+      path.nodes[1].x = left, path.nodes[1].y = bottom, path.nodes[1].z = 0.;
+      path.nodes[2].x = lefti, path.nodes[2].y = bottomi, path.nodes[2].z = 0.;
+      path.nodes[3].x = lefti, path.nodes[3].y = topi, path.nodes[3].z = 0.;
+      path.nodes[4].x = left, path.nodes[4].y = top, path.nodes[4].z = 0.;
       drawing->draw_path(path);
 
-      path[0].x = lefti, path[0].y = topi, path[0].z = 0.;
-      path[1].x = righti, path[1].y = topi, path[1].z = 0.;
-      path[2].x = right, path[2].y = top, path[2].z = 0.;
-      path[3].x = left, path[3].y = top, path[3].z = 0.;
-      path[4].x = lefti, path[4].y = topi, path[4].z = 0.;
+      path.nodes[0].x = lefti, path.nodes[0].y = topi, path.nodes[0].z = 0.;
+      path.nodes[1].x = righti, path.nodes[1].y = topi, path.nodes[1].z = 0.;
+      path.nodes[2].x = right, path.nodes[2].y = top, path.nodes[2].z = 0.;
+      path.nodes[3].x = left, path.nodes[3].y = top, path.nodes[3].z = 0.;
+      path.nodes[4].x = lefti, path.nodes[4].y = topi, path.nodes[4].z = 0.;
       drawing->draw_path(path);
     }
   
@@ -89,18 +90,18 @@ void rect(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, con
    * right and top (dark) edges
    */
   drawing->foreground(dark);
-  path[0].x = right, path[0].y = top, path[0].z = 0.;
-  path[1].x = right, path[1].y = bottom, path[1].z = 0.;
-  path[2].x = righti, path[2].y = bottomi, path[2].z = 0.;
-  path[3].x = righti, path[3].y = topi, path[3].z = 0.;
-  path[4].x = right, path[4].y = top, path[4].z = 0.;
+  path.nodes[0].x = right, path.nodes[0].y = top, path.nodes[0].z = 0.;
+  path.nodes[1].x = right, path.nodes[1].y = bottom, path.nodes[1].z = 0.;
+  path.nodes[2].x = righti, path.nodes[2].y = bottomi, path.nodes[2].z = 0.;
+  path.nodes[3].x = righti, path.nodes[3].y = topi, path.nodes[3].z = 0.;
+  path.nodes[4].x = right, path.nodes[4].y = top, path.nodes[4].z = 0.;
   drawing->draw_path(path);
   
-  path[0].x = right, path[0].y = bottom, path[0].z = 0.;
-  path[1].x = left, path[1].y = bottom, path[1].z = 0.;
-  path[2].x = lefti, path[2].y = bottomi, path[2].z = 0.;
-  path[3].x = righti, path[3].y = bottomi, path[3].z = 0.;
-  path[4].x = right, path[4].y = bottom, path[4].z = 0.;
+  path.nodes[0].x = right, path.nodes[0].y = bottom, path.nodes[0].z = 0.;
+  path.nodes[1].x = left, path.nodes[1].y = bottom, path.nodes[1].z = 0.;
+  path.nodes[2].x = lefti, path.nodes[2].y = bottomi, path.nodes[2].z = 0.;
+  path.nodes[3].x = righti, path.nodes[3].y = bottomi, path.nodes[3].z = 0.;
+  path.nodes[4].x = right, path.nodes[4].y = bottom, path.nodes[4].z = 0.;
   drawing->draw_path(path);
 
   drawing->restore();
@@ -120,45 +121,46 @@ void leftArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &medium
   drawing->save();
   
   Path path;
+  path.shape = convex;
   if (fill)
     {
-      path.length(4);
+      path.nodes.length(4);
       drawing->foreground(medium);
-      path[0].x = right, path[0].y = bottom, path[0].z = 0;
-      path[1].x = right, path[1].y = top, path[1].z = 0;
-      path[2].x = left, path[2].y = center.y, path[2].z = 0;
-      path[3] = path[0];
+      path.nodes[0].x = right, path.nodes[0].y = bottom, path.nodes[0].z = 0;
+      path.nodes[1].x = right, path.nodes[1].y = top, path.nodes[1].z = 0;
+      path.nodes[2].x = left, path.nodes[2].y = center.y, path.nodes[2].z = 0;
+      path.nodes[3] = path.nodes[0];
       drawing->draw_path(path);
     }
-  path.length(5);
+  path.nodes.length(5);
   /*
    * top
    */
   drawing->foreground(dark);
-  path[0].x = left, path[0].y = center.y, path[0].z = 0.;
-  path[1].x = left + dx, path[1].y = center.y, path[1].z = 0.;
-  path[2].x = right - thickness, path[2].y = top + dy, path[2].z = 0;
-  path[3].x = right, path[3].y = top, path[3].z = 0;
-  path[4] = path[0];
+  path.nodes[0].x = left, path.nodes[0].y = center.y, path.nodes[0].z = 0.;
+  path.nodes[1].x = left + dx, path.nodes[1].y = center.y, path.nodes[1].z = 0.;
+  path.nodes[2].x = right - thickness, path.nodes[2].y = top + dy, path.nodes[2].z = 0;
+  path.nodes[3].x = right, path.nodes[3].y = top, path.nodes[3].z = 0;
+  path.nodes[4] = path.nodes[0];
   drawing->draw_path(path);
   /*
    * right
    */
   drawing->foreground(light);
-  path[0].x = right, path[0].y = bottom, path[0].z = 0;
-  path[1].x = right, path[1].y = top, path[1].z = 0;
-  path[2].x = right - thickness, path[2].y = top + dy, path[2].z = 0;
-  path[3].x = right - thickness, path[3].y = bottom - dy, path[3].z = 0;
-  path[4] = path[0];
+  path.nodes[0].x = right, path.nodes[0].y = bottom, path.nodes[0].z = 0;
+  path.nodes[1].x = right, path.nodes[1].y = top, path.nodes[1].z = 0;
+  path.nodes[2].x = right - thickness, path.nodes[2].y = top + dy, path.nodes[2].z = 0;
+  path.nodes[3].x = right - thickness, path.nodes[3].y = bottom - dy, path.nodes[3].z = 0;
+  path.nodes[4] = path.nodes[0];
   drawing->draw_path(path);
   /*
    * bottom
    */
-  path[0].x = left, path[0].y = center.y, path[0].z = 0;
-  path[1].x = right, path[1].y = bottom, path[1].z = 0;
-  path[2].x = right - thickness, path[2].y = bottom - dy, path[2].z = 0;
-  path[3].x = left + dx, path[3].y = center.y, path[3].z = 0;
-  path[4] = path[0];
+  path.nodes[0].x = left, path.nodes[0].y = center.y, path.nodes[0].z = 0;
+  path.nodes[1].x = right, path.nodes[1].y = bottom, path.nodes[1].z = 0;
+  path.nodes[2].x = right - thickness, path.nodes[2].y = bottom - dy, path.nodes[2].z = 0;
+  path.nodes[3].x = left + dx, path.nodes[3].y = center.y, path.nodes[3].z = 0;
+  path.nodes[4] = path.nodes[0];
   drawing->draw_path(path);
   drawing->restore();
 }
@@ -176,45 +178,46 @@ void rightArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &mediu
   drawing->save();
 
   Path path;
+  path.shape = convex;
   if (fill)
     {
-      path.length(4);
+      path.nodes.length(4);
       drawing->foreground(medium);
-      path[0].x = right, path[0].y = center.y, path[0].z = 0;
-      path[1].x = left, path[1].y = top, path[1].z = 0;
-      path[2].x = left, path[2].y = bottom, path[2].z = 0;
-      path[3] = path[0];
+      path.nodes[0].x = right, path.nodes[0].y = center.y, path.nodes[0].z = 0;
+      path.nodes[1].x = left, path.nodes[1].y = top, path.nodes[1].z = 0;
+      path.nodes[2].x = left, path.nodes[2].y = bottom, path.nodes[2].z = 0;
+      path.nodes[3] = path.nodes[0];
       drawing->draw_path(path);
     }
-  path.length(5);
+  path.nodes.length(5);
   /*
    * bottom
    */
   drawing->foreground(light);
-  path[0].x = left, path[0].y = bottom, path[0].z = 0;
-  path[1].x = right, path[1].y = center.y, path[1].z = 0.;
-  path[2].x = right - dx, path[2].y = center.y, path[2].z = 0.;
-  path[3].x = left + thickness, path[3].y = bottom - dy, path[3].z = 0;
-  path[4] = path[0];
+  path.nodes[0].x = left, path.nodes[0].y = bottom, path.nodes[0].z = 0;
+  path.nodes[1].x = right, path.nodes[1].y = center.y, path.nodes[1].z = 0.;
+  path.nodes[2].x = right - dx, path.nodes[2].y = center.y, path.nodes[2].z = 0.;
+  path.nodes[3].x = left + thickness, path.nodes[3].y = bottom - dy, path.nodes[3].z = 0;
+  path.nodes[4] = path.nodes[0];
   drawing->draw_path(path);
   /*
    * left
    */
   drawing->foreground(dark);
-  path[0].x = left, path[0].y = top, path[0].z = 0;
-  path[1].x = left, path[1].y = bottom, path[1].z = 0;
-  path[2].x = left + thickness, path[2].y = bottom - dy, path[2].z = 0;
-  path[3].x = left + thickness, path[3].y = top + dy, path[3].z = 0;
-  path[4] = path[0];
+  path.nodes[0].x = left, path.nodes[0].y = top, path.nodes[0].z = 0;
+  path.nodes[1].x = left, path.nodes[1].y = bottom, path.nodes[1].z = 0;
+  path.nodes[2].x = left + thickness, path.nodes[2].y = bottom - dy, path.nodes[2].z = 0;
+  path.nodes[3].x = left + thickness, path.nodes[3].y = top + dy, path.nodes[3].z = 0;
+  path.nodes[4] = path.nodes[0];
   drawing->draw_path(path);
   /*
    * top
    */
-  path[0].x = right, path[0].y = center.y, path[0].z = 0;
-  path[1].x = left, path[1].y = top, path[1].z = 0;
-  path[2].x = left + thickness, path[2].y = top + dy, path[2].z = 0;
-  path[3].x = right - dx, path[3].y = center.y, path[3].z = 0;
-  path[4] = path[0];
+  path.nodes[0].x = right, path.nodes[0].y = center.y, path.nodes[0].z = 0;
+  path.nodes[1].x = left, path.nodes[1].y = top, path.nodes[1].z = 0;
+  path.nodes[2].x = left + thickness, path.nodes[2].y = top + dy, path.nodes[2].z = 0;
+  path.nodes[3].x = right - dx, path.nodes[3].y = center.y, path.nodes[3].z = 0;
+  path.nodes[4] = path.nodes[0];
   drawing->draw_path(path);
   drawing->restore();
 }
@@ -232,45 +235,46 @@ void upArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, 
   drawing->save();
 
   Path path;
+  path.shape = convex;
   if (fill)
     {
-      path.length(4);
+      path.nodes.length(4);
       drawing->foreground(medium);
-      path[0].x = left, path[0].y = bottom, path[0].z = 0;
-      path[1].x = right, path[1].y = bottom, path[1].z = 0;
-      path[2].x = center.x, path[2].y = top, path[2].z = 0;
-      path[3] = path[0];
+      path.nodes[0].x = left, path.nodes[0].y = bottom, path.nodes[0].z = 0;
+      path.nodes[1].x = right, path.nodes[1].y = bottom, path.nodes[1].z = 0;
+      path.nodes[2].x = center.x, path.nodes[2].y = top, path.nodes[2].z = 0;
+      path.nodes[3] = path.nodes[0];
       drawing->draw_path(path);
     }
-  path.length(5);
+  path.nodes.length(5);
   /*
    * left
    */
   drawing->foreground(light);
-  path[0].x = center.x, path[0].y = top, path[0].z = 0;
-  path[1].x = left, path[1].y = bottom, path[1].z = 0;
-  path[2].x = left + dx, path[2].y = bottom - thickness, path[2].z = 0;
-  path[3].x = center.x, path[3].y = top + dy, path[3].z = 0;
-  path[4] = path[0];
+  path.nodes[0].x = center.x, path.nodes[0].y = top, path.nodes[0].z = 0;
+  path.nodes[1].x = left, path.nodes[1].y = bottom, path.nodes[1].z = 0;
+  path.nodes[2].x = left + dx, path.nodes[2].y = bottom - thickness, path.nodes[2].z = 0;
+  path.nodes[3].x = center.x, path.nodes[3].y = top + dy, path.nodes[3].z = 0;
+  path.nodes[4] = path.nodes[0];
   drawing->draw_path(path);
   /*
    * right
    */
   drawing->foreground(dark);
-  path[0].x = center.x, path[0].y = top, path[0].z = 0;
-  path[1].x = center.x, path[1].y = top + dy, path[1].z = 0;
-  path[2].x = right - dx, path[2].y = bottom - thickness, path[2].z = 0;
-  path[3].x = right, path[3].y = bottom, path[3].z = 0;
-  path[4] = path[0];
+  path.nodes[0].x = center.x, path.nodes[0].y = top, path.nodes[0].z = 0;
+  path.nodes[1].x = center.x, path.nodes[1].y = top + dy, path.nodes[1].z = 0;
+  path.nodes[2].x = right - dx, path.nodes[2].y = bottom - thickness, path.nodes[2].z = 0;
+  path.nodes[3].x = right, path.nodes[3].y = bottom, path.nodes[3].z = 0;
+  path.nodes[4] = path.nodes[0];
   drawing->draw_path(path);
   /*
    * bottom
    */
-  path[0].x = left, path[0].y = bottom, path[0].z = 0;
-  path[1].x = right, path[1].y = bottom, path[1].z = 0;
-  path[2].x = right - dx, path[2].y = bottom - thickness, path[2].z = 0;
-  path[3].x = left + dx, path[3].y = bottom - thickness, path[3].z = 0;
-  path[4] = path[0];
+  path.nodes[0].x = left, path.nodes[0].y = bottom, path.nodes[0].z = 0;
+  path.nodes[1].x = right, path.nodes[1].y = bottom, path.nodes[1].z = 0;
+  path.nodes[2].x = right - dx, path.nodes[2].y = bottom - thickness, path.nodes[2].z = 0;
+  path.nodes[3].x = left + dx, path.nodes[3].y = bottom - thickness, path.nodes[3].z = 0;
+  path.nodes[4] = path.nodes[0];
   drawing->draw_path(path);
   drawing->restore();
 }
@@ -288,45 +292,46 @@ void downArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &medium
   drawing->save();
 
   Path path;
+  path.shape = convex;
   if (fill)
     {
-      path.length(4);
+      path.nodes.length(4);
       drawing->foreground(medium);
-      path[0].x = right, path[0].y = top, path[0].z = 0;
-      path[1].x = left, path[1].y = top, path[1].z = 0;
-      path[2].x = center.x, path[2].y = bottom, path[2].z = 0;
-      path[3] = path[0];
+      path.nodes[0].x = right, path.nodes[0].y = top, path.nodes[0].z = 0;
+      path.nodes[1].x = left, path.nodes[1].y = top, path.nodes[1].z = 0;
+      path.nodes[2].x = center.x, path.nodes[2].y = bottom, path.nodes[2].z = 0;
+      path.nodes[3] = path.nodes[0];
       drawing->draw_path(path);
     }
-  path.length(5);
+  path.nodes.length(5);
   /*
    * right
    */
   drawing->foreground(light);
-  path[0].x = right, path[0].y = top, path[0].z = 0;
-  path[1].x = right - dx, path[1].y = top + thickness, path[1].z = 0;
-  path[2].x = center.x, path[2].y = bottom - dy, path[2].z = 0;
-  path[3].x = center.x, path[3].y = bottom, path[3].z = 0;
-  path[4] = path[0];
+  path.nodes[0].x = right, path.nodes[0].y = top, path.nodes[0].z = 0;
+  path.nodes[1].x = right - dx, path.nodes[1].y = top + thickness, path.nodes[1].z = 0;
+  path.nodes[2].x = center.x, path.nodes[2].y = bottom - dy, path.nodes[2].z = 0;
+  path.nodes[3].x = center.x, path.nodes[3].y = bottom, path.nodes[3].z = 0;
+  path.nodes[4] = path.nodes[0];
   drawing->draw_path(path);
   /*
    * top
    */
   drawing->foreground(dark);
-  path[0].x = right, path[0].y = top, path[0].z = 0;
-  path[1].x = left, path[1].y = top, path[1].z = 0;
-  path[2].x = left + dx, path[2].y = top + thickness, path[2].z = 0;
-  path[3].x = right - dx, path[3].y = top + thickness, path[3].z = 0;
-  path[4] = path[0];
+  path.nodes[0].x = right, path.nodes[0].y = top, path.nodes[0].z = 0;
+  path.nodes[1].x = left, path.nodes[1].y = top, path.nodes[1].z = 0;
+  path.nodes[2].x = left + dx, path.nodes[2].y = top + thickness, path.nodes[2].z = 0;
+  path.nodes[3].x = right - dx, path.nodes[3].y = top + thickness, path.nodes[3].z = 0;
+  path.nodes[4] = path.nodes[0];
   drawing->draw_path(path);
   /*
    * left
    */
-  path[0].x = left, path[0].y = top, path[0].z = 0;
-  path[1].x = center.x, path[1].y = bottom, path[1].z = 0;
-  path[2].x = center.x, path[2].y = bottom - dy, path[2].z = 0;
-  path[3].x = left + dx, path[3].y = top + thickness, path[3].z = 0;
-  path[4] = path[0];
+  path.nodes[0].x = left, path.nodes[0].y = top, path.nodes[0].z = 0;
+  path.nodes[1].x = center.x, path.nodes[1].y = bottom, path.nodes[1].z = 0;
+  path.nodes[2].x = center.x, path.nodes[2].y = bottom - dy, path.nodes[2].z = 0;
+  path.nodes[3].x = left + dx, path.nodes[3].y = top + thickness, path.nodes[3].z = 0;
+  path.nodes[4] = path.nodes[0];
   drawing->draw_path(path);
   drawing->restore();
 }
@@ -343,54 +348,55 @@ void diamond(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, 
   drawing->save();
 
   Path path;
-  path.length(5);
+  path.shape = convex;
+  path.nodes.length(5);
   if (fill)
     {
       drawing->foreground(medium);
-      path[0].x = center.x, path[0].y = top, path[0].z = 0;
-      path[1].x = left, path[1].y = center.y, path[1].z = 0;
-      path[2].x = center.x, path[2].y = bottom, path[2].z = 0;
-      path[3].x = right, path[3].y = center.y, path[3].z = 0;
-      path[4] = path[0];
+      path.nodes[0].x = center.x, path.nodes[0].y = top, path.nodes[0].z = 0;
+      path.nodes[1].x = left, path.nodes[1].y = center.y, path.nodes[1].z = 0;
+      path.nodes[2].x = center.x, path.nodes[2].y = bottom, path.nodes[2].z = 0;
+      path.nodes[3].x = right, path.nodes[3].y = center.y, path.nodes[3].z = 0;
+      path.nodes[4] = path.nodes[0];
       drawing->draw_path(path);
     }
   /*
    * top left
    */
   drawing->foreground(dark);
-  path[0].x = center.x, path[0].y = top, path[0].z = 0;
-  path[1].x = left, path[1].y = center.y, path[1].z = 0;
-  path[2].x = left + dx, path[2].y = center.y, path[2].z = 0;
-  path[3].x = center.x, path[3].y = top + dy, path[3].z = 0;
-  path[4] = path[0];
+  path.nodes[0].x = center.x, path.nodes[0].y = top, path.nodes[0].z = 0;
+  path.nodes[1].x = left, path.nodes[1].y = center.y, path.nodes[1].z = 0;
+  path.nodes[2].x = left + dx, path.nodes[2].y = center.y, path.nodes[2].z = 0;
+  path.nodes[3].x = center.x, path.nodes[3].y = top + dy, path.nodes[3].z = 0;
+  path.nodes[4] = path.nodes[0];
   drawing->draw_path(path);
   /*
    * top right
    */
-  path[0].x = center.x, path[0].y = top, path[0].z = 0;
-  path[1].x = center.x, path[1].y = top + dy, path[1].z = 0;
-  path[2].x = right - dx, path[2].y = center.y, path[2].z = 0;
-  path[3].x = right, path[3].y = center.y, path[3].z = 0;
-  path[4] = path[0];
+  path.nodes[0].x = center.x, path.nodes[0].y = top, path.nodes[0].z = 0;
+  path.nodes[1].x = center.x, path.nodes[1].y = top + dy, path.nodes[1].z = 0;
+  path.nodes[2].x = right - dx, path.nodes[2].y = center.y, path.nodes[2].z = 0;
+  path.nodes[3].x = right, path.nodes[3].y = center.y, path.nodes[3].z = 0;
+  path.nodes[4] = path.nodes[0];
   drawing->draw_path(path);
   /*
    * bottom left
    */
   drawing->foreground(light);
-  path[0].x = left, path[0].y = center.y, path[0].z = 0;
-  path[1].x = center.x, path[1].y = bottom, path[1].z = 0;
-  path[2].x = center.x, path[2].y = bottom - dy, path[2].z = 0;
-  path[3].x = left + dx, path[3].y = center.y, path[3].z = 0;
-  path[4] = path[0];
+  path.nodes[0].x = left, path.nodes[0].y = center.y, path.nodes[0].z = 0;
+  path.nodes[1].x = center.x, path.nodes[1].y = bottom, path.nodes[1].z = 0;
+  path.nodes[2].x = center.x, path.nodes[2].y = bottom - dy, path.nodes[2].z = 0;
+  path.nodes[3].x = left + dx, path.nodes[3].y = center.y, path.nodes[3].z = 0;
+  path.nodes[4] = path.nodes[0];
   drawing->draw_path(path);
   /*
    * bottom right
    */
-  path[0].x = center.x, path[0].y = bottom, path[0].z = 0;
-  path[1].x = right, path[1].y = center.y, path[1].z = 0;
-  path[2].x = right - dx, path[2].y = center.y, path[2].z = 0;
-  path[3].x = center.x, path[3].y = bottom - dy, path[3].z = 0;
-  path[4] = path[0];
+  path.nodes[0].x = center.x, path.nodes[0].y = bottom, path.nodes[0].z = 0;
+  path.nodes[1].x = right, path.nodes[1].y = center.y, path.nodes[1].z = 0;
+  path.nodes[2].x = right - dx, path.nodes[2].y = center.y, path.nodes[2].z = 0;
+  path.nodes[3].x = center.x, path.nodes[3].y = bottom - dy, path.nodes[3].z = 0;
+  path.nodes[4] = path.nodes[0];
   drawing->draw_path(path);
   drawing->restore();
 }

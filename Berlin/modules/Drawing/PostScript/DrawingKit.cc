@@ -180,10 +180,10 @@ void PSDrawingKit::draw_path(const Path &path)
 {
   _os << "%draw_path" << std::endl;
   _os << "newpath" << std::endl;
-  Vertex v = path[path.length()-1];
+  Vertex v = path.nodes[path.nodes.length()-1];
   vertex(v, " moveto");
-  for (unsigned long i = 1; i < path.length(); i++) {
-    v = path[i];
+  for (unsigned long i = 1; i < path.nodes.length(); i++) {
+    v = path.nodes[i];
     vertex(v, " lineto");
   }
   _os << "closepath" << std::endl;

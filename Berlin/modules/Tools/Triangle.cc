@@ -43,32 +43,33 @@ void InvisibleTriangle::draw(DrawTraversal_ptr traversal)
   if (style != DrawingKit::outlined && _fill)
     {
       Path path;
-      path.length(4);
+      path.shape = convex;
+      path.nodes.length(4);
       switch (_direction)
 	{
 	case ToolKit::left:
-	  path[0].x = l.x, path[0].y = (l.y + u.y)/2, path[0].z = 0;
-	  path[1].x = u.x, path[1].y = l.y, path[1].z = 0;
-	  path[2].x = u.x, path[2].y = u.y, path[2].z = 0;
-	  path[3] = path[0];
+	  path.nodes[0].x = l.x, path.nodes[0].y = (l.y + u.y)/2, path.nodes[0].z = 0;
+	  path.nodes[1].x = u.x, path.nodes[1].y = l.y, path.nodes[1].z = 0;
+	  path.nodes[2].x = u.x, path.nodes[2].y = u.y, path.nodes[2].z = 0;
+	  path.nodes[3] = path.nodes[0];
 	  break;
 	case ToolKit::right:
-	  path[0].x = l.x, path[0].y = l.y, path[0].z = 0;
-	  path[1].x = u.x, path[1].y = (l.y + u.y)/2, path[1].z = 0;
-	  path[2].x = l.x, path[2].y = u.y, path[2].z = 0;
-	  path[3] = path[0];
+	  path.nodes[0].x = l.x, path.nodes[0].y = l.y, path.nodes[0].z = 0;
+	  path.nodes[1].x = u.x, path.nodes[1].y = (l.y + u.y)/2, path.nodes[1].z = 0;
+	  path.nodes[2].x = l.x, path.nodes[2].y = u.y, path.nodes[2].z = 0;
+	  path.nodes[3] = path.nodes[0];
 	  break;
 	case ToolKit::up:
-	  path[0].x = l.x, path[0].y = u.y, path[0].z = 0;
-	  path[1].x = (l.x + u.x)/2, path[1].y = l.y, path[1].z = 0;
-	  path[2].x = u.x, path[2].y = u.y, path[2].z = 0;
-	  path[3] = path[0];
+	  path.nodes[0].x = l.x, path.nodes[0].y = u.y, path.nodes[0].z = 0;
+	  path.nodes[1].x = (l.x + u.x)/2, path.nodes[1].y = l.y, path.nodes[1].z = 0;
+	  path.nodes[2].x = u.x, path.nodes[2].y = u.y, path.nodes[2].z = 0;
+	  path.nodes[3] = path.nodes[0];
 	  break;
 	case ToolKit::down:
-	  path[0].x = l.x, path[0].y = l.y, path[0].z = 0;
-	  path[1].x = (l.x + u.x)/2, path[1].y = u.y, path[1].z = 0;
-	  path[2].x = l.x, path[2].y = l.y, path[2].z = 0;
-	  path[3] = path[0];
+	  path.nodes[0].x = l.x, path.nodes[0].y = l.y, path.nodes[0].z = 0;
+	  path.nodes[1].x = (l.x + u.x)/2, path.nodes[1].y = u.y, path.nodes[1].z = 0;
+	  path.nodes[2].x = l.x, path.nodes[2].y = l.y, path.nodes[2].z = 0;
+	  path.nodes[3] = path.nodes[0];
 	  break;
 	}
       drawing->draw_path(path);
@@ -78,32 +79,33 @@ void InvisibleTriangle::draw(DrawTraversal_ptr traversal)
       drawing->save();
       drawing->surface_fillstyle(DrawingKit::solid);
       Path path;
-      path.length(4);
+      path.shape = convex;
+      path.nodes.length(4);
       switch (_direction)
 	{
 	case ToolKit::left:
-	  path[0].x = l.x, path[0].y = (l.y + u.y)/2, path[0].z = 0;
-	  path[1].x = u.x, path[1].y = l.y, path[1].z = 0;
-	  path[2].x = u.x, path[2].y = u.y, path[2].z = 0;
-	  path[3] = path[0];
+	  path.nodes[0].x = l.x, path.nodes[0].y = (l.y + u.y)/2, path.nodes[0].z = 0;
+	  path.nodes[1].x = u.x, path.nodes[1].y = l.y, path.nodes[1].z = 0;
+	  path.nodes[2].x = u.x, path.nodes[2].y = u.y, path.nodes[2].z = 0;
+	  path.nodes[3] = path.nodes[0];
 	  break;
 	case ToolKit::right:
-	  path[0].x = l.x, path[0].y = l.y, path[0].z = 0;
-	  path[1].x = u.x, path[1].y = (l.y + u.y)/2, path[1].z = 0;
-	  path[2].x = l.x, path[2].y = u.y, path[2].z = 0;
-	  path[3] = path[0];
+	  path.nodes[0].x = l.x, path.nodes[0].y = l.y, path.nodes[0].z = 0;
+	  path.nodes[1].x = u.x, path.nodes[1].y = (l.y + u.y)/2, path.nodes[1].z = 0;
+	  path.nodes[2].x = l.x, path.nodes[2].y = u.y, path.nodes[2].z = 0;
+	  path.nodes[3] = path.nodes[0];
 	  break;
 	case ToolKit::up:
-	  path[0].x = l.x, path[0].y = u.y, path[0].z = 0;
-	  path[1].x = (l.x + u.x)/2, path[1].y = l.y, path[1].z = 0;
-	  path[2].x = u.x, path[2].y = u.y, path[2].z = 0;
-	  path[3] = path[0];
+	  path.nodes[0].x = l.x, path.nodes[0].y = u.y, path.nodes[0].z = 0;
+	  path.nodes[1].x = (l.x + u.x)/2, path.nodes[1].y = l.y, path.nodes[1].z = 0;
+	  path.nodes[2].x = u.x, path.nodes[2].y = u.y, path.nodes[2].z = 0;
+	  path.nodes[3] = path.nodes[0];
 	  break;
 	case ToolKit::down:
-	  path[0].x = l.x, path[0].y = l.y, path[0].z = 0;
-	  path[1].x = (l.x + u.x)/2, path[1].y = u.y, path[1].z = 0;
-	  path[2].x = l.x, path[2].y = l.y, path[2].z = 0;
-	  path[3] = path[0];
+	  path.nodes[0].x = l.x, path.nodes[0].y = l.y, path.nodes[0].z = 0;
+	  path.nodes[1].x = (l.x + u.x)/2, path.nodes[1].y = u.y, path.nodes[1].z = 0;
+	  path.nodes[2].x = l.x, path.nodes[2].y = l.y, path.nodes[2].z = 0;
+	  path.nodes[3] = path.nodes[0];
 	  break;
 	}      
       drawing->draw_path(path);

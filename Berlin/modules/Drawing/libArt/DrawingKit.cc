@@ -182,7 +182,7 @@ void LibArtDrawingKit::set_font_attribute(const NVPair & nvp) {}
 
 void LibArtDrawingKit::draw_path(const Path &p) 
 {
-  int len = p.length();
+  int len = p.nodes.length();
   ArtVpath vpath[_fs == Warsaw::DrawingKit::outlined ? len : len + 1];
   ArtVpath *tvpath;  
 
@@ -190,8 +190,8 @@ void LibArtDrawingKit::draw_path(const Path &p)
     {
       for (int i = 0; i < len; ++i)
 	{
-	  vpath[i].x = p[i].x; 
-	  vpath[i].y = p[i].y;
+	  vpath[i].x = p.nodes[i].x; 
+	  vpath[i].y = p.nodes[i].y;
 	  vpath[i].code = ART_LINETO;
 	}
       vpath[0].code = ART_MOVETO_OPEN;
@@ -202,8 +202,8 @@ void LibArtDrawingKit::draw_path(const Path &p)
     {
       for (int i = 0; i < len; ++i)
 	{
-	  vpath[i].x = p[i].x; 
-	  vpath[i].y = p[i].y;
+	  vpath[i].x = p.nodes[i].x; 
+	  vpath[i].y = p.nodes[i].y;
 	  vpath[i].code = ART_LINETO;
 	}
       vpath[0].code = ART_MOVETO;
@@ -278,20 +278,22 @@ void LibArtDrawingKit::draw_rectangle(const Vertex &bot, const Vertex &top)
       Path path;
       if (_fs == Warsaw::DrawingKit::outlined)
 	{
-	  path.length(4);
-	  path[0].x = bot.x, path[0].y = bot.y;
-	  path[1].x = top.x, path[1].y = bot.y;
-	  path[2].x = top.x, path[2].y = top.y;
-	  path[3].x = bot.x, path[2].y = top.y;
+	  path.nodes.length(4);
+	  path.nodes[0].x = bot.x, path.nodes[0].y = bot.y;
+	  path.nodes[1].x = top.x, path.nodes[1].y = bot.y;
+	  path.nodes[2].x = top.x, path.nodes[2].y = top.y;
+	  path.nodes[3].x = bot.x, path.nodes[2].y = top.y;
+	  path.shape = convex;
 	}
       else
 	{
-	  path.length(5);
-	  path[0].x = bot.x, path[0].y = bot.y;
-	  path[1].x = top.x, path[1].y = bot.y;
-	  path[2].x = top.x, path[2].y = top.y;
-	  path[3].x = bot.x, path[3].y = top.y;
-	  path[4].x = bot.x, path[4].y = bot.y;
+	  path.nodes.length(5);
+	  path.nodes[0].x = bot.x, path.nodes[0].y = bot.y;
+	  path.nodes[1].x = top.x, path.nodes[1].y = bot.y;
+	  path.nodes[2].x = top.x, path.nodes[2].y = top.y;
+	  path.nodes[3].x = bot.x, path.nodes[3].y = top.y;
+	  path.nodes[4].x = bot.x, path.nodes[4].y = bot.y;
+	  path.shape = convex;
 	}
       draw_path(static_cast<const Path>(path));
     }

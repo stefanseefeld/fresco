@@ -50,14 +50,15 @@ void InvisibleDiamond::draw(DrawTraversal_ptr traversal)
   Coord dy = _thickness * sqrt(length.y * length.y / (length.x * length.x) + 1.0);
 
   Path path;
-  path.length(5);
+  path.shape = convex;
+  path.nodes.length(5);
   if (_fill)
     {
-      path[0].x = center.x, path[0].y = l.y, path[0].z = 0;
-      path[1].x = l.x, path[1].y = center.y, path[1].z = 0;
-      path[2].x = center.x, path[2].y = u.y, path[2].z = 0;
-      path[3].x = u.x, path[3].y = center.y, path[3].z = 0;
-      path[4] = path[0];
+      path.nodes[0].x = center.x, path.nodes[0].y = l.y, path.nodes[0].z = 0;
+      path.nodes[1].x = l.x, path.nodes[1].y = center.y, path.nodes[1].z = 0;
+      path.nodes[2].x = center.x, path.nodes[2].y = u.y, path.nodes[2].z = 0;
+      path.nodes[3].x = u.x, path.nodes[3].y = center.y, path.nodes[3].z = 0;
+      path.nodes[4] = path.nodes[0];
       drawing->draw_path(path);
     }
   else
@@ -65,38 +66,38 @@ void InvisibleDiamond::draw(DrawTraversal_ptr traversal)
       /*
        * top left
        */
-      path[0].x = center.x, path[0].y = u.y, path[0].z = 0;
-      path[1].x = l.x, path[1].y = center.y, path[1].z = 0;
-      path[2].x = l.x + dx, path[2].y = center.y, path[2].z = 0;
-      path[3].x = center.x, path[3].y = l.y + dy, path[3].z = 0;
-      path[4] = path[0];
+      path.nodes[0].x = center.x, path.nodes[0].y = u.y, path.nodes[0].z = 0;
+      path.nodes[1].x = l.x, path.nodes[1].y = center.y, path.nodes[1].z = 0;
+      path.nodes[2].x = l.x + dx, path.nodes[2].y = center.y, path.nodes[2].z = 0;
+      path.nodes[3].x = center.x, path.nodes[3].y = l.y + dy, path.nodes[3].z = 0;
+      path.nodes[4] = path.nodes[0];
       drawing->draw_path(path);
       /*
        * bottom left
        */
-      path[0].x = l.x, path[0].y = center.y, path[0].z = 0;
-      path[1].x = center.x, path[1].y = u.y, path[1].z = 0;
-      path[2].x = center.x, path[2].y = u.y - dy, path[2].z = 0;
-      path[3].x = l.x + dx, path[3].y = center.y, path[3].z = 0;
-      path[4] = path[0];
+      path.nodes[0].x = l.x, path.nodes[0].y = center.y, path.nodes[0].z = 0;
+      path.nodes[1].x = center.x, path.nodes[1].y = u.y, path.nodes[1].z = 0;
+      path.nodes[2].x = center.x, path.nodes[2].y = u.y - dy, path.nodes[2].z = 0;
+      path.nodes[3].x = l.x + dx, path.nodes[3].y = center.y, path.nodes[3].z = 0;
+      path.nodes[4] = path.nodes[0];
       drawing->draw_path(path);
       /*
        * bottom right
        */
-      path[0].x = center.x, path[0].y = u.y, path[0].z = 0;
-      path[1].x = u.x, path[1].y = center.y, path[1].z = 0;
-      path[2].x = u.x - dx, path[2].y = center.y, path[2].z = 0;
-      path[3].x = center.x, path[3].y = u.y - dy, path[3].z = 0;
-      path[4] = path[0];
+      path.nodes[0].x = center.x, path.nodes[0].y = u.y, path.nodes[0].z = 0;
+      path.nodes[1].x = u.x, path.nodes[1].y = center.y, path.nodes[1].z = 0;
+      path.nodes[2].x = u.x - dx, path.nodes[2].y = center.y, path.nodes[2].z = 0;
+      path.nodes[3].x = center.x, path.nodes[3].y = u.y - dy, path.nodes[3].z = 0;
+      path.nodes[4] = path.nodes[0];
       drawing->draw_path(path);
       /*
        * top right
        */
-      path[0].x = center.x, path[0].y = l.y, path[0].z = 0;
-      path[1].x = center.x, path[1].y = l.y + dy, path[1].z = 0;
-      path[2].x = u.x - dx, path[2].y = center.y, path[2].z = 0;
-      path[3].x = u.x, path[3].y = center.y, path[3].z = 0;
-      path[4] = path[0];
+      path.nodes[0].x = center.x, path.nodes[0].y = l.y, path.nodes[0].z = 0;
+      path.nodes[1].x = center.x, path.nodes[1].y = l.y + dy, path.nodes[1].z = 0;
+      path.nodes[2].x = u.x - dx, path.nodes[2].y = center.y, path.nodes[2].z = 0;
+      path.nodes[3].x = u.x, path.nodes[3].y = center.y, path.nodes[3].z = 0;
+      path.nodes[4] = path.nodes[0];
       drawing->draw_path(path);
     }
   drawing->restore();
@@ -160,14 +161,15 @@ void ColoredDiamond::draw(DrawTraversal_ptr traversal)
   Coord dy = _thickness * sqrt(length.y * length.y / (length.x * length.x) + 1.0);
 
   Path path;
-  path.length(5);
+  path.shape = convex;
+  path.nodes.length(5);
   if (_fill)
     {
-      path[0].x = center.x, path[0].y = l.y, path[0].z = 0;
-      path[1].x = l.x, path[1].y = center.y, path[1].z = 0;
-      path[2].x = center.x, path[2].y = u.y, path[2].z = 0;
-      path[3].x = u.x, path[3].y = center.y, path[3].z = 0;
-      path[4] = path[0];
+      path.nodes[0].x = center.x, path.nodes[0].y = l.y, path.nodes[0].z = 0;
+      path.nodes[1].x = l.x, path.nodes[1].y = center.y, path.nodes[1].z = 0;
+      path.nodes[2].x = center.x, path.nodes[2].y = u.y, path.nodes[2].z = 0;
+      path.nodes[3].x = u.x, path.nodes[3].y = center.y, path.nodes[3].z = 0;
+      path.nodes[4] = path.nodes[0];
       drawing->draw_path(path);
     }
   else
@@ -175,38 +177,38 @@ void ColoredDiamond::draw(DrawTraversal_ptr traversal)
       /*
        * top left
        */
-      path[0].x = center.x, path[0].y = l.y, path[0].z = 0;
-      path[1].x = l.x, path[1].y = center.y, path[1].z = 0;
-      path[2].x = l.x + dx, path[2].y = center.y, path[2].z = 0;
-      path[3].x = center.x, path[3].y = l.y + dy, path[3].z = 0;
-      path[4] = path[0];
+      path.nodes[0].x = center.x, path.nodes[0].y = l.y, path.nodes[0].z = 0;
+      path.nodes[1].x = l.x, path.nodes[1].y = center.y, path.nodes[1].z = 0;
+      path.nodes[2].x = l.x + dx, path.nodes[2].y = center.y, path.nodes[2].z = 0;
+      path.nodes[3].x = center.x, path.nodes[3].y = l.y + dy, path.nodes[3].z = 0;
+      path.nodes[4] = path.nodes[0];
       drawing->draw_path(path);
       /*
        * bottom left
        */
-      path[0].x = l.x, path[0].y = center.y, path[0].z = 0;
-      path[1].x = center.x, path[1].y = u.y, path[1].z = 0;
-      path[2].x = center.x, path[2].y = u.y - dy, path[2].z = 0;
-      path[3].x = l.x + dx, path[3].y = center.y, path[3].z = 0;
-      path[4] = path[0];
+      path.nodes[0].x = l.x, path.nodes[0].y = center.y, path.nodes[0].z = 0;
+      path.nodes[1].x = center.x, path.nodes[1].y = u.y, path.nodes[1].z = 0;
+      path.nodes[2].x = center.x, path.nodes[2].y = u.y - dy, path.nodes[2].z = 0;
+      path.nodes[3].x = l.x + dx, path.nodes[3].y = center.y, path.nodes[3].z = 0;
+      path.nodes[4] = path.nodes[0];
       drawing->draw_path(path);
       /*
        * bottom right
        */
-      path[0].x = center.x, path[0].y = u.y, path[0].z = 0;
-      path[1].x = u.x, path[1].y = center.y, path[1].z = 0;
-      path[2].x = u.x - dx, path[2].y = center.y, path[2].z = 0;
-      path[3].x = center.x, path[3].y = u.y - dy, path[3].z = 0;
-      path[4] = path[0];
+      path.nodes[0].x = center.x, path.nodes[0].y = u.y, path.nodes[0].z = 0;
+      path.nodes[1].x = u.x, path.nodes[1].y = center.y, path.nodes[1].z = 0;
+      path.nodes[2].x = u.x - dx, path.nodes[2].y = center.y, path.nodes[2].z = 0;
+      path.nodes[3].x = center.x, path.nodes[3].y = u.y - dy, path.nodes[3].z = 0;
+      path.nodes[4] = path.nodes[0];
       drawing->draw_path(path);
       /*
        * top right
        */
-      path[0].x = center.x, path[0].y = l.y, path[0].z = 0;
-      path[1].x = center.x, path[1].y = l.y + dy, path[1].z = 0;
-      path[2].x = u.x - dx, path[2].y = center.y, path[2].z = 0;
-      path[3].x = u.x, path[3].y = center.y, path[3].z = 0;
-      path[4] = path[0];
+      path.nodes[0].x = center.x, path.nodes[0].y = l.y, path.nodes[0].z = 0;
+      path.nodes[1].x = center.x, path.nodes[1].y = l.y + dy, path.nodes[1].z = 0;
+      path.nodes[2].x = u.x - dx, path.nodes[2].y = center.y, path.nodes[2].z = 0;
+      path.nodes[3].x = u.x, path.nodes[3].y = center.y, path.nodes[3].z = 0;
+      path.nodes[4] = path.nodes[0];
       drawing->draw_path(path);
     }
   drawing->restore();

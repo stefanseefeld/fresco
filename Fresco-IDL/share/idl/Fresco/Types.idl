@@ -69,9 +69,15 @@ module Warsaw
   };
   //. Vertices are a sequence of 3-dimensional points.
   typedef sequence<Vertex> Vertices;
-  //. A Path is a sequence of 3-dimensional points. It is exactly the same
-  //. as the Vertices type and introduced as a confinience only.
-  typedef Vertices Path;
+  //. A Path contains a sequence of points, as well as a hint
+  //. for the renderer concerning its shape that helps to determine
+  //. how much preprocessing needs to be done
+  enum PathShape { convex, non_convex, complex };
+  struct Path
+  {
+    Vertices nodes;
+    PathShape shape;
+  };
 
   //. An OriginatedDelta is used (e.g. by Dragger) to specify an
   //. origin and a delta (i.e. displacement) relative to that origin.

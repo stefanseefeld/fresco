@@ -225,21 +225,26 @@ void GLDrawingKit::set_texture(Raster_ptr t)
 
 void GLDrawingKit::draw_path(const Path &path)
 {
+  if (path.shape != convex)
+    {
+      std::cerr << "GLDrawingKit::draw_path : sorry, non-convex paths not yet supported" << std::endl;
+      return;
+    }
   if (_fs == Warsaw::DrawingKit::solid)
     {
       glBegin(GL_POLYGON);
 //       glBegin(GL_LINE_LOOP);
-      for (unsigned long i = 0; i < path.length(); i++) glVertex3f(path[i].x, path[i].y, path[i].z);
+      for (unsigned long i = 0; i < path.nodes.length(); i++) glVertex3f(path.nodes[i].x, path.nodes[i].y, path.nodes[i].z);
       glEnd();
     }
   else if (_fs == Warsaw::DrawingKit::textured)
     {
 //       glBegin(GL_TRIANGLE_FAN);
       glBegin(GL_LINE_LOOP);
-      for (unsigned long i = 0; i < path.length(); i++)
+      for (unsigned long i = 0; i < path.nodes.length(); i++)
 	{
-	  glTexCoord2f(path[i].x * _tx->width * 10., path[i].y * _tx->height * 10.); 
-	  glVertex3f(path[i].x, path[i].y, path[i].z);
+	  glTexCoord2f(path.nodes[i].x * _tx->width * 10., path.nodes[i].y * _tx->height * 10.); 
+	  glVertex3f(path.nodes[i].x, path.nodes[i].y, path.nodes[i].z);
 	}
       glEnd();
     }
@@ -248,7 +253,7 @@ void GLDrawingKit::draw_path(const Path &path)
 //       glBegin(GL_TRIANGLE_FAN);
       glBegin(GL_LINE_LOOP);
       // line strips (no final connecting line)      
-      for (unsigned long i = 0; i < path.length(); i++) glVertex3f(path[i].x, path[i].y, path[i].z);
+      for (unsigned long i = 0; i < path.nodes.length(); i++) glVertex3f(path.nodes[i].x, path.nodes[i].y, path.nodes[i].z);
       glEnd();
     }
 }
@@ -305,17 +310,18 @@ void GLDrawingKit::draw_image(Raster_ptr raster)
   glColor4f(_lt.red, _lt.green, _lt.blue, color_cache[3]); // use the current lighting
   glBegin(GL_POLYGON);
   Path path;
-  path.length(4);
+  path.nodes.length(4);
+  path.shape = convex;
   Coord width = glimage->width*10.;
   Coord height = glimage->height*10.;
-  path[0].x = path[0].y = path[0].z = 0.;
-  path[1].x = width, path[1].y = path[1].z = 0.;
-  path[2].x = width, path[2].y = height, path[2].z = 0.;
-  path[3].x = 0, path[3].y = height, path[3].z = 0.;
-  glTexCoord2f(0., 0.);                   glVertex3f(path[3].x, path[3].y, path[3].z);
-  glTexCoord2f(glimage->s, 0.);           glVertex3f(path[2].x, path[2].y, path[2].z);
-  glTexCoord2f(glimage->s, glimage->t);   glVertex3f(path[1].x, path[1].y, path[1].z);
-  glTexCoord2f(0., glimage->t);           glVertex3f(path[0].x, path[0].y, path[0].z);
+  path.nodes[0].x = path.nodes[0].y = path.nodes[0].z = 0.;
+  path.nodes[1].x = width, path.nodes[1].y = path.nodes[1].z = 0.;
+  path.nodes[2].x = width, path.nodes[2].y = height, path.nodes[2].z = 0.;
+  path.nodes[3].x = 0, path.nodes[3].y = height, path.nodes[3].z = 0.;
+  glTexCoord2f(0., 0.);                   glVertex3f(path.nodes[3].x, path.nodes[3].y, path.nodes[3].z);
+  glTexCoord2f(glimage->s, 0.);           glVertex3f(path.nodes[2].x, path.nodes[2].y, path.nodes[2].z);
+  glTexCoord2f(glimage->s, glimage->t);   glVertex3f(path.nodes[1].x, path.nodes[1].y, path.nodes[1].z);
+  glTexCoord2f(0., glimage->t);           glVertex3f(path.nodes[0].x, path.nodes[0].y, path.nodes[0].z);
   glEnd();
   glColor4fv(color_cache);  
   if (_fs != Warsaw::DrawingKit::textured) glDisable(GL_TEXTURE_2D);
