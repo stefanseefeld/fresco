@@ -74,7 +74,7 @@ void TTYAgent::start()
 	  pty->setup();
  	  inbuf = outbuf = pty;
 	  errbuf = 0;
-	  inbuf->setnonblocking();
+	  inbuf->async(true);
  	  break;
 	}
     }

@@ -37,20 +37,20 @@ public:
   public:
     echobuf (sockinetbuf &si): protocol::protocolbuf(si) {}
     echobuf (protocol::p_name pname) : protocol::protocolbuf (pname) {}
-    virtual void        serve_clients (int portno = -1);
-    virtual const char* rfc_name () const { return "echo"; }
-    virtual const char* rfc_doc  () const { return "rfc862"; }
+    virtual void        serve_clients(int portno = -1);
+    virtual const char* rfc_name() const { return "echo"; }
+    virtual const char* rfc_doc () const { return "rfc862"; }
   };
 protected:
   echo (): ios(0) {}
 public:
-  echo (protocol::p_name pname) : ios (0) { ios::init (new echobuf (pname));}
-  ~echo () { delete ios::rdbuf (); ios::init (0); }
+  echo(protocol::p_name pname) : ios (0) { ios::init (new echobuf (pname));}
+  ~echo() { delete ios::rdbuf (); ios::init (0); }
 
-  echobuf* rdbuf () { return (echobuf*) protocol::rdbuf (); }
-  echobuf* operator -> () { return rdbuf (); }
+  echobuf *rdbuf() { return (echobuf*) protocol::rdbuf (); }
+  echobuf *operator ->() { return rdbuf (); }
 };
 
 };
 
-#endif /* _echo_hh */
+#endif

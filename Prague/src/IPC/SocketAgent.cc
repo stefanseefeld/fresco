@@ -29,7 +29,7 @@ SocketAgent::SocketAgent(sockbuf *socket)
   : _socket(socket)
 {
   Trace trace("SocketAgent::SocketAgent");
-  _socket->setnonblocking();
+  _socket->async(true);
 }
 
 SocketAgent::~SocketAgent()

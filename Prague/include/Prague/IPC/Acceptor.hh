@@ -35,10 +35,14 @@ template <typename Connection>
 class Acceptor : public SocketAgent
 {
 public:
-  Acceptor(sockbuf *socket) : SocketAgent(socket) {}
+  Acceptor(sockbuf *socket, bool forever = false, size_t queue = 1)
+    : SocketAgent(socket), _forever(forever), _queue(queue) {}
+  virtual ~Acceptor() { Trace trace("Acceptor::~Acceptor");}
   virtual void start();
 private:
   virtual bool process(int, iomask_t);
+  bool   _forever;
+  size_t _queue;
 };
 
 template <typename Connection>
@@ -46,7 +50,7 @@ void Acceptor<Connection>::start()
 {
   Trace trace("Acceptor::start");
   mask(out);
-  obuf()->listen(1);
+  obuf()->listen(_queue);
   SocketAgent::start();
 }
 
@@ -54,10 +58,11 @@ template <typename Connection>
 bool Acceptor<Connection>::process(int, iomask_t)
 {
   Trace trace("Acceptor::process");
-  Connection *connection = new Connection(ibuf()->accept());
+  Connection *connection = new Connection(obuf()->accept());
+  connection->mask(out);
   connection->start();
   connection->remove_ref();
-  return false;
+  return _forever;
 }
 
 };

@@ -25,7 +25,7 @@ int main (int argc, char **argv)
 
   // get the FROM address
   User me;
-  string sender = string (me.name()) + '@' + client->localhost();
+  string sender = string (me.name()) + '@' + client->localaddr().hostname();
 
   // send the files
   for (int i = 3; i < argc; i++)

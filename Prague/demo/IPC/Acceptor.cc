@@ -27,15 +27,26 @@
 #include <unistd.h>
 
 using namespace Prague;
+bool running;
 
 class Connection : public SocketAgent
 {
 public:
-  Connection(sockbuf *socket) : SocketAgent(socket) {}
+  Connection(sockbuf *socket) : SocketAgent(socket)
+  {
+    Trace trace("Connection::Connection");
+  }
+  ~Connection() { Trace trace("Connection::~Connection"); running = false;}
 private:
   virtual bool process(int, iomask_t)
   {
     Trace trace("Connection::process");
+    istream is(obuf());
+    string line;
+    getline(is, line);
+    ostream os(ibuf());
+    os << "welcome !" << endl;
+    return false;
   }
 };
 
@@ -51,8 +62,9 @@ int main (int argc, char **argv)
   string name = File::tmp();
   socket->bind(name);
   Agent *acceptor = new Acceptor<Connection>(socket);
+  running = true;
   acceptor->start();
   acceptor->remove_ref();
   cout << "server is accepting connection requests at " << name << endl;
-  while (true) sleep(1);
+  while (running) sleep(1);
 }

@@ -26,15 +26,16 @@ srcdir		:= $(top_srcdir)/src/Prague/Examples/Network
 builddir	:= ../../../..
 cdir		:= $(builddir)/config
 hdir		:= $(top_srcdir)/include
-bdir		:= $(builddir)/bin
 
 include $(cdir)/local.mk
+
+bdir		:= $(builddir)/src/Prague/Examples/bin
 
 CPPFLAGS	+= @CPPFLAGS@
 LDFLAGS		+= -L../../../../lib
 LIBS		+= -lPrague @LIBS@
 
-TARGETS		:=   url ftp smtp
+TARGETS		:=   $(patsubst %, $(bdir)/%, Url Ftp Smtp Whois Echo EchoServer)
 
 all:		$(TARGETS)
 
@@ -42,15 +43,27 @@ all:		$(TARGETS)
 		@echo compiling $(@F)
 		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
-url:		url.o
+$(bdir)/Url:	Url.o
 		@echo linking $(@F)
 		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-ftp:		ftp.o
+$(bdir)/Ftp:	Ftp.o
 		@echo linking $(@F)
 		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-smtp:		smtp.o
+$(bdir)/Smtp:	Smtp.o
+		@echo linking $(@F)
+		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
+
+$(bdir)/Whois:	Whois.o
+		@echo linking $(@F)
+		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
+
+$(bdir)/Echo:	Echo.o
+		@echo linking $(@F)
+		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
+
+$(bdir)/EchoServer:	EchoServer.o
 		@echo linking $(@F)
 		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 

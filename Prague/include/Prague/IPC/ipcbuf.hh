@@ -22,6 +22,7 @@
 #ifndef _ipcbuf_hh
 #define _ipcbuf_hh
 
+#include <Prague/Sys/Thread.hh>
 #include <streambuf.h>
 
 namespace Prague
@@ -58,9 +59,9 @@ public:
 //   virtual int write (const void *, int);
 //   virtual int read (void *, int);
   int fd() const { return data->fd;}
-  void setnonblocking(bool flag = true);
+  void async(bool);
   //. set the buffer to nonblocking mode if <i>flag</i> is true, to blocking mode otherwise
-  bool nonblocking() const;
+  bool async() const;
   //. return true if the buffer is in nonblocking mode, false otherwise
   bool eof() const { return data->eofbit;}
 // protected:
@@ -81,7 +82,8 @@ public:
 protected:
   struct control
   {
-    control() : fd(-1), count(1), stmo (-1), rtmo (-1), oobbit(false), eofbit(false), gend (0), pend (0) {}
+    control() : fd(-1), count(1), stmo(-1), rtmo(-1), oobbit(false), eofbit(false), gend(0), pend(0) {}
+    Mutex mutex;
     int	fd;
     int	count;
     int stmo;        // -1==block, 0==poll, >0 == waiting time in secs

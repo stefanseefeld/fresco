@@ -46,7 +46,7 @@ const char *sockerr::errstr () const
   return strerror(err);
 }
 
-bool sockerr::io () const
+bool sockerr::io() const
 // recoverable io error.
 {
   switch (err)
@@ -59,7 +59,7 @@ bool sockerr::io () const
   return false;
 }
 
-bool sockerr::arg () const
+bool sockerr::arg() const
 // recoverable argument error.
 {
   switch (err)
@@ -81,7 +81,7 @@ bool sockerr::arg () const
   return false;
 }
 
-bool sockerr::op () const
+bool sockerr::op() const
 // operational error encountered 
 {
   switch (err)
@@ -111,7 +111,7 @@ bool sockerr::op () const
   return false;
 }
 
-bool sockerr::conn () const
+bool sockerr::conn() const
 // return true if err is EISCONN, ENOTCONN, ECONNRESET, ECONNREFUSED,
 // ETIMEDOUT, or EPIPE
 {
@@ -128,7 +128,7 @@ bool sockerr::conn () const
   return false;
 }
 
-bool sockerr::addr () const
+bool sockerr::addr() const
 // return true if err is EADDRINUSE or EADDRNOTAVAIL
 {
   switch (err)
@@ -226,6 +226,13 @@ void sockinetaddr::addr(const string &host)
   if (inet_aton(host.c_str(), &ia) == 0)
     {
       hostent *hp = gethostbyname(host.c_str());
+      if (!hp)
+	{
+	  cout << "sockinetaddr::addr :" << endl;
+	  cout << "error in host lookup" << endl;
+	  cout << "error processing for this problem has not yet been implemented, sorry" << endl;
+	  exit(-1);
+	}
       memcpy(&sin_addr, hp->h_addr, hp->h_length);
       sin_family = hp->h_addrtype;
     }

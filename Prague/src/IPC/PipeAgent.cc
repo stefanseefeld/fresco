@@ -71,9 +71,9 @@ void PipeAgent::start()
  	  inbuf = pin; close(fin);
  	  outbuf = pout; close(fout);
  	  errbuf = perr; close(ferr);
-	  inbuf->setnonblocking();
-	  outbuf->setnonblocking();
-	  errbuf->setnonblocking();
+	  inbuf->async(true);
+	  outbuf->async(true);
+	  errbuf->async(true);
  	  break;
 	}
     }

@@ -18,12 +18,12 @@ int main(int argc, char **argv)
 	  return 1;
 	}
       // use local whois server
-      sio->connect("128.143.2.20", "whois", "tcp"); 
+      sio->connect(sockinetaddr("128.143.2.20", "whois", "tcp")); 
       sio << argv[2] << "\r\n" << flush;
     }
   else
     {
-      sio->connect("nic.ddn.mil", "whois", "tcp");
+      sio->connect(sockinetaddr("whois.internic.net", "whois", "tcp"));
       sio << argv[1] << "\r\n" << flush;
     }
   char buf[1024];

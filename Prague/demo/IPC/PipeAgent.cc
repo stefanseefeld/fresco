@@ -56,7 +56,7 @@ int main (int argc, char **argv)
   if (argc == 2 && string("--trace") == argv[1]) Tracer::logging(true);
   Output *out = new Output;
   ConnectionClosed *eof = new ConnectionClosed;
-  agent = new PipeAgent("./echo", out, eof);
+  agent = new PipeAgent("./Echo", out, eof);
   agent->start();
   while (cin && agent->ibuf())
     {

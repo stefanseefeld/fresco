@@ -139,7 +139,7 @@ void Dispatcher::bind(Agent *agent, int fd, Agent::iomask_t mask)
 	  if (xchannel.find(fd) == xchannel.end()) xchannel[fd] = new task(fd, agent, Agent::errexc);
 	}
     }
-  sleep(1);
+  notify();
 }
 
 void Dispatcher::release(Agent *agent, int fd)
@@ -152,28 +152,22 @@ void Dispatcher::release(Agent *agent, int fd)
   for (repository_t::iterator i = rchannel.begin(); i != rchannel.end(); i++)
     if ((*i).second->agent == agent && (fd == -1 || fd == (*i).second->fd))
       {
-	(*i).second->mutex.lock();
-	deactivate(*(*i).second);
-	(*i).second->mutex.unlock();
-	delete (*i).second;
+	deactivate((*i).second);
+	(*i).second->released = true;
 	rchannel.erase(i);
       }
   for (repository_t::iterator i = wchannel.begin(); i != wchannel.end(); i++)
     if ((*i).second->agent == agent && (fd == -1 || fd == (*i).second->fd))
       {
-	(*i).second->mutex.lock();
-	deactivate(*(*i).second);
-	(*i).second->mutex.unlock();
-	delete (*i).second;
+	deactivate((*i).second);
+	(*i).second->released = true;
 	wchannel.erase(i);
       }
   for (repository_t::iterator i = xchannel.begin(); i != xchannel.end(); i++)
     if ((*i).second->agent == agent && (fd == -1 || fd == (*i).second->fd))
       {
-	(*i).second->mutex.lock();
-	deactivate(*(*i).second);
-	(*i).second->mutex.unlock();
-	delete (*i).second;
+	deactivate((*i).second);
+	(*i).second->released = true;
 	xchannel.erase(i);
       }
   /*
@@ -205,44 +199,52 @@ void *Dispatcher::run(void *X)
 
 void Dispatcher::dispatch(task *t)
 {
-  t->mutex.lock();
-  deactivate(*t);
+  deactivate(t);
   tasks.push(t);
 }
 
-void Dispatcher::process(const task &t)
+void Dispatcher::process(task *t)
 {
   Trace trace("Dispatcher::process");
-  bool done = !t.agent->process(t.fd, t.mask);
-  t.mutex.unlock();
-  if (done) t.agent->done(t.fd, t.mask);
-  else activate(t);
+  Agent *agent = t->agent;
+  // save the agent from being deleted while it processes i/o
+  agent->add_ref();
+  bool done = !agent->process(t->fd, t->mask);
+  if (done) agent->done(t->fd, t->mask);
+  agent->remove_ref();
+  // now look whether the agent is released and the task should be deleted
+  MutexGuard guard(mutex);
+  if (!done)
+    {
+      if (t->released) delete t;
+      else activate(t);
+    }
 }
 
-void Dispatcher::deactivate(const task &t)
+void Dispatcher::deactivate(task *t)
 {
-  switch (t.mask)
+  switch (t->mask)
     {
-    case Agent::inready: wfds.clear(t.fd); break;
+    case Agent::inready: wfds.clear(t->fd); break;
     case Agent::outready:
-    case Agent::errready: rfds.clear(t.fd); break;
+    case Agent::errready: rfds.clear(t->fd); break;
     case Agent::inexc:
     case Agent::outexc:
-    case Agent::errexc: xfds.clear(t.fd); break;
+    case Agent::errexc: xfds.clear(t->fd); break;
     default: break;
     }
 }
 
-void Dispatcher::activate(const task &t)
+void Dispatcher::activate(task *t)
 {
-  switch (t.mask)
+  switch (t->mask)
     {
-    case Agent::inready: wfds.set(t.fd); break;
+    case Agent::inready: wfds.set(t->fd); break;
     case Agent::outready:
-    case Agent::errready: rfds.set(t.fd); break;
+    case Agent::errready: rfds.set(t->fd); break;
     case Agent::inexc:
     case Agent::outexc:
-    case Agent::errexc: xfds.set(t.fd); break;
+    case Agent::errexc: xfds.set(t->fd); break;
     default: break;
     }
   notify();
@@ -276,7 +278,7 @@ void Dispatcher::wait()
       if (tmprfds.isset(wakeup[0]))
 	{
 	  char c[1];
-	  read(wakeup[0],c,1);
+	  read(wakeup[0], c, 1);
 	}
     }
 }

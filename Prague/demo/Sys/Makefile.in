@@ -26,15 +26,16 @@ srcdir		:= $(top_srcdir)/src/Prague/Examples/Sys
 builddir	:= ../../../..
 cdir		:= $(builddir)/config
 hdir		:= $(top_srcdir)/include
-bdir		:= $(builddir)/bin
 
 include $(cdir)/local.mk
+
+bdir		:= $(builddir)/src/Prague/Examples/bin
 
 CPPFLAGS	+= @CPPFLAGS@
 LDFLAGS		+= -L../../../../lib
 LIBS		+= -lPrague @LIBS@
 
-TARGETS		:= DataType Plugin1.so Plugin2.so Loader GetOpt
+TARGETS		:= $(patsubst %, $(bdir)/%, DataType Plugin1.so Plugin2.so Loader GetOpt)
 
 all:		$(TARGETS)
 
@@ -46,23 +47,23 @@ DataType.o:	$(srcdir)/DataType.cc
 		@echo compiling $(@F)
 		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -ftemplate-depth-23 -c $< -o $@
 
-DataType:	DataType.o
+$(bdir)/DataType:	DataType.o
 		@echo linking $(@F)
 		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-Plugin1.so:	Plugin1.o
+$(bdir)/Plugin1.so:	Plugin1.o
 		@echo linking $(@F)
 		$(CXX) -shared $(LDFLAGS) -o $@ $^ $(LIBS)
 
-Plugin2.so:	Plugin2.o
+$(bdir)/Plugin2.so:	Plugin2.o
 		@echo linking $(@F)
 		$(CXX) -shared $(LDFLAGS) -o $@ $^ $(LIBS)
 
-Loader:		Plugin1.so Plugin2.so Loader.o
+$(bdir)/Loader:		$(bdir)/Plugin1.so $(bdir)/Plugin2.so Loader.o
 		@echo linking $(@F)
 		$(CXX) $(LDFLAGS) -o $@ Loader.o $(LIBS)
 
-GetOpt:		GetOpt.o
+$(bdir)/GetOpt:		GetOpt.o
 		@echo linking $(@F)
 		$(CXX) $(LDFLAGS) -o $@ GetOpt.o $(LIBS)
 

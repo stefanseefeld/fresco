@@ -19,10 +19,12 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include "Prague/IPC/ipcbuf.hh"
+#include "Prague/config.hh"
+#include "Prague/Sys/Tracer.hh"
 #include "Prague/Sys/FdSet.hh"
 #include "Prague/Sys/Time.hh"
 #include "Prague/Sys/Memory.hh"
+#include "Prague/IPC/ipcbuf.hh"
 #include <sys/time.h>
 #include <sys/types.h>
 #include <fcntl.h>
@@ -35,6 +37,7 @@ using namespace Prague;
 ipcbuf::ipcbuf(int mode)
   : data(new control)
 {
+  Trace trace("ipcbuf::ipcbuf");
   if (mode & ios::in)
     {
       char_type *gbuf = new char_type [BUFSIZ];
@@ -52,21 +55,28 @@ ipcbuf::ipcbuf(int mode)
 ipcbuf::ipcbuf(const ipcbuf &ipc)
   : streambuf(ipc), data(ipc.data)
 {
+  Trace trace("ipcbuf::ipcbuf");
+  MutexGuard guard(data->mutex);
   data->count++;
 }
 
 ipcbuf::~ipcbuf()
 {
-  overflow (EOF); // flush write buffer
-  if (--data->count) return;
-  delete [] pbase ();
-  delete [] eback ();
-  if (fd() != -1 && close (fd()) == -1) perror("ipcbuf::~ipcbuf");
+  Trace trace("ipcbuf::~ipcbuf");
+  overflow(EOF); // flush write buffer
+  {
+    MutexGuard guard(data->mutex);
+    if (--data->count) return;
+  }
+  delete [] pbase();
+  delete [] eback();
+  if (fd() != -1 && close(fd()) == -1) perror("ipcbuf::~ipcbuf");
   delete data;
 }
 
 ipcbuf &ipcbuf::operator = (const ipcbuf &ipc)
 {
+  Trace trace("ipcbuf::operator =");
   if (this != &ipc && data != ipc.data && data->fd != ipc.data->fd)
     {
       streambuf::operator = (ipc);
@@ -74,6 +84,7 @@ ipcbuf &ipcbuf::operator = (const ipcbuf &ipc)
       // the streambuf::operator = (const streambuf&) is assumed
       // to have handled pbase () and gbase () correctly.
       data  = ipc.data;
+      MutexGuard guard(data->mutex);
       data->count++;
     }
   return *this;
@@ -106,7 +117,7 @@ bool ipcbuf::exceptionpending() const
   return false;
 }
 
-void ipcbuf::setnonblocking(bool flag)
+void ipcbuf::async(bool flag)
 {
   int flags = fcntl(fd(), F_GETFL);
   if (flag) flags |= O_NONBLOCK;
@@ -114,7 +125,7 @@ void ipcbuf::setnonblocking(bool flag)
   fcntl(fd(), F_SETFL, flags);
 }
 
-bool ipcbuf::nonblocking() const
+bool ipcbuf::async() const
 {
   int flags = fcntl(fd(), F_GETFL);
   return flags | O_NONBLOCK;

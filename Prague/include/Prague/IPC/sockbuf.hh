@@ -41,17 +41,17 @@ namespace Prague
 class sockerr
 {
 public:
-  sockerr (int e): err (e) {}
-  const char* what () const { return "sockerr"; }
-  int number () const { return err; }
-  const char *errstr () const;
-  bool error (int eno) const { return eno == err; }
-  bool io () const;     // non-blocking and interrupt io recoverable error.
-  bool arg () const;    // incorrect argument supplied. recoverable error.
-  bool op () const;     // operational error. recovery difficult.
-  bool conn () const;   // connection error
-  bool addr () const;   // address error
-  bool benign () const; // recoverable read/write error like EINTR etc.
+  sockerr(int e) : err(e) {}
+  const char* what() const { return "sockerr"; }
+  int number() const { return err; }
+  const char *errstr() const;
+  bool error(int eno) const { return eno == err; }
+  bool io() const;     // non-blocking and interrupt io recoverable error.
+  bool arg() const;    // incorrect argument supplied. recoverable error.
+  bool op() const;     // operational error. recovery difficult.
+  bool conn() const;   // connection error
+  bool addr() const;   // address error
+  bool benign() const; // recoverable read/write error like EINTR etc.
 private:
   int  err;
 };
@@ -247,7 +247,6 @@ public:
   long               nread() const;
   long               howmanyc() const;
   void               nbio(bool set = true) const;
-  void               async(bool set = true) const;
 protected:
 };
 
@@ -260,10 +259,10 @@ class sockunixbuf : public sockbuf
 public:
   typedef sockunixaddr address_type;
   sockunixbuf(int s) : sockbuf(s) {}
-  sockunixbuf (const sockunixbuf &su) : sockbuf(su) {}
-  sockunixbuf (sockbuf::type ty, int proto = 0) : sockbuf(af_unix, ty, proto) {}
+  sockunixbuf(const sockunixbuf &su) : sockbuf(su) {}
+  sockunixbuf(sockbuf::type ty, int proto = 0) : sockbuf(af_unix, ty, proto) {}
   sockunixbuf &operator = (const sockunixbuf &);
-  ~sockunixbuf () {}
+  ~sockunixbuf() {}
   sockunixaddr addr() const;
   void bind(const sockunixaddr &);
   virtual sockunixbuf *accept();

@@ -38,25 +38,25 @@ class Dispatcher
   typedef vector<Agent *> alist_t;
   struct task
   {
-    task() : fd(-1), agent(0), mask(Agent::none) {}
+    task() : fd(-1), agent(0), mask(Agent::none), released(false) {}
     task(int ffd, Agent *a, Agent::iomask_t m) : fd(ffd), agent(a), mask(m) {}
     bool operator < (const task &t) const { return fd < t.fd;}
-    int fd;
-    Agent *agent;
+    int             fd;
+    Agent          *agent;
     Agent::iomask_t mask;
-    mutable Mutex mutex;
+    bool            released;
   };
   typedef map<int, task *> repository_t;
   struct Handler
   //. Handler is responsible for calling a specific method
   //. (determined by the mask) on the agent
   {
-    Handler(const task &tt) : t(tt) {}
+    Handler(task *tt) : t(tt) {}
     void process() { dispatcher->process(t);}
-    const task &t;
+    task *t;
   };
   friend struct Handler;
-  struct Acceptor { Handler *consume(const task *t) const { return new Handler(*t);}};
+  struct Acceptor { Handler *consume(task *t) const { return new Handler(t);}};
   struct Cleaner { ~Cleaner();};
   friend struct Cleaner;
 public:
@@ -70,9 +70,9 @@ private:
   void notify() { char *c = "c"; write(wakeup[1], c, 1);}
   static void *run(void *);
   void dispatch(task *);
-  void process(const task &);
-  void deactivate(const task &);
-  void activate(const task &);
+  void process(task *);
+  void deactivate(task *);
+  void activate(task *);
   static Dispatcher *dispatcher;
   static Mutex  singletonMutex;
   static Cleaner cleaner;

@@ -37,6 +37,7 @@ class Connector : public SocketAgent
 public:
   Connector(Socket *socket, const typename Socket::address_type &peer)
     : SocketAgent(socket), _peer(peer) {}
+  virtual ~Connector() { Trace trace("Connector::~Connector");}
   virtual Socket *ibuf() { return static_cast<Socket *>(SocketAgent::ibuf());}
   virtual Socket *obuf() { return static_cast<Socket *>(SocketAgent::obuf());}
   virtual void start();
@@ -61,7 +62,9 @@ bool Connector<Connection, Socket>::process(int, iomask_t)
   int error = ibuf()->clearerror();
   if (!error)
     {
-      Connection *connection = new Connection(new Socket(*ibuf()));
+      stop();
+      Connection *connection = new Connection(new Socket(*obuf()));
+      connection->mask(out);
       connection->start();
       connection->remove_ref();
     }

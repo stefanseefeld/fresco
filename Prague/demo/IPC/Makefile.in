@@ -26,15 +26,16 @@ srcdir		:= $(top_srcdir)/src/Prague/Examples/IPC
 builddir	:= ../../../..
 cdir		:= $(builddir)/config
 hdir		:= $(top_srcdir)/include
-bdir		:= $(builddir)/bin
 
 include $(cdir)/local.mk
+
+bdir		:= $(builddir)/src/Prague/Examples/bin
 
 CPPFLAGS	+= @CPPFLAGS@
 LDFLAGS		+=
 LIBS		+= -lPrague @LIBS@
 
-TARGETS		:= MMapServer MMapClient echo PipeAgent TTYAgent Acceptor Connector
+TARGETS		:= $(patsubst %, $(bdir)/%, MMapServer MMapClient Echo PipeAgent TTYAgent Acceptor Connector)
 
 all:		$(TARGETS)
 
@@ -42,31 +43,31 @@ all:		$(TARGETS)
 		@echo compiling $(@F)
 		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
-MMapServer:	MMapServer.o
+$(bdir)/MMapServer:	MMapServer.o
 		@echo linking $(@F)
 		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-MMapClient:	MMapClient.o
+$(bdir)/MMapClient:	MMapClient.o
 		@echo linking $(@F)
 		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-echo:		echo.o
+$(bdir)/Echo:		Echo.o
 		@echo linking $(@F)
 		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-PipeAgent:	echo PipeAgent.o
+$(bdir)/PipeAgent:	$(bdir)/Echo PipeAgent.o
 		@echo linking $(@F)
 		$(CXX) $(LDFLAGS) -o $@ PipeAgent.o $(LIBS)
 
-TTYAgent:	TTYAgent.o
+$(bdir)/TTYAgent:	TTYAgent.o
 		@echo linking $(@F)
 		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-Acceptor:	Acceptor.o
+$(bdir)/Acceptor:	Acceptor.o
 		@echo linking $(@F)
 		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-Connector:	Connector.o
+$(bdir)/Connector:	Connector.o
 		@echo linking $(@F)
 		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 

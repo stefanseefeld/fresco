@@ -22,19 +22,20 @@
 SHELL		:= /bin/sh
 
 top_srcdir	:= @topdir@
-srcdir		:= $(top_srcdir)/src/Prague/Examples/Sys
+srcdir		:= $(top_srcdir)/src/Prague/Examples/Filter
 builddir	:= ../../../..
 cdir		:= $(builddir)/config
 hdir		:= $(top_srcdir)/include
-bdir		:= $(builddir)/bin
 
 include $(cdir)/local.mk
+
+bdir		:= $(builddir)/src/Prague/Examples/bin
 
 CPPFLAGS	+= @CPPFLAGS@
 LDFLAGS		+= -L../../../../lib
 LIBS		+= -lPrague @LIBS@
 
-TARGETS		:=   gzstream #xdrstream
+TARGETS		:=   $(patsubst %, $(bdir)/%, Gzstream) #xdrstream
 
 all:		$(TARGETS)
 
@@ -42,15 +43,15 @@ all:		$(TARGETS)
 		@echo compiling $(@F)
 		$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(OPTFLAGS) -c $< -o $@
 
-gzstream:	gzstream.o
+$(bdir)/Gzstream:	Gzstream.o
 		@echo linking $(@F)
 		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-xdrstream:	xdrstream.o
+$(bdir)/Xdrstream:	Xdrstream.o
 		@echo linking $(@F)
 		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-comment:	comment.o
+$(bdir)/Comment:	Comment.o
 		@echo linking $(@F)
 		$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 

@@ -27,15 +27,27 @@
 #include <unistd.h>
 
 using namespace Prague;
+bool running;
 
 class Connection : public SocketAgent
 {
 public:
-  Connection(sockbuf *socket) : SocketAgent(socket) {}
+  Connection(sockbuf *socket) : SocketAgent(socket)
+  {
+    Trace trace("Connection::Connection");
+    ostream os(ibuf());
+    os << "hi there" << endl;
+  }
+  ~Connection() { Trace trace("Connection::~Connection"); running = false;}
 private:
   virtual bool process(int, iomask_t)
   {
     Trace trace("Connection::process");
+    istream is(obuf());
+    string line;
+    getline(is, line);
+    cout << "server replied: " << line << endl;
+    return false;
   }
 };
 
@@ -65,7 +77,8 @@ int main (int argc, char **argv)
     }
   sockunixbuf *socket = new sockunixbuf(sockbuf::sock_stream);
   Agent *connector = new Connector<Connection, sockunixbuf>(socket, sockunixaddr(value));
+  running = true;
   connector->start();
   connector->remove_ref();
-  while (true) sleep(1);
+  while (running) sleep(1);
 }
