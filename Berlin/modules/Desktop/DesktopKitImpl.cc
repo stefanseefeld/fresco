@@ -104,12 +104,12 @@ Window_ptr DesktopKitImpl::shell(Controller_ptr g, Fresco::ClientContext_ptr n)
   Image_var exitgraphic = _figure->pixmap(raster);
   Trigger_var exitbutton = _widget->button(exitgraphic, _exit);
   raster = _image->create("shade.png");
-  Image_var shadergraphic = _figure->pixmap(raster);
-  Command_var shade = shader(wptr, down);
-  Trigger_var shaderbutton = _widget->button(shadergraphic, shade);
+  // Take out the shader for now, as it doesn't work yet.
+  //Image_var shadergraphic = _figure->pixmap(raster);
+  //Command_var shade = shader(wptr, down);
+  //Trigger_var shaderbutton = _widget->button(shadergraphic, shade);
 
   RefCount_var<Graphic> tbbuttons = _layout->hbox();
-  // Take out the shader for now, as it doesn't work yet.
   //  tbbuttons->append_graphic(shaderbutton);
   tbbuttons->append_graphic(RefCount_var<Graphic>(_layout->hspace(20.)));
   tbbuttons->append_graphic(exitbutton);
