@@ -146,10 +146,13 @@ AC_DEFUN([FRESCO_LIB_OMNIORB],
   
     dnl Check for omniORB includes
     CPPFLAGS="$CPPFLAGS $ORB_CPPFLAGS"
-    if test ".$omniorb_version" = ".4" ; then
-      AC_CHECK_HEADER(omniORB4/CORBA.h,,no_omniorb=yes)
-    else
-      AC_CHECK_HEADER(omniORB3/CORBA.h,,no_omniorb=yes)
+    if test ".$omniorb_version" = ".4" \
+       -o ".$omniorb_version" = "." ; then
+      AC_CHECK_HEADER(omniORB4/CORBA.h, omniorb_version=4, no_omniorb=yes)
+    fi
+    if test ".$omniorb_version" = ".3" || \
+       test ".$omniorb_version" = "." -a "no_omniorb" = "yes" ; then
+      AC_CHECK_HEADER(omniORB3/CORBA.h, omniorb_version=3, no_omniorb=yes)
     fi
   fi
 
