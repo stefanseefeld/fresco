@@ -126,6 +126,8 @@ void TraversalImpl::push(Graphic_ptr g, Tag id, Region_ptr r, TransformImpl *t)
 void TraversalImpl::pop()
 {
   Trace trace("TraversalImpl::pop");
+  // We do only own the TraversalImpl which will clean up after itself.
+  // Don't release the other stuff as we do not own it.
   _stack.erase(_stack.end() - 1);
 }
 
@@ -153,11 +155,18 @@ void TraversalImpl::update()
 
 void TraversalImpl::clear()
 {
-  // this assumes we own all items
+  // DO NOT CALL DURING A TRAVERSAL.
+
+  // After the Traversal is done it is empty anyway, so we won't
+  // delete anything. If there is something left, then
+  // we were a momento, a deep copy of another partial
+  // Traversal: We own everything and must release it on our
+  // own.
   for (stack_t::iterator i = _stack.begin(); i != _stack.end(); ++i)
     {
       CORBA::release((*i).graphic);
       CORBA::release((*i).allocation);
       Provider<TransformImpl>::adopt((*i).transformation);
     };
+  _stack.clear();
 }
