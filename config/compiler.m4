@@ -118,7 +118,7 @@ AC_DEFUN(AC_CHECK_OPTIMIZE,[dnl
 	AC_REQUIRE([AC_CANONICAL_HOST])
 
 	AC_ARG_ENABLE(optimize,dnl
-[  --enable-optmize          build with optimization (default=no)],
+[  --enable-optimize          build with optimization (default=no)],
 	[dnl
 		if test ".$enableval" = ".yes" ; then
 			if test ".$user_O_CFLAGS" != "." ; then
