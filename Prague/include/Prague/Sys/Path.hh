@@ -33,9 +33,9 @@ namespace Prague
 class Path
 {
   typedef std::vector<std::string> rep_type;
-  typedef rep_type::iterator iterator;
   struct Predicate { bool operator()(const std::string &name) { File file(name); return file.access() & File::ru;}};
 public:
+  typedef rep_type::iterator iterator;
   //. construct an empty path
   Path() {}
   //. construct a list of directories, using the given separator to tokenize the string
