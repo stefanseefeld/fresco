@@ -37,7 +37,7 @@ Stage_var ServerContextImpl::ourSceneRoot;
 ServerContextImpl::ServerContextImpl(CosLifeCycle::FactoryFinder_ptr theFactoryFinder, 
 				     ClientContext_ptr theClient, Stage_ptr root) {
     _ff = theFactoryFinder;
-    _client = theClient;
+    _client = ClientContext::_duplicate(theClient);
     MutexGuard guard(singletons_mutex);
     if (CORBA::is_nil(ourSceneRoot)) ourSceneRoot = Stage::_duplicate(root);
 }
@@ -63,8 +63,12 @@ ClientContext_ptr ServerContextImpl::myClient() {
 bool ServerContextImpl::verify() {
   MutexGuard guard (_ServerContext_mutex);
   bool clientIsStillThere = true;
-  try {
-    clientIsStillThere = _client->stillAlive();
+  try {      
+      if (CORBA::is_nil(_client)) {
+	  clientIsStillThere = false;
+      } else {
+	  clientIsStillThere = _client->stillAlive();
+      }
   } catch (...) {
     clientIsStillThere = false;
   }

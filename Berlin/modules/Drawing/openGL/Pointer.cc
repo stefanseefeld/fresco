@@ -2,6 +2,7 @@
  *
  * This source file is a part of the Berlin Project.
  * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -64,6 +65,10 @@ Pointer::Pointer(ggi_visual_t visual)
   depth = dbuf->buffer.plb.pixelformat->size/8;
   stride = dbuf->buffer.plb.stride;
 
+  ggi_mode m;
+  ggiGetMode(visual, &m);
+  maxCoord = m.virt.x * m.virt.y;
+
   /*
    * create the pointer image
    */
@@ -102,11 +107,13 @@ void Pointer::move(PixelCoord x, PixelCoord y)
   write();
 };
 
+#define PIXPOS  (((position[1] + y) - origin[1])*(stride/depth) + (position[0]-origin[0]) + size[0])
+
 void Pointer::save()
 {
   unsigned char *from = static_cast<unsigned char *>(dbuf->read) + (position[1]-origin[1])*stride + (position[0]-origin[0])*depth;
   unsigned char *to = backup;
-  for (PixelCoord y = 0; y != size[1]; y++, from += stride, to += depth*size[0])
+  for (PixelCoord y = 0; (y != size[1]) && (PIXPOS < maxCoord); y++, from += stride, to += depth*size[0])
     Memory::copy(from, to, depth*size[0]);
 }
 
@@ -114,7 +121,7 @@ void Pointer::restore()
 {
   unsigned char *from = backup;
   unsigned char *to = static_cast<unsigned char *>(dbuf->write) + (position[1]-origin[1])*stride + (position[0]-origin[0])*depth;
-  for (PixelCoord y = 0; y != size[1]; y++, from += depth*size[0], to += stride)
+  for (PixelCoord y = 0; (y != size[1]) && (PIXPOS < maxCoord); y++, from += depth*size[0], to += stride)
     Memory::copy(from, to, depth*size[0]);
 }
 
@@ -124,7 +131,7 @@ void Pointer::write()
   unsigned char *bits = mask;
   unsigned char *to = static_cast<unsigned char *>(dbuf->write) + (position[1]-origin[1])*stride + (position[0]-origin[0])*depth;
 
-  for (PixelCoord y = 0; y != size[1]; y++, to += stride - size[0]*depth)
+  for (PixelCoord y = 0; (y != size[1]) && (PIXPOS < maxCoord); y++, to += stride - size[0]*depth)
     for (PixelCoord x = 0; x != size[0]*depth; x++, from++, bits++, to++)
 	*to = (*from & *bits) | (*to & ~*bits);
 	    

@@ -123,7 +123,6 @@ void CloneableImpl::reload() {
 // this is the simplest possible "blow self up" method.
 void CloneableImpl::remove (  ) {
    CORBA::BOA::getBOA()->dispose(this);
-   delete this;
 }
 
 // garbage collection to be implemented here.

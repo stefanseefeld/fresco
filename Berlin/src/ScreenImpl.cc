@@ -26,6 +26,10 @@
 #include "Berlin/ScreenImpl.hh"
 #include "Berlin/ScreenManager.hh"
 #include "Berlin/TransformImpl.hh"
+#include "Berlin/RegionImpl.hh"
+#include "Berlin/DamageImpl.hh"
+#include "Drawing/openGL/GLDrawingKit.hh"
+
 #include "Warsaw/Traversal.hh"
 #include <iostream>
 

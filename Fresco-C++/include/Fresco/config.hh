@@ -6,7 +6,7 @@
 #define __OSVERSION__ 2
 #define __OMNIORB2__
 #define _MIT_POSIX_THREADS
-#define _REENTRANT
+//#define _REENTRANT
  
 // this cruft is intended to help handle differences in ORBs. it's sad, really.
 #define interface(name) name##_IntfRepoID

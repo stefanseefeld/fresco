@@ -102,9 +102,7 @@ Graphic::Requisition *PolyGraphic::childrenRequests()
   for (clist_t::iterator i = children.begin(); i != children.end(); i++)
     {
       GraphicImpl::initRequisition(*r);
-      cerr << "ask child for it's requisition" << endl;
       if (!CORBA::is_nil(*i)) (*i)->request(*r);
-      cerr << "got child's requisition" << endl;
       ++r;
     }
   return requisitions;

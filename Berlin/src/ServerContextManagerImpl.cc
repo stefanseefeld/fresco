@@ -35,18 +35,35 @@ ServerContextManagerImpl::ServerContextManagerImpl(GenericFactoryImpl *factory, 
   mySceneRoot = Stage::_duplicate(g);
 }
 
-// this needs to be fleshed out :)
-bool ServerContextManagerImpl::verify() {return true;};
+void ServerContextManagerImpl::run(void* arg) {
+    while (true) {
+	sleep(1);
+	verify();
+    }
+}
+
+void ServerContextManagerImpl::verify() {
+    MutexGuard guard (myMutex);
+    vector<ServerContextImpl *> tmp;
+    for (vector<ServerContextImpl *>::iterator i = allocatedServerContexts.begin();
+	 i != allocatedServerContexts.end(); i++) {
+	if ((*i)->verify()) {
+	    tmp.push_back(*i);	    
+	} else {
+	    (*i)->_dispose();
+	}
+    }
+    allocatedServerContexts = tmp;	    
+};
 
 // declared in IDL
 ServerContext_ptr ServerContextManagerImpl::newServerContext(ClientContext_ptr c) 
 throw (SecurityException) {
-    myMutex.lock();
+    MutexGuard guard (myMutex);
     ServerContextImpl *temp = new ServerContextImpl(myFactoryFinder->_this(), c, mySceneRoot);
     temp->_obj_is_ready(this->_boa());
-    allocatedServerContexts.push_back(temp->_this());
-    myMutex.unlock();
-    return temp->_this();
+    allocatedServerContexts.push_back(temp);
+    return ServerContext::_duplicate(temp->_this());
 }
   
 

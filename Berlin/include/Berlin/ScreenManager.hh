@@ -22,12 +22,20 @@
 #ifndef _ScreenManager_hh
 #define _ScreenManager_hh
 
-#include <Berlin/ScreenImpl.hh>
-#include <Berlin/RegionImpl.hh>
-#include <Berlin/Thread.hh>
-#include <Drawing/openGL/GLDrawingKit.hh>
-#include <Drawing/openGL/Pointer.hh>
+#include "Warsaw/config.hh"
+
+extern "C" {
+#include <ggi/ggi.h>
+}
+
+#include "Warsaw/Region.hh"
+#include "Berlin/Thread.hh"
 #include <vector>
+
+class GLDrawingKit;
+class Pointer;
+class ScreenImpl;
+class RegionImpl;
 
 class ScreenManager
 {

@@ -1,3 +1,8 @@
+1999-05-08  graydon@pobox.com  <graydon@pobox.com>
+
+	* Pointer.cc ("C"): fixed a bug which was causing overwrites of the
+ 	linear framebuffer. Now it checks boundaries of the buffer.
+
 1999-04-13  graydon@pobox.com  <graydon@pobox.com>
 
 	* GLPencil.cc (GLPencil): modified pencil to accept style values,

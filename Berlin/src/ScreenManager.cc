@@ -23,8 +23,14 @@
 #include "Berlin/ScreenManager.hh"
 #include "Berlin/DrawTraversalImpl.hh"
 #include "Berlin/PickTraversalImpl.hh"
+#include "Berlin/ScreenImpl.hh"
+#include "Berlin/RegionImpl.hh"
+#include "Drawing/openGL/GLDrawingKit.hh"
+#include "Drawing/openGL/Pointer.hh"
+
 
 static Mutex ggi_mutex;
+static ggi_event event;
 
 ScreenManager::ScreenManager(ScreenImpl *s, GLDrawingKit *d)
   : screen(s), drawing(d), visual(drawing->getVisual())
@@ -96,13 +102,12 @@ void ScreenManager::nextEvent()
 
     ggi_event_mask mask = ggi_event_mask (emCommand | emKeyboard | emPtrMove | emPtrButtonPress | emPtrButtonRelease);
     timeval t;
-    ggi_event *event = new ggi_event;
 
     t.tv_sec = 0;
     t.tv_usec = 20000; 
     
     if (ggiEventPoll(visual, mask, &t)) {
-	ggiEventRead(visual, event, mask);
+	ggiEventRead(visual, &event, mask);
     } else {
       return;
     }
@@ -110,22 +115,21 @@ void ScreenManager::nextEvent()
   CORBA::Any a;
 
   // we are being woken up by the damage subsystem
-  if (event->any.origin == GII_EV_ORIGIN_SENDEVENT) return;
+  if (event.any.origin == GII_EV_ORIGIN_SENDEVENT) return;
 
   // we can process this, it's a legitimate event.
-  switch (event->any.type) {
+  switch (event.any.type) {
   case evKeyPress:
   case evKeyRepeat: {      
       Event::Key ke;
-      ke.theChar = event->key.sym;
+      ke.theChar = event.key.sym;
       a <<= ke;
-      cerr << "k";
       break;
   }
   
   case evPtrAbsolute: {
-      ptrPositionX = event->pmove.x;
-      ptrPositionY = event->pmove.y;
+      ptrPositionX = event.pmove.x;
+      ptrPositionY = event.pmove.y;
       pointer->move(ptrPositionX, ptrPositionY);
       // absence of break statement here is intentional
   }
@@ -135,23 +139,21 @@ void ScreenManager::nextEvent()
       pe.location.x = ptrPositionX;
       pe.location.y = ptrPositionY;	  
       pe.location.z = 0; // time being we're using non-3d mice.
-      pe.buttonNumber = event->pbutton.button;	  
+      pe.buttonNumber = event.pbutton.button;	  
       pe.whatHappened = 
-	  event->any.type == evPtrAbsolute ? Event::hold :
-	  event->any.type == evPtrButtonPress ? Event::press :
-	  event->any.type == evPtrButtonRelease ? Event::release : Event::hold;
-//       cerr << "m";
+	  event.any.type == evPtrAbsolute ? Event::hold :
+	  event.any.type == evPtrButtonPress ? Event::press :
+	  event.any.type == evPtrButtonRelease ? Event::release : Event::hold;
       a <<= pe;
       break;
   }
   }
-//   PickTraversalImpl *traversal = new PickTraversalImpl(a, screen->getRegion());
-//   traversal->_obj_is_ready(CORBA::BOA::getBOA());
-//   screen->traverse(traversal);
-//   cout << "call traversal->_dispose()" << endl;
-//   traversal->_dispose();
-//   cout << "called traversal->_dispose()" << endl;
-  delete event;
+
+    PickTraversalImpl *traversal = new PickTraversalImpl(a, screen->getRegion());
+    traversal->_obj_is_ready(CORBA::BOA::getBOA());
+    screen->traverse(traversal->_this());
+    traversal->_dispose();
+
 }
 
 void ScreenManager::run()

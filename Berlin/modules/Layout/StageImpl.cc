@@ -589,22 +589,13 @@ void StageImpl::end()
 Stage::Info StageImpl::insert(Graphic_ptr g, const Vertex &position, const Vertex &size, Index layer)
 {
   Guard guard(myMutex);
-  cout << "I'm here" << endl;
   StageInfoImpl *info = new StageInfoImpl(g, position, size, layer);
-  cout << "I'm here" << endl;
   g->addParent(_this());
-  cout << "I'm here" << endl;
   tree.insert(info);
-  cout << "I'm here" << endl;
   list.insert(info);
-  cout << "I'm here" << endl;
-  
   damage(info);
-  cout << "I'm here" << endl;
   need_resize = true;
   needResize(); // ??? -stefan
-  cout << "I'm here" << endl;
-
   return *info;
 }
 

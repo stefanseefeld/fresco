@@ -38,7 +38,7 @@ MonoGraphic::~MonoGraphic()
 Graphic_ptr MonoGraphic::body()
 {
   MutexGuard guard(childMutex);
-  return child;
+  return Graphic::_duplicate(child);
 }
 
 void MonoGraphic::body(Graphic_ptr c)
@@ -103,8 +103,9 @@ void MonoGraphic::shape(Region_ptr r)
 void MonoGraphic::traverse(Traversal_ptr t)
 {
   Graphic_ptr child = body();
-  if (!CORBA::is_nil(child))
-    t->traverseChild(child, Region::_nil(), Transform::_nil());
+  if (!CORBA::is_nil(child)) {
+      t->traverseChild(child, Region::_nil(), Transform::_nil());
+  }
 }
 
 void MonoGraphic::allocate(Graphic_ptr g, Allocation_ptr a)

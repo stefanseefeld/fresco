@@ -253,7 +253,7 @@ void GraphicImpl::shape(Region_ptr) {}
 
 void GraphicImpl::traverse(Traversal_ptr t) { t->visit(this);}
 void GraphicImpl::draw(DrawTraversal_ptr) {}
-void GraphicImpl::pick(PickTraversal_ptr) {}
+void GraphicImpl::pick(PickTraversal_ptr) { cerr << "PickTraversal passing : " << this->_hash(10000) << endl;  }
 
 void GraphicImpl::allocate(Graphic_ptr, Allocation_ptr a) { allocateParents(a);}
 void GraphicImpl::needRedraw()

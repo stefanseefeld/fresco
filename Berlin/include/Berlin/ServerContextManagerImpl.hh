@@ -35,11 +35,12 @@
 #include "Berlin/GenericFactoryImpl.hh"
 #include "Berlin/Thread.hh"
 
-class ServerContextManagerImpl : implements(ServerContextManager) {
+class ServerContextManagerImpl : implements(ServerContextManager), public virtual Thread {
 
 public:  
   ServerContextManagerImpl(GenericFactoryImpl *factory, Stage_ptr g);
-  bool verify();
+  void verify();
+  virtual void run(void* arg);
 
   // declared in IDL
   ServerContext_ptr newServerContext(ClientContext_ptr c) throw (SecurityException);
@@ -47,7 +48,7 @@ public:
 protected:
   FactoryFinderImpl *myFactoryFinder;
   Mutex myMutex;
-  vector<ServerContext_var> allocatedServerContexts;
+  vector<ServerContextImpl *> allocatedServerContexts;
   Stage_var mySceneRoot;
 
 };

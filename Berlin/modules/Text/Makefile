@@ -21,9 +21,13 @@
 
 SHELL	= /bin/sh
 
-cpath	= ../../config
-ipath	= ../../include
-lpath	= ../../lib
+top     = ../..
+cpath   = $(top)/config
+hpath   = $(top)/include/Berlin
+
+#cpath	= ../../config
+#ipath	= ../../include
+#lpath	= ../../lib
 dpath	= dep
 opath	= obj
 gpath	= gdb
@@ -67,3 +71,5 @@ ifneq ($(MAKECMDGOALS),distclean)
 -include $(DEP)
 endif 
 endif 
+ 
+include $(cpath)/plugin.mk

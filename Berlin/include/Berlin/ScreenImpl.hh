@@ -24,12 +24,12 @@
 
 #include <Warsaw/config.hh>
 #include <Warsaw/Screen.hh>
-#include <Berlin/RegionImpl.hh>
-#include <Berlin/DamageImpl.hh>
 #include <Berlin/MonoGraphic.hh>
-#include <Drawing/openGL/GLDrawingKit.hh>
 
 class ScreenManager;
+class DamageImpl;
+class RegionImpl;
+class GLDrawingKit;
 
 class ScreenImpl : implements(Screen), virtual public MonoGraphic
 {
