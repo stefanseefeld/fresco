@@ -34,8 +34,8 @@ void SDL::GLExposeHandler::refresh_screen()
 {
   Prague::Trace trace("SDL::GLExposeHandler::refresh_screen()");
 
-  /*
-  ::Console::Drawable * drawable = ::Console::instance()->drawable();
+  ::Console::Drawable * drawable =
+    dynamic_cast<SDL::Drawable *>(::Console::instance()->drawable());
 
   glDisable(GL_ALPHA_TEST);
   glDisable(GL_BLEND);
@@ -45,10 +45,8 @@ void SDL::GLExposeHandler::refresh_screen()
   glDrawBuffer(GL_FRONT);
   glRasterPos2i(0, 0);
 
-  glCopyPixels(0, drawable->height(), drawable->width(), drawable->height(),
-  	       GL_COLOR);
+  glCopyPixels(0, 0, drawable->width(), drawable->height(), GL_COLOR);
   glFlush();
-  SDL_UpdateRect(static_cast<SDL::Drawable *>(drawable)->surface(), 0, 0, 0, 0);
 
   glEnable(GL_ALPHA_TEST);
   glEnable(GL_BLEND);
@@ -57,7 +55,6 @@ void SDL::GLExposeHandler::refresh_screen()
   glDrawBuffer(GL_BACK);
   
   _glcontext->flush();
-  */
 }
 
 
@@ -144,11 +141,9 @@ void SDL::GLContext::flush() {
     glReadBuffer(GL_FRONT);
     glDrawBuffer(GL_BACK);
     glRasterPos2i(0, 0);
-    glCopyPixels(0, _drawable->height(), _drawable->width(), _drawable->height(),
-		 GL_COLOR);
 
-    glCopyPixels(0, 0, _drawable->width(), _drawable->height(),
-		 GL_COLOR);
+    glCopyPixels(0, 0, _drawable->width(), _drawable->height(), GL_COLOR);
+
     glEnable(GL_ALPHA_TEST);
     glEnable(GL_BLEND);
     glEnable(GL_SCISSOR_TEST);
