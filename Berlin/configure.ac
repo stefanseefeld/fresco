@@ -128,9 +128,11 @@ if test ".$enable_libArt" = .yes ; then
 	fi
 fi
 if test ".$enable_openGL" = .yes ; then
-	BERLIN_LIB_GGIMESA
-	if test ".$ac_cv_lib_GGIMesa" = .yes ; then
-		tested_drawing_kits="$tested_drawing_kits Drawing/openGL"
+	if test ".$CON_IMPL" = .GGI ; then
+		BERLIN_LIB_GGIMESA
+		if test ".$ac_cv_lib_GGIMesa" = .yes ; then
+			tested_drawing_kits="$tested_drawing_kits Drawing/openGL"
+		fi
 	else
 		BERLIN_LIB_MESA
 		if test ".$ac_cv_lib_Mesa" = .yes ; then
