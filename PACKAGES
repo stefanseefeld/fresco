@@ -1,5 +1,0 @@
-Prague:		Berlin/include/Prague Berlin/src/Prague
-server: 	Berlin/include Berlin/src Berlin/server
-clients/C++: 	Berlin/include/Warsaw Berlin/clients/C++
-clients/python:	Berlin/include/Warsaw Berlin/clients/python
-docs: 		Berlin/docs

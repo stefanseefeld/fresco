@@ -133,12 +133,12 @@ $(opath)/%.o:	%.cc
 		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
 clean:	
-		rm -f $(opath)/*.o $(dpath)/*.d
+		rm -f $(TARGET)
+		rm -rf $(opath) $(dpath)
 		rm -f $(DYNSRC) $(DYNSTATSRC) $(STATSRC) $(DYNHDR) $(STATHDR) *~
 
 distclean:	clean
-		rm -f $(TARGET)
-		rm -rf $(opath) $(dpath)
+		rm -f $(ipath)/Warsaw/config.hh
 
 install:
 		install -m755 $(TARGET) $(libdir)

@@ -70,4 +70,5 @@ clean:
 		cd Unicode/Blocks; $(MAKE) clean;
 
 distclean:	clean
+		rm -f $(ipath)/Prague/Sys/config.hh
 		cd Examples; $(MAKE) distclean
