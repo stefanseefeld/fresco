@@ -20,7 +20,7 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include "Berlin/Memory.hh"
+#include "Prague/Sys/Memory.hh"
 #include "Drawing/openGL/Pointer.hh"
 extern "C"
 {
@@ -29,6 +29,7 @@ extern "C"
 #include <iostream>
 #include <algorithm>
 
+using namespace Prague;
 
 static unsigned char pointerImg[256] = 
 
