@@ -108,7 +108,7 @@ ftp::replycodea ftp::ftpbuf::get_response ()
      // get all the response that one can get and send all of them to o
 {
   // if o is 0, then we trash data.
-  int  firstline = 1;
+  bool  firstline = true;
   while (underflow () != EOF)
     {
       int n = in_avail ();
@@ -130,7 +130,7 @@ ftp::replycodea ftp::ftpbuf::get_response ()
 	  strncpy (replycode, q, 3);
 	  replycode [3] = ' ';
 	  if (q [3] == ' ') break;
-	  firstline = 0;
+	  firstline = false;
 	}
       else if (strncmp (q, replycode, 4) == 0) break;
     }

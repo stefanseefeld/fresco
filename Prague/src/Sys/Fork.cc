@@ -185,6 +185,7 @@ void Fork::Process::Suicide::notify (int)
 
 Fork::Fork (bool kill, bool reason)
   : process (new Process (kill, reason)) {}
+Fork::~Fork () { if (process->pid <= 0) delete process;}
 bool  Fork::child() const { return process->pid == 0;}
 bool  Fork::parent() const { return process->pid > 0;}
 pid_t Fork::pid() const { return process->pid;}

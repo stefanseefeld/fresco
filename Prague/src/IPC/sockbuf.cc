@@ -29,8 +29,8 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <cstdio>
-#include <string.h>
 #include <cerrno>
+#include <sys/ioctl.h>
 
 using namespace Prague;
 
@@ -307,6 +307,33 @@ sockbuf::socklinger sockbuf::linger (sockbuf::socklinger opt) const
   socklinger old (0, 0);
   getopt (so_linger, &old, sizeof (old));
   setopt (so_linger, &opt, sizeof (opt));
+  return old;
+}
+
+bool sockbuf::atmark() const
+  // return true, if the read pointer for socket points to an
+  // out of band data
+{
+  int arg;
+  if (::ioctl (data->fd, SIOCATMARK, &arg) == -1) throw sockerr(errno);
+  return arg;
+}
+
+int sockbuf::pgrp () const
+// return the process group id that would receive SIGIO and SIGURG
+// signals
+{
+  int arg;
+  if (::ioctl (data->fd, SIOCGPGRP, &arg) == -1) throw sockerr (errno);
+  return arg;
+}
+
+int sockbuf::pgrp (int new_pgrp) const
+// set the process group id that would receive SIGIO and SIGURG signals.
+// return the old pgrp
+{
+  int old = pgrp();
+  if (::ioctl (data->fd, SIOCSPGRP, &new_pgrp) == -1) throw sockerr (errno);
   return old;
 }
 

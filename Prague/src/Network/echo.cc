@@ -31,12 +31,12 @@ using namespace Prague;
 
 void echo::echobuf::serve_clients (int portno)
 {
-  if (protocol_name ())
+  if (protocol_name())
     {
       if (portno < 0) sockinetbuf::bind ((unsigned long) INADDR_ANY, "echo", protocol_name ());
       else if (portno <= 1024)
 	{
-	  sockinetbuf::bind ();
+	  sockinetbuf::bind();
 	  cout << "Host: " << localhost () << '\n' << "Port: " << localport () << endl;
 	}
       else sockinetbuf::bind((unsigned long) INADDR_ANY, portno);

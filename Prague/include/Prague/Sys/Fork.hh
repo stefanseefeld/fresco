@@ -38,7 +38,7 @@ class Fork
   struct Process;
  public:
   Fork (bool = false, bool = false);
-  ~Fork ();
+  ~Fork();
   bool   child() const;
   bool   parent() const;
   pid_t  pid() const;
