@@ -27,6 +27,7 @@
 #include <cerrno>
 #include <sstream>
 #include <iostream>
+#include <unistd.h>
 
 using namespace Prague;
 
