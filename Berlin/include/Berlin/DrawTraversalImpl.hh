@@ -29,7 +29,6 @@
 #include <vector>
 
 declare_corba_ptr_type(DrawingKit)
-declare_corba_ptr_type(Drawable)
 declare_corba_ptr_type(Region)
 
 class DrawTraversalImpl : implements(DrawTraversal), virtual public TraversalImpl

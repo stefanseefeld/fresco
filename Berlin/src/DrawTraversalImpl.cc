@@ -23,7 +23,6 @@
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/ImplVar.hh"
 #include "Warsaw/Graphic.hh"
-#include "Warsaw/Drawable.hh"
 #include "Warsaw/DrawingKit.hh"
 #include "Warsaw/Region.hh"
 
