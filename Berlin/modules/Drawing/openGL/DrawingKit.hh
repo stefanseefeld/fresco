@@ -53,11 +53,13 @@ class DrawingKit : public virtual POA_Fresco::DrawingKit3D,
   class Light
   {
   public:
-    Light();
+    Light(GLContext *);
     int push();
     int top() const;
     void pop();
   private:
+    class Init;
+    GLContext *my_glcontext;
     int _max;
     int _number;
   };

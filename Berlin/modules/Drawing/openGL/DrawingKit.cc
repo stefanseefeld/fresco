@@ -35,10 +35,22 @@
 using namespace Prague;
 using namespace Fresco;
 
-openGL::DrawingKit::Light::Light()
-  : _max(-1), _number(-1)
+class openGL::DrawingKit::Light::Init : public virtual GLContext::Callback {
+public:
+  Init::Init(int *max)
+    : my_max(max) {}
+  void operator()() {
+    glGetIntegerv(GL_MAX_LIGHTS, my_max);  
+    delete this;
+  }
+private:
+  int *my_max;
+};
+
+openGL::DrawingKit::Light::Light(GLContext *glcontext)
+  : _max(-1), _number(-1), my_glcontext(glcontext)
 {
-  glGetIntegerv(GL_MAX_LIGHTS, &_max);
+  my_glcontext->add_to_queue(new Init(&_max));
 }
 
 int openGL::DrawingKit::Light::push()
@@ -101,7 +113,7 @@ void openGL::DrawingKit::init()
   my_glcontext = console->get_extension<GLContext>("GLContext");
 
   _font = new FTFont(my_glcontext);
-  _light = new Light();
+  _light = new Light(my_glcontext);
 
   // XXX we should have our own initializer, but it turns out that
   // the Console's mouse pointer doesn't work without executing this
@@ -625,7 +637,6 @@ void openGL::DrawingKit::draw_char(Unichar c)
   _font->set_transform(_tr);
   _font->draw_char(c);
 }
-
 
 class openGL::DrawingKit::DrawMesh : public virtual GLContext::Callback {
 public:
