@@ -55,7 +55,7 @@ else
 	$(XSLT) $(xsl) $(srcdir)/book.xml
 endif
 
-pdf:	$(PDF)
+pdf:	$(PNG)
 ifeq ($(xsl),)
 	@echo "please use \"$(MAKE) xsl=<stylesheet>\""
 else

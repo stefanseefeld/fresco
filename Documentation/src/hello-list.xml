@@ -1,24 +1,24 @@
 <appendix><title>the complete listing of the hello world program</title>
   <programlisting>
   #include &lt;Prague/Sys/Thread.hh&gt;
-  #include &lt;Warsaw/config.hh&gt;
-  #include &lt;Warsaw/Trigger.hh&gt;
-  #include &lt;Warsaw/DesktopKit.hh&gt;
-  #include &lt;Warsaw/TextKit.hh&gt;
-  #include &lt;Warsaw/WidgetKit.hh&gt;
-  #include &lt;Warsaw/resolve.hh&gt;
-  #include &lt;Warsaw/Unicode.hh&gt;
-  #include &lt;Warsaw/ClientContextImpl.hh&gt;
+  #include &lt;Fresco/config.hh&gt;
+  #include &lt;Fresco/Trigger.hh&gt;
+  #include &lt;Fresco/DesktopKit.hh&gt;
+  #include &lt;Fresco/TextKit.hh&gt;
+  #include &lt;Fresco/WidgetKit.hh&gt;
+  #include &lt;Fresco/resolve.hh&gt;
+  #include &lt;Fresco/Unicode.hh&gt;
+  #include &lt;Fresco/ClientContextImpl.hh&gt;
 
   using namespace Prague;
-  using namespace Warsaw;
+  using namespace Fresco;
 
   int main(int argc, char **argv)
   {
     CORBA::ORB_var orb = CORBA::ORB_init(argc, argv);
     CosNaming::NamingContext_var ncontext =
         resolve_init&lt;CosNaming::NamingContext&gt;(orb, "NameService");
-    Server_var server = resolve_name&lt;Server&gt;(ncontext, "IDL:Warsaw/Server:1.0");
+    Server_var server = resolve_name&lt;Server&gt;(ncontext, "IDL:fresco.org/Fresco/Server:1.0");
   
     PortableServer::POA_var poa = resolve_init&lt;PortableServer::POA&gt;(orb, "RootPOA");
     PortableServer::POAManager_var pman = poa-&gt;the_POAManager();
@@ -28,10 +28,10 @@
     ClientContext_var client = ci-&gt;_this();
     ServerContext_var context = server-&gt;create_server_context(client);
 
-    DesktopKit_var desktop = resolve_kit&lt;DesktopKit&gt;(context, "IDL:Warsaw/DesktopKit:1.0");
-    TextKit_var text       = resolve_kit&lt;TextKit&gt;(context, "IDL:Warsaw/TextKit:1.0");
-    WidgetKit_var widgets  = resolve_kit&lt;WidgetKit&gt;(context, "IDL:Warsaw/WidgetKit:1.0");
-    ToolKit_var tools      = resolve_kit&lt;ToolKit&gt;(context, "IDL:Warsaw/ToolKit:1.0");
+    DesktopKit_var desktop = resolve_kit&lt;DesktopKit&gt;(context, "IDL:fresco.org/Fresco/DesktopKit:1.0");
+    TextKit_var text       = resolve_kit&lt;TextKit&gt;(context, "IDL:fresco.org/Fresco/TextKit:1.0");
+    WidgetKit_var widgets  = resolve_kit&lt;WidgetKit&gt;(context, "IDL:fresco.org/Fresco/WidgetKit:1.0");
+    ToolKit_var tools      = resolve_kit&lt;ToolKit&gt;(context, "IDL:fresco.org/Fresco/ToolKit:1.0");
 
     Graphic_var label = text-&gt;chunk(Unicode::to_CORBA(Babylon::String("hello world")));
     Graphic_var black = tools->rgb(label, 0., 0., 0.);

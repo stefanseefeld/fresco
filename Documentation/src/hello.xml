@@ -16,9 +16,9 @@
           <imageobject>
             <imagedata fileref="figures/resolve.png" align="center" format="PNG"/>
           </imageobject>
-          <imageobject>
-            <imagedata fileref="figures/resolve.pdf" align="center" format="PDF"/>
-          </imageobject>
+<!--           <imageobject> -->
+<!--             <imagedata fileref="figures/resolve.pdf" align="center" format="PDF"/> -->
+<!--           </imageobject> -->
         </mediaobject>
       </figure>
       Here is the relevant code in python:
@@ -27,9 +27,9 @@
       orb = CORBA.ORB_init(sys.argv, CORBA.ORB_ID)
       object = orb.resolve_initial_references("NameService");
       ncontext = object._narrow(CosNaming.NamingContext)
-      name = [CosNaming.NameComponent("IDL:Warsaw/Server:1.0", "Object")]
+      name = [CosNaming.NameComponent("IDL:fresco.org/Fresco/Server:1.0", "Object")]
       object = ncontext.resolve(name)
-      server = object._narrow(Warsaw.Server)
+      server = object._narrow(Fresco.Server)
     </programlisting>
     <para>and the same in C++:</para>
     <programlisting>
@@ -37,7 +37,7 @@
       CosNaming::NamingContext_var ncontext =
           resolve_init&lt;CosNaming::NamingContext&gt;(orb, "NameService");
       Server_var server =
-          resolve_name&lt;Server&gt;(ncontext, "IDL:Warsaw/Server:1.0");
+          resolve_name&lt;Server&gt;(ncontext, "IDL:fresco.org/Fresco/Server:1.0");
     </programlisting>
     <para>
       One of the most frequent errors is a misconfigured naming service, i.e. the ORB is unable to
@@ -89,21 +89,21 @@
     </para>
     <programlisting>
       properties = []
-      object  = context.resolve("IDL:Warsaw/DesktopKit:1.0", properties)
-      desktop = object._narrow(Warsaw.DesktopKit)
-      object  = context.resolve("IDL:Warsaw/TextKit:1.0", properties)
-      text    = object._narrow(Warsaw.TextKit)
-      object  = context.resolve("IDL:Warsaw/WidgetKit:1.0", properties)
-      widgets = object._narrow(Warsaw.WidgetKit)
-      object  = context.resolve("IDL:Warsaw/ToolKit:1.0", properties)
-      tools   = object._narrow(Warsaw.ToolKit)
+      object  = context.resolve("IDL:fresco.org/Fresco/DesktopKit:1.0", properties)
+      desktop = object._narrow(Fresco.DesktopKit)
+      object  = context.resolve("IDL:fresco.org/Fresco/TextKit:1.0", properties)
+      text    = object._narrow(Fresco.TextKit)
+      object  = context.resolve("IDL:fresco.org/Fresco/WidgetKit:1.0", properties)
+      widgets = object._narrow(Fresco.WidgetKit)
+      object  = context.resolve("IDL:fresco.org/Fresco/ToolKit:1.0", properties)
+      tools   = object._narrow(Fresco.ToolKit)
     </programlisting>
     <para>and the same in C++:</para>
     <programlisting>
-      DesktopKit_var desktop = resolve_kit&lt;DesktopKit&gt;(context, "IDL:Warsaw/DesktopKit:1.0");
-      TextKit_var text       = resolve_kit&lt;TextKit&gt;(context, "IDL:Warsaw/TextKit:1.0");
-      WidgetKit_var widgets  = resolve_kit&lt;WidgetKit&gt;(context, "IDL:Warsaw/WidgetKit:1.0");
-      ToolKit_var tools      = resolve_kit&lt;ToolKit&gt;(context, "IDL:Warsaw/ToolKit:1.0");
+      DesktopKit_var desktop = resolve_kit&lt;DesktopKit&gt;(context, "IDL:fresco.org/Fresco/DesktopKit:1.0");
+      TextKit_var text       = resolve_kit&lt;TextKit&gt;(context, "IDL:fresco.org/Fresco/TextKit:1.0");
+      WidgetKit_var widgets  = resolve_kit&lt;WidgetKit&gt;(context, "IDL:fresco.org/Fresco/WidgetKit:1.0");
+      ToolKit_var tools      = resolve_kit&lt;ToolKit&gt;(context, "IDL:fresco.org/Fresco/ToolKit:1.0");
     </programlisting>
   </section>
   <section>

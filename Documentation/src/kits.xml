@@ -18,9 +18,9 @@
         <imageobject>
           <imagedata fileref="figures/about-button.png" align="center" format="PNG"/>
         </imageobject>
-        <imageobject>
-          <imagedata fileref="figures/about-button.pdf" align="center" format="PDF"/>
-        </imageobject>
+<!--         <imageobject> -->
+<!--           <imagedata fileref="figures/about-button.pdf" align="center" format="PDF"/> -->
+<!--         </imageobject> -->
       </mediaobject>
     </figure>
     <figure id="fig.about-button-sg" float="1">
@@ -29,9 +29,9 @@
         <imageobject>
           <imagedata fileref="figures/about-button-sg.png" align="center" format="PNG"/>
         </imageobject>
-        <imageobject>
-          <imagedata fileref="figures/about-button-sg.pdf" align="center" format="PDF"/>
-        </imageobject>
+<!--         <imageobject> -->
+<!--           <imagedata fileref="figures/about-button-sg.pdf" align="center" format="PDF"/> -->
+<!--         </imageobject> -->
       </mediaobject>
     </figure>
   <para>As simple as this button looks, it is already an amazing composition of smaller parts coming
@@ -63,9 +63,9 @@
         <imageobject>
           <imagedata fileref="figures/abstract-factory.png" align="center" format="PNG"/>
         </imageobject>
-        <imageobject>
-          <imagedata fileref="figures/abstract-factory.pdf" align="center" format="PDF"/>
-        </imageobject>
+<!--         <imageobject> -->
+<!--           <imagedata fileref="figures/abstract-factory.pdf" align="center" format="PDF"/> -->
+<!--         </imageobject> -->
       </mediaobject>
     </figure>
     <para>The exact type of the returned object isn't known, which means that the server has more freedom to choose
@@ -117,17 +117,17 @@
         <imageobject>
           <imagedata fileref="figures/prototype.png" align="center" format="PNG"/>
         </imageobject>
-        <imageobject>
-          <imagedata fileref="figures/prototype.pdf" align="center" format="PDF"/>
-        </imageobject>
+<!--         <imageobject> -->
+<!--           <imagedata fileref="figures/prototype.pdf" align="center" format="PDF"/> -->
+<!--         </imageobject> -->
       </mediaobject>
     </figure>
   <para> the full sequence of events thus looks like this:</para>
   <programlisting>
   template &lt;class T&gt;
-  typename T::_ptr_type resolve_kit(Warsaw::ServerContext_ptr context,
+  typename T::_ptr_type resolve_kit(Fresco::ServerContext_ptr context,
                                     const char *name,
-                                    const Warsaw::Kit::PropertySeq &amp;props)
+                                    const Fresco::Kit::PropertySeq &amp;props)
   {
     CORBA::Object_ptr object;
     try
@@ -150,7 +150,7 @@
   properties[0].name = CORBA::string_dup("style");
   properties[0].value = CORBA::string_dup("Motif");
   widgets =
-      resolve_kit&lt;WidgetKit&gt;(context, "IDL:Warsaw/WidgetKit:1.0", properties);
+      resolve_kit&lt;WidgetKit&gt;(context, "IDL:fresco.org/Fresco/WidgetKit:1.0", properties);
   </programlisting>
   
   </section>

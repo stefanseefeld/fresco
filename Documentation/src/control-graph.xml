@@ -213,9 +213,9 @@
             <imageobject>
               <imagedata fileref="figures/scene.png" align="center" format="PNG"/>
             </imageobject>
-            <imageobject>
-              <imagedata fileref="figures/scene.pdf" align="center" format="PDF"/>
-            </imageobject>
+<!--             <imageobject> -->
+<!--               <imagedata fileref="figures/scene.pdf" align="center" format="PDF"/> -->
+<!--             </imageobject> -->
           </mediaobject>
         </figure>
         <figure id="scene-graph-figure" float="1">
@@ -224,9 +224,9 @@
             <imageobject>
               <imagedata fileref="figures/scene-graph.png" align="center" format="PNG"/>
             </imageobject>
-            <imageobject>
-              <imagedata fileref="figures/scene-graph.pdf" align="center" format="PDF"/>
-            </imageobject>
+<!--             <imageobject> -->
+<!--               <imagedata fileref="figures/scene-graph.pdf" align="center" format="PDF"/> -->
+<!--             </imageobject> -->
           </mediaobject>
         </figure>
         Imagine the mouse to click on the red polygon. This will result in
@@ -248,9 +248,9 @@
             <imageobject>
               <imagedata fileref="figures/trail.png" align="center" format="PNG"/>
             </imageobject>
-            <imageobject>
-              <imagedata fileref="figures/trail.pdf" align="center" format="PDF"/>
-            </imageobject>
+<!--             <imageobject> -->
+<!--               <imagedata fileref="figures/trail.pdf" align="center" format="PDF"/> -->
+<!--             </imageobject> -->
           </mediaobject>
         </figure>
         For each position, the trail contains the following information:
@@ -286,9 +286,9 @@
             <imageobject>
               <imagedata fileref="figures/cstack.png" align="center" format="PNG"/>
             </imageobject>
-            <imageobject>
-              <imagedata fileref="figures/cstack.pdf" align="center" format="PDF"/>
-            </imageobject>
+<!--             <imageobject> -->
+<!--               <imagedata fileref="figures/cstack.pdf" align="center" format="PDF"/> -->
+<!--             </imageobject> -->
           </mediaobject>
         </figure>
         It is used to update the focus, i.e. to call (in appropriate order) all the controllers'
@@ -312,9 +312,9 @@
             <imageobject>
               <imagedata fileref="figures/gstack.png" align="center" format="PNG"/>
             </imageobject>
-            <imageobject>
-              <imagedata fileref="figures/gstack.pdf" align="center" format="PDF"/>
-            </imageobject>
+<!--             <imageobject> -->
+<!--               <imagedata fileref="figures/gstack.pdf" align="center" format="PDF"/> -->
+<!--             </imageobject> -->
           </mediaobject>
         </figure>
         A special iterator allows it to access the graphics which, inside the editor, were intersecting
@@ -330,9 +330,9 @@
             <imageobject>
               <imagedata fileref="figures/control-graph.png" align="center" format="PNG"/>
             </imageobject>
-            <imageobject>
-              <imagedata fileref="figures/control-graph.pdf" align="center" format="PDF"/>
-            </imageobject>
+<!--             <imageobject> -->
+<!--               <imagedata fileref="figures/control-graph.pdf" align="center" format="PDF"/> -->
+<!--             </imageobject> -->
           </mediaobject>
         </figure>
 	You can navigate the focus through this control graph via the following
@@ -361,9 +361,9 @@
             <imageobject>
               <imagedata fileref="figures/events.png" align="center" format="PNG"/>
             </imageobject>
-            <imageobject>
-              <imagedata fileref="figures/events.pdf" align="center" format="PDF"/>
-            </imageobject>
+<!--             <imageobject> -->
+<!--               <imagedata fileref="figures/events.pdf" align="center" format="PDF"/> -->
+<!--             </imageobject> -->
           </mediaobject>
         </figure>
       </para>
