@@ -20,18 +20,26 @@
  * MA 02139, USA.
  */
 
-/* This file contains the headers of various functions used by
+/*
+ * This file contains the headers of various functions used by
  * the Unicode classes.
  */
 
 #ifndef _Babylon_utils_hh
 #define _Babylon_utils_hh
 
-#include <Babylon/BabylonDefs.hh>
-#include <Babylon/Char.hh>
+#include <Babylon/Babylon.hh>
 
 namespace Babylon {
-    bool isGraphemBoundary(Babylon::Char, Babylon::Char);
+
+bool isGraphemBoundary(Babylon::Char &, Babylon::Char &);
+
+template<class SEQUENCE>
+SEQUENCE translate(Babylon::String & bs);
+
+template<class SEQUENCE>
+Babylon::String translate(SEQUENCE & s);
+
 } // namespace Babylon
 
 #endif // _Babylon_utils_hh

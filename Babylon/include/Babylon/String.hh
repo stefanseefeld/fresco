@@ -23,9 +23,9 @@
 #ifndef _String_hh
 #define _String_hh
 
-/** String class
-    This class stores and manipulates strings of characters defined 
-    acordding to the Unicode[tm] Standard. 
+/* String class
+ * This class stores and manipulates strings of characters defined 
+ * acordding to the Unicode[tm] Standard. 
  */
 
 
@@ -33,89 +33,96 @@
 #include <Babylon/Dictionary.hh>
 
 namespace Babylon {
-
+    
 class String : public basic_string<Babylon::Char> {
 public:
-  // CONSTRUCTORS:
+    // CONSTRUCTORS:
+    
+    /// Creates a string of the length 0.
+    String();
+    /// Creates a string of the length 1 containing 
+    String(const Babylon::Char &, const Norm norm = NORM_NONE);
+    String(const Babylon::_UCS4 &, const Norm norm = NORM_NONE);
+    void utf8(const UTF8String &, const Norm norm = NORM_NONE) throw (TransError);
+    void utf8(const char * s, const Norm norm = NORM_NONE) throw (TransError) {
+	utf8(UTF8String(s), norm);
+    }
+    void utf16(const UTF16String &, const Norm norm = NORM_NONE) throw (TransError);
+    UTF8String utf8() const;
+    UTF16String utf16() const;
+    String(const Babylon::String&);
+    String(const Babylon::_UTF32String&, const Norm norm = NORM_NONE);
+    String(unsigned long len, Babylon::Char * data ) {
+	this->assign(data, len);
+    }
+    
+    // normalizes a String.
+    void normalize(const Norm);
+    
+    // returns the norm the string is in
+    Babylon::Norm norm() const { return currentNorm; }
+    
+    // sets the norm the String is in. Does NOT change the
+    // string itself, so USE WITH CAUTION!
+    void overrideNorm(const Norm norm) { currentNorm = norm; }
+    
+    // returns the normalized form of a string without changing it.
+    String norm(const Norm norm) const;
+    
+    // returns the number of glyphs in a string
+    size_t glyphs() const;
+    
+    // returns all characters starting at the iterator position up to the start of
+    // the next Glyph.
+    String getGlyph(String::const_iterator) const;
+    
+    // sets the iterator to the start of the next glyph.
+    void nextGlyph(String::const_iterator &) const;
+    
+    // returns all characters up to the next line break opportunity. Those are
+    // supposed to happen only between words, in all languages!
+    // String getWord(String::const_iterator) const;
+    
+    // sets the iterator to the start of the next word
+    // void nextWord(String::const_iterator &) const;
+    
+    // returns all characters up to the next linebreak.
+    // (NOT IMPLEMENTED YET SINCE LINEBREAKING IS STILL MISSING.)
+    // String getLine(String::iterator) const;
+    
+    // sets the iterator to the start of the next line
+    // (NOT IMPLEMENTED YET SINCE LINEBREAKING IS STILL MISSING.)
+    // void nextLine(String::iterator &) const;
+    
+    // returns all characters up to the next Paragraph separator.
+    String getParagraph(String::const_iterator);
+    
+    // sets the iterator to the start of the next paragraph
+    void nextParagraph(String::const_iterator &) const;
+    
+    // OPERATORS:
+    
+    // UTILITIES:
+    ostream & _write(ostream &) const;
 
-  /// Creates a string of the length 0.
-  String();
-  /// Creates a string of the length 1 containing 
-  String(const Babylon::Char &, const Norm norm = NORM_NONE);
-  String(const Babylon::_UCS4 &, const Norm norm = NORM_NONE);
-  String(const UTF8String &, const Norm norm = NORM_NONE) throw (TransError);
-  String(const char * s, const Norm norm = NORM_NONE) throw (TransError) {
-      *this = string(s);
-      this->overrideNorm(norm);
-  }
-  String(const Babylon::String&);
-  String(const Babylon::_UTF32String&, const Norm norm = NORM_NONE);
-  String(unsigned long len, Babylon::Char * data ) {
-    this->assign(data, len);
-  }
+    void clear() {
+	currentNorm = Babylon::NORM_NONE;
+	this->resize(0); // Workaround: this->basic_string::clear()
+    }
 
-  // normalizes a String.
-  void normalize(const Norm);
-
-  // returns the norm the string is in
-  Babylon::Norm norm() const { return currentNorm; }
-
-  // sets the norm the String is in. Does NOT change the
-  // string itself, so USE WITH CAUTION!
-  void overrideNorm(const Norm norm) { currentNorm = norm; }
-
-  // returns the normalized form of a string without changing it.
-  String norm(const Norm norm) const;
-
-  // returns the number of glyphs in a string
-  size_t glyphs() const;
-
-  // returns all characters starting at the iterator position up to the start of
-  // the next Glyph.
-  String getGlyph(String::const_iterator) const;
-
-  // sets the iterator to the start of the next glyph.
-  void nextGlyph(String::const_iterator &) const;
-
-  // returns all characters up to the next line break opportunity. Those are
-  // supposed to happen only between words, in all languages!
-  // String getWord(String::const_iterator) const;
-
-  // sets the iterator to the start of the next word
-  // void nextWord(String::const_iterator &) const;
-
-  // returns all characters up to the next linebreak.
-  // (NOT IMPLEMENTED YET SINCE LINEBREAKING IS STILL MISSING.)
-  // String getLine(String::iterator) const;
-
-  // sets the iterator to the start of the next line
-  // (NOT IMPLEMENTED YET SINCE LINEBREAKING IS STILL MISSING.)
-  // void nextLine(String::iterator &) const;
-
-  // returns all characters up to the next Paragraph separator.
-  String getParagraph(String::const_iterator);
-
-  // sets the iterator to the start of the next paragraph
-  void nextParagraph(String::const_iterator &) const;
-
-  // OPERATORS:
-
-  // UTILITIES:
-  ostream & _write(ostream &) const;
-
-  // DESTRUCTOR:
-  // ~String() {} // Noting special needed...
+    // DESTRUCTOR:
+    // ~String() {} // Noting special needed...
 protected:
 private:
-  Babylon::Norm currentNorm;
+    Babylon::Norm currentNorm;
 }; // class String
-
+    
 } // namespace Babylon
 
 // OPERATORS:
 inline ostream & operator <<
-(ostream & out, const Babylon::String & us) {
-  return us._write(out);
+    (ostream & out, const Babylon::String & us) {
+    return us._write(out);
 }
 
 #endif // _String_hh
