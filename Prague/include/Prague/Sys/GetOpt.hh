@@ -54,6 +54,16 @@ public:
     virtual const char* what() const throw() { return (std::string("no such option ") + my_option).c_str();}
     const std::string my_option;
   };
+  class DuplicateOption : public std::exception
+  {
+  public:
+    DuplicateOption(const char o) throw()
+      : my_option(std::string("-") + o) {}
+    virtual ~DuplicateOption() throw() {}
+    virtual const char* what() const throw() { return (std::string("option already added: ") + my_option).c_str();}
+  private:
+    const std::string my_option;
+  };
 private:
   struct cell
   {
@@ -78,7 +88,7 @@ public:
   //. parse the given args
   int parse(char *args);
   //. register an option
-  void add(char o, const std::string &option, type, const std::string & = "no description available");
+  void add(char o, const std::string &option, type, const std::string & = "no description available") throw (DuplicateOption);
   //. return whether the option was issued
   bool is_set(char o) const throw (NoSuchOption);
   //. return whether the option was issued

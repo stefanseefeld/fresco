@@ -28,8 +28,10 @@ using namespace Prague;
 GetOpt::GetOpt(const char *program, const char *use) : p(program), u(use) {}
 GetOpt::~GetOpt() {}
 
-void GetOpt::add(char o, const std::string &opt, type t, const std::string &desc)
+void GetOpt::add(char o, const std::string &opt, type t, const std::string &desc) throw (DuplicateOption)
 {
+   table_t::const_iterator i = find(o);
+   if (i != table.end()) throw DuplicateOption(o);
    table.push_back(cell(o, opt, t, desc));
 }
 
