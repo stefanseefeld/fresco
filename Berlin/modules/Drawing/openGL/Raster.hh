@@ -19,8 +19,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Raster_hh
-#define _Raster_hh
+#ifndef _openGL_Raster_hh
+#define _openGL_Raster_hh
 
 #include <Fresco/config.hh>
 #include <Fresco/Raster.hh>
@@ -29,56 +29,59 @@
 #include <vector>
 #include <GL/gl.h>
 
-namespace Berlin {
-namespace DrawingKit {
-namespace openGL {
-
-class Texture
+namespace Berlin
 {
-public:
-  Texture(Fresco::Raster_var);
-  ~Texture();
-  void activate(GLContext *);
-  Fresco::Raster_var remote;
-  Fresco::PixelCoord width;
-  Fresco::PixelCoord height;
-  Fresco::PixelCoord texgen_w;
-  Fresco::PixelCoord texgen_h;
-  GLuint texture;
-private:
-  class Activate;
-  class Bind;
-  class Delete;
-  bool is_bound;
-  GLContext *my_glcontext;
-  std::vector<unsigned char> data;
-};
+  namespace DrawingKit
+  {
+    namespace openGL
+    {
+
+      class Texture
+      {
+	public:
+	  Texture(Fresco::Raster_var);
+	  ~Texture();
+	  void activate(Console_Extension::GLContext *);
+	  Fresco::Raster_var remote;
+	  Fresco::PixelCoord width;
+	  Fresco::PixelCoord height;
+	  Fresco::PixelCoord texgen_w;
+	  Fresco::PixelCoord texgen_h;
+	  GLuint texture;
+	private:
+	  class Activate;
+	  class Bind;
+	  class Delete;
+	  bool my_is_bound;
+	  Console_Extension::GLContext *my_glcontext;
+	  std::vector<unsigned char> my_data;
+      };
 
 
-class Image
-{
-public:
-  Image(Fresco::Raster_var r);
-  ~Image();
-  void activate(GLContext *);
-  GLfloat s, t;
-  Fresco::Raster_var remote;
-  Fresco::PixelCoord width;
-  Fresco::PixelCoord height;
-  Fresco::PixelCoord texgen_w;
-  Fresco::PixelCoord texgen_h;
-  GLuint texture;
-private:
-  class Activate;
-  class Bind;
-  class Delete;
-  bool is_bound;
-  GLContext *my_glcontext;
-  std::vector<unsigned char> data;
-};
-
-} // namespace
-} // namespace
+      class Image
+      {
+	public:
+	  Image(Fresco::Raster_var r);
+	  ~Image();
+	  void activate(Console_Extension::GLContext *);
+	  GLfloat s, t;
+	  Fresco::Raster_var remote;
+	  Fresco::PixelCoord width;
+	  Fresco::PixelCoord height;
+	  Fresco::PixelCoord texgen_w;
+	  Fresco::PixelCoord texgen_h;
+	  GLuint texture;
+	private:
+	  class Activate;
+	  class Bind;
+	  class Delete;
+	  bool my_is_bound;
+	  Console_Extension::GLContext *my_glcontext;
+	  std::vector<unsigned char> my_data;
+      };
+      
+    } // namespace
+  } // namespace
 } // namespace
 
 #endif 

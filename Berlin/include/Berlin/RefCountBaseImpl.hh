@@ -27,19 +27,24 @@
 #include <Fresco/RefCountBase.hh>
 #include <Berlin/ServantBase.hh>
 
-//.Implements distributed reference counting. To ease the process of keeping
-//.track of references, see the RefCount_var template.
-class RefCountBaseImpl : public virtual POA_Fresco::RefCountBase,
-                         public virtual ServantBase
+namespace Berlin
 {
-public:
-  RefCountBaseImpl();
-  virtual ~RefCountBaseImpl();
-  virtual void increment();
-  virtual void decrement();
-private:
-  //. The number of references to this object.
-  int _refcount;
-};
+
+  //.Implements distributed reference counting. To ease the process of
+  //. keeping track of references, see the RefCount_var template.
+  class RefCountBaseImpl : public virtual POA_Fresco::RefCountBase,
+			   public virtual ServantBase
+  {
+    public:
+      RefCountBaseImpl();
+      virtual ~RefCountBaseImpl();
+      virtual void increment();
+      virtual void decrement();
+    private:
+      //. The number of references to this object.
+      int my_refcount;
+  };
+
+} // namespace
 
 #endif

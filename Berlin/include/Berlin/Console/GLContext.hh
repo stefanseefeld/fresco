@@ -26,15 +26,24 @@
 #include <Berlin/config.hh>
 #include <Berlin/Console.hh>
 
-class GLContext : public virtual Console::Extension
+namespace Berlin
 {
-public:
-  class Callback {
-  public:
-    virtual void operator()() = 0;
-  };
-  virtual void add_to_queue(Callback *) = 0;
-  virtual void flush() = 0;
-};
+  namespace Console_Extension
+  {
+
+    class GLContext : public virtual Console::Extension
+    {
+      public:
+	class Callback
+	{
+	  public:
+	    virtual void operator()() = 0;
+	};
+	virtual void add_to_queue(Callback *) = 0;
+	virtual void flush() = 0;
+    };
+    
+  } // namespace
+} // namespace
 
 #endif

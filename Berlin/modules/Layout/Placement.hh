@@ -29,46 +29,47 @@
 
 class RegionImpl;
 
-namespace Berlin {
-namespace LayoutKit {
-
-class LayoutManager;
-
-class Placement : public MonoGraphic
+namespace Berlin
 {
-public:
-  Placement(LayoutManager *);
-  virtual ~Placement();
+  namespace LayoutKit
+  {
 
-  virtual void request(Fresco::Graphic::Requisition &);
+    class LayoutManager;
 
-  virtual void traverse(Fresco::Traversal_ptr);
+    class Placement : public MonoGraphic
+    {
+      public:
+	Placement(LayoutManager *);
+	virtual ~Placement();
+	
+	virtual void request(Fresco::Graphic::Requisition &);
+	virtual void traverse(Fresco::Traversal_ptr);
+	virtual void allocate(Fresco::Tag,
+			      const Fresco::Allocation::Info &);
 
-  virtual void allocate(Fresco::Tag, const Fresco::Allocation::Info &);
+	virtual const char *object_name() { return my_name; }
 
-  virtual const char *object_name() { return _name;}
+      private:
+	LayoutManager       *my_layout;
+	Impl_var<RegionImpl> my_region;
+	char                *my_name;
+    };
 
-private:
-  LayoutManager       *_layout;
-  Impl_var<RegionImpl> _region;
-  char                *_name;
-};
+    class LayoutLayer : public MonoGraphic
+    {
+      public:
+	LayoutLayer(Fresco::Graphic_ptr, Fresco::Graphic_ptr,
+		    Fresco::Graphic_ptr);
+	virtual ~LayoutLayer();
+	virtual void traverse(Fresco::Traversal_ptr);
 
-class LayoutLayer : public MonoGraphic
-{
-public:
-  LayoutLayer(Fresco::Graphic_ptr, Fresco::Graphic_ptr, Fresco::Graphic_ptr);
-  virtual ~LayoutLayer();
-  virtual void traverse(Fresco::Traversal_ptr);
-
-  virtual const char* object_name() { return "LayoutLayer";}
-
-private:
-  Fresco::Graphic_var _under;
-  Fresco::Graphic_var _over;
-};
-
-} // namespace
+	virtual const char* object_name() { return "LayoutLayer"; }
+      private:
+	Fresco::Graphic_var my_under;
+	Fresco::Graphic_var my_over;
+    };
+    
+  } // namespace
 } // namespace
 
 #endif

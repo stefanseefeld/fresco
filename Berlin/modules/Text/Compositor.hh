@@ -20,8 +20,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Compositor_hh
-#define _Compositor_hh
+#ifndef _TextKit_Compositor_hh
+#define _TextKit_Compositor_hh
 
 #include <Fresco/config.hh>
 #include <Fresco/Graphic.hh>
@@ -29,48 +29,72 @@
 
 class RegionImpl;
 
-namespace Berlin {
-namespace TextKit {
-
-class Compositor
-//. this is a strategy object for adjusting text layouts to compensate for font
-//. misses or hinting. It plays a very similar role to a LayoutManager.
+namespace Berlin
 {
-public:
-  typedef RegionImpl **Allocations;
-  virtual ~Compositor() {}
-  virtual void request(long n, Fresco::Graphic::Requisition *requests, Fresco::DrawingKit_ptr dk, Fresco::Graphic::Requisition &result) = 0;
-  virtual void allocate(long n, Fresco::Graphic::Requisition *requests, Fresco::DrawingKit_ptr dk, Fresco::Region_ptr given, Allocations result) = 0;
-  static void set_span(RegionImpl *r, Fresco::Axis a, Fresco::Coord origin, Fresco::Coord length, Fresco::Alignment align);
-  static Fresco::Coord compute_length(const Fresco::Graphic::Requirement &, const Fresco::Region::Allotment &);
-  static Fresco::Coord compute_squeeze(const Fresco::Graphic::Requirement &, Fresco::Coord);
-};
+  namespace TextKit
+  {
+    
+    //. this is a strategy object for adjusting text layouts to compensate
+    // for font misses or hinting. It plays a very similar role to a
+    // LayoutManager.
+    class Compositor
+    {
+      public:
+	typedef RegionImpl **Allocations;
+	virtual ~Compositor() { }
+	virtual void request(long n,
+			     Fresco::Graphic::Requisition *requests,
+			     Fresco::DrawingKit_ptr dk,
+			     Fresco::Graphic::Requisition &result) = 0;
+	virtual void allocate(long n,
+			      Fresco::Graphic::Requisition *requests,
+			      Fresco::DrawingKit_ptr dk,
+			      Fresco::Region_ptr given,
+			      Allocations result) = 0;
+	static void set_span(RegionImpl *r, Fresco::Axis a,
+			     Fresco::Coord origin, Fresco::Coord length,
+			     Fresco::Alignment align);
+	static Fresco::Coord
+	compute_length(const Fresco::Graphic::Requirement &,
+		       const Fresco::Region::Allotment &);
+	static Fresco::Coord
+	compute_squeeze(const Fresco::Graphic::Requirement &, 
+			Fresco::Coord);
+    };
 
-class LRCompositor : public Compositor
-//. left to right compositor -- aligns vertically, tiles left to right
-//. for now it ignores the DrawingKit parameter and does no compensation
-//. no line breaking
-{
-public:
-  virtual void request(long, Fresco::Graphic::Requisition *, Fresco::DrawingKit_ptr, Fresco::Graphic::Requisition &);
-  virtual void allocate(long, Fresco::Graphic::Requisition *, Fresco::DrawingKit_ptr, Fresco::Region_ptr, Allocations);    
-private:
-  Fresco::Graphic::Requisition requisition;
-};
+    //. left to right compositor -- aligns vertically, tiles left to right
+    //. for now it ignores the DrawingKit parameter and does no
+    //. compensation no line breaking.
+    class LRCompositor : public Compositor
+    {
+      public:
+	virtual void request(long, Fresco::Graphic::Requisition *,
+			     Fresco::DrawingKit_ptr,
+			     Fresco::Graphic::Requisition &);
+	virtual void allocate(long, Fresco::Graphic::Requisition *,
+			      Fresco::DrawingKit_ptr, Fresco::Region_ptr,
+			      Allocations);    
+      private:
+	Fresco::Graphic::Requisition my_requisition;
+    };
 
-class TBCompositor : public Compositor
-//. top to button compositor -- aligns horicontally, tiles top to bottom
-//. for now it ignores the DrawingKit parameter and does no compensation
-//. no line breaking
-{
-public:
-  virtual void request(long, Fresco::Graphic::Requisition *, Fresco::DrawingKit_ptr, Fresco::Graphic::Requisition &);
-  virtual void allocate(long, Fresco::Graphic::Requisition *, Fresco::DrawingKit_ptr, Fresco::Region_ptr, Allocations);    
-private:
-  Fresco::Graphic::Requisition requisition;
-};
+    //. top to button compositor -- aligns horicontally, tiles top to
+    //. bottom for now it ignores the DrawingKit parameter and does no
+    //. compensation no line breaking.
+    class TBCompositor : public Compositor
+    {
+      public:
+	virtual void request(long, Fresco::Graphic::Requisition *,
+			     Fresco::DrawingKit_ptr,
+			     Fresco::Graphic::Requisition &);
+	virtual void allocate(long, Fresco::Graphic::Requisition *,
+			      Fresco::DrawingKit_ptr, Fresco::Region_ptr,
+			      Allocations);    
+      private:
+	Fresco::Graphic::Requisition my_requisition;
+    };
 
-} // namespace
+  } // namespace
 } // namespace
 
 #endif

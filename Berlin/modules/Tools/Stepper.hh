@@ -19,38 +19,42 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Stepper_hh
-#define _Stepper_hh
+#ifndef _ToolKit_Stepper_hh
+#define _ToolKit_Stepper_hh
 
 #include <Prague/Sys/Time.hh>
 #include <Prague/Sys/Timer.hh>
 #include "TriggerImpl.hh"
 
-namespace Berlin {
-namespace ToolKit {
-
-//. The Stepper class implements a button with autorepeat.
-class Stepper : public TriggerImpl
+namespace Berlin
 {
-  class Notifier;
-  friend class Notifier;
-public:
-  Stepper();
-  ~Stepper();
-//protected:
-  virtual void press(Fresco::PickTraversal_ptr, const Fresco::Input::Event &);
-  virtual void release(Fresco::PickTraversal_ptr, const Fresco::Input::Event &);
-  virtual void step();
-private:
-  void start();
-  void stop();
-  Prague::Time  _delay;
-  Prague::Time  _delta;
-  Notifier     *_notifier;
-  Prague::Timer _timer;
-};
+  namespace ToolKit
+  {
 
-} // namespace
+    //. The Stepper class implements a button with autorepeat.
+    class Stepper : public TriggerImpl
+    {
+	class Notifier;
+	friend class Notifier;
+      public:
+	Stepper();
+	~Stepper();
+//      protected:
+	virtual void press(Fresco::PickTraversal_ptr,
+			   const Fresco::Input::Event &);
+	virtual void release(Fresco::PickTraversal_ptr,
+			     const Fresco::Input::Event &);
+	virtual void step();
+      private:
+	void start();
+	void stop();
+	Prague::Time  my_delay;
+	Prague::Time  my_delta;
+	Notifier     *my_notifier;
+	Prague::Timer my_timer;
+    };
+
+  } // namespace
 } // namespace
 
 #endif

@@ -25,9 +25,10 @@
 using namespace Prague;
 using namespace Fresco;
 
-Berlin::CommandKit::BoundedValueImpl::BoundedValueImpl(Coord l, Coord u, Coord v,
-                                                       Coord s, Coord p) :
-  _l(l), _u(u), _v(v), _s(s), _p(p)
+Berlin::CommandKit::BoundedValueImpl::BoundedValueImpl(Coord l, Coord u,
+						       Coord v, Coord s,
+						       Coord p) :
+  my_l(l), my_u(u), my_v(v), my_s(s), my_p(p)
 { }
 
 Berlin::CommandKit::BoundedValueImpl::~BoundedValueImpl()
@@ -35,17 +36,17 @@ Berlin::CommandKit::BoundedValueImpl::~BoundedValueImpl()
 
 Coord Berlin::CommandKit::BoundedValueImpl::lower()
 {
-  Prague::Guard<Mutex> guard(_mutex);
-  return _l;
+  Prague::Guard<Mutex> guard(my_mutex);
+  return my_l;
 }
 
 void Berlin::CommandKit::BoundedValueImpl::lower(Coord l)
 {
   {
-    Prague::Guard<Mutex> guard(_mutex);
-    if (l == _l) return;
-    _l = l;
-    if (_v < _l) _v = _l;
+    Prague::Guard<Mutex> guard(my_mutex);
+    if (l == my_l) return;
+    my_l = l;
+    if (my_v < my_l) my_v = my_l;
   }
   CORBA::Any any;
   notify(any);
@@ -53,17 +54,17 @@ void Berlin::CommandKit::BoundedValueImpl::lower(Coord l)
 
 Coord Berlin::CommandKit::BoundedValueImpl::upper()
 {
-  Prague::Guard<Mutex> guard(_mutex);
-  return _u;
+  Prague::Guard<Mutex> guard(my_mutex);
+  return my_u;
 }
 
 void Berlin::CommandKit::BoundedValueImpl::upper(Coord u)
 {
   {
-    Prague::Guard<Mutex> guard(_mutex);
-    if (u == _u) return;
-    _u = u;
-    if (_v > _u) _v = _u;
+    Prague::Guard<Mutex> guard(my_mutex);
+    if (u == my_u) return;
+    my_u = u;
+    if (my_v > my_u) my_v = my_u;
   }
   CORBA::Any any;
   notify(any);
@@ -71,94 +72,94 @@ void Berlin::CommandKit::BoundedValueImpl::upper(Coord u)
 
 Coord Berlin::CommandKit::BoundedValueImpl::step()
 {
-  Prague::Guard<Mutex> guard(_mutex);
-  return _s;
+  Prague::Guard<Mutex> guard(my_mutex);
+  return my_s;
 }
 
 void Berlin::CommandKit::BoundedValueImpl::step(Coord s)
 {
-  Prague::Guard<Mutex> guard(_mutex);
-  _s = s;
+  Prague::Guard<Mutex> guard(my_mutex);
+  my_s = s;
 }
 
 Coord Berlin::CommandKit::BoundedValueImpl::page()
 {
-  Prague::Guard<Mutex> guard(_mutex);
-  return _p;
+  Prague::Guard<Mutex> guard(my_mutex);
+  return my_p;
 }
 
 void Berlin::CommandKit::BoundedValueImpl::page(Coord p)
 {
-  Prague::Guard<Mutex> guard(_mutex);
-  _p = p;
+  Prague::Guard<Mutex> guard(my_mutex);
+  my_p = p;
 }
 
 void Berlin::CommandKit::BoundedValueImpl::forward()
 {
   {
-    Prague::Guard<Mutex> guard(_mutex);
-    Coord t = _v + _s;
-    if (t > _u) t = _u;
-    if (t == _v) return;
-    _v = t;
+    Prague::Guard<Mutex> guard(my_mutex);
+    Coord t = my_v + my_s;
+    if (t > my_u) t = my_u;
+    if (t == my_v) return;
+    my_v = t;
   }
   CORBA::Any any;
-  any <<= _v;
+  any <<= my_v;
   notify(any);
 }
 
 void Berlin::CommandKit::BoundedValueImpl::backward()
 {
   {
-    Prague::Guard<Mutex> guard(_mutex);
-    Coord t = _v - _s;
-    if (t < _l) t = _l;
-    if (t == _v) return;
-    _v = t;
+    Prague::Guard<Mutex> guard(my_mutex);
+    Coord t = my_v - my_s;
+    if (t < my_l) t = my_l;
+    if (t == my_v) return;
+    my_v = t;
   }
   CORBA::Any any;
-  any <<= _v;
+  any <<= my_v;
   notify(any);
 }
 
 void Berlin::CommandKit::BoundedValueImpl::fastforward()
 {
   {
-    Prague::Guard<Mutex> guard(_mutex);
-    Coord t = _v + _p;
-    if (t > _u) t = _u;
-    if (t == _v) return;
-    _v = t;
+    Prague::Guard<Mutex> guard(my_mutex);
+    Coord t = my_v + my_p;
+    if (t > my_u) t = my_u;
+    if (t == my_v) return;
+    my_v = t;
   }
   CORBA::Any any;
-  any <<= _v;
+  any <<= my_v;
   notify(any);
 }
 
 void Berlin::CommandKit::BoundedValueImpl::fastbackward()
 {
   {
-    Prague::Guard<Mutex> guard(_mutex);
-    Coord t = _v - _p;
-    if (t < _l) t = _l;
-    if (t == _v) return;
-    _v = t;
+    Prague::Guard<Mutex> guard(my_mutex);
+    Coord t = my_v - my_p;
+    if (t < my_l) t = my_l;
+    if (t == my_v) return;
+    my_v = t;
   }
   CORBA::Any any;
-  any <<= _v;
+  any <<= my_v;
   notify(any);
 }
 
 void Berlin::CommandKit::BoundedValueImpl::begin()
 {
   {
-    Prague::Guard<Mutex> guard(_mutex);
-    Coord t = _l;
-    if (t == _v) return;
-    _v = t;
+    Prague::Guard<Mutex> guard(my_mutex);
+    Coord t = my_l;
+    if (t == my_v) return;
+    my_v = t;
   }
   CORBA::Any any;
-  any <<= _v;
+  any <<= my_v;
   notify(any);
 }
 
@@ -166,48 +167,48 @@ void Berlin::CommandKit::BoundedValueImpl::begin()
 void Berlin::CommandKit::BoundedValueImpl::end()
 {
   {
-    Prague::Guard<Mutex> guard(_mutex);
-    Coord t = _u;
-    if (t == _v) return;
-    _v = t;
+    Prague::Guard<Mutex> guard(my_mutex);
+    Coord t = my_u;
+    if (t == my_v) return;
+    my_v = t;
   }
   CORBA::Any any;
-  any <<= _v;
+  any <<= my_v;
   notify(any);
 }
 
 void Berlin::CommandKit::BoundedValueImpl::value(Coord v)
 {
   {
-    Prague::Guard<Mutex> guard(_mutex);
-    if (v > _u) v = _u;
-    else if (v < _l) v = _l;
-    if (v == _v) return;
-    _v = v;
+    Prague::Guard<Mutex> guard(my_mutex);
+    if (v > my_u) v = my_u;
+    else if (v < my_l) v = my_l;
+    if (v == my_v) return;
+    my_v = v;
   }
   CORBA::Any any;
-  any <<= _v;
+  any <<= my_v;
   notify(any);
 }
 
 Coord Berlin::CommandKit::BoundedValueImpl::value()
 {
-  Prague::Guard<Mutex> guard(_mutex);
-  return _v;
+  Prague::Guard<Mutex> guard(my_mutex);
+  return my_v;
 }
 
 
 void Berlin::CommandKit::BoundedValueImpl::adjust(Coord d)
 {
   {
-    Prague::Guard<Mutex> guard(_mutex);
-    Coord t = _v + d;
-    if (t > _u) t = _u;
-    else if (t < _l) t = _l;
-    if (t == _v) return;
-    _v = t;
+    Prague::Guard<Mutex> guard(my_mutex);
+    Coord t = my_v + d;
+    if (t > my_u) t = my_u;
+    else if (t < my_l) t = my_l;
+    if (t == my_v) return;
+    my_v = t;
   }
   CORBA::Any any;
-  any <<= _v;
+  any <<= my_v;
   notify(any);
 }

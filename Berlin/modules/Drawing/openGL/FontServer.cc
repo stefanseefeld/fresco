@@ -29,33 +29,33 @@ using namespace Berlin::DrawingKit;
 
 openGL::FontServer::FontServer()
 {
-  _size = 16;
-  _weight = 100;
-  _font = new GLUnifont;
-  fonts[key(16, 100, Unicode::toCORBA(Unicode::String("GNU Unifont")))] = _font;
-//   char *env = getenv("BERLIN_ROOT");
-//   if (!env)
-//     {
-//       std::cerr << "Please set environment variable BERLIN_ROOT first"
-//                 << std::endl;
-//       exit(-1);
-//     }
-//   string ttf = string(env) + "/etc/Fonts/helv.ttf";
-//   FT::Face *face = new FT::Face(ttf.c_str());
-//   faces[Unicode::toCORBA(Unicode::String("Helvetica"))] = face;
-//   _font = new GLPixmapFont(*face, 10);
-//   fonts[key(16, 100, Unicode::toCORBA(Unicode::String("Helvetica")))] = _font;
+    my_size = 16;
+    my_weight = 100;
+    my_font = new GLUnifont;
+    my_fonts[key(16, 100,
+		 Unicode::toCORBA(Unicode::String("GNU Unifont")))] =
+	my_font;
+//    char *env = getenv("BERLIN_ROOT");
+//    if (!env)
+//    {
+//         std::cerr << "Please set environment variable BERLIN_ROOT first"
+//                    << std::endl;
+//         exit(-1);
+//    }
+//    string ttf = string(env) + "/etc/Fonts/helv.ttf";
+//    FT::Face *face = new FT::Face(ttf.c_str());
+//    faces[Unicode::toCORBA(Unicode::String("Helvetica"))] = face;
+//    my_font = new GLPixmapFont(*face, 10);
+//    my_fonts[key(16, 100,
+//             Unicode::toCORBA(Unicode::String("Helvetica")))] = my_font;
 }
 
 openGL::FontServer::~FontServer()
 {
-    for (fmap_t::iterator i = fonts.begin(); i != fonts.end(); i++)
+    for (fmap_t::iterator i = my_fonts.begin(); i != my_fonts.end(); ++i)
         delete (*i).second;
 }
 
 void
 openGL::FontServer::lookup(unsigned long, unsigned long, const Unistring &)
-{
-}
-
-};
+{ }

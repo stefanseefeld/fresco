@@ -20,39 +20,43 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Composition_hh
-#define _Composition_hh
+#ifndef _TextKit_Composition_hh
+#define _TextKit_Composition_hh
 
 #include <Fresco/config.hh>
 #include <Fresco/View.hh>
 #include <Fresco/TextKit.hh>
 #include <Berlin/PolyGraphic.hh>
 
-namespace Berlin {
-namespace TextKit {
-
-class Compositor;
-
-class Composition : public PolyGraphic
+namespace Berlin
 {
- public:
-  Composition(Fresco::DrawingKit_ptr, Compositor *);
-  virtual ~Composition();
-  virtual void request(Fresco::Graphic::Requisition &);
-  virtual void extension(const Fresco::Allocation::Info &, Fresco::Region_ptr);
-  virtual void traverse(Fresco::Traversal_ptr);
-  virtual void need_resize();
-  virtual void need_resize(Fresco::Tag);
-  virtual void allocate(Fresco::Tag, const Fresco::Allocation::Info &);
- protected:
-  RegionImpl **children_allocations(Fresco::Region_ptr);
-  Fresco::DrawingKit_var canonicalDK;
-  Compositor  *compositor;
-  bool requested;
-  Fresco::Graphic::Requisition requisition;
-};
+  namespace TextKit
+  {
 
-} // namespace
+    class Compositor;
+    
+    class Composition : public PolyGraphic
+    {
+      public:
+	Composition(Fresco::DrawingKit_ptr, Compositor *);
+	virtual ~Composition();
+	virtual void request(Fresco::Graphic::Requisition &);
+	virtual void extension(const Fresco::Allocation::Info &,
+			       Fresco::Region_ptr);
+	virtual void traverse(Fresco::Traversal_ptr);
+	virtual void need_resize();
+	virtual void need_resize(Fresco::Tag);
+	virtual void allocate(Fresco::Tag,
+			      const Fresco::Allocation::Info &);
+      protected:
+	RegionImpl **children_allocations(Fresco::Region_ptr);
+	Fresco::DrawingKit_var my_canonicalDK;
+	Compositor  *my_compositor;
+	bool my_requested;
+	Fresco::Graphic::Requisition my_requisition;
+    };
+    
+  } // namespace
 } // namespace
 
 #endif

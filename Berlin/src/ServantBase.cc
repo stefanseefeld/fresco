@@ -24,101 +24,113 @@
 #include <Berlin/config.hh>
 #include <Berlin/Logger.hh>
 #include "Berlin/ServantBase.hh"
-#include "Berlin/KitImpl.hh"
 #include <typeinfo>
 
 using namespace Prague;
 using namespace Fresco;
+using namespace Berlin;
 
 namespace
 {
   Mutex mutex;
-};
+}
 
-ServantBase::ServantBase()
-  : _refcount(1), _poa(_default_POA())
+ServantBase::ServantBase() :
+    my_refcount(1), my_poa(_default_POA())
 {
 #ifdef LCLOG
-  Logger::log(Logger::lifecycle) << "ServantBase::ServantBase: " << this << " constructed" << std::endl;
+    Logger::log(Logger::lifecycle)
+	<< "ServantBase::ServantBase: " << this << " constructed"
+	<< std::endl;
 #endif
 }
 
-ServantBase::ServantBase(const ServantBase &)
-  : _refcount(1), _poa(_default_POA())
+ServantBase::ServantBase(const ServantBase &) :
+    my_refcount(1), my_poa(_default_POA())
 {
 #ifdef LCLOG
-  Logger::log(Logger::lifecycle) << "ServantBase::ServantBase: " << this << " constructed" << std::endl;
+    Logger::log(Logger::lifecycle)
+	<< "ServantBase::ServantBase: " << this << " constructed"
+	<< std::endl;
 #endif
 }
 
 ServantBase::~ServantBase()
 {
 #ifdef LCLOG
-  Logger::log(Logger::lifecycle) << "ServantBase::~ServantBase: " << this << " destructed" << std::endl;
+    Logger::log(Logger::lifecycle)
+	<< "ServantBase::~ServantBase: " << this << " destructed"
+	<< std::endl;
 #endif
 }
 
-ServantBase &ServantBase::operator = (const ServantBase &) { return *this;}
+ServantBase &ServantBase::operator = (const ServantBase &)
+{ return *this; }
 
 void ServantBase::_add_ref()
 {
   Guard<Mutex> guard(mutex);
-  ++_refcount;
+  ++my_refcount;
 #ifdef LCLOG
-  Logger::log(Logger::lifecycle) << "ServantBase::_add_ref on " << this << " (" << typeid(*this).name() << "): new count is " << _refcount << std::endl;
+  Logger::log(Logger::lifecycle)
+      << "ServantBase::_add_ref on " << this
+      << " (" << typeid(*this).name() << "): new count is "
+      << my_refcount << std::endl;
 #endif
 }
 
-PortableServer::POA_ptr ServantBase::_default_POA() { return DefaultPOA::_default_POA();}
+PortableServer::POA_ptr ServantBase::_default_POA()
+{ return DefaultPOA::_default_POA(); }
 
 void ServantBase::_remove_ref()
 {
-  bool done;
-  {
-    Guard<Mutex> guard(mutex);
-    done = --_refcount;
-#ifdef LCLOG
-    Logger::log(Logger::lifecycle) << "ServantBase::_remove_ref on " << this << " (" << typeid(*this).name() << "): new count is " << _refcount << std::endl;
-#endif
-  }
-  if (done) return;
-  else
+    bool done;
     {
+	Guard<Mutex> guard(mutex);
+	done = --my_refcount;
 #ifdef LCLOG
-      Logger::log(Logger::lifecycle) << "deleting " << this << std::endl;
+	Logger::log(Logger::lifecycle)
+	    << "ServantBase::_remove_ref on " << this << " ("
+	    << typeid(*this).name() << "): new count is " << my_refcount
+	    << std::endl;
 #endif
-      delete this;
     }
+    if (done) return;
+#ifdef LCLOG
+    Logger::log(Logger::lifecycle) << "deleting " << this << std::endl;
+#endif
+    delete this;
 }
 
-void ServantBase::deactivate()
-{
-  ServantBase::deactivate(this);
-}
+void ServantBase::deactivate() { ServantBase::deactivate(this); }
 
 void ServantBase::deactivate(ServantBase *servant)
 {
-  Trace trace("ServantBase::deactivate(ServantBase *)");
-  assert(!CORBA::is_nil(servant->_poa));
-  PortableServer::ObjectId *oid = servant->_poa->servant_to_id(servant);
+    Trace trace("ServantBase::deactivate(ServantBase *)");
+    assert(!CORBA::is_nil(servant->my_poa));
+    PortableServer::ObjectId *oid =
+	servant->my_poa->servant_to_id(servant);
 #ifdef LCLOG
-  Logger::log(Logger::lifecycle) << "deactivating " << servant << " (" << typeid(*servant).name() << ")" << std::endl;
+    Logger::log(Logger::lifecycle)
+	<< "deactivating " << servant << " (" << typeid(*servant).name()
+	<< ")" << std::endl;
 #endif
-  servant->_poa->deactivate_object(*oid);
-  delete oid;
-};
+    servant->my_poa->deactivate_object(*oid);
+    delete oid;
+}
 
 void ServantBase::activate(ServantBase *servant)
 {
-  Trace trace("ServantBase::activate");
-  assert(!CORBA::is_nil(_poa));
+    Trace trace("ServantBase::activate");
+    assert(!CORBA::is_nil(my_poa));
 #ifdef LCLOG
-  Logger::log(Logger::lifecycle) << "activating " << servant << " (" << typeid(*servant).name() << ")" << std::endl;
+    Logger::log(Logger::lifecycle)
+	<< "activating " << servant << " (" << typeid(*servant).name()
+	<< ")" << std::endl;
 #endif
-  PortableServer::ObjectId *oid = _poa->activate_object(servant);
-  servant->_poa = PortableServer::POA::_duplicate(_poa);
-  servant->_remove_ref();
-  delete oid;
-  servant->activate_composite();
-};
-
+    PortableServer::ObjectId *oid = my_poa->activate_object(servant);
+    servant->my_poa = PortableServer::POA::_duplicate(my_poa);
+    servant->_remove_ref();
+    delete oid;
+    servant->activate_composite();
+}

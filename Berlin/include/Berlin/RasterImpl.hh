@@ -30,26 +30,37 @@
 #include <Berlin/PNG.hh>
 #include <string>
 
-class RasterImpl : public virtual POA_Fresco::Raster,
-		   public SubjectImpl
+namespace Berlin
+{
+
+  class RasterImpl : public virtual POA_Fresco::Raster,
+		     public SubjectImpl
 						  
-{  	
-public:
-  RasterImpl(const Fresco::Raster::Info &);
-  RasterImpl(const std::string &file);
-  virtual ~RasterImpl();
-  virtual Fresco::Raster::Info header();
-  virtual void clear();
-  virtual void load_data(const Fresco::Raster::Data &);
-  virtual void store_data(Fresco::Raster::Data_out);
-  virtual void load_pixel(const Fresco::Raster::Index &, const Fresco::Color &);
-  virtual void store_pixel(const Fresco::Raster::Index &, Fresco::Color &);
-  virtual void load_pixels(const Fresco::Raster::Index &, const Fresco::Raster::Index &, const Fresco::Raster::ColorSeq &);
-  virtual void store_pixels(const Fresco::Raster::Index &, const Fresco::Raster::Index &, Fresco::Raster::ColorSeq_out);
-  void write(const char *);
- private:
-  PNG _png;
-  unsigned char **_rows;
-};
+  {  	
+    public:
+      RasterImpl(const Fresco::Raster::Info &);
+      RasterImpl(const std::string &file);
+      virtual ~RasterImpl();
+      virtual Fresco::Raster::Info header();
+      virtual void clear();
+      virtual void load_data(const Fresco::Raster::Data &);
+      virtual void store_data(Fresco::Raster::Data_out);
+      virtual void load_pixel(const Fresco::Raster::Index &,
+			      const Fresco::Color &);
+      virtual void store_pixel(const Fresco::Raster::Index &,
+			       Fresco::Color &);
+      virtual void load_pixels(const Fresco::Raster::Index &,
+			       const Fresco::Raster::Index &,
+			       const Fresco::Raster::ColorSeq &);
+      virtual void store_pixels(const Fresco::Raster::Index &,
+				const Fresco::Raster::Index &,
+				Fresco::Raster::ColorSeq_out);
+      void write(const char *);
+    private:
+      PNG my_png;
+      unsigned char **my_rows;
+  };
+
+} // namespace
 
 #endif

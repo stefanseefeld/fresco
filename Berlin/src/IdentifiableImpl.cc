@@ -26,18 +26,18 @@
 using namespace Prague;
 using namespace Fresco;
 
-CORBA::Boolean IdentifiableImpl::is_identical(Identifiable_ptr id)
+CORBA::Boolean Berlin::IdentifiableImpl::is_identical(Identifiable_ptr id)
 {
-  Trace trace(this, "IdentifiableImpl::is_identical");
-  PortableServer::POA_var poa = _poa;
-  if (CORBA::is_nil(poa)) poa = _default_POA();
-  try
+    Trace trace(this, "IdentifiableImpl::is_identical");
+    PortableServer::POA_var poa = my_poa;
+    if (CORBA::is_nil(poa)) poa = _default_POA();
+    try
     {
-      PortableServer::ServantBase_var s = poa->reference_to_servant(id);
-      if (s.in() == this) return 1;
+	PortableServer::ServantBase_var s = poa->reference_to_servant(id);
+	if (s.in() == this) return 1;
     }
-  catch (const PortableServer::POA::ObjectNotActive &) {}
-  catch (const PortableServer::POA::WrongAdapter &) {}
-  catch (const CORBA::OBJECT_NOT_EXIST &) {}
-  return 0;
+    catch (const PortableServer::POA::ObjectNotActive &) { }
+    catch (const PortableServer::POA::WrongAdapter &) { }
+    catch (const CORBA::OBJECT_NOT_EXIST &) { }
+    return 0;
 }

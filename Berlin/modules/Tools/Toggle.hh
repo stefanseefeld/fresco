@@ -19,28 +19,32 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Toggle_hh
-#define _Toggle_hh
+#ifndef _ToolKit_Toggle_hh
+#define _ToolKit_Toggle_hh
 
 #include <Berlin/ControllerImpl.hh>
 
-namespace Berlin {
-namespace ToolKit {
-
-class Toggle : public ControllerImpl
-//. The Toggle class implements a chosable controller
+namespace Berlin
 {
-public:
-  Toggle(bool = false);
-  ~Toggle();
-//protected:
-  virtual void press(Fresco::PickTraversal_ptr, const Fresco::Input::Event &);
-  virtual void release(Fresco::PickTraversal_ptr, const Fresco::Input::Event &);
-  virtual void key_press(const Fresco::Input::Event &);
-private:
-};
+  namespace ToolKit
+  {
 
-} // namespace
+    //. The Toggle class implements a chosable controller
+    class Toggle : public ControllerImpl
+    {
+      public:
+	Toggle(bool = false);
+	~Toggle();
+//      protected:
+	virtual void press(Fresco::PickTraversal_ptr,
+			   const Fresco::Input::Event &);
+	virtual void release(Fresco::PickTraversal_ptr,
+			     const Fresco::Input::Event &);
+	virtual void key_press(const Fresco::Input::Event &);
+      private:
+    };
+
+  } // namespace
 } // namespace
 
 #endif

@@ -19,8 +19,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _PrimitiveImpl_hh
-#define _PrimitiveImpl_hh
+#ifndef _PrimitiveKit_PrimitiveImpl_hh
+#define _PrimitiveKit_PrimitiveImpl_hh
 
 #include <Fresco/config.hh>
 #include <Fresco/Primitive.hh>
@@ -36,7 +36,7 @@ namespace Berlin
   namespace PrimitiveKit
   {
 
-    static bool _error = false;
+    static bool my_error = false;
 
     class TransformPrimitive : public virtual POA_Primitive::PrimitiveBase,
                                public GraphicImpl
@@ -46,25 +46,28 @@ namespace Berlin
         ~TransformPrimitive();
         virtual Fresco::Transform_ptr transformation();
         virtual void request(Fresco::Graphic::Requisition &);
-        virtual void extension(const Fresco::Allocation::Info &, Fresco::Region_ptr);
+        virtual void extension(const Fresco::Allocation::Info &,
+			       Fresco::Region_ptr);
         virtual void pick(Fresco::PickTraversal_ptr);
         virtual void need_redraw();
 
-        // Figure::Mode type() { return _mode;}
-        // void type(Figure::Mode m) { _mode = m; need_redraw();}
-        // Fresco::Color foreground() { return _fg;}
-        // void foreground(const Fresco::Color &f) { _fg = f; need_redraw();}
-        // Fresco::Color background() { return _bg;}
-        // void background(const Fresco::Color &b) { _bg = b; need_redraw();}
+        // Figure::Mode type() { return my_mode; }
+        // void type(Figure::Mode m) { my_mode = m; need_redraw(); }
+        // Fresco::Color foreground() { return my_fg; }
+        // void foreground(const Fresco::Color &f)
+	// { my_fg = f; need_redraw(); }
+        // Fresco::Color background() { return my_bg; }
+        // void background(const Fresco::Color &b)
+	// { my_bg = b; need_redraw(); }
 
         virtual void resize();
 
         void copy(const TransformPrimitive &);
       protected:
-        // Figure::Mode            _mode;
-        // Fresco::Color           _fg, _bg;
-        Impl_var<TransformImpl> _tx;
-        Impl_var<RegionImpl>    _ext;
+        // Figure::Mode            my_mode;
+        // Fresco::Color           my_fg, my_bg;
+        Impl_var<TransformImpl> my_tx;
+        Impl_var<RegionImpl>    my_ext;
     };
 
     class PrimitiveImpl : public TransformPrimitive
@@ -81,7 +84,7 @@ namespace Berlin
 
         void copy(const PrimitiveImpl &);
       protected:
-        Fresco::Mesh_var _mesh;
+        Fresco::Mesh_var my_mesh;
     };
 
   } // namespace

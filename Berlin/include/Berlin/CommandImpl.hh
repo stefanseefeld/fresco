@@ -19,19 +19,24 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _CommandImpl_hh
-#define _CommandImpl_hh
+#ifndef _Berlin_CommandImpl_hh
+#define _Berlin_CommandImpl_hh
 
 #include <Fresco/config.hh>
 #include <Fresco/Command.hh>
 #include <Berlin/ServantBase.hh>
 
-class CommandImpl : public virtual POA_Fresco::Command,
-                    public virtual ServantBase
+namespace Berlin
 {
-  public:
-    virtual void execute(const CORBA::Any &) = 0;
-    virtual void destroy() { deactivate();}
-};
+
+  class CommandImpl : public virtual POA_Fresco::Command,
+		      public virtual ServantBase
+  {
+    public:
+      virtual void execute(const CORBA::Any &) = 0;
+      virtual void destroy() { deactivate(); }
+  };
+
+} // namespace
 
 #endif

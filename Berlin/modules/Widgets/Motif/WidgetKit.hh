@@ -37,57 +37,64 @@ class GraphicImpl;
 
 namespace Berlin 
 {
-namespace WidgetKit 
-{
-namespace Motif 
-{
+  namespace WidgetKit 
+  {
+    namespace Motif 
+    {
 
-class WidgetKit : public virtual POA_Fresco::WidgetKit,
-		  public KitImpl
-{
- public:
-  WidgetKit(const std::string &,
-	    const Fresco::Kit::PropertySeq &,
-	    ServerContextImpl *);
-  virtual ~WidgetKit();
-  virtual KitImpl *clone(const Fresco::Kit::PropertySeq &p, ServerContextImpl *c)
-  { return new WidgetKit(repo_id(), p, c);}
-  virtual void bind(Fresco::ServerContext_ptr);
+      class WidgetKit : public virtual POA_Fresco::WidgetKit,
+			public KitImpl
+      {
+	public:
+	  WidgetKit(const std::string &,
+		    const Fresco::Kit::PropertySeq &,
+		    ServerContextImpl *);
+	  virtual ~WidgetKit();
+	  virtual Berlin::KitImpl *clone(const Fresco::Kit::PropertySeq &p,
+					 ServerContextImpl *c)
+          { return new WidgetKit(repo_id(), p, c);}
+	  virtual void bind(Fresco::ServerContext_ptr);
   
-  Fresco::Trigger_ptr      button(Fresco::Graphic_ptr, Fresco::Command_ptr);
-  Fresco::Controller_ptr   toggle(Fresco::Graphic_ptr);
-  Fresco::Graphic_ptr      gauge(Fresco::BoundedValue_ptr);
-  Fresco::Controller_ptr   slider(Fresco::BoundedValue_ptr, Fresco::Axis);
-  Fresco::Controller_ptr   panner(Fresco::BoundedRange_ptr, Fresco::BoundedRange_ptr);
-  Fresco::Controller_ptr   scrollbar(Fresco::BoundedRange_ptr, Fresco::Axis);
-  Widget::Choice_ptr       toggle_choice();
-  Widget::Choice_ptr       checkbox_choice();
-  Widget::Choice_ptr       toolbar();
-  Fresco::Controller_ptr   terminal();
-//   Widget::Splitter_ptr     splitter(Fresco::Graphic_ptr, Fresco::Graphic_ptr, Fresco::Axis);
-  Fresco::Controller_ptr   scrollable(Fresco::Graphic_ptr);
- private:
-  RefCount_var<Fresco::LayoutKit>  my_layout;
-  RefCount_var<Fresco::CommandKit> my_commands;
-  RefCount_var<Fresco::ToolKit>    my_tools;
-  RefCount_var<Fresco::TextKit>    my_text;
-  Fresco::Graphic_var              my_strut;
-  Fresco::Graphic_var              my_in_square;
-  Fresco::Graphic_var              my_out_square;
-  Fresco::Graphic_var              my_in_diamond;
-  Fresco::Graphic_var              my_out_diamond;
-  Fresco::Graphic_var              my_up_in_triangle;
-  Fresco::Graphic_var              my_up_out_triangle;
-  Fresco::Graphic_var              my_down_in_triangle;
-  Fresco::Graphic_var              my_down_out_triangle;
-  Fresco::Graphic_var              my_left_in_triangle;
-  Fresco::Graphic_var              my_left_out_triangle;
-  Fresco::Graphic_var              my_right_in_triangle;
-  Fresco::Graphic_var              my_right_out_triangle;
-};
+	  Fresco::Trigger_ptr button(Fresco::Graphic_ptr,
+				     Fresco::Command_ptr);
+	  Fresco::Controller_ptr toggle(Fresco::Graphic_ptr);
+	  Fresco::Graphic_ptr  gauge(Fresco::BoundedValue_ptr);
+	  Fresco::Controller_ptr slider(Fresco::BoundedValue_ptr,
+					Fresco::Axis);
+	  Fresco::Controller_ptr panner(Fresco::BoundedRange_ptr,
+					Fresco::BoundedRange_ptr);
+	  Fresco::Controller_ptr scrollbar(Fresco::BoundedRange_ptr,
+					   Fresco::Axis);
+	  Widget::Choice_ptr toggle_choice();
+	  Widget::Choice_ptr checkbox_choice();
+	  Widget::Choice_ptr toolbar();
+	  Fresco::Controller_ptr terminal();
+//         Widget::Splitter_ptr splitter(Fresco::Graphic_ptr,
+//                                       Fresco::Graphic_ptr,
+//                                       Fresco::Axis);
+	  Fresco::Controller_ptr scrollable(Fresco::Graphic_ptr);
+	private:
+	  RefCount_var<Fresco::LayoutKit>  my_layout;
+	  RefCount_var<Fresco::CommandKit> my_commands;
+	  RefCount_var<Fresco::ToolKit>    my_tools;
+	  RefCount_var<Fresco::TextKit>    my_text;
+	  Fresco::Graphic_var              my_strut;
+	  Fresco::Graphic_var              my_in_square;
+	  Fresco::Graphic_var              my_out_square;
+	  Fresco::Graphic_var              my_in_diamond;
+	  Fresco::Graphic_var              my_out_diamond;
+	  Fresco::Graphic_var              my_up_in_triangle;
+	  Fresco::Graphic_var              my_up_out_triangle;
+	  Fresco::Graphic_var              my_down_in_triangle;
+	  Fresco::Graphic_var              my_down_out_triangle;
+	  Fresco::Graphic_var              my_left_in_triangle;
+	  Fresco::Graphic_var              my_left_out_triangle;
+	  Fresco::Graphic_var              my_right_in_triangle;
+	  Fresco::Graphic_var              my_right_out_triangle;
+      };
 
-} // namespace
-} // namespace
+    } // namespace
+  } // namespace
 } // namespace
 
 #endif

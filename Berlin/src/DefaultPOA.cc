@@ -21,15 +21,14 @@
  */
 #include "Berlin/DefaultPOA.hh"
 
+PortableServer::POA_var Berlin::DefaultPOA::my_default_poa;
 
-PortableServer::POA_var DefaultPOA::_default_poa;
-
-void DefaultPOA::default_POA(PortableServer::POA_ptr poa)
+void Berlin::DefaultPOA::default_POA(PortableServer::POA_ptr poa)
 {
-  _default_poa = PortableServer::POA::_duplicate(poa);
+  my_default_poa = PortableServer::POA::_duplicate(poa);
 }
 
-PortableServer::POA_ptr DefaultPOA::_default_POA()
+PortableServer::POA_ptr Berlin::DefaultPOA::_default_POA()
 {
-  return PortableServer::POA::_duplicate(_default_poa);
+  return PortableServer::POA::_duplicate(my_default_poa);
 }

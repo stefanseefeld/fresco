@@ -40,23 +40,26 @@ using namespace Berlin::GadgetKit;
 
 // class AlphaAdjuster : public virtual POA_View, public MonoGraphic
 // {
-//  public:
-//   virtual void traverse(Traversal_ptr traversal) { traversal->visit(Graphic_var(_this()));}
-//   virtual void draw(DrawTraversal_ptr traversal)
-//   {
-//     DrawingKit_var kit = traversal->kit();
-//     kit->saveState();
-//     Color color = kit->foreground();
-//     color.alpha *= alpha;
-//     kit->foreground(color);
-//     MonoGraphic::traverse(traversal);
-//     kit->restoreState();
-//   }
-//   virtual void pick(PickTraversal_ptr traversal) { MonoGraphic::traverse(traversal);}
+//   public:
+//     virtual void traverse(Traversal_ptr traversal)
+//     { traversal->visit(Graphic_var(_this())); }
+//     virtual void draw(DrawTraversal_ptr traversal)
+//     {
+//         DrawingKit_var kit = traversal->kit();
+// 	   kit->saveState();
+// 	   Color color = kit->foreground();
+// 	   color.alpha *= my_alpha;
+// 	   kit->foreground(color);
+// 	   MonoGraphic::traverse(traversal);
+// 	   kit->restoreState();
+//     }
+//     virtual void pick(PickTraversal_ptr traversal)
+//     { MonoGraphic::traverse(traversal); }
 
-//   virtual void update(const CORBA::Any &any) { any >>= alpha; needRedraw();}
-//  private:
-//   Coord alpha;
+//     virtual void update(const CORBA::Any &any)
+//     { any >>= my_alpha; needRedraw(); }
+//   private:
+//     Coord my_alpha;
 // };
 
 namespace Berlin
@@ -66,14 +69,15 @@ namespace Berlin
     class RGBAdjuster : public virtual ViewImpl, public MonoGraphic
     {
       public:
-        RGBAdjuster(BoundedValue_ptr r, BoundedValue_ptr g, BoundedValue_ptr b) :
-          red(RefCount_var<BoundedValue>::increment(r)),
-          green(RefCount_var<BoundedValue>::increment(g)),
-          blue(RefCount_var<BoundedValue>::increment(b))
+        RGBAdjuster(BoundedValue_ptr r, BoundedValue_ptr g,
+		    BoundedValue_ptr b) :
+	    my_red(RefCount_var<BoundedValue>::increment(r)),
+	    my_green(RefCount_var<BoundedValue>::increment(g)),
+	    my_blue(RefCount_var<BoundedValue>::increment(b))
         {
-            color.red = red->value();
-            color.green = green->value();
-            color.blue = blue->value();
+            my_color.red = my_red->value();
+            my_color.green = my_green->value();
+            my_color.blue = my_blue->value();
         }
         virtual void traverse(Traversal_ptr traversal)
         { traversal->visit(Graphic_var(_this())); }
@@ -82,8 +86,8 @@ namespace Berlin
             DrawingKit_var drawing = traversal->drawing();
             drawing->save();
             Color tmp = drawing->foreground();
-            color.alpha = tmp.alpha;
-            drawing->foreground(color);
+            my_color.alpha = tmp.alpha;
+            drawing->foreground(my_color);
             MonoGraphic::traverse(traversal);
             drawing->restore();
         }
@@ -92,21 +96,21 @@ namespace Berlin
 
         virtual void update(const CORBA::Any &)
         {
-            color.red = red->value();
-            color.green = green->value();
-            color.blue = blue->value();
+            my_color.red = my_red->value();
+            my_color.green = my_green->value();
+            my_color.blue = my_blue->value();
             need_redraw();
         }
       private:
-        RefCount_var<BoundedValue> red, green, blue;
-        Color color;
+        RefCount_var<BoundedValue> my_red, my_green, my_blue;
+        Color my_color;
     };
 
     class AlphaAdjuster : public virtual ViewImpl,
                           public MonoGraphic
     {
       public:
-        AlphaAdjuster(BoundedValue_ptr v) : alpha(v->value()) { }
+        AlphaAdjuster(BoundedValue_ptr v) : my_alpha(v->value()) { }
         virtual void traverse(Traversal_ptr traversal)
         { traversal->visit(Graphic_var(_this())); }
         virtual void draw(DrawTraversal_ptr traversal)
@@ -114,7 +118,7 @@ namespace Berlin
             DrawingKit_var drawing = traversal->drawing();
             drawing->save();
             Color color = drawing->foreground();
-            color.alpha *= alpha;
+            color.alpha *= my_alpha;
             drawing->foreground(color);
             MonoGraphic::traverse(traversal);
             drawing->restore();
@@ -122,22 +126,24 @@ namespace Berlin
         virtual void pick(PickTraversal_ptr traversal)
         { MonoGraphic::traverse(traversal); }
 
-        virtual void update(const CORBA::Any &any) { any >>= alpha; need_redraw(); }
+        virtual void update(const CORBA::Any &any)
+	{ any >>= my_alpha; need_redraw(); }
       private:
-        Coord alpha;
+        Coord my_alpha;
     };
 
     class LightingAdjuster : public virtual ViewImpl, public MonoGraphic
     {
       public:
-        LightingAdjuster(BoundedValue_ptr r, BoundedValue_ptr g, BoundedValue_ptr b) :
-          red(RefCount_var<BoundedValue>::increment(r)),
-          green(RefCount_var<BoundedValue>::increment(g)),
-          blue(RefCount_var<BoundedValue>::increment(b))
+        LightingAdjuster(BoundedValue_ptr r, BoundedValue_ptr g,
+			 BoundedValue_ptr b) :
+          my_red(RefCount_var<BoundedValue>::increment(r)),
+          my_green(RefCount_var<BoundedValue>::increment(g)),
+          my_blue(RefCount_var<BoundedValue>::increment(b))
         {
-            color.red = red->value();
-            color.green = green->value();
-            color.blue = blue->value();
+            my_color.red = my_red->value();
+            my_color.green = my_green->value();
+            my_color.blue = my_blue->value();
         }
         virtual void traverse(Traversal_ptr traversal)
         { traversal->visit(Graphic_var(_this())); }
@@ -146,12 +152,11 @@ namespace Berlin
             DrawingKit_var drawing = traversal->drawing();
             drawing->save();
             Color tmp = drawing->lighting();
-            /*
-             * how is the light attribute concatenated, subtractive, additive ? -stefan
-             */
-            tmp.red *= color.red;
-            tmp.green *= color.green;
-            tmp.blue *= color.blue;
+            // how is the light attribute concatenated, subtractive,
+	    // additive ? -stefan
+            tmp.red *= my_color.red;
+            tmp.green *= my_color.green;
+            tmp.blue *= my_color.blue;
             drawing->lighting(tmp);
             MonoGraphic::traverse(traversal);
             drawing->restore();
@@ -161,33 +166,34 @@ namespace Berlin
 
         virtual void update(const CORBA::Any &)
         {
-            color.red = red->value();
-            color.green = green->value();
-            color.blue = blue->value();
+            my_color.red = my_red->value();
+            my_color.green = my_green->value();
+            my_color.blue = my_blue->value();
             need_redraw();
         }
       private:
-        RefCount_var<BoundedValue> red, green, blue;
-        Color color;
+        RefCount_var<BoundedValue> my_red, my_green, my_blue;
+        Color my_color;
     };
 
     class RotationAdjuster : public virtual ViewImpl, public MonoGraphic
     {
       public:
-        RotationAdjuster(Axis a) : axis(a) {}
+        RotationAdjuster(Axis a) : my_axis(a) { }
         virtual void update(const CORBA::Any &any)
         {
             Graphic_var child = body(); if (CORBA::is_nil(child)) return;
             Transform_var transformation =
-            child->transformation(); if (CORBA::is_nil(transformation)) return;
+		child->transformation();
+	    if (CORBA::is_nil(transformation)) return;
             Coord phi;
             any >>= phi;
             transformation->load_identity();
-            transformation->rotate(phi, axis);
+            transformation->rotate(phi, my_axis);
             need_resize();
         }
       private:
-        Axis axis;
+        Axis my_axis;
     };
 
     class ZoomAdjuster : public virtual ViewImpl, public MonoGraphic
@@ -195,9 +201,11 @@ namespace Berlin
       public:
         virtual void update(const CORBA::Any &any)
         {
-            Graphic_var child = body(); if (CORBA::is_nil(child)) return;
+            Graphic_var child = body();
+	    if (CORBA::is_nil(child)) return;
             Transform_var transformation =
-            child->transformation(); if (CORBA::is_nil(transformation)) return;
+            child->transformation();
+	    if (CORBA::is_nil(transformation)) return;
             Coord scale;
             any >>= scale;
             Vertex s;
@@ -207,13 +215,14 @@ namespace Berlin
             need_resize();
         }
     };
+
   } // namespace
 } // namespace
 
 GadgetKitImpl::GadgetKitImpl(const std::string &id,
                              const Fresco::Kit::PropertySeq &p,
                              ServerContextImpl *c) :
-  KitImpl(id, p, c)
+    KitImpl(id, p, c)
 { }
 GadgetKitImpl::~GadgetKitImpl() { }
 void GadgetKitImpl::bind(ServerContext_ptr context)
@@ -221,12 +230,14 @@ void GadgetKitImpl::bind(ServerContext_ptr context)
     KitImpl::bind(context);
     Fresco::Kit::PropertySeq props;
     props.length(0);
-    _command = resolve_kit<CommandKit>(context,
-                                       "IDL:fresco.org/Fresco/CommandKit:1.0",
-                                       props);
-    _figure = resolve_kit<FigureKit>(context,
-                                     "IDL:fresco.org/Fresco/FigureKit:1.0",
-                                     props);
+    my_command =
+	resolve_kit<CommandKit>(context,
+				"IDL:fresco.org/Fresco/CommandKit:1.0",
+				props);
+    my_figure =
+	resolve_kit<FigureKit>(context,
+			       "IDL:fresco.org/Fresco/FigureKit:1.0",
+			       props);
 }
 
 
@@ -272,27 +283,26 @@ Graphic_ptr GadgetKitImpl::rotator(Graphic_ptr g,
                                    BoundedValue_ptr value,
                                    Axis axis)
 {
-    Graphic_var transformer = _figure->transformer(g);
+    Graphic_var transformer = my_figure->transformer(g);
     Graphic_var adjuster =
-      create_and_set_body<Graphic>(new RotationAdjuster(axis), transformer,
-                                   "GadgetKit/rotator");
+	create_and_set_body<Graphic>(new RotationAdjuster(axis),
+				     transformer, "GadgetKit/rotator");
     value->attach(Observer_ptr(Graphic_ptr(adjuster)));
     return adjuster;
 }
 
 Graphic_ptr GadgetKitImpl::zoomer(Graphic_ptr g, BoundedValue_ptr value)
 {
-    Graphic_var transformer = _figure->transformer(g);
+    Graphic_var transformer = my_figure->transformer(g);
     Graphic_var adjuster =
-      create_and_set_body<Graphic>(new ZoomAdjuster(), transformer,
-                                   "GadgetKit/zoomer");
+	create_and_set_body<Graphic>(new ZoomAdjuster(), transformer,
+				     "GadgetKit/zoomer");
     value->attach(Observer_ptr(Graphic_ptr(adjuster)));
     return adjuster;
 }
 
-extern "C" KitImpl *load()
+extern "C" Berlin::KitImpl *load()
 {
     static std::string properties[] = {"implementation", "GadgetKitImpl"};
-    return create_prototype<GadgetKitImpl>("IDL:fresco.org/Fresco/GadgetKit:1.0",
-                                           properties, 2);
+    return Berlin::create_prototype<GadgetKitImpl>("IDL:fresco.org/Fresco/GadgetKit:1.0", properties, 2);
 }

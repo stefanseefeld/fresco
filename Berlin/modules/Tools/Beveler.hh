@@ -19,41 +19,51 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Beveler_hh
-#define _Beveler_hh
+#ifndef _ToolKit_Beveler_hh
+#define _ToolKit_Beveler_hh
 
 #include <Fresco/config.hh>
 #include <Fresco/DrawTraversal.hh>
 
-namespace Berlin {
-namespace ToolKit {
+namespace Berlin
+{
+  namespace ToolKit
+  {
 
-namespace Beveler {
+    namespace Beveler 
+    {
 
-  void rect(Fresco::DrawTraversal_ptr, Fresco::Coord,
-	    const Fresco::Color &, const Fresco::Color &, const Fresco::Color&,
-	    Fresco::Coord, Fresco::Coord, Fresco::Coord, Fresco::Coord, bool);
-  void leftArrow(Fresco::DrawTraversal_ptr, Fresco::Coord,
-		 const Fresco::Color &, const Fresco::Color &, const Fresco::Color&,
-		 Fresco::Coord, Fresco::Coord, Fresco::Coord, Fresco::Coord, bool);
-  void rightArrow(Fresco::DrawTraversal_ptr, Fresco::Coord,
-		  const Fresco::Color &, const Fresco::Color &, const Fresco::Color&,
-		  Fresco::Coord, Fresco::Coord, Fresco::Coord, Fresco::Coord, bool);
-  void upArrow(Fresco::DrawTraversal_ptr, Fresco::Coord,
-	       const Fresco::Color &, const Fresco::Color &, const Fresco::Color&,
-	       Fresco::Coord, Fresco::Coord, Fresco::Coord, Fresco::Coord, bool);
-  void downArrow(Fresco::DrawTraversal_ptr, Fresco::Coord,
-		 const Fresco::Color &, const Fresco::Color &, const Fresco::Color&,
-		 Fresco::Coord, Fresco::Coord, Fresco::Coord, Fresco::Coord, bool);
-  void diamond(Fresco::DrawTraversal_ptr, Fresco::Coord,
-	       const Fresco::Color &, const Fresco::Color &, const Fresco::Color&,
-	       Fresco::Coord, Fresco::Coord, Fresco::Coord, Fresco::Coord, bool);
-  void circle(Fresco::DrawTraversal_ptr, Fresco::Coord,
-	      const Fresco::Color &, const Fresco::Color &, const Fresco::Color&,
-	      Fresco::Coord, Fresco::Coord, Fresco::Coord, Fresco::Coord, bool);
-} // namespace
-
-} // namespace
+      void rect(Fresco::DrawTraversal_ptr, Fresco::Coord,
+		const Fresco::Color &, const Fresco::Color &,
+		const Fresco::Color&, Fresco::Coord, Fresco::Coord,
+		Fresco::Coord, Fresco::Coord, bool);
+      void leftArrow(Fresco::DrawTraversal_ptr, Fresco::Coord,
+		     const Fresco::Color &, const Fresco::Color &,
+		     const Fresco::Color&, Fresco::Coord, Fresco::Coord,
+		     Fresco::Coord, Fresco::Coord, bool);
+      void rightArrow(Fresco::DrawTraversal_ptr, Fresco::Coord,
+		      const Fresco::Color &, const Fresco::Color &,
+		      const Fresco::Color&, Fresco::Coord, Fresco::Coord,
+		      Fresco::Coord, Fresco::Coord, bool);
+      void upArrow(Fresco::DrawTraversal_ptr, Fresco::Coord,
+		   const Fresco::Color &, const Fresco::Color &,
+		   const Fresco::Color&, Fresco::Coord, Fresco::Coord,
+		   Fresco::Coord, Fresco::Coord, bool);
+      void downArrow(Fresco::DrawTraversal_ptr, Fresco::Coord,
+		     const Fresco::Color &, const Fresco::Color &,
+		     const Fresco::Color&, Fresco::Coord, Fresco::Coord,
+		     Fresco::Coord, Fresco::Coord, bool);
+      void diamond(Fresco::DrawTraversal_ptr, Fresco::Coord,
+		   const Fresco::Color &, const Fresco::Color &,
+		   const Fresco::Color&, Fresco::Coord, Fresco::Coord,
+		   Fresco::Coord, Fresco::Coord, bool);
+      void circle(Fresco::DrawTraversal_ptr, Fresco::Coord,
+		  const Fresco::Color &, const Fresco::Color &,
+		  const Fresco::Color&, Fresco::Coord, Fresco::Coord,
+		  Fresco::Coord, Fresco::Coord, bool);
+    } // namespace
+    
+  } // namespace
 } // namespace
 
 #endif

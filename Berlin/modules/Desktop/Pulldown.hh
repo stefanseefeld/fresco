@@ -19,23 +19,25 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Pulldown_hh
-#define _Pulldown_hh
+#ifndef _DesktopKit_Pulldown_hh
+#define _DesktopKit_Pulldown_hh
 
 #include "WindowImpl.hh"
 
-namespace Berlin {
-namespace DesktopKit {
-
-class Pulldown : public WindowImpl
+namespace Berlin
 {
-public:
-  virtual CORBA::Boolean receive_focus(Fresco::Focus_ptr);
-  virtual void lose_focus(Fresco::Input::Device);
-  virtual void mapped(CORBA::Boolean);
-};
+  namespace DesktopKit
+  {
 
-} // namespace
+    class Pulldown : public WindowImpl
+    {
+      public:
+	virtual CORBA::Boolean receive_focus(Fresco::Focus_ptr);
+	virtual void lose_focus(Fresco::Input::Device);
+	virtual void mapped(CORBA::Boolean);
+    };
+
+  } // namespace
 } // namespace
 
 #endif

@@ -27,31 +27,36 @@ using namespace Fresco;
 
 using namespace Berlin::ToolKit;
 
-Toggle::Toggle(bool f) : ControllerImpl(f) {}
-Toggle::~Toggle() {}
+Toggle::Toggle(bool f) : ControllerImpl(f) { }
+Toggle::~Toggle() { }
 
 void Toggle::press(PickTraversal_ptr traversal, const Input::Event &event)
 {
-  Trace trace("Toggle::press");
-  ControllerImpl::press(traversal, event);
-  if (test(Fresco::Controller::toggled)) clear(Fresco::Controller::toggled);
-  else set(Fresco::Controller::toggled);
+    Trace trace("Toggle::press");
+    ControllerImpl::press(traversal, event);
+    if (test(Fresco::Controller::toggled))
+	clear(Fresco::Controller::toggled);
+    else
+	set(Fresco::Controller::toggled);
 }
 
-void Toggle::release(PickTraversal_ptr traversal, const Input::Event &event)
+void Toggle::release(PickTraversal_ptr traversal,
+		     const Input::Event &event)
 {
-  Trace trace("Toggle::release");
-  ControllerImpl::release(traversal, event);
+    Trace trace("Toggle::release");
+    ControllerImpl::release(traversal, event);
 }
 
 void Toggle::key_press(const Input::Event &event)
 {
-  Trace trace("Toggle::key_press");
-  const Input::Toggle &toggle = event[0].attr.selection();
-  if (toggle.number == 32) // space
+    Trace trace("Toggle::key_press");
+    const Input::Toggle &toggle = event[0].attr.selection();
+    if (toggle.number == 32) // space
     {
-      if (test(Fresco::Controller::toggled)) clear(Fresco::Controller::toggled);
-      else set(Fresco::Controller::toggled);
+	if (test(Fresco::Controller::toggled))
+	    clear(Fresco::Controller::toggled);
+	else
+	    set(Fresco::Controller::toggled);
     }
-  else ControllerImpl::key_press(event);
+    else ControllerImpl::key_press(event);
 }

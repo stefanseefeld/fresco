@@ -30,28 +30,30 @@ using namespace Fresco;
 
 using namespace Berlin::ToolKit;
 
-MainControllerImpl::MainControllerImpl(bool transparent) : ControllerImpl(transparent) {}
-MainControllerImpl::~MainControllerImpl() {}
+MainControllerImpl::MainControllerImpl(bool transparent) :
+    ControllerImpl(transparent)
+{ }
+MainControllerImpl::~MainControllerImpl() { }
 void MainControllerImpl::cursor(Raster_ptr r)
 {
-  Trace trace("MainControllerImpl::cursor");
-  Prague::Guard<Mutex> guard(_mutex);
-  _cursor = Raster::_duplicate(r);
+    Trace trace("MainControllerImpl::cursor");
+    Prague::Guard<Mutex> guard(my_mutex);
+    my_cursor = Raster::_duplicate(r);
 }
 
 Raster_ptr MainControllerImpl::cursor()
 {
-  Prague::Guard<Mutex> guard(_mutex);
-  return Raster::_duplicate(_cursor);
+    Prague::Guard<Mutex> guard(my_mutex);
+    return Raster::_duplicate(my_cursor);
 }
 
 CORBA::Boolean MainControllerImpl::receive_focus(Focus_ptr focus)
 {
-  Trace trace(this, "MainControllerImpl::receive_focus");
-  Input::Device d = focus->device();
-  bool ret = ControllerImpl::receive_focus(focus);
-  if (ret && d == 1 && !CORBA::is_nil(_cursor))
-    focus->set_cursor(_cursor);
-  return ret;
+    Trace trace(this, "MainControllerImpl::receive_focus");
+    Input::Device d = focus->device();
+    bool ret = ControllerImpl::receive_focus(focus);
+    if (ret && d == 1 && !CORBA::is_nil(my_cursor))
+	focus->set_cursor(my_cursor);
+    return ret;
 }
 

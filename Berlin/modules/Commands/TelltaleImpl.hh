@@ -20,8 +20,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _TelltaleImpl_hh
-#define _TelltaleImpl_hh
+#ifndef _CommandKit_TelltaleImpl_hh
+#define _CommandKit_TelltaleImpl_hh
 
 #include <Prague/Sys/Thread.hh>
 #include <Fresco/config.hh>
@@ -43,15 +43,15 @@ namespace Berlin
         virtual void clear(Fresco::Telltale::Mask);
         virtual CORBA::Boolean test(Fresco::Telltale::Mask);
         virtual void modify(Fresco::Telltale::Mask, CORBA::Boolean);
-        CORBA::ULong state() { return _mask;}
+        CORBA::ULong state() { return my_mask;}
 
         virtual void constraint(Fresco::TelltaleConstraint_ptr);
         virtual Fresco::TelltaleConstraint_ptr constraint();
 
       protected:
-        Prague::Mutex                  _mutex;
-        CORBA::ULong                   _mask;
-        Fresco::TelltaleConstraint_var _constraint;
+        Prague::Mutex                  my_mutex;
+        CORBA::ULong                   my_mask;
+        Fresco::TelltaleConstraint_var my_constraint;
     };
 
     class TelltaleConstraintImpl : public virtual POA_Fresco::TelltaleConstraint,
@@ -66,8 +66,8 @@ namespace Berlin
         virtual void trymodify(Fresco::Telltale_ptr, Fresco::Telltale::Mask,
                                CORBA::Boolean) = 0;
       protected:
-        Prague::Mutex _mutex;
-        tlist_t       _telltales;
+        Prague::Mutex my_mutex;
+        tlist_t       my_telltales;
     };
 
     class ExclusiveChoice : public TelltaleConstraintImpl
@@ -77,7 +77,7 @@ namespace Berlin
         virtual void trymodify(Fresco::Telltale_ptr, Fresco::Telltale::Mask,
                                CORBA::Boolean);
       private:
-        Fresco::Telltale::Mask _mask;
+        Fresco::Telltale::Mask my_mask;
     };
 
     class SelectionRequired : public TelltaleConstraintImpl
@@ -87,7 +87,7 @@ namespace Berlin
         virtual void trymodify(Fresco::Telltale_ptr, Fresco::Telltale::Mask,
                                CORBA::Boolean);
       private:
-        Fresco::Telltale::Mask _mask;
+        Fresco::Telltale::Mask my_mask;
     };
 
     class ExclusiveRequired : public TelltaleConstraintImpl
@@ -97,7 +97,7 @@ namespace Berlin
         virtual void trymodify(Fresco::Telltale_ptr, Fresco::Telltale::Mask,
                                CORBA::Boolean);
       private:
-        Fresco::Telltale::Mask _mask;
+        Fresco::Telltale::Mask my_mask;
     };
 
   } // namespace

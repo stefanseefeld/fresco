@@ -19,8 +19,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Frame_hh
-#define _Frame_hh
+#ifndef _ToolKit_Frame_hh
+#define _ToolKit_Frame_hh
 
 #include <Fresco/config.hh>
 #include <Fresco/Telltale.hh>
@@ -30,64 +30,78 @@
 #include <Berlin/ImplVar.hh>
 #include <Berlin/RefCountVar.hh>
 
-namespace Berlin {
-namespace ToolKit {
-
-class Frame : public MonoGraphic
+namespace Berlin
 {
-public:
-  class Renderer
+  namespace ToolKit
   {
-  public:
-    Renderer(Fresco::Coord t, bool f) : _thickness(t), _fill(f) {}
-    virtual void draw(Fresco::DrawTraversal_ptr) = 0;
-    Fresco::Coord _thickness;
-    bool          _fill;  
-  };
-  Frame(Fresco::Coord, Renderer *);
-  virtual ~Frame();
-  virtual void request(Fresco::Graphic::Requisition &);
-  virtual void traverse(Fresco::Traversal_ptr);
-  virtual void extension(const Fresco::Allocation::Info &, Fresco::Region_ptr);
-  virtual void allocate(Fresco::Tag, const Fresco::Allocation::Info &);
 
-  virtual void draw(Fresco::DrawTraversal_ptr);
-  virtual const char *object_name() { return "Frame";}
-protected:
-  void allocate_span(const Fresco::Graphic::Requirement &, Fresco::Region::Allotment &, Fresco::Coord, Fresco::Alignment);
-  Fresco::Coord        _thickness;
-  Impl_var<RegionImpl> _allocation;
-  Renderer            *_renderer;
-};
+    class Frame : public MonoGraphic
+    {
+      public:
+	class Renderer
+	{
+	  public:
+	    Renderer(Fresco::Coord t, bool f) :
+		thickness(t), fill(f)
+	    { }
+	    virtual void draw(Fresco::DrawTraversal_ptr) = 0;
+	    Fresco::Coord thickness;
+	    bool          fill;
+	};  
 
-class InvisibleFrame : public Frame::Renderer
-{
-public:
-  InvisibleFrame(Fresco::Coord t, bool f) : Frame::Renderer(t, f) {}
-  virtual void draw(Fresco::DrawTraversal_ptr);
-};
+	Frame(Fresco::Coord, Renderer *);
+	virtual ~Frame();
+	virtual void request(Fresco::Graphic::Requisition &);
+	virtual void traverse(Fresco::Traversal_ptr);
+	virtual void extension(const Fresco::Allocation::Info &,
+			       Fresco::Region_ptr);
+	virtual void allocate(Fresco::Tag,
+			      const Fresco::Allocation::Info &);
+    
+	virtual void draw(Fresco::DrawTraversal_ptr);
+	virtual const char *object_name() { return "Frame"; }
+      protected:
+	void allocate_span(const Fresco::Graphic::Requirement &,
+			   Fresco::Region::Allotment &,
+			   Fresco::Coord, Fresco::Alignment);
+	Fresco::Coord        my_thickness;
+	Impl_var<RegionImpl> my_allocation;
+	Renderer            *my_renderer;
+    };
 
-class Bevel : public Frame::Renderer
-{
-public:
-  enum type { inset, outset, convex, concav};
-  Bevel(Fresco::Coord t, type s, Fresco::Coord b, bool f) : Frame::Renderer(t, f), _style(s), _bright(b) {}
-  virtual void draw(Fresco::DrawTraversal_ptr);
-protected:
-  type          _style;
-  Fresco::Coord _bright;
-};
+    class InvisibleFrame : public Frame::Renderer
+    {
+      public:
+	InvisibleFrame(Fresco::Coord t, bool f) :
+	    Frame::Renderer(t, f)
+	{ }
+	virtual void draw(Fresco::DrawTraversal_ptr);
+    };
 
-class ColoredFrame : public Frame::Renderer
-{
-public:
-  ColoredFrame(Fresco::Coord t, const Fresco::Color &c, bool f) : Frame::Renderer(t, f), _color(c) {}
-  virtual void draw(Fresco::DrawTraversal_ptr);
-protected:
-  Fresco::Color _color;
-};
+    class Bevel : public Frame::Renderer
+    {
+      public:
+	enum type { inset, outset, convex, concav };
+	Bevel(Fresco::Coord t, type s, Fresco::Coord b, bool f) :
+	    Frame::Renderer(t, f), my_style(s), my_bright(b)
+	{ }
+	virtual void draw(Fresco::DrawTraversal_ptr);
+      protected:
+	type          my_style;
+	Fresco::Coord my_bright;
+    };
 
-} // namespace
+    class ColoredFrame : public Frame::Renderer
+    {
+      public:
+	ColoredFrame(Fresco::Coord t, const Fresco::Color &c, bool f) :
+	    Frame::Renderer(t, f), my_color(c) { }
+	virtual void draw(Fresco::DrawTraversal_ptr);
+      protected:
+	Fresco::Color my_color;
+    };
+
+  } // namespace
 } // namespace
 
 #endif

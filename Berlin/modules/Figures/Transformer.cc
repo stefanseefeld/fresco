@@ -37,9 +37,10 @@ using namespace Fresco;
 
 using namespace Berlin::FigureKit;
 
-Transformer::Transformer() : my_transform(new TransformImpl) {}
-Transformer::~Transformer() {}
-Transform_ptr Transformer::transformation() { return my_transform->_this();}
+Transformer::Transformer() : my_transform(new TransformImpl) { }
+Transformer::~Transformer() { }
+Transform_ptr Transformer::transformation()
+{ return my_transform->_this(); }
 
 void Transformer::request(Fresco::Graphic::Requisition &requisition)
 {
@@ -93,7 +94,8 @@ void Transformer::allocate(Tag, const Allocation::Info &info)
 	    Fresco::Graphic::Requisition r;
 	    GraphicImpl::init_requisition(r);
 	    Allocator::request(r);
-	    Lease_var<TransformImpl> tx(Provider<TransformImpl>::provide());
+	    Lease_var<TransformImpl>
+		tx(Provider<TransformImpl>::provide());
 	    tx->load_identity();
 	    Vertex delta =
 		GraphicImpl::transform_allocate(*rr, r, Transform_var(my_transform->_this()));

@@ -34,8 +34,9 @@ using namespace Berlin::PrimitiveKit;
 
 PrimitiveKitImpl::PrimitiveKitImpl(const std::string &id,
 		                   const Fresco::Kit::PropertySeq &p,
-				   ServerContextImpl *c)
-  : KitImpl(id, p, c) { }
+				   ServerContextImpl *c) :
+    Berlin::KitImpl(id, p, c)
+{ }
 
 PrimitiveKitImpl::~PrimitiveKitImpl() { }
 
@@ -49,67 +50,91 @@ Graphic_ptr PrimitiveKitImpl::root(Graphic_ptr g)
 
 Primitive::Geometry_ptr PrimitiveKitImpl::geometry(const Fresco::Mesh &mesh)
 {
-  return create<Primitive::Geometry>(new GeometryImpl(mesh),
-				     "PrimitiveKit/geometry");
+    return create<Primitive::Geometry>(new GeometryImpl(mesh),
+				       "PrimitiveKit/geometry");
 }
 
 Graphic_ptr PrimitiveKitImpl::cube()
 {
-  Fresco::Mesh mesh;
-  mesh.nodes.length(8);
-  mesh.nodes[0].x = -500; mesh.nodes[0].y = -500; mesh.nodes[0].z = -500;
-  mesh.nodes[1].x = -500; mesh.nodes[1].y = -500; mesh.nodes[1].z =  500;
-  mesh.nodes[2].x = -500; mesh.nodes[2].y =  500; mesh.nodes[2].z =  500;
+    Fresco::Mesh mesh;
+    mesh.nodes.length(8);
+    mesh.nodes[0].x = -500, mesh.nodes[0].y = -500, mesh.nodes[0].z = -500;
+    mesh.nodes[1].x = -500, mesh.nodes[1].y = -500, mesh.nodes[1].z =  500;
+    mesh.nodes[2].x = -500, mesh.nodes[2].y =  500, mesh.nodes[2].z =  500;
+    
+    mesh.nodes[3].x = -500, mesh.nodes[3].y =  500, mesh.nodes[3].z = -500;
+    mesh.nodes[4].x =  500, mesh.nodes[4].y =  500, mesh.nodes[4].z =  500;
+    mesh.nodes[5].x =  500, mesh.nodes[5].y = -500, mesh.nodes[5].z =  500;
+    
+    mesh.nodes[6].x =  500, mesh.nodes[6].y = -500, mesh.nodes[6].z = -500;
+    mesh.nodes[7].x =  500, mesh.nodes[7].y =  500, mesh.nodes[7].z = -500;
+    
+    mesh.triangles.length(12);
+    // x=0 side
+    mesh.triangles[0].a = 0, mesh.triangles[0].b = 2,
+	mesh.triangles[0].c = 3;
+    mesh.triangles[1].a = 0, mesh.triangles[1].b = 1,
+	mesh.triangles[1].c = 2;
+    // y=0 side
+    mesh.triangles[2].a = 0, mesh.triangles[2].b = 5,
+	mesh.triangles[2].c = 1;
+    mesh.triangles[3].a = 0, mesh.triangles[3].b = 6,
+	mesh.triangles[3].c = 5;
+    // z=0 side
+    mesh.triangles[4].a = 0, mesh.triangles[4].b = 3,
+	mesh.triangles[4].c = 7;
+    mesh.triangles[5].a = 0, mesh.triangles[5].b = 7,
+	mesh.triangles[5].c = 6;
+    // x=1 side
+    mesh.triangles[6].a = 4, mesh.triangles[6].b = 5,
+	mesh.triangles[6].c = 6;
+    mesh.triangles[7].a = 4, mesh.triangles[7].b = 6,
+	mesh.triangles[7].c = 7;
+    // y=1 side
+    mesh.triangles[8].a = 4, mesh.triangles[8].b = 7,
+	mesh.triangles[8].c = 3;
+    mesh.triangles[9].a = 4, mesh.triangles[9].b = 3,
+	mesh.triangles[9].c = 2;
+    // z=1 side
+    mesh.triangles[10].a = 4, mesh.triangles[10].b = 1,
+	mesh.triangles[10].c = 5;
+    mesh.triangles[11].a = 4, mesh.triangles[11].b = 2,
+	mesh.triangles[11].c = 1;
+    
+    mesh.normals.length(12);
+    mesh.normals[0].x = -1., mesh.normals[0].y =  0.,
+	mesh.normals[0].z =  0.;
+    mesh.normals[1].x = -1., mesh.normals[1].y =  0.,
+	mesh.normals[1].z =  0.;
+    mesh.normals[2].x =  0., mesh.normals[2].y = -1.,
+	mesh.normals[2].z =  0.;
+    mesh.normals[3].x =  0., mesh.normals[3].y = -1.,
+	mesh.normals[3].z =  0.;
+    mesh.normals[4].x =  0., mesh.normals[4].y =  0.,
+	mesh.normals[4].z = -1.;
+    mesh.normals[5].x =  0., mesh.normals[5].y =  0.,
+	mesh.normals[5].z = -1.;
+    mesh.normals[6].x =  1., mesh.normals[6].y =  0.,
+	mesh.normals[6].z =  0.;
+    mesh.normals[7].x =  1., mesh.normals[7].y =  0.,
+	mesh.normals[7].z =  0.;
+    mesh.normals[8].x =  0., mesh.normals[8].y =  1.,
+	mesh.normals[8].z =  0.;
+    mesh.normals[9].x =  0., mesh.normals[9].y =  1.,
+	mesh.normals[9].z =  0.;
+    mesh.normals[10].x =  0., mesh.normals[10].y =  0.,
+	mesh.normals[10].z =  1.;
+    mesh.normals[11].x =  0., mesh.normals[11].y =  0.,
+	mesh.normals[11].z =  1.;
 
-  mesh.nodes[3].x = -500; mesh.nodes[3].y =  500; mesh.nodes[3].z = -500;
-  mesh.nodes[4].x =  500; mesh.nodes[4].y =  500; mesh.nodes[4].z =  500;
-  mesh.nodes[5].x =  500; mesh.nodes[5].y = -500; mesh.nodes[5].z =  500;
-
-  mesh.nodes[6].x =  500; mesh.nodes[6].y = -500; mesh.nodes[6].z = -500;
-  mesh.nodes[7].x =  500; mesh.nodes[7].y =  500; mesh.nodes[7].z = -500;
-
-  mesh.triangles.length(12);
-  /* x=0 side */
-  mesh.triangles[0].a = 0; mesh.triangles[0].b = 2; mesh.triangles[0].c = 3;
-  mesh.triangles[1].a = 0; mesh.triangles[1].b = 1; mesh.triangles[1].c = 2;
-  /* y=0 side */
-  mesh.triangles[2].a = 0; mesh.triangles[2].b = 5; mesh.triangles[2].c = 1;
-  mesh.triangles[3].a = 0; mesh.triangles[3].b = 6; mesh.triangles[3].c = 5;
-  /* z=0 side */
-  mesh.triangles[4].a = 0; mesh.triangles[4].b = 3; mesh.triangles[4].c = 7;
-  mesh.triangles[5].a = 0; mesh.triangles[5].b = 7; mesh.triangles[5].c = 6;
-  /* x=1 side */
-  mesh.triangles[6].a = 4; mesh.triangles[6].b = 5; mesh.triangles[6].c = 6;
-  mesh.triangles[7].a = 4; mesh.triangles[7].b = 6; mesh.triangles[7].c = 7;
-  /* y=1 side */
-  mesh.triangles[8].a = 4; mesh.triangles[8].b = 7; mesh.triangles[8].c = 3;
-  mesh.triangles[9].a = 4; mesh.triangles[9].b = 3; mesh.triangles[9].c = 2;
-  /* z=1 side */
-  mesh.triangles[10].a = 4; mesh.triangles[10].b = 1; mesh.triangles[10].c = 5;
-  mesh.triangles[11].a = 4; mesh.triangles[11].b = 2; mesh.triangles[11].c = 1;
-
-  mesh.normals.length(12);
-  mesh.normals[0].x = -1.; mesh.normals[0].y =  0.; mesh.normals[0].z =  0.;
-  mesh.normals[1].x = -1.; mesh.normals[1].y =  0.; mesh.normals[1].z =  0.;
-  mesh.normals[2].x =  0.; mesh.normals[2].y = -1.; mesh.normals[2].z =  0.;
-  mesh.normals[3].x =  0.; mesh.normals[3].y = -1.; mesh.normals[3].z =  0.;
-  mesh.normals[4].x =  0.; mesh.normals[4].y =  0.; mesh.normals[4].z = -1.;
-  mesh.normals[5].x =  0.; mesh.normals[5].y =  0.; mesh.normals[5].z = -1.;
-  mesh.normals[6].x =  1.; mesh.normals[6].y =  0.; mesh.normals[6].z =  0.;
-  mesh.normals[7].x =  1.; mesh.normals[7].y =  0.; mesh.normals[7].z =  0.;
-  mesh.normals[8].x =  0.; mesh.normals[8].y =  1.; mesh.normals[8].z =  0.;
-  mesh.normals[9].x =  0.; mesh.normals[9].y =  1.; mesh.normals[9].z =  0.;
-  mesh.normals[10].x =  0.; mesh.normals[10].y =  0.; mesh.normals[10].z =  1.;
-  mesh.normals[11].x =  0.; mesh.normals[11].y =  0.; mesh.normals[11].z =  1.;
-
-  return geometry(mesh);
+    return geometry(mesh);
 }
 
 
 Graphic_ptr PrimitiveKitImpl::transformer(Graphic_ptr g)
 {
-  return create_and_set_body<Graphic>(new Transformer, g,
-				      "PrimitiveKit/transformer");
+    return create_and_set_body<Graphic>(new Transformer, g,
+					"PrimitiveKit/transformer");
 }
 
 Graphic_ptr PrimitiveKitImpl::directional_light(Fresco::Graphic_ptr g,
@@ -117,8 +142,8 @@ Graphic_ptr PrimitiveKitImpl::directional_light(Fresco::Graphic_ptr g,
 						CORBA::Float i,
 						const Fresco::Vertex &d)
 {
-  return create_and_set_body<Graphic>(new DirectionalLight(c, i, d), g,
-				      "PrimitiveKit/directional_light");
+    return create_and_set_body<Graphic>(new DirectionalLight(c, i, d), g,
+					"PrimitiveKit/directional_light");
 }
 
 Graphic_ptr PrimitiveKitImpl::point_light(Fresco::Graphic_ptr g,
@@ -126,8 +151,8 @@ Graphic_ptr PrimitiveKitImpl::point_light(Fresco::Graphic_ptr g,
 					  CORBA::Float i,
 					  const Fresco::Vertex &p)
 {
-  return create_and_set_body<Graphic>(new PointLight(c, i, p), g,
-				      "PrmitiveKit/point_light");
+    return create_and_set_body<Graphic>(new PointLight(c, i, p), g,
+					"PrmitiveKit/point_light");
 }
 
 Graphic_ptr PrimitiveKitImpl::spot_light(Fresco::Graphic_ptr g,
@@ -138,14 +163,14 @@ Graphic_ptr PrimitiveKitImpl::spot_light(Fresco::Graphic_ptr g,
 					 CORBA::Float r,
 					 CORBA::Float a)
 {
-  return create_and_set_body<Graphic>(new SpotLight(c, i, p, d, r, a), g,
-				      "PrimitiveKit/spot_light");
+    return create_and_set_body<Graphic>(new SpotLight(c, i, p, d, r, a), g,
+					"PrimitiveKit/spot_light");
 }
 
 
 
-extern "C" KitImpl *load()
+extern "C" Berlin::KitImpl *load()
 {
-  static std::string properties[] = {"implementation", "PrimitiveKitImpl"};
-  return create_prototype<PrimitiveKitImpl> ("IDL:fresco.org/Fresco/PrimitiveKit:1.0", properties, 2);
+    static std::string properties[] = {"implementation", "PrimitiveKitImpl"};
+    return Berlin::create_prototype<PrimitiveKitImpl> ("IDL:fresco.org/Fresco/PrimitiveKit:1.0", properties, 2);
 }

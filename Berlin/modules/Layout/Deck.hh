@@ -19,31 +19,34 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Deck_hh
-#define _Deck_hh
+#ifndef _Layout_Deck_hh
+#define _Layout_Deck_hh
 
 #include <Berlin/PolyGraphic.hh>
 
-namespace Berlin {
-namespace LayoutKit {
-
-class Deck : public PolyGraphic
+namespace Berlin
 {
-public:
-  Deck();
-  virtual ~Deck();
+  namespace LayoutKit
+  {
 
-  virtual void request(Fresco::Graphic::Requisition &);
-  virtual void extension(const Fresco::Allocation::Info &, Fresco::Region_ptr);
+    class Deck : public PolyGraphic
+    {
+      public:
+	Deck();
+	virtual ~Deck();
+	
+	virtual void request(Fresco::Graphic::Requisition &);
+	virtual void extension(const Fresco::Allocation::Info &,
+			       Fresco::Region_ptr);
 
-  virtual void traverse(Fresco::Traversal_ptr);
+	virtual void traverse(Fresco::Traversal_ptr);
 
-protected:
-  bool _requested;
-  Fresco::Graphic::Requisition _requisition;
-};
-
-} // namespace
+      protected:
+	bool my_requested;
+	Fresco::Graphic::Requisition my_requisition;
+    };
+    
+  } // namespace
 } // namespace
 
 #endif

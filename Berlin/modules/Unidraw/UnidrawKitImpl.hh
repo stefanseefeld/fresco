@@ -19,8 +19,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _UnidrawKitImpl_hh
-#define _UnidrawKitImpl_hh
+#ifndef _UnidrawKit_UnidrawKitImpl_hh
+#define _UnidrawKit_UnidrawKitImpl_hh
 
 #include <Fresco/config.hh>
 #include <Fresco/FigureKit.hh>
@@ -32,33 +32,35 @@
 
 namespace Berlin 
 {
-namespace UnidrawKit 
-{
+  namespace UnidrawKit 
+  {
 
-class UnidrawKitImpl : public virtual POA_Unidraw::UnidrawKit,
-		       public KitImpl
-{
-public:
-  UnidrawKitImpl(const std::string &,
-		 const Fresco::Kit::PropertySeq &,
-		 ServerContextImpl *);
-  virtual ~UnidrawKitImpl();
-  virtual KitImpl *clone(const Fresco::Kit::PropertySeq &p, ServerContextImpl *c)
-  { return new UnidrawKitImpl(repo_id(), p, c);}
-  virtual void bind(Fresco::ServerContext_ptr);
-  virtual Unidraw::Tool_ptr select_tool();
-  virtual Unidraw::Editor_ptr create_editor();
-  virtual Unidraw::View_ptr   create_view(Fresco::Graphic_ptr g, Unidraw::Model_ptr);
-  Fresco::FigureKit_ptr figures();
-  Fresco::ToolKit_ptr tools();
-  Fresco::WidgetKit_ptr widgets();
-private:
-  RefCount_var<Fresco::FigureKit> _figures;
-  RefCount_var<Fresco::ToolKit>   _tools;
-  RefCount_var<Fresco::WidgetKit> _widgets;
-};
+    class UnidrawKitImpl : public virtual POA_Unidraw::UnidrawKit,
+			   public KitImpl
+    {
+      public:
+	UnidrawKitImpl(const std::string &,
+		       const Fresco::Kit::PropertySeq &,
+		       ServerContextImpl *);
+	virtual ~UnidrawKitImpl();
+	virtual Berlin::KitImpl *clone(const Fresco::Kit::PropertySeq &p,
+				       ServerContextImpl *c)
+        { return new UnidrawKitImpl(repo_id(), p, c); }
+	virtual void bind(Fresco::ServerContext_ptr);
+	virtual Unidraw::Tool_ptr select_tool();
+	virtual Unidraw::Editor_ptr create_editor();
+	virtual Unidraw::View_ptr create_view(Fresco::Graphic_ptr g,
+					      Unidraw::Model_ptr);
+	Fresco::FigureKit_ptr figures();
+	Fresco::ToolKit_ptr tools();
+	Fresco::WidgetKit_ptr widgets();
+      private:
+	RefCount_var<Fresco::FigureKit> my_figures;
+	RefCount_var<Fresco::ToolKit> my_tools;
+	RefCount_var<Fresco::WidgetKit> my_widgets;
+    };
 
-} // namespace
+  } // namespace
 } // namespace
 
 #endif

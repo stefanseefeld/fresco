@@ -32,122 +32,132 @@
 
 using namespace Prague;
 using namespace Fresco;
+using namespace Berlin;
 
-ScreenManager::ScreenManager(Graphic_ptr g, EventManager *em, DrawingKit_ptr d)
-  : _screen(g), 
-    _emanager(em), 
-    _drawing(DrawingKit::_duplicate(d)),
+ScreenManager::ScreenManager(Graphic_ptr g, EventManager *em,
+			     DrawingKit_ptr d) :
+    my_screen(g), 
+    my_emanager(em), 
+    my_drawing(DrawingKit::_duplicate(d)),
     my_thread(&ScreenManager::run_thread, this)
-{
-}
+{ }
 
-ScreenManager::~ScreenManager() {}
+ScreenManager::~ScreenManager() { }
 void ScreenManager::damage(Region_ptr r)
 {
-  Trace trace("ScreenManager::damage");
-  Vertex l, u;
-  r->bounds(l, u);
-  Prague::Guard<Mutex> guard(_mutex);
-  _theDamage->merge_union(r);
-  Console::instance()->wakeup();
+    Trace trace("ScreenManager::damage");
+    Vertex l, u;
+    r->bounds(l, u);
+    Prague::Guard<Mutex> guard(my_mutex);
+    my_theDamage->merge_union(r);
+    Console::instance()->wakeup();
 }
 
-inline clock_t myclock()
+namespace Berlin
 {
-  timeval tv;
-  gettimeofday(&tv, 0);
-  return tv.tv_sec * 1000000L + tv.tv_usec;
-}
 
-clock_t traverse_clock;
+  inline clock_t myclock()
+  {
+      timeval tv;
+      gettimeofday(&tv, 0);
+      return tv.tv_sec * 1000000L + tv.tv_usec;
+  }
+
+  clock_t traverse_clock;
+}
 
 void ScreenManager::repair()
 {
-  Trace trace("ScreenManager::repair");
-  Tracer::reset_clock();
-  clock_t start = traverse_clock = myclock(), mid, mid2, mid3, end;
-  _mutex.lock();
-  _tmpDamage->copy(Region_var(_theDamage->_this()));
-  _theDamage->clear();
-  _mutex.unlock();
+    Trace trace("ScreenManager::repair");
+    Tracer::reset_clock();
+    clock_t start = traverse_clock = myclock(), mid, mid2, mid3, end;
+    {
+	Guard<Mutex> guard(my_mutex);
+	my_tmpDamage->copy(Region_var(my_theDamage->_this()));
+	my_theDamage->clear();
+    }
 
-  // Place here for single-buffered Consoles:
-  // The GGI/GL is singlebuffered, so this is what we do for now:-(
-  _emanager->restore(Region_var(_tmpDamage->_this()));
+    // Place here for single-buffered Consoles:
+    // The GGI/GL is singlebuffered, so this is what we do for now:-(
+    my_emanager->restore(Region_var(my_tmpDamage->_this()));
 
-  _traversal->damage(Region_var(_tmpDamage->_this()));
-  _traversal->init();
-  _drawing->start_traversal(Traversal_var(_traversal->_this()));
-  mid = myclock();
-  try
+    my_traversal->damage(Region_var(my_tmpDamage->_this()));
+    my_traversal->init();
+    my_drawing->start_traversal(Traversal_var(my_traversal->_this()));
+    mid = myclock();
+    try
     {
-      _screen->traverse(Traversal_var(_traversal->_this()));
+	my_screen->traverse(Traversal_var(my_traversal->_this()));
     }
-  catch (const CORBA::OBJECT_NOT_EXIST &)
+    catch (const CORBA::OBJECT_NOT_EXIST &)
     {
-      std::cerr << "ScreenManager: warning: corrupt scene graph!" << std::endl;
+      std::cerr << "ScreenManager: warning: corrupt scene graph!"
+		<< std::endl;
     }
-  catch (const CORBA::BAD_PARAM &)
+    catch (const CORBA::BAD_PARAM &)
     {
-      std::cerr << "ScreenManager: caught bad parameter" << std::endl;
+	std::cerr << "ScreenManager: caught bad parameter" << std::endl;
     }
-  _drawing->finish_traversal();
-  _traversal->finish();
-  mid2 = myclock();
+    my_drawing->finish_traversal();
+    my_traversal->finish();
+    mid2 = myclock();
   
-  // Place here for doublebuffered Consoles:
-  // _emanager->restore(Region_var(_tmpDamage->_this()));
-  _drawing->flush();
+    // Place here for doublebuffered Consoles:
+    // _emanager->restore(Region_var(my_tmpDamage->_this()));
+    my_drawing->flush();
 
-  end = myclock();
-  _emanager->damage(Region_var(_tmpDamage->_this()));
-  {
-    std::ostringstream buf;
-    buf << "ScreenManager::repair: took " << (end-start)/1000. << " : ";
-    buf << (mid-start)/1000. << " " << (mid2-mid)/1000. << " ";
-    buf << (end-mid2)/1000. << " ";
-    buf << " ("<<1000000./(end-start+1)<<")" << std::endl << std::ends;
+    end = myclock();
+    my_emanager->damage(Region_var(my_tmpDamage->_this()));
+    {
+	std::ostringstream buf;
+	buf << "ScreenManager::repair: took " << (end-start)/1000. << " : ";
+	buf << (mid-start)/1000. << " " << (mid2-mid)/1000. << " ";
+	buf << (end-mid2)/1000. << " ";
+	buf << " ("<<1000000./(end-start+1)<<")" << std::endl << std::ends;
 
-    Logger::log(Logger::drawing) << buf.str();
-    Logger::log(Logger::lifecycle) << "Provider<Transform> pool size is " << Provider<TransformImpl>::size() << std::endl;
-    Logger::log(Logger::lifecycle) << "Provider<Region> pool size is " << Provider<RegionImpl>::size() << std::endl;
-  }
+	Logger::log(Logger::drawing) << buf.str();
+	Logger::log(Logger::lifecycle) << "Provider<Transform> pool size is "
+				       << Provider<TransformImpl>::size()
+				       << std::endl;
+	Logger::log(Logger::lifecycle) << "Provider<Region> pool size is "
+				       << Provider<RegionImpl>::size()
+				       << std::endl;
+    }
 }
 
-void ScreenManager::start()
-{
-  my_thread.start();
-}
+void ScreenManager::start() { my_thread.start(); }
 
 void *ScreenManager::run_thread(void *X)
 {
-  ScreenManager * const s = reinterpret_cast<ScreenManager*>(X);
-  s->run();
+    ScreenManager * const s = reinterpret_cast<ScreenManager*>(X);
+    s->run();
 }
 
 void ScreenManager::run()
 {
-  _theDamage = new RegionImpl;
-  _tmpDamage = new RegionImpl;
-  _traversal = new DrawTraversalImpl(_screen,
-				     Region::_nil(),
-				     Transform::_nil(),
-				     _drawing);
-  Prague::Time last;
-  while (true)
+    my_theDamage = new RegionImpl;
+    my_tmpDamage = new RegionImpl;
+    my_traversal = new DrawTraversalImpl(my_screen,
+					 Region::_nil(),
+					 Transform::_nil(),
+					 my_drawing);
+    Prague::Time last;
+    while (true)
     {
-      _mutex.lock();
-      bool haveDamage = _theDamage->defined();
-      _mutex.unlock();
-      if (haveDamage)
+	bool haveDamage;
 	{
-	  Prague::Time current = Prague::Time::currentTime();
-	  if (current > last + Prague::Time(33))
+	    Guard<Mutex> guard(my_mutex);
+	    haveDamage = my_theDamage->defined();
+	}
+	if (haveDamage)
+	{
+	    Prague::Time current = Prague::Time::currentTime();
+	    if (current > last + Prague::Time(33))
 	    {
-	      repair();
-	      last = current;
+		repair();
+		last = current;
 	    }
 	}
-      _emanager->next_event();
+	my_emanager->next_event();
     }
 }

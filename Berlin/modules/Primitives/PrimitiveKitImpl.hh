@@ -20,8 +20,8 @@
  * MA 02139, USA.
  */
 
-#ifndef _PrimitiveKitImpl_hh
-#define _PrimitiveKitImpl_hh
+#ifndef _PrimitiveKit_PrimitiveKitImpl_hh
+#define _PrimitiveKit_PrimitiveKitImpl_hh
 
 #include <Fresco/config.hh>
 #include <Fresco/PrimitiveKit.hh>
@@ -30,34 +30,45 @@
 
 namespace Berlin 
 {
-namespace PrimitiveKit 
-{
+  namespace PrimitiveKit 
+  {
 
-class PrimitiveKitImpl : public virtual POA_Fresco::PrimitiveKit,
-			 public KitImpl
-{
-public:
-  PrimitiveKitImpl(const std::string &,
-		   const Fresco::Kit::PropertySeq &,
-		   ServerContextImpl *);
-  virtual ~PrimitiveKitImpl();
-  virtual KitImpl *clone(const Fresco::Kit::PropertySeq &p, ServerContextImpl *c)
-  { return new PrimitiveKitImpl(repo_id(), p, c);}
+    class PrimitiveKitImpl : public virtual POA_Fresco::PrimitiveKit,
+			     public KitImpl
+    {
+      public:
+	PrimitiveKitImpl(const std::string &,
+			 const Fresco::Kit::PropertySeq &,
+			 ServerContextImpl *);
+	virtual ~PrimitiveKitImpl();
+	virtual Berlin::KitImpl *clone(const Fresco::Kit::PropertySeq &p,
+				       ServerContextImpl *c)
+	{ return new PrimitiveKitImpl(repo_id(), p, c);}
 
-  Fresco::Graphic_ptr root(Fresco::Graphic_ptr);
-  Primitive::Geometry_ptr geometry(const Fresco::Mesh &);
-  Fresco::Graphic_ptr cube();
-  //Fresco::Graphic_ptr sphere();
-  //Fresco::Graphic_ptr tetrahedron();
-  Fresco::Graphic_ptr transformer(Fresco::Graphic_ptr);
+	Fresco::Graphic_ptr root(Fresco::Graphic_ptr);
+	Primitive::Geometry_ptr geometry(const Fresco::Mesh &);
+	Fresco::Graphic_ptr cube();
+	//Fresco::Graphic_ptr sphere();
+	//Fresco::Graphic_ptr tetrahedron();
+	Fresco::Graphic_ptr transformer(Fresco::Graphic_ptr);
+	
+	Fresco::Graphic_ptr directional_light(Fresco::Graphic_ptr,
+					      const Fresco::Color &,
+					      CORBA::Float,
+					      const Fresco::Vertex &);
+	Fresco::Graphic_ptr point_light(Fresco::Graphic_ptr,
+					const Fresco::Color &,
+					CORBA::Float,
+					const Fresco::Vertex &);
+	Fresco::Graphic_ptr spot_light(Fresco::Graphic_ptr,
+				       const Fresco::Color &,
+				       CORBA::Float,
+				       const Fresco::Vertex &,
+				       const Fresco::Vertex &,
+				       CORBA::Float, CORBA::Float);
+    };
 
-  Fresco::Graphic_ptr directional_light(Fresco::Graphic_ptr, const Fresco::Color &, CORBA::Float, const Fresco::Vertex &);
-  Fresco::Graphic_ptr point_light(Fresco::Graphic_ptr, const Fresco::Color &, CORBA::Float, const Fresco::Vertex &);
-  Fresco::Graphic_ptr spot_light(Fresco::Graphic_ptr, const Fresco::Color &, CORBA::Float, const Fresco::Vertex &, const Fresco::Vertex &,
-				 CORBA::Float, CORBA::Float);
-};
-
-} // namespace
+  } // namespace
 } // namespace
 
 #endif

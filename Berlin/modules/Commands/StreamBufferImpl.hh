@@ -19,8 +19,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _StreamBufferImpl_hh
-#define _StreamBufferImpl_hh
+#ifndef _CommandKit_StreamBufferImpl_hh
+#define _CommandKit_StreamBufferImpl_hh
 
 #include <Prague/Sys/Thread.hh>
 #include <Fresco/config.hh>
@@ -36,7 +36,8 @@ namespace Berlin
                              public SubjectImpl
     {
       public:
-        StreamBufferImpl(long l) : length(l) { buffer.reserve(length);}
+        StreamBufferImpl(long l) : my_length(l)
+	{ my_buffer.reserve(my_length); }
         virtual ~StreamBufferImpl() { }
         virtual CORBA::Long size();
         virtual CORBA::Long available();
@@ -44,9 +45,9 @@ namespace Berlin
         virtual void write(const Fresco::StreamBuffer::Data &);
         virtual void flush();
       private:
-        size_t length;
-        std::vector<CORBA::Octet> buffer;
-        Prague::Mutex mutex;
+        size_t my_length;
+        std::vector<CORBA::Octet> my_buffer;
+        Prague::Mutex my_mutex;
     };
 
   } // namespace

@@ -19,8 +19,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Motif_Gauge_hh
-#define _Motif_Gauge_hh
+#ifndef _WidgetKit_Motif_Gauge_hh
+#define _WidgetKit_Motif_Gauge_hh
 
 #include <Fresco/config.hh>
 #include <Fresco/View.hh>
@@ -29,28 +29,35 @@
 #include <Berlin/GraphicImpl.hh>
 #include <Berlin/RefCountVar.hh>
 
-namespace Berlin {
-namespace WidgetKit {
-namespace Motif {
-
-class Gauge : public virtual ViewImpl,
-	      public GraphicImpl
+namespace Berlin
 {
- public:
-  Gauge(Fresco::BoundedValue_ptr v, const Fresco::Color &c)
-    : value(RefCount_var<Fresco::BoundedValue>::increment(v)), color(c), width(2000.), height(200.) {}
-  ~Gauge() {}
-  virtual void request(Fresco::Graphic::Requisition &);
-  virtual void draw(Fresco::DrawTraversal_ptr);
-  virtual void update(const CORBA::Any &);
-private:
-  RefCount_var<Fresco::BoundedValue> value;
-  Fresco::Color color;
-  Fresco::Coord width, height;
-};
+  namespace WidgetKit
+  {
+    namespace Motif
+    {
 
-} // namespace
-} // namespace
+      class Gauge : public virtual ViewImpl,
+		    public GraphicImpl
+      {
+	public:
+	  Gauge(Fresco::BoundedValue_ptr v, const Fresco::Color &c) :
+	      my_value(RefCount_var<Fresco::BoundedValue>::increment(v)),
+	      my_color(c),
+	      my_width(2000.),
+	      my_height(200.)
+	  { }
+	  ~Gauge() { }
+	  virtual void request(Fresco::Graphic::Requisition &);
+	  virtual void draw(Fresco::DrawTraversal_ptr);
+	  virtual void update(const CORBA::Any &);
+	private:
+	  RefCount_var<Fresco::BoundedValue> my_value;
+	  Fresco::Color my_color;
+	  Fresco::Coord my_width, my_height;
+      };
+
+    } // namespace
+  } // namespace
 } // namespace
 
 #endif

@@ -146,17 +146,13 @@ static const float p4 = 0.26794919f;   // tan 15
 EllipseImpl::EllipseImpl() { }
 EllipseImpl::EllipseImpl(const Vertex &c, Coord r1, Coord r2) :
     my_center(c), my_radius1(r1), my_radius2(r2)
-{
-    resize();
-}
+{ resize(); }
 
 EllipseImpl::EllipseImpl(const EllipseImpl &ellipse) :
     my_center(ellipse.my_center),
     my_radius1(ellipse.my_radius1),
     my_radius2(ellipse.my_radius2)
-{
-    copy(ellipse);
-}
+{ copy(ellipse); }
 
 EllipseImpl::~EllipseImpl() { }
 
@@ -200,7 +196,8 @@ PathImpl::PathImpl (const Fresco::Path &path, bool flag) :
     my_handles(new Fresco::Path(path)), my_closed(flag)
 { my_handles->shape = convex; resize(); }
 PathImpl::PathImpl(const PathImpl &path) :
-    my_handles(new Fresco::Path(path.my_handles)), my_closed(path.my_closed)
+    my_handles(new Fresco::Path(path.my_handles)),
+    my_closed(path.my_closed)
 { copy(path); }
 
 void PathImpl::resize()

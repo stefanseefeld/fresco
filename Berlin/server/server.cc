@@ -72,6 +72,7 @@ const std::string version = "unknown";
 
 using namespace Prague;
 using namespace Fresco;
+using namespace Berlin;
 
 namespace
 {

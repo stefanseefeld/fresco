@@ -24,16 +24,24 @@
 
 #include <Berlin/MonoGraphic.hh>
 
-class Requestor : public MonoGraphic
+namespace Berlin
 {
-public:
-  Requestor(Fresco::Alignment xalign = .5, Fresco::Alignment yalign = .5, Fresco::Coord xspan = 1, Fresco::Coord yspan = 1);
-  Requestor(const Fresco::Graphic::Requisition &);
-  ~Requestor();
- 
-  virtual void request(Fresco::Graphic::Requisition &);
-protected:
-  Fresco::Graphic::Requisition _requisition;
-};
+
+  class Requestor : public MonoGraphic
+  {
+    public:
+      Requestor(Fresco::Alignment xalign = .5,
+		Fresco::Alignment yalign = .5,
+		Fresco::Coord xspan = 1,
+		Fresco::Coord yspan = 1);
+      Requestor(const Fresco::Graphic::Requisition &);
+      ~Requestor();
+      
+      virtual void request(Fresco::Graphic::Requisition &);
+    protected:
+      Fresco::Graphic::Requisition my_requisition;
+  };
+
+} // namespace
 
 #endif 

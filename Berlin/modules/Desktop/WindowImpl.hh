@@ -19,8 +19,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _WindowImpl_hh
-#define _WindowImpl_hh
+#ifndef _DesktopKit_WindowImpl_hh
+#define _DesktopKit_WindowImpl_hh
 
 #include <Prague/Sys/Tracer.hh>
 #include <Fresco/config.hh>
@@ -31,35 +31,38 @@
 #include <Prague/Sys/Thread.hh>
 #include <vector>
 
-namespace Berlin {
-namespace DesktopKit {
-
-class WindowImpl : public virtual POA_Fresco::Window,
-		   public ControllerImpl
+namespace Berlin
 {
-  class UnmappedStageHandle;
-public:
-  WindowImpl();
-  virtual ~WindowImpl();
-  virtual void need_resize();
-  virtual CORBA::Boolean request_focus(Fresco::Controller_ptr, Fresco::Input::Device);
-  void insert(Fresco::Desktop_ptr);
-  virtual Fresco::Vertex position();
-  virtual void position(const Fresco::Vertex &);
-  virtual Fresco::Vertex size();
-  virtual void size(const Fresco::Vertex &);
-  virtual Layout::Stage::Index layer();
-  virtual void layer(Layout::Stage::Index);
-  virtual CORBA::Boolean mapped();
-  virtual void mapped(CORBA::Boolean);
-private:
-  Layout::StageHandle_var             _handle;
-  Impl_var<UnmappedStageHandle>       _unmapped;
-  Prague::Mutex                       _mutex;
-  std::vector<Fresco::Controller_var> _focus;
-};
+  namespace DesktopKit
+  {
 
-} // namespace
+    class WindowImpl : public virtual POA_Fresco::Window,
+		       public ControllerImpl
+    {
+	class UnmappedStageHandle;
+      public:
+	WindowImpl();
+	virtual ~WindowImpl();
+	virtual void need_resize();
+	virtual CORBA::Boolean request_focus(Fresco::Controller_ptr,
+					     Fresco::Input::Device);
+	void insert(Fresco::Desktop_ptr);
+	virtual Fresco::Vertex position();
+	virtual void position(const Fresco::Vertex &);
+	virtual Fresco::Vertex size();
+	virtual void size(const Fresco::Vertex &);
+	virtual Layout::Stage::Index layer();
+	virtual void layer(Layout::Stage::Index);
+	virtual CORBA::Boolean mapped();
+	virtual void mapped(CORBA::Boolean);
+      private:
+	Layout::StageHandle_var             my_handle;
+	Impl_var<UnmappedStageHandle>       my_unmapped;
+	Prague::Mutex                       my_mutex;
+	std::vector<Fresco::Controller_var> my_focus;
+    };
+
+  } // namespace
 } // namespace
 
 #endif

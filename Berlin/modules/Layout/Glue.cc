@@ -25,15 +25,17 @@ using namespace Fresco;
 
 using namespace Berlin::LayoutKit;
 
-Glue::Glue(Axis a, Coord natural, Coord stretch, Coord shrink, Alignment align)
+Glue::Glue(Axis a,
+	   Coord natural, Coord stretch, Coord shrink, Alignment align)
 {
-  GraphicImpl::init_requisition(_requisition);
-  Fresco::Graphic::Requirement *r = GraphicImpl::requirement(_requisition, a);
-  if (r != 0) GraphicImpl::require(*r, natural, stretch, shrink, align);
+    GraphicImpl::init_requisition(my_requisition);
+    Fresco::Graphic::Requirement *r =
+	GraphicImpl::requirement(my_requisition, a);
+    if (r != 0) GraphicImpl::require(*r, natural, stretch, shrink, align);
 }
 
-Glue::Glue(const Fresco::Graphic::Requisition &r) { _requisition = r;}
-Glue::~Glue() {}
+Glue::Glue(const Fresco::Graphic::Requisition &r) { my_requisition = r; }
+Glue::~Glue() { }
 
-void Glue::request(Fresco::Graphic::Requisition &r) { r = _requisition;}
+void Glue::request(Fresco::Graphic::Requisition &r) { r = my_requisition; }
 

@@ -19,8 +19,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _ToolKitImpl_hh
-#define _ToolKitImpl_hh
+#ifndef _ToolKit_ToolKitImpl_hh
+#define _ToolKit_ToolKitImpl_hh
 
 #include <Fresco/config.hh>
 #include <Fresco/ToolKit.hh>
@@ -32,44 +32,66 @@ class GraphicImpl;
 
 namespace Berlin 
 {
-namespace ToolKit 
-{
+  class GraphicImpl;
 
-class ToolKitImpl : public virtual POA_Fresco::ToolKit,
-		    public KitImpl
-{
-public:
-  ToolKitImpl(const std::string &,
-	      const Fresco::Kit::PropertySeq &,
-	      ServerContextImpl *);
-  virtual ~ToolKitImpl();
-  virtual KitImpl *clone(const Fresco::Kit::PropertySeq &p, ServerContextImpl *c)
- { return new ToolKitImpl(repo_id(), p, c);}
+  namespace ToolKit 
+  {
 
-  Fresco::Graphic_ptr      debugger(Fresco::Graphic_ptr, const char *);
-  Fresco::DrawingState_ptr decorator(Fresco::Graphic_ptr);
-  Fresco::Graphic_ptr      rgb(Fresco::Graphic_ptr, Fresco::Coord, Fresco::Coord, Fresco::Coord);
-  Fresco::Graphic_ptr      alpha(Fresco::Graphic_ptr, Fresco::Coord);
-  Fresco::Graphic_ptr      lighting(Fresco::Graphic_ptr, Fresco::Coord, Fresco::Coord, Fresco::Coord);
+    class ToolKitImpl : public virtual POA_Fresco::ToolKit,
+			public KitImpl
+    {
+      public:
+	ToolKitImpl(const std::string &,
+		    const Fresco::Kit::PropertySeq &,
+		    ServerContextImpl *);
+	virtual ~ToolKitImpl();
+	virtual Berlin::KitImpl *clone(const Fresco::Kit::PropertySeq &p,
+				       ServerContextImpl *c)
+	{ return new ToolKitImpl(repo_id(), p, c); }
 
-  Fresco::Graphic_ptr      frame(Fresco::Graphic_ptr, Fresco::Coord, const Fresco::ToolKit::FrameSpec &, CORBA::Boolean);
-  Fresco::Graphic_ptr      triangle(Fresco::Graphic_ptr, Fresco::Coord, const Fresco::ToolKit::FrameSpec &, CORBA::Boolean,
-					   Fresco::ToolKit::Direction d);
-  Fresco::Graphic_ptr      diamond(Fresco::Graphic_ptr, Fresco::Coord, const Fresco::ToolKit::FrameSpec &, CORBA::Boolean);
-//   Graphic_ptr      filler(Graphic_ptr, const Color &);
-//   Graphic_ptr      indicator(Graphic_ptr, const Color &, Telltale_ptr);
-  Fresco::Graphic_ptr      create_switch(Fresco::Graphic_ptr, Fresco::Graphic_ptr, Fresco::Telltale::Mask, Fresco::Telltale_ptr);
-  Fresco::Trigger_ptr      button(Fresco::Graphic_ptr, Fresco::Command_ptr);
-  Fresco::Controller_ptr   dragger(Fresco::Graphic_ptr, Fresco::Command_ptr);
-  Fresco::Controller_ptr   stepper(Fresco::Graphic_ptr, Fresco::Command_ptr);
-  Fresco::Controller_ptr   text_input(Fresco::Graphic_ptr, Fresco::TextBuffer_ptr);
-  Fresco::Controller_ptr   terminal(Fresco::Graphic_ptr, Fresco::StreamBuffer_ptr);
-  Fresco::MainController_ptr   group(Fresco::Graphic_ptr);
-  Fresco::Controller_ptr   toggle(Fresco::Graphic_ptr);
-  Fresco::Canvas_ptr       create_canvas(Fresco::PixelCoord, Fresco::PixelCoord) throw (Fresco::SecurityException, Fresco::CreationFailureException);
-};
+	Fresco::Graphic_ptr debugger(Fresco::Graphic_ptr, const char *);
+	Fresco::DrawingState_ptr decorator(Fresco::Graphic_ptr);
+	Fresco::Graphic_ptr rgb(Fresco::Graphic_ptr, Fresco::Coord,
+				Fresco::Coord, Fresco::Coord);
+	Fresco::Graphic_ptr alpha(Fresco::Graphic_ptr, Fresco::Coord);
+	Fresco::Graphic_ptr lighting(Fresco::Graphic_ptr, Fresco::Coord,
+				     Fresco::Coord, Fresco::Coord);
 
-} // namespace
+	Fresco::Graphic_ptr frame(Fresco::Graphic_ptr, Fresco::Coord,
+				  const Fresco::ToolKit::FrameSpec &,
+				  CORBA::Boolean);
+	Fresco::Graphic_ptr triangle(Fresco::Graphic_ptr, Fresco::Coord,
+				     const Fresco::ToolKit::FrameSpec &,
+				     CORBA::Boolean,
+				     Fresco::ToolKit::Direction d);
+	Fresco::Graphic_ptr diamond(Fresco::Graphic_ptr, Fresco::Coord,
+				    const Fresco::ToolKit::FrameSpec &,
+				    CORBA::Boolean);
+//        Graphic_ptr filler(Graphic_ptr, const Color &);
+//        Graphic_ptr indicator(Graphic_ptr, const Color &, Telltale_ptr);
+	Fresco::Graphic_ptr create_switch(Fresco::Graphic_ptr,
+					  Fresco::Graphic_ptr,
+					  Fresco::Telltale::Mask,
+					  Fresco::Telltale_ptr);
+	Fresco::Trigger_ptr button(Fresco::Graphic_ptr,
+				   Fresco::Command_ptr);
+	Fresco::Controller_ptr dragger(Fresco::Graphic_ptr,
+				       Fresco::Command_ptr);
+	Fresco::Controller_ptr stepper(Fresco::Graphic_ptr,
+				       Fresco::Command_ptr);
+	Fresco::Controller_ptr text_input(Fresco::Graphic_ptr,
+					  Fresco::TextBuffer_ptr);
+	Fresco::Controller_ptr terminal(Fresco::Graphic_ptr,
+					Fresco::StreamBuffer_ptr);
+	Fresco::MainController_ptr group(Fresco::Graphic_ptr);
+	Fresco::Controller_ptr toggle(Fresco::Graphic_ptr);
+	Fresco::Canvas_ptr create_canvas(Fresco::PixelCoord,
+					 Fresco::PixelCoord)
+	    throw (Fresco::SecurityException,
+		   Fresco::CreationFailureException);
+    };
+    
+  } // namespace
 } // namespace
 
 #endif

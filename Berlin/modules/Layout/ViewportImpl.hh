@@ -45,7 +45,7 @@ namespace Berlin
         ~ViewportImpl();
         virtual void body(Fresco::Graphic_ptr);
         virtual Fresco::Graphic_ptr body() { return MonoGraphic::body();}
-
+	
         virtual Fresco::Transform_ptr transformation();
         virtual void request(Fresco::Graphic::Requisition &);
 
@@ -69,11 +69,11 @@ namespace Berlin
         void body_allocation(Fresco::Region_ptr, RegionImpl *);
         void scroll_transform(Fresco::Transform_ptr);
 
-        Fresco::BoundedRange::Settings     _settings[2];
-        RefCount_var<Fresco::BoundedRange> _xadjustment;
-        RefCount_var<Fresco::BoundedRange> _yadjustment;
-        bool                               _requested;
-        Fresco::Graphic::Requisition       _requisition;
+        Fresco::BoundedRange::Settings     my_settings[2];
+        RefCount_var<Fresco::BoundedRange> my_xadjustment;
+        RefCount_var<Fresco::BoundedRange> my_yadjustment;
+        bool                               my_requested;
+        Fresco::Graphic::Requisition       my_requisition;
     };
 
   } // namespace

@@ -29,38 +29,43 @@
 #include <Berlin/Provider.hh>
 #include <vector>
 
-class RegionImpl;
-class TransformImpl;
-class AllocationImpl;
-
-template <> struct Initializer<AllocationImpl>;
-
-class AllocationImpl : public virtual POA_Fresco::Allocation,
-                       public virtual ServantBase
+namespace Berlin
 {
-  struct State
+
+  class RegionImpl;
+  class TransformImpl;
+  class AllocationImpl;
+  
+  template <> struct Initializer<AllocationImpl>;
+  
+  class AllocationImpl : public virtual POA_Fresco::Allocation,
+			 public virtual ServantBase
   {
-    RegionImpl        *allocation;
-    TransformImpl     *transformation;
-    Fresco::Screen_var root;
+      struct State
+      {
+	  RegionImpl        *allocation;
+	  TransformImpl     *transformation;
+	  Fresco::Screen_var root;
+      };
+      typedef std::vector<State> list_t;
+      friend class Provider<AllocationImpl>;
+    public:
+      AllocationImpl();
+      ~AllocationImpl();
+      void add(Fresco::Region_ptr, Fresco::Screen_ptr);
+      CORBA::Long size();
+      Fresco::Allocation::Info *get(CORBA::Long);
+      void clear();
+    private:
+      bool my_active : 1;
+      list_t my_list;
   };
-  typedef std::vector<State> list_t;
-  friend class Provider<AllocationImpl>;
-public:
-  AllocationImpl();
-  ~AllocationImpl();
-  void add(Fresco::Region_ptr, Fresco::Screen_ptr);
-  CORBA::Long size();
-  Fresco::Allocation::Info *get(CORBA::Long);
-  void clear();
-private:
-  bool _active : 1;
-  list_t _list;
-};
+  
+  template <> struct Initializer<AllocationImpl>
+  {
+      static void initialize(AllocationImpl *a) { a->clear();}
+  };
 
-template <> struct Initializer<AllocationImpl>
-{
-  static void initialize(AllocationImpl *a) { a->clear();}
-};
+} // namespace
 
 #endif 

@@ -19,8 +19,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _EditorImpl_hh
-#define _EditorImpl_hh
+#ifndef _UnidrawKit_EditorImpl_hh
+#define _UnidrawKit_EditorImpl_hh
 
 #include <Fresco/config.hh>
 #include <Fresco/Widget.hh>
@@ -33,32 +33,37 @@
 #include "UnidrawKitImpl.hh"
 #include <map>
 
-namespace Berlin {
-namespace UnidrawKit {
-
-class EditorImpl : public virtual POA_Unidraw::Editor,
-		   public RefCountBaseImpl
+namespace Berlin
 {
-  typedef std::map<Fresco::Tag, RefCount_var<Unidraw::Tool> > tdict_t;
-  class Observer;
-  friend class Observer;
-public:
-  EditorImpl(UnidrawKitImpl *);
-  virtual ~EditorImpl();
-  virtual void append_tool(Unidraw::Tool_ptr, Fresco::Graphic_ptr);
-  virtual Unidraw::Tool_ptr current_tool();
-  virtual void current_tool(Unidraw::Tool_ptr);
-  virtual Fresco::Controller_ptr create_viewer(Unidraw::Model_ptr, Fresco::Coord, Fresco::Coord);
-  virtual Fresco::Controller_ptr toolbar();
-private:
-  UnidrawKitImpl         *_unidraw;
-  Unidraw::Tool_var       _current;
-  Widget::Choice_var      _choice;
-  tdict_t                 _tools;
-  Impl_var<Observer>      _tool_setter;
-};
+  namespace UnidrawKit
+  {
 
-} // namespace
+    class EditorImpl : public virtual POA_Unidraw::Editor,
+		       public RefCountBaseImpl
+    {
+	typedef std::map<Fresco::Tag, RefCount_var<Unidraw::Tool> >
+	    tdict_t;
+	class Observer;
+	friend class Observer;
+      public:
+	EditorImpl(UnidrawKitImpl *);
+	virtual ~EditorImpl();
+	virtual void append_tool(Unidraw::Tool_ptr, Fresco::Graphic_ptr);
+	virtual Unidraw::Tool_ptr current_tool();
+	virtual void current_tool(Unidraw::Tool_ptr);
+	virtual Fresco::Controller_ptr create_viewer(Unidraw::Model_ptr,
+						     Fresco::Coord,
+						     Fresco::Coord);
+	virtual Fresco::Controller_ptr toolbar();
+      private:
+	UnidrawKitImpl *my_unidraw;
+	Unidraw::Tool_var my_current;
+	Widget::Choice_var my_choice;
+	tdict_t my_tools;
+	Impl_var<Observer> my_tool_setter;
+    };
+    
+  } // namespace
 } // namespace
 
 #endif

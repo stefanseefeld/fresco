@@ -26,217 +26,264 @@
 
 using namespace Prague;
 using namespace Fresco;
+using namespace Berlin;
 
-class PolyGraphic::Iterator : public virtual POA_Fresco::GraphicIterator,
-		              public virtual GraphicIteratorImpl
+namespace Berlin
 {
-public:
-  Iterator(PolyGraphic *p, Tag c) : _parent(p), _cursor(c) { Trace trace("PolyGraphic::Iterator::Iterator"); _parent->_add_ref();}
-  virtual ~Iterator() { Trace trace("PolyGraphic::Iterator::~Iterator"); _parent->_remove_ref();}
-  virtual Fresco::Graphic_ptr child()
+
+  class PolyGraphic::Iterator : public virtual POA_Fresco::GraphicIterator,
+		     public virtual GraphicIteratorImpl
   {
-    Trace trace("PolyGraphic::Iterator::child");
-    Prague::Guard<Mutex> guard(_parent->_mutex);
-    if (_cursor >= _parent->_children.size()) return Fresco::Graphic::_nil();
-    return RefCount_var<Fresco::Graphic>::increment(_parent->_children[_cursor].peer);
-  }
-  virtual void next() { _cursor++;}
-  virtual void prev() { _cursor--;}
-  virtual void insert(Graphic_ptr child)
-  {
-    Trace trace("PolyGraphic::Iterator::insert");
-    _parent->_mutex.lock();
-    Edge edge;
-    edge.peer = RefCount_var<Fresco::Graphic>::increment(child);
-    edge.localId = _parent->unique_child_id();
-    edge.peerId = child->add_parent_graphic(Graphic_var(_parent->_this()), edge.localId);
-    if (_cursor >= _parent->_children.size())
-       _parent->_children.insert(_parent->_children.end(), edge);
-    else
-       _parent->_children.insert(_parent->_children.begin() + _cursor, edge);
-    _parent->_mutex.unlock();
-    _parent->need_resize();
-  }
-  virtual void replace(Graphic_ptr child)
-  {
-    Trace trace("PolyGraphic::Iterator::replace");
-    {
-      Prague::Guard<Mutex> guard(_parent->_mutex);
-      if (_cursor >= _parent->_children.size()) return;
-      Edge &edge = _parent->_children[_cursor];
-      if (!CORBA::is_nil(edge.peer))
-	try
+    public:
+      Iterator(PolyGraphic *p, Tag c) :
+	  my_parent(p),
+	  my_cursor(c)
+      {
+	  Trace trace("PolyGraphic::Iterator::Iterator");
+	  my_parent->_add_ref();
+      }
+      virtual ~Iterator()
+      {
+	  Trace trace("PolyGraphic::Iterator::~Iterator");
+	  my_parent->_remove_ref();
+      }
+      virtual Fresco::Graphic_ptr child()
+      {
+	  Trace trace("PolyGraphic::Iterator::child");
+	  Prague::Guard<Mutex> guard(my_parent->my_mutex);
+	  if (my_cursor >= my_parent->my_children.size())
+	      return Fresco::Graphic::_nil();
+	  return RefCount_var<Fresco::Graphic>::increment(my_parent->my_children[my_cursor].peer);
+      }
+      virtual void next() { my_cursor++; }
+      virtual void prev() { my_cursor--; }
+      virtual void insert(Graphic_ptr child)
+      {
+	  Trace trace("PolyGraphic::Iterator::insert");
 	  {
-	    edge.peer->remove_parent_graphic(edge.peerId);
-	    edge.peer->decrement();
+	      Prague::Guard<Mutex> guard(my_parent->my_mutex);
+	      Edge edge;
+	      edge.peer = RefCount_var<Fresco::Graphic>::increment(child);
+	      edge.localId = my_parent->unique_child_id();
+	      edge.peerId =
+		  child->add_parent_graphic(Graphic_var(my_parent->_this()),
+					    edge.localId);
+	      if (my_cursor >= my_parent->my_children.size())
+		  my_parent->my_children.insert(my_parent->my_children.end(),
+						edge);
+	      else
+		  my_parent->my_children.insert(my_parent->my_children.begin() +
+						my_cursor, edge);
 	  }
-	catch(const CORBA::OBJECT_NOT_EXIST &) {}
-	catch (const CORBA::COMM_FAILURE &) {}
-	catch (const CORBA::TRANSIENT &) {}
-      edge.peer = RefCount_var<Fresco::Graphic>::increment(child);
-      edge.peerId = child->add_parent_graphic(Graphic_var(_parent->_this()), edge.localId);
-    }
-    _parent->need_resize();
-  }
+	  my_parent->need_resize();
+      }
+      virtual void replace(Graphic_ptr child)
+      {
+	  Trace trace("PolyGraphic::Iterator::replace");
+	  {
+	      Prague::Guard<Mutex> guard(my_parent->my_mutex);
+	      if (my_cursor >= my_parent->my_children.size()) return;
+	      Edge &edge = my_parent->my_children[my_cursor];
+	      if (!CORBA::is_nil(edge.peer))
+		  try
+		  {
+		      edge.peer->remove_parent_graphic(edge.peerId);
+		      edge.peer->decrement();
+		  }
+		  catch(const CORBA::OBJECT_NOT_EXIST &) { }
+		  catch (const CORBA::COMM_FAILURE &) { }
+		  catch (const CORBA::TRANSIENT &) { }
+	      edge.peer = RefCount_var<Fresco::Graphic>::increment(child);
+	      edge.peerId =
+		  child->add_parent_graphic(Graphic_var(my_parent->_this()),
+					    edge.localId);
+	  }
+	  my_parent->need_resize();
+      }
+    
+      virtual void remove()
+      {
+	  Trace trace("PolyGraphic::Iterator::remove");
+	  {
+	      Prague::Guard<Mutex> guard(my_parent->my_mutex);
+	      if (my_cursor >= my_parent->my_children.size()) return;
+	      
+	      GraphicImpl::glist_t::iterator i =
+		  my_parent->my_children.begin() + my_cursor;
+	      try
+	      {
+		  (*i).peer->remove_parent_graphic((*i).peerId);
+		  (*i).peer->decrement();
+	      }
+	      catch(const CORBA::OBJECT_NOT_EXIST &) { }
+	      catch (const CORBA::COMM_FAILURE &) { }
+	      catch (const CORBA::TRANSIENT &) { }
+	      my_parent->my_children.erase(i);
+	  }
+	  my_parent->need_resize();
+      }
+    private:
+      PolyGraphic *my_parent;
+      CORBA::ULong my_cursor;
+  };
 
-  virtual void remove()
-  {
-    Trace trace("PolyGraphic::Iterator::remove");
-    {
-      Prague::Guard<Mutex> guard(_parent->_mutex);
-      if (_cursor >= _parent->_children.size()) return;
+} // namespace
 
-      GraphicImpl::glist_t::iterator i = _parent->_children.begin() + _cursor;
-      try
-	{
-	  (*i).peer->remove_parent_graphic((*i).peerId);
-	  (*i).peer->decrement();
-	}
-      catch(const CORBA::OBJECT_NOT_EXIST &) {}
-      catch (const CORBA::COMM_FAILURE &) {}
-      catch (const CORBA::TRANSIENT &) {}
-      _parent->_children.erase(i);
-    }
-    _parent->need_resize();
-  }
-private:
-  PolyGraphic *_parent;
-  CORBA::ULong _cursor;
-};
+Pool<Fresco::Graphic::Requisition> PolyGraphic::my_pool;
 
-Pool<Fresco::Graphic::Requisition> PolyGraphic::_pool;
-
-PolyGraphic::PolyGraphic() {}
+PolyGraphic::PolyGraphic() { }
 PolyGraphic::~PolyGraphic()
 {
-  Trace trace(this, "PolyGraphic::~PolyGraphic");
-  Prague::Guard<Mutex> guard(_mutex);
-  for (glist_t::iterator i = _children.begin(); i != _children.end(); i++)
+    Trace trace(this, "PolyGraphic::~PolyGraphic");
+    Prague::Guard<Mutex> guard(my_mutex);
+    for (glist_t::iterator i = my_children.begin();
+	 i != my_children.end();
+	 ++i)
     {
-      if (!CORBA::is_nil((*i).peer))
-	try
-	  {
-	    (*i).peer->remove_parent_graphic((*i).peerId);
-	    (*i).peer->decrement();
-	  }
-	catch(const CORBA::OBJECT_NOT_EXIST &) {}
-	catch (const CORBA::COMM_FAILURE &) {}
-	catch (const CORBA::TRANSIENT &) {}
+	if (!CORBA::is_nil((*i).peer))
+	    try
+	    {
+		(*i).peer->remove_parent_graphic((*i).peerId);
+		(*i).peer->decrement();
+	    }
+	    catch(const CORBA::OBJECT_NOT_EXIST &) { }
+	    catch (const CORBA::COMM_FAILURE &) { }
+	    catch (const CORBA::TRANSIENT &) { }
     }
 }
 
 void PolyGraphic::append_graphic(Graphic_ptr child)
 {
-  Trace trace(this, "PolyGraphic::append_graphic");
-  _mutex.lock();
-  Edge edge;
-  edge.peer = RefCount_var<Fresco::Graphic>::increment(child);
-  edge.localId = unique_child_id();
-  edge.peerId = child->add_parent_graphic(Graphic_var(_this()), edge.localId);
-  _children.push_back(edge);
-  _mutex.unlock();
-  need_resize();
+    Trace trace(this, "PolyGraphic::append_graphic");
+    {
+	Prague::Guard<Mutex> guard(my_mutex);
+	Edge edge;
+	edge.peer = RefCount_var<Fresco::Graphic>::increment(child);
+	edge.localId = unique_child_id();
+	edge.peerId = child->add_parent_graphic(Graphic_var(_this()),
+						edge.localId);
+	my_children.push_back(edge);
+    }
+    need_resize();
 }
 
 void PolyGraphic::prepend_graphic(Graphic_ptr child)
 {
-  Trace trace(this, "PolyGraphic::prepend_graphic");
-  _mutex.lock();
-  Edge edge;
-  edge.peer = RefCount_var<Fresco::Graphic>::increment(child);
-  edge.localId = unique_child_id();
-  edge.peerId = child->add_parent_graphic(Graphic_var(_this()), edge.localId);
-  _children.insert(_children.begin(), edge);
-  _mutex.unlock();
-  need_resize();
+    Trace trace(this, "PolyGraphic::prepend_graphic");
+    {
+	Prague::Guard<Mutex> guard(my_mutex);
+	Edge edge;
+	edge.peer = RefCount_var<Fresco::Graphic>::increment(child);
+	edge.localId = unique_child_id();
+	edge.peerId = child->add_parent_graphic(Graphic_var(_this()),
+						edge.localId);
+	my_children.insert(my_children.begin(), edge);
+    }
+    need_resize();
 }
 
 void PolyGraphic::remove_graphic(Tag localId)
 {
-  Trace trace(this, "PolyGraphic::remove_graphic");
-  _mutex.lock();
-  glist_t::iterator i = child_id_to_iterator(localId);
-  try
+    Trace trace(this, "PolyGraphic::remove_graphic");
     {
-      (*i).peer->remove_parent_graphic((*i).peerId);
-      (*i).peer->decrement();
+	Prague::Guard<Mutex> guard(my_mutex);
+	glist_t::iterator i = child_id_to_iterator(localId);
+	try
+	{
+	    (*i).peer->remove_parent_graphic((*i).peerId);
+	    (*i).peer->decrement();
+	}
+	catch(const CORBA::OBJECT_NOT_EXIST &) { }
+	catch (const CORBA::COMM_FAILURE &) { }
+	catch (const CORBA::TRANSIENT &) { }
+	my_children.erase(i);
     }
-  catch(const CORBA::OBJECT_NOT_EXIST &) {}
-  catch (const CORBA::COMM_FAILURE &) {}
-  catch (const CORBA::TRANSIENT &) {}
-  _children.erase(i);
-  _mutex.unlock();
-  need_resize();
+    need_resize();
 }
 
 void PolyGraphic::remove_child_graphic(Tag localId)
 {
-  Trace trace(this, "PolyGraphic::remove_child_graphic");
-  _mutex.lock();
-  glist_t::iterator i = child_id_to_iterator(localId);
-  _children.erase(i);
-  _mutex.unlock();
-  need_resize();
+    Trace trace(this, "PolyGraphic::remove_child_graphic");
+    {
+	Prague::Guard<Mutex> guard(my_mutex);
+	glist_t::iterator i = child_id_to_iterator(localId);
+	my_children.erase(i);
+    }
+    need_resize();
 }
 
 Fresco::GraphicIterator_ptr PolyGraphic::first_child_graphic()
 {
-  Trace trace(this, "PolyGraphic::first_child_graphic");
-  Iterator *iterator = new Iterator(this, 0);
-  activate(iterator);
-  return iterator->_this();
+    Trace trace(this, "PolyGraphic::first_child_graphic");
+    Iterator *iterator = new Iterator(this, 0);
+    activate(iterator);
+    return iterator->_this();
 }
 
 Fresco::GraphicIterator_ptr PolyGraphic::last_child_graphic()
 {
-  Trace trace(this, "PolyGraphic::last_child_graphic");
-  
-  Iterator *iterator = new Iterator(this, num_children() ? num_children() - 1 : 0);
-  activate(iterator);
-  return iterator->_this();
+    Trace trace(this, "PolyGraphic::last_child_graphic");
+    
+    Iterator *iterator = new Iterator(this, num_children() ?
+				      num_children() - 1 : 0);
+    activate(iterator);
+    return iterator->_this();
 }
 
-void PolyGraphic::need_resize() { GraphicImpl::need_resize();}
-void PolyGraphic::need_resize(Tag) { GraphicImpl::need_resize();}
+void PolyGraphic::need_resize() { GraphicImpl::need_resize(); }
+void PolyGraphic::need_resize(Tag) { GraphicImpl::need_resize(); }
 
 CORBA::ULong PolyGraphic::num_children()
 {
-  Prague::Guard<Mutex> guard(_mutex);
-  return _children.size();
+    Prague::Guard<Mutex> guard(my_mutex);
+    return my_children.size();
 }
 
 Fresco::Graphic::Requisition *PolyGraphic::children_requests()
 {
-  Trace trace(this, "PolyGraphic::children_requests");
-  Prague::Guard<Mutex> guard(_mutex);
-  Fresco::Graphic::Requisition *requisitions = _pool.allocate(_children.size());
-  Fresco::Graphic::Requisition *r = requisitions;
-  for (glist_t::iterator i = _children.begin(); i != _children.end(); i++)
+    Trace trace(this, "PolyGraphic::children_requests");
+    Prague::Guard<Mutex> guard(my_mutex);
+    Fresco::Graphic::Requisition *requisitions =
+	my_pool.allocate(my_children.size());
+    Fresco::Graphic::Requisition *r = requisitions;
+    for (glist_t::iterator i = my_children.begin();
+	 i != my_children.end();
+	 ++i)
     {
-      GraphicImpl::init_requisition(*r);
-      if (!CORBA::is_nil((*i).peer))
-	try { (*i).peer->request(*r);}
-	catch (const CORBA::OBJECT_NOT_EXIST &) { (*i).peer = Fresco::Graphic::_nil();}
-	catch (const CORBA::COMM_FAILURE &) { (*i).peer = Fresco::Graphic::_nil();}
-	catch (const CORBA::TRANSIENT &) { (*i).peer = Fresco::Graphic::_nil();}
-      ++r;
+	GraphicImpl::init_requisition(*r);
+	if (!CORBA::is_nil((*i).peer))
+	    try
+	    { (*i).peer->request(*r); }
+	    catch (const CORBA::OBJECT_NOT_EXIST &)
+	    { (*i).peer = Fresco::Graphic::_nil(); }
+	    catch (const CORBA::COMM_FAILURE &)
+	    { (*i).peer = Fresco::Graphic::_nil(); }
+	    catch (const CORBA::TRANSIENT &)
+	    { (*i).peer = Fresco::Graphic::_nil(); }
+	++r;
     }
-  return requisitions;
+    return requisitions;
 }
 
 void PolyGraphic::deallocate_requisitions(Fresco::Graphic::Requisition *r)
 {
-  Prague::Guard<Mutex> guard(_mutex);
-  _pool.deallocate(r);
+    Prague::Guard<Mutex> guard(my_mutex);
+    my_pool.deallocate(r);
 }
 
-void PolyGraphic::child_extension(size_t i, const Fresco::Allocation::Info &info, Region_ptr region)
+void PolyGraphic::child_extension(size_t i,
+				  const Fresco::Allocation::Info &info,
+				  Region_ptr region)
 {
-  Prague::Guard<Mutex> guard(_mutex);
-  Graphic_var child = _children[i].peer;
-  if (!CORBA::is_nil(child))
-    try { child->extension(info, region);}
-    catch (const CORBA::OBJECT_NOT_EXIST &) { _children[i].peer = Fresco::Graphic::_nil();}
-    catch (const CORBA::COMM_FAILURE &) { _children[i].peer = Fresco::Graphic::_nil();}
-    catch (const CORBA::TRANSIENT &) { _children[i].peer = Fresco::Graphic::_nil();}
+    Prague::Guard<Mutex> guard(my_mutex);
+    Graphic_var child = my_children[i].peer;
+    if (!CORBA::is_nil(child))
+	try
+	{ child->extension(info, region); }
+	catch (const CORBA::OBJECT_NOT_EXIST &)
+	{ my_children[i].peer = Fresco::Graphic::_nil(); }
+	catch (const CORBA::COMM_FAILURE &)
+	{ my_children[i].peer = Fresco::Graphic::_nil(); }
+	catch (const CORBA::TRANSIENT &)
+	{ my_children[i].peer = Fresco::Graphic::_nil(); }
 }

@@ -30,51 +30,54 @@ using namespace Berlin::ToolKit;
 
 class Stepper::Notifier : public Timer::Notifier
 {
-public:
-  Notifier(Stepper *s) : _stepper(s) {}
-  virtual void notify() { _stepper->step();}
-private:
-  Stepper *_stepper;
+  public:
+    Notifier(Stepper *s) : my_stepper(s) { }
+    virtual void notify() { my_stepper->step(); }
+  private:
+    Stepper *my_stepper;
 };
 
-Stepper::Stepper()
-  : _delay(500), _delta(300), _notifier(new Notifier(this)), _timer(_notifier)
-{
-}
+Stepper::Stepper() :
+    my_delay(500),
+    my_delta(300),
+    my_notifier(new Notifier(this)),
+    my_timer(my_notifier)
+{ }
 
 Stepper::~Stepper()
 {
-  Trace trace("Stepper::~Stepper");
-  stop();
-  delete _notifier;
+    Trace trace("Stepper::~Stepper");
+    stop();
+    delete my_notifier;
 }
 
 void Stepper::press(PickTraversal_ptr traversal, const Input::Event &event)
 {
-  Trace trace("Stepper::press");
-  ControllerImpl::press(traversal, event);
-  start();
+    Trace trace("Stepper::press");
+    ControllerImpl::press(traversal, event);
+    start();
 }
 
-void Stepper::release(PickTraversal_ptr traversal, const Input::Event &event)
+void Stepper::release(PickTraversal_ptr traversal,
+		      const Input::Event &event)
 {
-  Trace trace("Stepper::release");
-  stop();
-  ControllerImpl::release(traversal, event);
+    Trace trace("Stepper::release");
+    stop();
+    ControllerImpl::release(traversal, event);
 }
 
 void Stepper::step()
 {
-  Trace trace("Stepper::step");
-  execute();
+    Trace trace("Stepper::step");
+    execute();
 }
 
 void Stepper::start()
 {
-  _timer.start(Prague::Time::currentTime() + _delay, _delta);
+    my_timer.start(Prague::Time::currentTime() + my_delay, my_delta);
 }
 
 void Stepper::stop()
 {
-  _timer.stop();
+    my_timer.stop();
 }

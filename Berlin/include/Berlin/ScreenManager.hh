@@ -35,35 +35,41 @@
 #include <Berlin/EventManager.hh>
 #include <vector>
 
-class RegionImpl;
-
-//. The ScreenManager contains the main event loop. It queries the
-//. EventManager for those Events, registers damages to the screen's
-//. contents and repairs them by initialising a DrawTraversal whenever
-//. needed.
-class ScreenManager
+namespace Berlin
 {
-public:
-  ScreenManager(Fresco::Graphic_ptr, EventManager *, Fresco::DrawingKit_ptr);
-  ~ScreenManager();
-  //. This method marks the given Region as damaged.
-  void damage(Fresco::Region_ptr);
-  //. This method redraws the damaged regions of the screen.
-  //. The DrawTraversal gets started here!
-  void repair();
-  //. Start the gui thread
-  void start();
-private:
-  static void *run_thread(void *);
-  void run();
-  Fresco::Graphic_var         _screen;    //.< The graphic that is managed.
-  EventManager               *_emanager;
-  Fresco::DrawingKit_var      _drawing;   //.< The DrawingKit used to update this screen. 
-  Impl_var<RegionImpl>        _theDamage; //.< The region that got damaged.
-  Impl_var<RegionImpl>        _tmpDamage; //.< Temporary copy of _theDamage
-  Impl_var<DrawTraversalImpl> _traversal;
-  Prague::Mutex               _mutex;
-  Prague::Thread              my_thread;
-};
+
+  class RegionImpl;
+
+  //. The ScreenManager contains the main event loop. It queries the
+  //. EventManager for those Events, registers damages to the screen's
+  //. contents and repairs them by initialising a DrawTraversal whenever
+  //. needed.
+  class ScreenManager
+  {
+    public:
+      ScreenManager(Fresco::Graphic_ptr, EventManager *,
+		    Fresco::DrawingKit_ptr);
+      ~ScreenManager();
+      //. This method marks the given Region as damaged.
+      void damage(Fresco::Region_ptr);
+      //. This method redraws the damaged regions of the screen.
+      //. The DrawTraversal gets started here!
+      void repair();
+      //. Start the gui thread
+      void start();
+    private:
+      static void *run_thread(void *);
+      void run();
+      Fresco::Graphic_var my_screen; //.< The graphic that is managed.
+      EventManager *my_emanager;
+      Fresco::DrawingKit_var my_drawing; //.< The DrawingKit used to update this screen. 
+      Impl_var<RegionImpl> my_theDamage; //.< The region that got damaged.
+      Impl_var<RegionImpl> my_tmpDamage; //.< Temporary copy of _theDamage
+      Impl_var<DrawTraversalImpl> my_traversal;
+      Prague::Mutex my_mutex;
+      Prague::Thread my_thread;
+  };
+
+} // namespace
 
 #endif

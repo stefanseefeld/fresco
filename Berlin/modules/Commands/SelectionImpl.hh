@@ -19,8 +19,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _SelectionImpl_hh
-#define _SelectionImpl_hh
+#ifndef _CommandKit_SelectionImpl_hh
+#define _CommandKit_SelectionImpl_hh
 
 #include <Fresco/config.hh>
 #include <Fresco/Telltale.hh>
@@ -48,7 +48,8 @@ namespace Berlin
             Fresco::Tag id;
         };
       public:
-        SelectionImpl(Fresco::Selection::Policy, Fresco::TelltaleConstraint_ptr);
+        SelectionImpl(Fresco::Selection::Policy,
+		      Fresco::TelltaleConstraint_ptr);
         virtual ~SelectionImpl();
         virtual Fresco::Selection::Policy type();
         virtual void type(Fresco::Selection::Policy);
@@ -60,10 +61,11 @@ namespace Berlin
         void remove_observer(Fresco::Tag);
         Fresco::Tag uniqueId();
         CORBA::Long id_to_index(Fresco::Tag);
-        Prague::Mutex mutex;
-        Fresco::Selection::Policy policy;
-        RefCount_var<Fresco::TelltaleConstraint> constraint;
-        list_t items;
+
+        Prague::Mutex my_mutex;
+        Fresco::Selection::Policy my_policy;
+        RefCount_var<Fresco::TelltaleConstraint> my_constraint;
+        list_t my_items;
     };
 
   } // namespace

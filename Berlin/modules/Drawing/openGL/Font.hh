@@ -20,8 +20,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Font_hh
-#define _Font_hh
+#ifndef _openGL_Font_hh
+#define _openGL_Font_hh
 
 #include <Fresco/config.hh>
 #include <Fresco/Types.hh>
@@ -30,31 +30,36 @@
 #include <string>
 #include <GL/gl.h>
 
-namespace Berlin {
-namespace DrawingKit {
-namespace openGL {
-
-class Font
+namespace Berlin
 {
-public:
-  Font() {}
-  virtual ~Font() {}
-  virtual CORBA::ULong size() = 0;
-  virtual void size(CORBA::ULong) = 0;
-  virtual CORBA::ULong weight() = 0;
-  virtual Fresco::Unistring *family() = 0;
-  virtual Fresco::Unistring *subfamily() = 0;
-  virtual Fresco::Unistring *fullname() = 0;
-  virtual Fresco::Unistring *style() = 0;
-  virtual Fresco::DrawingKit::FontMetrics metrics() = 0;
-  virtual Fresco::DrawingKit::GlyphMetrics metrics(Fresco::Unichar uc) = 0;
+  namespace DrawingKit
+  {
+    namespace openGL
+    {
 
-  virtual void draw_char(Fresco::Unichar) = 0;
-  virtual void allocate_char(Fresco::Unichar, Fresco::Graphic::Requisition &) = 0;
-};
+      class Font
+      {
+	public:
+	  Font() { }
+	  virtual ~Font() { }
+	  virtual CORBA::ULong size() = 0;
+	  virtual void size(CORBA::ULong) = 0;
+	  virtual CORBA::ULong weight() = 0;
+	  virtual Fresco::Unistring *family() = 0;
+	  virtual Fresco::Unistring *subfamily() = 0;
+	  virtual Fresco::Unistring *fullname() = 0;
+	  virtual Fresco::Unistring *style() = 0;
+	  virtual Fresco::DrawingKit::FontMetrics metrics() = 0;
+	  virtual Fresco::DrawingKit::GlyphMetrics
+	  metrics(Fresco::Unichar uc) = 0;
 
-} // namespace
-} // namespace
+	  virtual void draw_char(Fresco::Unichar) = 0;
+	  virtual void allocate_char(Fresco::Unichar,
+				     Fresco::Graphic::Requisition &) = 0;
+      };
+
+    } // namespace
+  } // namespace
 } // namespace
 
 #endif

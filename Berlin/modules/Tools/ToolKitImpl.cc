@@ -54,61 +54,73 @@ namespace Berlin
     class RGBDecorator : public MonoGraphic
     {
       public:
-        RGBDecorator(Coord r, Coord g, Coord b) : red(r), green(g), blue(b) { }
-        virtual void traverse(Traversal_ptr traversal) { traversal->visit(Graphic_var(_this()));}
+        RGBDecorator(Coord r, Coord g, Coord b) :
+	    my_red(r), my_green(g), my_blue(b)
+	{ }
+        virtual void traverse(Traversal_ptr traversal)
+	{ traversal->visit(Graphic_var(_this())); }
         virtual void draw(DrawTraversal_ptr traversal)
         {
             DrawingKit_var drawing = traversal->drawing();
             drawing->save();
             Color color = drawing->foreground();
-            color.red = red, color.green = green, color.blue = blue;
+            color.red = my_red, color.green = my_green,
+		color.blue = my_blue;
             drawing->foreground(color);
             MonoGraphic::traverse(traversal);
             drawing->restore();
         }
-        virtual void pick(PickTraversal_ptr traversal) { MonoGraphic::traverse(traversal);}
+        virtual void pick(PickTraversal_ptr traversal)
+	{ MonoGraphic::traverse(traversal); }
       private:
-        Coord red, green, blue;
+        Coord my_red, my_green, my_blue;
     };
 
     class LightingDecorator : public MonoGraphic
     {
       public:
-        LightingDecorator(Coord r, Coord g, Coord b) : red(r), green(g), blue(b) { }
-        virtual void traverse(Traversal_ptr traversal) { traversal->visit(Graphic_var(_this()));}
+        LightingDecorator(Coord r, Coord g, Coord b) :
+	    my_red(r), my_green(g), my_blue(b)
+	{ }
+        virtual void traverse(Traversal_ptr traversal)
+	{ traversal->visit(Graphic_var(_this())); }
         virtual void draw(DrawTraversal_ptr traversal)
-        {
-            DrawingKit_var drawing = traversal->drawing();
+	{
+	    DrawingKit_var drawing = traversal->drawing();
             drawing->save();
             Color color = drawing->lighting();
-            color.red *= red, color.green *= green, color.blue *= blue;
+            color.red *= my_red, color.green *= my_green,
+		color.blue *= my_blue;
             drawing->lighting(color);
             MonoGraphic::traverse(traversal);
             drawing->restore();
         }
-        virtual void pick(PickTraversal_ptr traversal) { MonoGraphic::traverse(traversal);}
+        virtual void pick(PickTraversal_ptr traversal)
+	{ MonoGraphic::traverse(traversal); }
       private:
-        Coord red, green, blue;
+        Coord my_red, my_green, my_blue;
     };
 
     class AlphaDecorator : public MonoGraphic
     {
       public:
-        AlphaDecorator(Coord a) : alpha(a) { }
-        virtual void traverse(Traversal_ptr traversal) { traversal->visit(Graphic_var(_this()));}
+        AlphaDecorator(Coord a) : my_alpha(a) { }
+        virtual void traverse(Traversal_ptr traversal)
+	{ traversal->visit(Graphic_var(_this())); }
         virtual void draw(DrawTraversal_ptr traversal)
         {
             DrawingKit_var drawing = traversal->drawing();
             drawing->save();
             Color color = drawing->foreground();
-            color.alpha *= alpha;
+            color.alpha *= my_alpha;
             drawing->foreground(color);
             MonoGraphic::traverse(traversal);
             drawing->restore();
         }
-        virtual void pick(PickTraversal_ptr traversal) { MonoGraphic::traverse(traversal);}
+        virtual void pick(PickTraversal_ptr traversal)
+	{ MonoGraphic::traverse(traversal); }
       private:
-        Coord alpha;
+        Coord my_alpha;
     };
 
   } // namespace
@@ -117,143 +129,149 @@ namespace Berlin
 Berlin::ToolKit::ToolKitImpl::ToolKitImpl(const std::string &id,
                                           const Fresco::Kit::PropertySeq &p,
                                           ServerContextImpl *c) :
-  KitImpl(id, p, c) { }
+    Berlin::KitImpl(id, p, c)
+{ }
 
 Berlin::ToolKit::ToolKitImpl::~ToolKitImpl() { }
 
-Graphic_ptr Berlin::ToolKit::ToolKitImpl::debugger(Graphic_ptr g, const char *s)
+Graphic_ptr Berlin::ToolKit::ToolKitImpl::debugger(Graphic_ptr g,
+						   const char *s)
 {
-  return create_and_set_body<Graphic>(new DebugGraphic(std::cout, s), g,
-                      "ToolKit/debugger");
+    return create_and_set_body<Graphic>(new DebugGraphic(std::cout, s), g,
+					"ToolKit/debugger");
 }
 
 DrawingState_ptr Berlin::ToolKit::ToolKitImpl::decorator(Graphic_ptr g)
 {
-  return create_and_set_body<DrawingState>(new DrawingStateImpl(), g,
-                       "ToolKit/decorator");
+    return create_and_set_body<DrawingState>(new DrawingStateImpl(), g,
+					     "ToolKit/decorator");
 }
 
-Graphic_ptr Berlin::ToolKit::ToolKitImpl::rgb(Graphic_ptr gg, Coord r, Coord g, Coord b)
+Graphic_ptr Berlin::ToolKit::ToolKitImpl::rgb(Graphic_ptr gg,
+					      Coord r, Coord g, Coord b)
 {
-  return create_and_set_body<Graphic>(new RGBDecorator(r, g, b), gg,
-                      "ToolKit/rgb");
+    return create_and_set_body<Graphic>(new RGBDecorator(r, g, b), gg,
+					"ToolKit/rgb");
 }
 
 Graphic_ptr Berlin::ToolKit::ToolKitImpl::alpha(Graphic_ptr g, Coord a)
 {
-  return create_and_set_body<Graphic>(new AlphaDecorator(a), g,
-                      "ToolKit/alpha");
+    return create_and_set_body<Graphic>(new AlphaDecorator(a), g,
+					"ToolKit/alpha");
 }
 
-Graphic_ptr Berlin::ToolKit::ToolKitImpl::lighting(Graphic_ptr gg, Coord r, Coord g, Coord b)
+Graphic_ptr Berlin::ToolKit::ToolKitImpl::lighting(Graphic_ptr gg,
+						   Coord r, Coord g,
+						   Coord b)
 {
-  return create_and_set_body<Graphic>(new LightingDecorator(r, g, b), gg,
-                      "ToolKit/lighting");
+    return create_and_set_body<Graphic>(new LightingDecorator(r, g, b), gg,
+					"ToolKit/lighting");
 }
 
 Graphic_ptr Berlin::ToolKit::ToolKitImpl::frame(Graphic_ptr g,
-                   Coord thickness,
-                   const Fresco::ToolKit::FrameSpec &spec,
-                   CORBA::Boolean fill)
+						Coord thickness,
+						const Fresco::ToolKit::FrameSpec &spec,
+						CORBA::Boolean fill)
 {
     Frame::Renderer *renderer = 0;
     switch (spec._d())
     {
-      case Fresco::ToolKit::none:
-        renderer = new InvisibleFrame(thickness, fill);
-        break;
-      case Fresco::ToolKit::inset:
-        renderer = new Bevel(thickness, Bevel::inset,
-                 spec.brightness(), fill);
-        break;
+    case Fresco::ToolKit::none:
+	renderer = new InvisibleFrame(thickness, fill);
+	break;
+    case Fresco::ToolKit::inset:
+	renderer = new Bevel(thickness, Bevel::inset,
+			     spec.brightness(), fill);
+	break;
     case Fresco::ToolKit::outset:
         renderer = new Bevel(thickness, Bevel::outset,
-                 spec.brightness(), fill);
+			     spec.brightness(), fill);
         break;
     case Fresco::ToolKit::convex:
         renderer = new Bevel(thickness, Bevel::convex,
-                 spec.brightness(), fill);
+			     spec.brightness(), fill);
         break;
     case Fresco::ToolKit::concav:
         renderer = new Bevel(thickness, Bevel::concav,
-                 spec.brightness(), fill);
+			     spec.brightness(), fill);
         break;
     case Fresco::ToolKit::colored:
         renderer = new ColoredFrame(thickness, spec.foreground(), fill);
         break;
     }
     return create_and_set_body<Graphic>(new Frame(thickness, renderer), g,
-                        "ToolKit/frame");
+					"ToolKit/frame");
 }
 
 Graphic_ptr Berlin::ToolKit::ToolKitImpl::triangle(Graphic_ptr g, Coord thickness,
-                  const Fresco::ToolKit::FrameSpec &spec,
-                  CORBA::Boolean fill,
-                  Fresco::ToolKit::Direction d)
+						   const Fresco::ToolKit::FrameSpec &spec,
+						   CORBA::Boolean fill,
+						   Fresco::ToolKit::Direction d)
 {
     Frame::Renderer *renderer = 0;
     switch (spec._d())
     {
-      case Fresco::ToolKit::none:
+    case Fresco::ToolKit::none:
         renderer = new InvisibleTriangle(thickness, fill, d); break;
-      case Fresco::ToolKit::inset:
+    case Fresco::ToolKit::inset:
         renderer = new BeveledTriangle(thickness, Bevel::inset,
-                       spec.brightness(),
-                       fill, d);
+				       spec.brightness(),
+				       fill, d);
         break;
-      case Fresco::ToolKit::outset:
+    case Fresco::ToolKit::outset:
         renderer = new BeveledTriangle(thickness, Bevel::outset,
-                       spec.brightness(), fill, d);
+				       spec.brightness(), fill, d);
         break;
-      case Fresco::ToolKit::convex:
+    case Fresco::ToolKit::convex:
         renderer = new BeveledTriangle(thickness, Bevel::convex,
-                       spec.brightness(), fill, d);
+				       spec.brightness(), fill, d);
         break;
-      case Fresco::ToolKit::concav:
+    case Fresco::ToolKit::concav:
         renderer = new BeveledTriangle(thickness, Bevel::concav,
-                       spec.brightness(), fill, d);
+				       spec.brightness(), fill, d);
         break;
-      case Fresco::ToolKit::colored:
+    case Fresco::ToolKit::colored:
         renderer = new ColoredTriangle(thickness, spec.foreground(),
-                       fill, d);
+				       fill, d);
         break;
     }
     return create_and_set_body<Graphic>(new Frame(thickness, renderer), g,
-                        "ToolKit/triangle");
+					"ToolKit/triangle");
 }
 
-Graphic_ptr Berlin::ToolKit::ToolKitImpl::diamond(Graphic_ptr g, Coord thickness,
-                 const Fresco::ToolKit::FrameSpec &spec,
-                 CORBA::Boolean fill)
+Graphic_ptr Berlin::ToolKit::ToolKitImpl::diamond(Graphic_ptr g,
+						  Coord thickness,
+						  const Fresco::ToolKit::FrameSpec &spec,
+						  CORBA::Boolean fill)
 {
     Frame::Renderer *renderer = 0;
     switch (spec._d())
     {
-      case Fresco::ToolKit::none:
+    case Fresco::ToolKit::none:
         renderer = new InvisibleDiamond(thickness, fill);
         break;
-      case Fresco::ToolKit::inset:
+    case Fresco::ToolKit::inset:
         renderer = new BeveledDiamond(thickness, Bevel::inset,
-                      spec.brightness(), fill);
+				      spec.brightness(), fill);
         break;
-      case Fresco::ToolKit::outset:
+    case Fresco::ToolKit::outset:
         renderer = new BeveledDiamond(thickness, Bevel::outset,
-                      spec.brightness(), fill);
+				      spec.brightness(), fill);
         break;
-      case Fresco::ToolKit::convex:
+    case Fresco::ToolKit::convex:
         renderer = new BeveledDiamond(thickness, Bevel::convex,
-                      spec.brightness(), fill);
+				      spec.brightness(), fill);
         break;
-      case Fresco::ToolKit::concav:
+    case Fresco::ToolKit::concav:
         renderer = new BeveledDiamond(thickness, Bevel::concav,
-                      spec.brightness(), fill);
+				      spec.brightness(), fill);
         break;
-      case Fresco::ToolKit::colored:
+    case Fresco::ToolKit::colored:
         renderer = new ColoredDiamond(thickness, spec.foreground(), fill);
         break;
     }
     return create_and_set_body<Graphic>(new Frame(thickness, renderer), g,
-                        "ToolKit/diamond");
+					"ToolKit/diamond");
 }
 
 // Graphic_ptr Berlin::ToolKit::ToolKitImpl::filler(Graphic_ptr g, const Color &c)
@@ -275,8 +293,10 @@ Graphic_ptr Berlin::ToolKit::ToolKitImpl::diamond(Graphic_ptr g, Coord thickness
 //     return i->_this();
 // }
 
-Graphic_ptr Berlin::ToolKit::ToolKitImpl::create_switch(Graphic_ptr g1, Graphic_ptr g2,
-                       Telltale::Mask mask, Telltale_ptr telltale)
+Graphic_ptr Berlin::ToolKit::ToolKitImpl::create_switch(Graphic_ptr g1,
+							Graphic_ptr g2,
+							Telltale::Mask mask,
+							Telltale_ptr telltale)
 {
     Switch *s = new Switch(mask);
     s->attach(telltale);
@@ -286,14 +306,18 @@ Graphic_ptr Berlin::ToolKit::ToolKitImpl::create_switch(Graphic_ptr g1, Graphic_
 
 MainController_ptr Berlin::ToolKit::ToolKitImpl::group(Graphic_ptr g)
 {
-    return create_and_set_body<MainController>(new MainControllerImpl(true), g,
-                           "ToolKit/group");
+    return
+	create_and_set_body<MainController>(new MainControllerImpl(true),
+					    g,
+					    "ToolKit/group");
 }
 
-Trigger_ptr Berlin::ToolKit::ToolKitImpl::button(Graphic_ptr g, Command_ptr c)
+Trigger_ptr Berlin::ToolKit::ToolKitImpl::button(Graphic_ptr g,
+						 Command_ptr c)
 {
-    Trigger_ptr trigger = create_and_set_body<Trigger>(new TriggerImpl(), g,
-                               "ToolKit/button");
+    Trigger_ptr trigger = create_and_set_body<Trigger>(new TriggerImpl(),
+						       g,
+						       "ToolKit/button");
     trigger->action(c);
     return trigger;
 }
@@ -301,19 +325,21 @@ Trigger_ptr Berlin::ToolKit::ToolKitImpl::button(Graphic_ptr g, Command_ptr c)
 Controller_ptr Berlin::ToolKit::ToolKitImpl::toggle(Graphic_ptr g)
 {
     return create_and_set_body<Controller>(new Toggle, g,
-                       "ToolKit/toggle");
+					   "ToolKit/toggle");
 }
 
-Controller_ptr Berlin::ToolKit::ToolKitImpl::dragger(Graphic_ptr g, Command_ptr command)
+Controller_ptr Berlin::ToolKit::ToolKitImpl::dragger(Graphic_ptr g,
+						     Command_ptr command)
 {
     return create_and_set_body<Controller>(new Dragger(command), g,
-                       "ToolKit/dragger");
+					   "ToolKit/dragger");
 }
 
-Controller_ptr Berlin::ToolKit::ToolKitImpl::stepper(Graphic_ptr g, Command_ptr command)
+Controller_ptr Berlin::ToolKit::ToolKitImpl::stepper(Graphic_ptr g,
+						     Command_ptr command)
 {
     Trigger_ptr stepper = create_and_set_body<Trigger>(new Stepper, g,
-                               "ToolKit/stepper");
+						       "ToolKit/stepper");
     stepper->action(command);
     return stepper;
 }
@@ -322,24 +348,24 @@ Controller_ptr Berlin::ToolKit::ToolKitImpl::text_input(Graphic_ptr g,
                        TextBuffer_ptr buffer)
 {
     return create_and_set_body<Controller>(new TextInput(buffer), g,
-                       "ToolKit/text_input");
+					   "ToolKit/text_input");
 }
 
 Controller_ptr Berlin::ToolKit::ToolKitImpl::terminal(Graphic_ptr g,
-                     StreamBuffer_ptr buffer)
+						      StreamBuffer_ptr buffer)
 {
     return create_and_set_body<Controller>(new Terminal(buffer), g,
-                       "ToolKit/terminal");
+					   "ToolKit/terminal");
 }
 
 Canvas_ptr Berlin::ToolKit::ToolKitImpl::create_canvas(PixelCoord width,
-                      PixelCoord height)
+						       PixelCoord height)
     throw (SecurityException, CreationFailureException)
 {
     try
     {
         return create<Canvas>(new CanvasImpl(width, height),
-                  "ToolKit/create_canvas");
+			      "ToolKit/create_canvas");
     }
     catch (const std::runtime_error &e)
     {
@@ -349,9 +375,9 @@ Canvas_ptr Berlin::ToolKit::ToolKitImpl::create_canvas(PixelCoord width,
 
 
 
-extern "C" KitImpl *load()
+extern "C" Berlin::KitImpl *load()
 {
-  static std::string properties[] = {"implementation", "ToolKitImpl"};
-  return create_prototype<Berlin::ToolKit::ToolKitImpl>
+    static std::string properties[] = {"implementation", "ToolKitImpl"};
+    return Berlin::create_prototype<Berlin::ToolKit::ToolKitImpl>
       ("IDL:fresco.org/Fresco/ToolKit:1.0", properties, 2);
 }

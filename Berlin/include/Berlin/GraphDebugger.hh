@@ -26,10 +26,10 @@
 #include <string>
 #include <vector>
 
-class GraphicImpl;
-
 namespace Berlin
 {
+
+  class GraphicImpl;
 
   class GraphDebugger
   {

@@ -26,58 +26,69 @@
 #include <Berlin/Pool.hh>
 #include <vector>
 
-class PolyGraphic : public GraphicImpl
+namespace Berlin
 {
-  class Iterator;
-  friend class Iterator;
-public:
-  PolyGraphic();
-  virtual ~PolyGraphic();
 
-  virtual void append_graphic(Fresco::Graphic_ptr);
-  virtual void prepend_graphic(Fresco::Graphic_ptr);
-  virtual void remove_graphic(Fresco::Tag);
-  virtual void remove_child_graphic(Fresco::Tag);
-  virtual Fresco::GraphicIterator_ptr first_child_graphic();
-  virtual Fresco::GraphicIterator_ptr last_child_graphic();
-
-  virtual void need_resize();
-  virtual void need_resize(Fresco::Tag);
-protected:
-  CORBA::ULong num_children();
-  Fresco::Tag unique_child_id();
-  glist_t::iterator child_id_to_iterator(Fresco::Tag);
-  CORBA::Long child_id_to_index(Fresco::Tag);
-  Fresco::Graphic::Requisition *children_requests();
-  void deallocate_requisitions(Fresco::Graphic::Requisition *);
-  void child_extension(size_t, const Fresco::Allocation::Info &, Fresco::Region_ptr);
+  class PolyGraphic : public GraphicImpl
+  {
+      class Iterator;
+      friend class Iterator;
+    public:
+      PolyGraphic();
+      virtual ~PolyGraphic();
+      
+      virtual void append_graphic(Fresco::Graphic_ptr);
+      virtual void prepend_graphic(Fresco::Graphic_ptr);
+      virtual void remove_graphic(Fresco::Tag);
+      virtual void remove_child_graphic(Fresco::Tag);
+      virtual Fresco::GraphicIterator_ptr first_child_graphic();
+      virtual Fresco::GraphicIterator_ptr last_child_graphic();
+      
+      virtual void need_resize();
+      virtual void need_resize(Fresco::Tag);
+    protected:
+      CORBA::ULong num_children();
+      Fresco::Tag unique_child_id();
+      glist_t::iterator child_id_to_iterator(Fresco::Tag);
+      CORBA::Long child_id_to_index(Fresco::Tag);
+      Fresco::Graphic::Requisition *children_requests();
+      void deallocate_requisitions(Fresco::Graphic::Requisition *);
+      void child_extension(size_t, const Fresco::Allocation::Info &,
+			   Fresco::Region_ptr);
 // private:
-  static Pool<Fresco::Graphic::Requisition> _pool;
-  glist_t _children;
-  Prague::Mutex _mutex;
-};
+      static Pool<Fresco::Graphic::Requisition> my_pool;
+      glist_t my_children;
+      Prague::Mutex my_mutex;
+  };
 
 /*
  * the following methods are inlined for speed.
- * Attention : they must be used within a PolyGraphic::childMutex locked section !
+ * Attention : they must be used within a PolyGraphic::childMutex locked
+ * section!
  */
-inline Fresco::Tag PolyGraphic::unique_child_id()
-{
-  Fresco::Tag localId;
-  for (localId = 0;
-       find_if (_children.begin(), _children.end(), localId_eq(localId)) != _children.end();
-       localId++);
+  inline Fresco::Tag PolyGraphic::unique_child_id()
+  {
+      Fresco::Tag localId;
+      for (localId = 0;
+	   find_if(my_children.begin(), my_children.end(),
+		   localId_eq(localId)) != my_children.end();
+	   localId++);
       return localId;
-}
+  }
+  
+  inline PolyGraphic::glist_t::iterator
+  PolyGraphic::child_id_to_iterator(Fresco::Tag localId)
+  {
+      return find_if(my_children.begin(), my_children.end(),
+		     localId_eq(localId));
+  }
 
-inline PolyGraphic::glist_t::iterator PolyGraphic::child_id_to_iterator(Fresco::Tag localId)
-{
-  return find_if(_children.begin(), _children.end(), localId_eq(localId));
-}
-
-inline CORBA::Long PolyGraphic::child_id_to_index(Fresco::Tag localId)
-{
-  return find_if(_children.begin(), _children.end(), localId_eq(localId)) - _children.begin();
-}
+  inline CORBA::Long PolyGraphic::child_id_to_index(Fresco::Tag localId)
+  {
+      return find_if(my_children.begin(), my_children.end(),
+		     localId_eq(localId)) - my_children.begin();
+  }
+  
+} // namespace
 
 #endif 

@@ -25,23 +25,28 @@
 #include <Fresco/config.hh>
 #include <Fresco/Types.hh>
 
-//. A mixin class to use a single global POA as the default POA. This is used
-//. by the "shortcut POA" for omniORB so that all objects (using the class)
-//. use the POA with the shortcut policy.
-class DefaultPOA
+namespace Berlin
 {
-public:
-  //. Set the global poa. This should only be called once, in whatever method
-  //. creates the global poa (eg: the main() function creating the shortcut poa
-  //. for omniORB in server/server.cc)
-  static void default_POA(PortableServer::POA_ptr);
 
-  //. Mixin virtual method to return a duplicate ptr to the global poa.
-  virtual PortableServer::POA_ptr _default_POA();
+  //. A mixin class to use a single global POA as the default POA. This
+  //. is used by the "shortcut POA" for omniORB so that all objects (using
+  //. the class) use the POA with the shortcut policy.
+  class DefaultPOA
+  {
+    public:
+      //. Set the global poa. This should only be called once, in whatever
+      //. method creates the global poa (eg: the main() function creating
+      //. the shortcut poa for omniORB in server/server.cc)
+      static void default_POA(PortableServer::POA_ptr);
+      
+      //. Mixin virtual method to return a duplicate ptr to the global poa.
+      virtual PortableServer::POA_ptr _default_POA();
+      
+    private:
+      //. The global poa
+      static PortableServer::POA_var my_default_poa;
+  };
 
-private:
-  //. The global poa
-  static PortableServer::POA_var _default_poa;
-};
+} // namespace
 
 #endif

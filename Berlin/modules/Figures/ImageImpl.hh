@@ -45,8 +45,8 @@ namespace Berlin
         ~ImageImpl();
 
         virtual Fresco::Raster_ptr data()
-        { return Fresco::Raster::_duplicate(raster); }
-        virtual void data(Fresco::Raster_ptr r) { raster = r; }
+        { return Fresco::Raster::_duplicate(my_raster); }
+        virtual void data(Fresco::Raster_ptr r) { my_raster = r; }
 
         virtual void request(Fresco::Graphic::Requisition &);
         virtual void draw(Fresco::DrawTraversal_ptr);
@@ -54,8 +54,8 @@ namespace Berlin
       protected:
         virtual void activate_composite();
       private:
-        RefCount_var<Fresco::Raster> raster;
-        Fresco::Coord width, height;
+        RefCount_var<Fresco::Raster> my_raster;
+        Fresco::Coord my_width, my_height;
     };
 
     class Texture : public MonoGraphic
@@ -67,7 +67,7 @@ namespace Berlin
         virtual void draw(Fresco::DrawTraversal_ptr);
         virtual void pick(Fresco::PickTraversal_ptr);
       private:
-        RefCount_var<Fresco::Raster> raster;
+        RefCount_var<Fresco::Raster> my_raster;
     };
 
   } // namespace

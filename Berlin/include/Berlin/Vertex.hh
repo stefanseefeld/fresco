@@ -26,38 +26,42 @@
 #include <Fresco/Types.hh>
 #include <iostream>
 
-inline Fresco::Vertex &operator += (Fresco::Vertex &p, const Fresco::Vertex &q)
+inline Fresco::Vertex &operator += (Fresco::Vertex &p,
+				    const Fresco::Vertex &q)
 {
-  p.x += q.x;
-  p.y += q.y;
-  p.z += q.z;
-  return p;
+    p.x += q.x;
+    p.y += q.y;
+    p.z += q.z;
+    return p;
 }
 
-inline Fresco::Vertex &operator -= (Fresco::Vertex &p, const Fresco::Vertex &q)
+inline Fresco::Vertex &operator -= (Fresco::Vertex &p,
+				    const Fresco::Vertex &q)
 {
-  p.x -= q.x;
-  p.y -= q.y;
-  p.z -= q.z;
-  return p;
+    p.x -= q.x;
+    p.y -= q.y;
+    p.z -= q.z;
+    return p;
 }
 
-inline Fresco::Vertex operator + (const Fresco::Vertex &p, const Fresco::Vertex &q)
+inline Fresco::Vertex operator + (const Fresco::Vertex &p,
+				  const Fresco::Vertex &q)
 {
-  Fresco::Vertex r;
-  r.x = p.x + q.x;
-  r.y = p.y + q.y;
-  r.z = p.z + q.z;
-  return r;
+    Fresco::Vertex r;
+    r.x = p.x + q.x;
+    r.y = p.y + q.y;
+    r.z = p.z + q.z;
+    return r;
 }
 
-inline Fresco::Vertex operator - (const Fresco::Vertex &p, const Fresco::Vertex &q)
+inline Fresco::Vertex operator - (const Fresco::Vertex &p,
+				  const Fresco::Vertex &q)
 {
-  Fresco::Vertex r;
-  r.x = p.x - q.x;
-  r.y = p.y - q.y;
-  r.z = p.z - q.z;
-  return r;
+    Fresco::Vertex r;
+    r.x = p.x - q.x;
+    r.y = p.y - q.y;
+    r.z = p.z - q.z;
+    return r;
 }
 
 #endif

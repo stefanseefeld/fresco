@@ -34,50 +34,56 @@
 #include <vector>
 #include <stack>
 
-class CachingPickTraversal;
-class ScreenImpl;
-class RasterImpl;
-
-class PositionalFocus : public FocusImpl
+namespace Berlin
 {
-  typedef std::vector<Fresco::Controller_var> cstack_t;
-  class Traversal;
-  struct PointerCacheTrait;
-  typedef ObjectCache<Fresco::Raster_var, Console::Pointer, PointerCacheTrait> PointerCache;
-  struct Resources
+
+  class CachingPickTraversal;
+  class ScreenImpl;
+  class RasterImpl;
+  
+  class PositionalFocus : public FocusImpl
   {
-    enum state { set_pointer = 0x1};
-    Resources() : flags(0) {}
-    unsigned long     flags;
-    Console::Pointer *pointer;
-
+      typedef std::vector<Fresco::Controller_var> cstack_t;
+      class Traversal;
+      struct PointerCacheTrait;
+      typedef ObjectCache<Fresco::Raster_var, Console::Pointer,
+			  PointerCacheTrait> PointerCache;
+      struct Resources
+      {
+	  enum state { set_pointer = 0x1 };
+	  Resources() : flags(0) { }
+	  unsigned long flags;
+	  Console::Pointer *pointer;
+      };
+      typedef std::stack<Resources> rstack_t;
+    public:
+      PositionalFocus(Fresco::Input::Device, Fresco::Graphic_ptr,
+		      Fresco::Region_ptr);
+      virtual ~PositionalFocus();
+      virtual void grab();
+      virtual void ungrab();
+      virtual void set_cursor(Fresco::Raster_ptr);
+      virtual void add_filter(Fresco::Input::Filter_ptr);
+      
+      virtual bool request(Fresco::Controller_ptr);
+      virtual void restore(Fresco::Region_ptr);
+      virtual void damage(Fresco::Region_ptr);
+      virtual void dispatch(Fresco::Input::Event &);
+    protected:
+      virtual void activate_composite();
+    private:
+      Fresco::Graphic_ptr my_root;
+      RasterImpl         *my_default_raster;
+      PointerCache       *my_pointers;
+      Console::Pointer   *my_pointer;
+      rstack_t            my_resources;
+      Traversal          *my_traversal_cache[2];
+      Traversal          *my_traversal;
+      cstack_t            my_controllers;
+      bool                my_grabbed;
+      Prague::Mutex       my_mutex;
   };
-  typedef std::stack<Resources> rstack_t;
-public:
-  PositionalFocus(Fresco::Input::Device, Fresco::Graphic_ptr, Fresco::Region_ptr);
-  virtual ~PositionalFocus();
-  virtual void grab();
-  virtual void ungrab();
-  virtual void set_cursor(Fresco::Raster_ptr);
-  virtual void add_filter(Fresco::Input::Filter_ptr);
 
-  virtual bool request(Fresco::Controller_ptr);
-  virtual void restore(Fresco::Region_ptr);
-  virtual void damage(Fresco::Region_ptr);
-  virtual void dispatch(Fresco::Input::Event &);
-protected:
-  virtual void activate_composite();
-private:
-  Fresco::Graphic_ptr _root;
-  RasterImpl         *_default_raster;
-  PointerCache       *_pointers;
-  Console::Pointer   *_pointer;
-  rstack_t            _resources;
-  Traversal          *_traversal_cache[2];
-  Traversal          *_traversal;
-  cstack_t            _controllers;
-  bool                _grabbed;
-  Prague::Mutex       _mutex;
-};
+} // namespace
 
 #endif 

@@ -39,14 +39,15 @@ using namespace Prague;
 using namespace Fresco;
 
 Berlin::PrimitiveKit::TransformPrimitive::TransformPrimitive() :
-    //_mode(Figure::outline),
-    _tx(new TransformImpl),
-    _ext(new RegionImpl)
+    //my_mode(Figure::outline),
+    my_tx(new TransformImpl),
+    my_ext(new RegionImpl)
 { }
 
 Berlin::PrimitiveKit::TransformPrimitive::~TransformPrimitive() { }
+
 Transform_ptr Berlin::PrimitiveKit::TransformPrimitive::transformation()
-{ return _tx->_this(); }
+{ return my_tx->_this(); }
 void Berlin::PrimitiveKit::TransformPrimitive::request(Fresco::Graphic::Requisition &r)
 {
     Trace trace("TransformPrimitive::request");
@@ -77,15 +78,16 @@ void Berlin::PrimitiveKit::TransformPrimitive::extension(const Allocation::Info 
                                                          Region_ptr region)
 {
     Trace trace("TransformPrimitive::extension");
-    if (_ext->valid)
+    if (my_ext->valid)
     {
         Lease_var<RegionImpl> tmp(Provider<RegionImpl>::provide());
-        tmp->copy(Region_var(_ext->_this()));
+        tmp->copy(Region_var(my_ext->_this()));
         tmp->xalign = tmp->yalign = tmp->zalign = 0.;
-        Lease_var<TransformImpl> transformation(Provider<TransformImpl>::provide());
+        Lease_var<TransformImpl>
+	    transformation(Provider<TransformImpl>::provide());
         if (!CORBA::is_nil(info.transformation))
             transformation->copy(info.transformation);
-        transformation->premultiply(Transform_var(_tx->_this()));
+        transformation->premultiply(Transform_var(my_tx->_this()));
         tmp->apply_transform(Transform_var(transformation->_this()));
         region->merge_union(Region_var(tmp->_this()));
     }
@@ -93,8 +95,9 @@ void Berlin::PrimitiveKit::TransformPrimitive::extension(const Allocation::Info 
 
 void Berlin::PrimitiveKit::TransformPrimitive::pick(PickTraversal_ptr traversal)
 {
-    if (_ext->valid && traversal->intersects_region(Region_var(_ext->_this())))
-      traversal->hit();
+    if (my_ext->valid &&
+	traversal->intersects_region(Region_var(my_ext->_this())))
+	traversal->hit();
 }
 
 void Berlin::PrimitiveKit::TransformPrimitive::need_redraw()
@@ -109,22 +112,25 @@ void Berlin::PrimitiveKit::TransformPrimitive::need_redraw()
 void Berlin::PrimitiveKit::TransformPrimitive::resize() { }
 void Berlin::PrimitiveKit::TransformPrimitive::copy(const TransformPrimitive &tp)
 {
-    // _mode = tp._mode;
-    // _fg = tp._fg;
-    // _bg = tp._bg;
-    _tx->copy(Transform_var(tp._tx->_this()));
-    if (tp._ext->valid) _ext->copy(Region_var(tp._ext->_this()));
+    // my_mode = tp.my_mode;
+    // my_fg = tp.my_fg;
+    // my_bg = tp.my_bg;
+    my_tx->copy(Transform_var(tp.my_tx->_this()));
+    if (tp.my_ext->valid) my_ext->copy(Region_var(tp.my_ext->_this()));
 }
 
-Berlin::PrimitiveKit::PrimitiveImpl::PrimitiveImpl() : _mesh(new Fresco::Mesh()) { }
+Berlin::PrimitiveKit::PrimitiveImpl::PrimitiveImpl() :
+    my_mesh(new Fresco::Mesh())
+{ }
 Berlin::PrimitiveKit::PrimitiveImpl::~PrimitiveImpl() { }
 
 void Berlin::PrimitiveKit::PrimitiveImpl::draw(DrawTraversal_ptr traversal)
 {
     Trace trace("PrimitiveImpl::draw");
-    if (_mesh->nodes.length() > 0)
+    if (my_mesh->nodes.length() > 0)
     {
-        // bounding box culling, use extension(...) to add brush effect into extension.
+        // bounding box culling, use extension(...) to add brush effect
+	// into extension.
         Allocation::Info info;
         Lease_var<RegionImpl> region(Provider<RegionImpl>::provide());
         extension(info, Region_var(region->_this()));
@@ -134,68 +140,68 @@ void Berlin::PrimitiveKit::PrimitiveImpl::draw(DrawTraversal_ptr traversal)
             DrawingKit3D_var d3d = DrawingKit3D::_narrow(drawing);
             if (CORBA::is_nil(d3d))
             {
-                if (_error == false)
-                    std::cerr << "No DrawingKit3D interface found." << std::endl
-                              << "Consider passing \"-d GLDrawingKit\" to Berlin."
+                if (my_error == false)
+                    std::cerr << "No DrawingKit3D interface found."
+			      << std::endl
+                              << "Consider passing \"-d GLDrawingKit\" to "
+			      << "Berlin."
                               << std::endl;
-                _error = true;
+                my_error = true;
                 return;
             }
             d3d->save();
-            d3d->draw_mesh(_mesh);
+            d3d->draw_mesh(my_mesh);
             d3d->restore();
         }
     }
 }
 
-/*
- * Picking just does a bounding box test for now.
- */
-
+// Picking just does a bounding box test for now.
 void Berlin::PrimitiveKit::PrimitiveImpl::pick(PickTraversal_ptr traversal)
 {
     TransformPrimitive::pick(traversal);
     return;
-    if (_ext->valid)
+    if (my_ext->valid)
     {
-        if (traversal->intersects_region(Region_var(_ext->_this())))
+        if (traversal->intersects_region(Region_var(my_ext->_this())))
         { }
         traversal->hit();
     }
 }
 
-/*
- * Reset the primitive's list of vertices
- */
-
+// Reset the primitive's list of vertices
 void Berlin::PrimitiveKit::PrimitiveImpl::resize()
 {
-    _ext->valid = false;
-    if (_mesh->nodes.length() > 0)
+    my_ext->valid = false;
+    if (my_mesh->nodes.length() > 0)
     {
-        _ext->valid = true;
-        _ext->lower = _mesh->nodes[0];
-        _ext->upper = _mesh->nodes[0];
-        CORBA::ULong n = _mesh->nodes.length();
+        my_ext->valid = true;
+        my_ext->lower = my_mesh->nodes[0];
+        my_ext->upper = my_mesh->nodes[0];
+        CORBA::ULong n = my_mesh->nodes.length();
         for (CORBA::ULong i = 1; i < n; ++i)
         {
-            _ext->lower.x = Math::min(_ext->lower.x, _mesh->nodes[i].x);
-            _ext->upper.x = Math::max(_ext->upper.x, _mesh->nodes[i].x);
-            _ext->lower.y = Math::min(_ext->lower.y, _mesh->nodes[i].y);
-            _ext->upper.y = Math::max(_ext->upper.y, _mesh->nodes[i].y);
-            _ext->lower.z = Math::min(_ext->lower.z, _mesh->nodes[i].z);
-            _ext->upper.z = Math::max(_ext->upper.z, _mesh->nodes[i].z);
+            my_ext->lower.x = Math::min(my_ext->lower.x,
+					my_mesh->nodes[i].x);
+            my_ext->upper.x = Math::max(my_ext->upper.x,
+					my_mesh->nodes[i].x);
+            my_ext->lower.y = Math::min(my_ext->lower.y,
+					my_mesh->nodes[i].y);
+            my_ext->upper.y = Math::max(my_ext->upper.y,
+					my_mesh->nodes[i].y);
+            my_ext->lower.z = Math::min(my_ext->lower.z,
+					my_mesh->nodes[i].z);
+            my_ext->upper.z = Math::max(my_ext->upper.z,
+					my_mesh->nodes[i].z);
         }
     }
 }
 
 void Berlin::PrimitiveKit::PrimitiveImpl::reset()
-{
-    _ext->valid = false;
-}
+{ my_ext->valid = false; }
 
 void Berlin::PrimitiveKit::PrimitiveImpl::copy(const PrimitiveImpl &p)
 {
     TransformPrimitive::copy(p);
-    _mesh = new Fresco::Mesh(p._mesh);
+    my_mesh = new Fresco::Mesh(p.my_mesh);
 }

@@ -29,71 +29,63 @@
 
 using namespace Prague;
 using namespace Fresco;
-
 using namespace Berlin::UnidrawKit;
 
 UnidrawKitImpl::UnidrawKitImpl(const std::string &id,
 			       const Fresco::Kit::PropertySeq &p,
-			       ServerContextImpl *c)
-  : KitImpl(id, p, c)
+			       ServerContextImpl *c) :
+    KitImpl(id, p, c)
 { }
 
-UnidrawKitImpl::~UnidrawKitImpl()
-{ }
+UnidrawKitImpl::~UnidrawKitImpl() { }
 
 void UnidrawKitImpl::bind(ServerContext_ptr context)
 {
-  Trace trace("UnidrawKitImpl::bind");
-  KitImpl::bind(context);
-  Fresco::Kit::PropertySeq props;
-  props.length(0);
-  _figures = resolve_kit<FigureKit>(context,
-				    "IDL:fresco.org/Fresco/FigureKit:1.0",
-				    props);
-  _tools   = resolve_kit<ToolKit>(context,
-				  "IDL:fresco.org/Fresco/ToolKit:1.0",
-				  props);
-  _widgets = resolve_kit<WidgetKit>(context,
-				    "IDL:fresco.org/Fresco/WidgetKit:1.0",
-				    props);
+    Trace trace("UnidrawKitImpl::bind");
+    KitImpl::bind(context);
+    Fresco::Kit::PropertySeq props;
+    props.length(0);
+    my_figures =
+	resolve_kit<FigureKit>(context,
+			       "IDL:fresco.org/Fresco/FigureKit:1.0",
+			       props);
+    my_tools
+	= resolve_kit<ToolKit>(context,
+			       "IDL:fresco.org/Fresco/ToolKit:1.0",
+			       props);
+    my_widgets =
+	resolve_kit<WidgetKit>(context,
+			       "IDL:fresco.org/Fresco/WidgetKit:1.0",
+			       props);
 }
 
 Unidraw::Tool_ptr UnidrawKitImpl::select_tool()
 {
-  Graphic_var box = _figures->rectangle(0., 0., 1., 1.);
-  return create<Unidraw::Tool>(new SelectTool(box));
+    Graphic_var box = my_figures->rectangle(0., 0., 1., 1.);
+    return create<Unidraw::Tool>(new SelectTool(box));
 }
 
 Unidraw::Editor_ptr UnidrawKitImpl::create_editor()
-{
-  return create<Unidraw::Editor>(new EditorImpl(this));
-}
+{ return create<Unidraw::Editor>(new EditorImpl(this)); }
 
-Unidraw::View_ptr UnidrawKitImpl::create_view(Graphic_ptr g, Unidraw::Model_ptr m)
+Unidraw::View_ptr UnidrawKitImpl::create_view(Graphic_ptr g,
+					      Unidraw::Model_ptr m)
 {
-  return create_and_set_body<Unidraw::View>(new UViewImpl(m), g,
-					    "UnidrawKit/create_view");
+    return create_and_set_body<Unidraw::View>(new UViewImpl(m), g,
+					      "UnidrawKit/create_view");
 }
 
 Fresco::FigureKit_ptr UnidrawKitImpl::figures()
-{
-    return RefCount_var<Fresco::FigureKit>::increment(_figures);
-}
+{ return RefCount_var<Fresco::FigureKit>::increment(my_figures); }
 
 Fresco::ToolKit_ptr UnidrawKitImpl::tools()
-{
-    return RefCount_var<Fresco::ToolKit>::increment(_tools);
-}
+{ return RefCount_var<Fresco::ToolKit>::increment(my_tools); }
 
 Fresco::WidgetKit_ptr UnidrawKitImpl::widgets()
+{ return RefCount_var<Fresco::WidgetKit>::increment(my_widgets); }
+
+extern "C" Berlin::KitImpl *load()
 {
-    return RefCount_var<Fresco::WidgetKit>::increment(_widgets);
-}
-
-
-
-extern "C" KitImpl *load()
-{
-  static std::string properties[] = {"implementation", "UnidrawKitImpl"};
-  return create_prototype<UnidrawKitImpl>("IDL:fresco.org/Unidraw/UnidrawKit:1.0", properties, 2);
+    static std::string properties[] = {"implementation", "UnidrawKitImpl"};
+    return Berlin::create_prototype<UnidrawKitImpl>("IDL:fresco.org/Unidraw/UnidrawKit:1.0", properties, 2);
 } 

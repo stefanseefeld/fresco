@@ -32,6 +32,7 @@
 
 using namespace Prague;
 using namespace Fresco;
+using namespace Berlin;
 
 DrawTraversalImpl::DrawTraversalImpl(Graphic_ptr g, Region_ptr r,
 				     Transform_ptr t, DrawingKit_ptr kit) :

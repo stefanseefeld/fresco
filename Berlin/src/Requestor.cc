@@ -22,18 +22,25 @@
 #include "Berlin/Requestor.hh"
 
 using namespace Fresco;
+using namespace Berlin;
 
-Requestor::Requestor(Alignment xalign, Alignment yalign, Coord xspan, Coord yspan)
+Requestor::Requestor(Alignment xalign, Alignment yalign,
+		     Coord xspan, Coord yspan)
 {
-  GraphicImpl::default_requisition(_requisition);
-  Fresco::Graphic::Requirement *rx = GraphicImpl::requirement(_requisition, xaxis);
-  Fresco::Graphic::Requirement *ry = GraphicImpl::requirement(_requisition, yaxis);
-  rx->align = xalign;
-  ry->align = yalign;
-  rx->natural = rx->maximum = rx->minimum = xspan;
-  ry->natural = ry->maximum = ry->minimum = yspan; 
+    GraphicImpl::default_requisition(my_requisition);
+    Fresco::Graphic::Requirement *rx =
+	GraphicImpl::requirement(my_requisition, xaxis);
+    Fresco::Graphic::Requirement *ry =
+	GraphicImpl::requirement(my_requisition, yaxis);
+    rx->align = xalign;
+    ry->align = yalign;
+    rx->natural = rx->maximum = rx->minimum = xspan;
+    ry->natural = ry->maximum = ry->minimum = yspan; 
 }
 
-Requestor::Requestor(const Fresco::Graphic::Requisition &r) : _requisition(r) {}
-Requestor::~Requestor() {}
-void Requestor::request(Fresco::Graphic::Requisition &r) { r = _requisition;}
+Requestor::Requestor(const Fresco::Graphic::Requisition &r) :
+    my_requisition(r)
+{ }
+Requestor::~Requestor() { }
+void Requestor::request(Fresco::Graphic::Requisition &r)
+{ r = my_requisition; }

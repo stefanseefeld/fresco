@@ -26,28 +26,32 @@
 #include <Fresco/Region.hh>
 #include <Fresco/Focus.hh>
 #include <Berlin/DefaultPOA.hh>
-#include <vector>
-#include <stack>
 
-class FocusImpl : public virtual POA_Fresco::Focus,
-                  public virtual PortableServer::RefCountServantBase,
-                  private DefaultPOA
+namespace Berlin
 {
-  friend class EventManager;
-public:
-  FocusImpl(Fresco::Input::Device device) : _device(device) {}
-  virtual ~FocusImpl() {}
-  virtual Fresco::Input::Device device() { return _device;}
 
-  virtual bool request(Fresco::Controller_ptr) = 0;
-  virtual void restore(Fresco::Region_ptr) = 0;
-  virtual void damage(Fresco::Region_ptr) = 0;
-  virtual void dispatch(Fresco::Input::Event &) = 0;
-  PortableServer::POA_ptr _default_POA() { return DefaultPOA::_default_POA();}
-protected:
-  virtual void activate_composite() {}
-private:
-  const Fresco::Input::Device _device;
-};
+  class FocusImpl : public virtual POA_Fresco::Focus,
+		    public virtual PortableServer::RefCountServantBase,
+		    private DefaultPOA
+  {
+      friend class EventManager;
+    public:
+      FocusImpl(Fresco::Input::Device device) : my_device(device) { }
+      virtual ~FocusImpl() { }
+      virtual Fresco::Input::Device device() { return my_device; }
+      
+      virtual bool request(Fresco::Controller_ptr) = 0;
+      virtual void restore(Fresco::Region_ptr) = 0;
+      virtual void damage(Fresco::Region_ptr) = 0;
+      virtual void dispatch(Fresco::Input::Event &) = 0;
+      PortableServer::POA_ptr _default_POA()
+      { return DefaultPOA::_default_POA(); }
+    protected:
+      virtual void activate_composite() { }
+    private:
+      const Fresco::Input::Device my_device;
+  };
+
+} // namespace
 
 #endif

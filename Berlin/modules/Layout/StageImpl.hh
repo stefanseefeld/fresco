@@ -19,8 +19,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _StageImpl_hh
-#define _StageImpl_hh
+#ifndef _LayoutKit_StageImpl_hh
+#define _LayoutKit_StageImpl_hh
 
 #include <Prague/Sys/Thread.hh>
 #include <Fresco/config.hh>
@@ -83,22 +83,22 @@ namespace Berlin
       private:
         //. Return a new unique tag in the scope of this parent
         Fresco::Tag unique_tag();
-        //. Return a handle to the child of the Stage that has the given tag.
-        //. It returns 0 if no child has the given tag.
+        //. Return a handle to the child of the Stage that has the given
+	//. tag. It returns 0 if no child has the given tag.
         StageHandleImpl *tag_to_handle(Fresco::Tag);
         //. Mark the region occupied by the given StageHandle as damaged.
-        //. This is done by either merging that region with the one allready
+        //. This is done by either merging that region with the one already
         //. damaged or by creating a new onw
         void damage(StageHandleImpl *);
 
-        Sequence            *_children;
-        QuadTree            *_tree;
-        long                 _nesting;
-        Impl_var<RegionImpl> _damage;
-        Impl_var<RegionImpl> _bbregion;
-        bool                 _need_redraw : 1;
-        bool                 _need_resize : 1;
-        Prague::Mutex        _mutex;
+        Sequence            *my_children;
+        QuadTree            *my_tree;
+        long                 my_nesting;
+        Impl_var<RegionImpl> my_damage;
+        Impl_var<RegionImpl> my_bbregion;
+        bool                 my_need_redraw : 1;
+        bool                 my_need_resize : 1;
+        Prague::Mutex        my_mutex;
     };
 
     class StageHandleImpl : public virtual POA_Layout::StageHandle
@@ -120,30 +120,33 @@ namespace Berlin
         const Geometry::Rectangle<Fresco::Coord> &bbox();
         void bbox(RegionImpl &);
       // private:
-        //. Calculate the bounding box of the graphic in this StageHandle and
-        //. stores the result in _bbox.
+	// FIXME: These variables should be private!
+
+        //. Calculate the bounding box of the graphic in this StageHandle
+	//. and stores the result in _bbox.
         void cache_bbox();
         //. The stage this StageHandle belongs into.
-        StageImpl                         *_parent;
+        StageImpl                         *my_parent;
         //. The graphic forming this StageHandle.
-        Fresco::Graphic_var                _child;
-        //. This tag is unique for the parent-Stage and identifies this StageHandle.
-        Fresco::Tag                        _tag;
+        Fresco::Graphic_var                my_child;
+        //. This tag is unique for the parent-Stage and identifies this
+	//. StageHandle.
+        Fresco::Tag                        my_tag;
         //. The position of the graphic forming this StageHandle.
-        Fresco::Vertex                     _position;
+        Fresco::Vertex                     my_position;
         //. The size of the graphic forming this StageHandle
-        Fresco::Vertex                     _size;
-        //. The layer this StageHandle has.
-        Layout::Stage::Index               _layer;
-        //. The bounding box of the graphic of this StageHandle as calculated
-        //. by cache_bbox().
-        Geometry::Rectangle<Fresco::Coord> _bbox;
+        Fresco::Vertex                     my_size;
+        //. The bounding box of the graphic of this StageHandle as
+	//. calculated by cache_bbox().
+        Geometry::Rectangle<Fresco::Coord> my_bbox;
         //. The alignment along the x-axis.
-        Fresco::Alignment                  _xalign;
+        Fresco::Alignment                  my_xalign;
         //. The alignment along the y-axis.
-        Fresco::Alignment                  _yalign;
+        Fresco::Alignment                  my_yalign;
         //. A mutex for thread safety.
-        Prague::Mutex                      _mutex;
+        Prague::Mutex                      my_mutex;
+	//. The layer this StageHandle has.
+        Layout::Stage::Index               my_layer;
     };
 
   } // namespace

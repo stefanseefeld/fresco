@@ -27,43 +27,42 @@ using namespace Fresco;
 
 Berlin::CommandKit::TelltaleImpl::TelltaleImpl(TelltaleConstraint_ptr c,
                                                CORBA::ULong m) :
-  _mask(m),
-  _constraint(c)
+    my_mask(m),
+    my_constraint(c)
 { }
 
-Berlin::CommandKit::TelltaleImpl::~TelltaleImpl()
-{ }
+Berlin::CommandKit::TelltaleImpl::~TelltaleImpl() { }
 
 void Berlin::CommandKit::TelltaleImpl::set(Fresco::Telltale::Mask m)
 {
     Trace trace("TelltaleImpl::set");
-    if (!CORBA::is_nil(_constraint))
-        _constraint->trymodify(Telltale_var(_this()), m, true);
+    if (!CORBA::is_nil(my_constraint))
+        my_constraint->trymodify(Telltale_var(_this()), m, true);
     else modify(m, true);
 }
 
 void Berlin::CommandKit::TelltaleImpl::clear(Fresco::Telltale::Mask m)
 {
     Trace trace("TelltaleImpl::clear");
-    if (!CORBA::is_nil(_constraint))
-        _constraint->trymodify(Telltale_var(_this()), m, false);
+    if (!CORBA::is_nil(my_constraint))
+        my_constraint->trymodify(Telltale_var(_this()), m, false);
     else modify(m, false);
 }
 
 CORBA::Boolean Berlin::CommandKit::TelltaleImpl::test(Fresco::Telltale::Mask m)
 {
-    Prague::Guard<Mutex> guard(_mutex);
-    return (_mask & m) == m;
+    Prague::Guard<Mutex> guard(my_mutex);
+    return (my_mask & m) == m;
 }
 
 void Berlin::CommandKit::TelltaleImpl::modify(Fresco::Telltale::Mask m,
                                               CORBA::Boolean on)
 {
-    CORBA::ULong nf = on ? _mask | m : _mask & ~m;
+    CORBA::ULong nf = on ? my_mask | m : my_mask & ~m;
     {
-        Prague::Guard<Mutex> guard(_mutex);
-        if (nf == _mask) return;
-        else _mask = nf;
+        Prague::Guard<Mutex> guard(my_mutex);
+        if (nf == my_mask) return;
+        else my_mask = nf;
     }
     CORBA::Any any;
     any <<= nf;
@@ -72,85 +71,95 @@ void Berlin::CommandKit::TelltaleImpl::modify(Fresco::Telltale::Mask m,
 
 void Berlin::CommandKit::TelltaleImpl::constraint(TelltaleConstraint_ptr constraint)
 {
-    Prague::Guard<Mutex> guard(_mutex);
-    _constraint = constraint;
+    Prague::Guard<Mutex> guard(my_mutex);
+    my_constraint = constraint;
 }
 
 
 TelltaleConstraint_ptr Berlin::CommandKit::TelltaleImpl::constraint()
 {
-    Prague::Guard<Mutex> guard(_mutex);
-    return TelltaleConstraint::_duplicate(_constraint);
+    Prague::Guard<Mutex> guard(my_mutex);
+    return TelltaleConstraint::_duplicate(my_constraint);
 }
 
 void Berlin::CommandKit::TelltaleConstraintImpl::add(Telltale_ptr t)
 {
-    Prague::Guard<Mutex> guard(_mutex);
-    _telltales.push_back(Telltale::_duplicate(t));
+    Prague::Guard<Mutex> guard(my_mutex);
+    my_telltales.push_back(Telltale::_duplicate(t));
     t->constraint(TelltaleConstraint_var(_this()));
 }
 
 void Berlin::CommandKit::TelltaleConstraintImpl::remove(Telltale_ptr t)
 {
-    Prague::Guard<Mutex> guard(_mutex);
-    for (tlist_t::iterator i = _telltales.begin(); i != _telltales.end(); ++i)
+    Prague::Guard<Mutex> guard(my_mutex);
+    for (tlist_t::iterator i = my_telltales.begin();
+	 i != my_telltales.end();
+	 ++i)
         if ((*i) == t)
         {
-            _telltales.erase(i);
+            my_telltales.erase(i);
             break;
         }
 }
 
 Berlin::CommandKit::ExclusiveChoice::ExclusiveChoice(Fresco::Telltale::Mask m) :
-  _mask(m)
+    my_mask(m)
 { }
 
 void Berlin::CommandKit::ExclusiveChoice::trymodify(Telltale_ptr t,
                                                     Fresco::Telltale::Mask m,
                                                     CORBA::Boolean b)
 {
-    Prague::Guard<Mutex> guard(_mutex);
+    Prague::Guard<Mutex> guard(my_mutex);
     if (b)
-        for (tlist_t::iterator i = _telltales.begin(); i != _telltales.end(); ++i)
+        for (tlist_t::iterator i = my_telltales.begin();
+	     i != my_telltales.end();
+	     ++i)
             if ((*i)->test(m)) (*i)->modify(m, false);
-            t->modify(m, b);
+    t->modify(m, b);
 }
 
 Berlin::CommandKit::SelectionRequired::SelectionRequired(Fresco::Telltale::Mask m) :
-  _mask(m)
+    my_mask(m)
 { }
 
 void Berlin::CommandKit::SelectionRequired::trymodify(Telltale_ptr t,
                                                       Fresco::Telltale::Mask m,
                                                       CORBA::Boolean b)
 {
-    Prague::Guard<Mutex> guard(_mutex);
+    Prague::Guard<Mutex> guard(my_mutex);
     size_t selected = 0;
     if (!b)
-        for (tlist_t::iterator i = _telltales.begin(); i != _telltales.end(); ++i)
+        for (tlist_t::iterator i = my_telltales.begin();
+	     i != my_telltales.end();
+	     ++i)
             if ((*i)->test(m)) selected++;
     if (b || selected > 1) t->modify(m, b);
 }
 
 Berlin::CommandKit::ExclusiveRequired::ExclusiveRequired(Fresco::Telltale::Mask m) :
-  _mask(m)
+    my_mask(m)
 { }
 
 void Berlin::CommandKit::ExclusiveRequired::trymodify(Telltale_ptr t,
                                                       Fresco::Telltale::Mask m,
                                                       CORBA::Boolean b)
 {
-    Prague::Guard<Mutex> guard(_mutex);
+    Prague::Guard<Mutex> guard(my_mutex);
     if (b)
     {
-        for (tlist_t::iterator i = _telltales.begin(); i != _telltales.end(); ++i)
+        for (tlist_t::iterator i = my_telltales.begin();
+	     i != my_telltales.end();
+	     ++i)
             if ((*i)->test(m)) (*i)->modify(m, false);
         t->modify(m, true);
     }
     else
     {
         size_t selected = 0;
-        for (tlist_t::iterator i = _telltales.begin(); i != _telltales.end(); ++i)
+        for (tlist_t::iterator i = my_telltales.begin();
+	     i != my_telltales.end();
+	     ++i)
             if ((*i)->test(m)) selected++;
         if (selected > 1) t->modify(m, false);
     }

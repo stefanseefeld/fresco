@@ -19,38 +19,46 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Diamond_hh
-#define _Diamond_hh
+#ifndef _ToolKit_Diamond_hh
+#define _ToolKit_Diamond_hh
 
 #include <Fresco/config.hh>
 #include <Fresco/ToolKit.hh>
 #include "Frame.hh"
 
-namespace Berlin {
-namespace ToolKit {
-
-class InvisibleDiamond : public Frame::Renderer
+namespace Berlin
 {
-public:
-  InvisibleDiamond(Fresco::Coord t, bool f) : Frame::Renderer(t, f) {}
-  virtual void draw(Fresco::DrawTraversal_ptr);
-};
+  namespace ToolKit
+  {
 
-class BeveledDiamond : public Bevel
-{
-public:
-  BeveledDiamond(Fresco::Coord t, type s, Fresco::Coord b, bool f) : Bevel(t, s, b, f) {}
-  virtual void draw(Fresco::DrawTraversal_ptr);
-};
+    class InvisibleDiamond : public Frame::Renderer
+    {
+      public:
+	InvisibleDiamond(Fresco::Coord t, bool f) :
+	    Frame::Renderer(t, f)
+	{ }
+	virtual void draw(Fresco::DrawTraversal_ptr);
+    };
 
-class ColoredDiamond : public ColoredFrame
-{
-public:
-  ColoredDiamond(Fresco::Coord t, const Fresco::Color &c, bool f) : ColoredFrame(t, c, f) {}
-  virtual void draw(Fresco::DrawTraversal_ptr);
-};
+    class BeveledDiamond : public Bevel
+    {
+      public:
+	BeveledDiamond(Fresco::Coord t, type s, Fresco::Coord b, bool f) :
+	    Bevel(t, s, b, f)
+	{ }
+	virtual void draw(Fresco::DrawTraversal_ptr);
+    };
 
-} // namespace
+    class ColoredDiamond : public ColoredFrame
+    {
+      public:
+	ColoredDiamond(Fresco::Coord t, const Fresco::Color &c, bool f) :
+	    ColoredFrame(t, c, f)
+        { }
+	virtual void draw(Fresco::DrawTraversal_ptr);
+    };
+    
+  } // namespace
 } // namespace
 
 #endif

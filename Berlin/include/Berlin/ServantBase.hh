@@ -28,32 +28,37 @@
 #include <Berlin/DefaultPOA.hh>
 #include <cassert>
 
-class ServantBase : virtual public PortableServer::ServantBase,
-		    private DefaultPOA
+namespace Berlin
 {
-  friend class KitImpl;
-  friend class IdentifiableImpl;
-public:
-  ServantBase();
-  ServantBase(const ServantBase &);
-  virtual ~ServantBase();
-  ServantBase &operator = (const ServantBase &);
-  virtual PortableServer::POA_ptr _default_POA();
-  virtual void _add_ref();
-  virtual void _remove_ref();
-  virtual void deactivate();
-protected:
-  static void deactivate(ServantBase *);
-  //.in case this object serves as a factory,
-  //.this method allows to activate the manufactored objects
-  //.with the same POA this object is registered with
-  void activate(ServantBase *);
-  //.if the servant is a composite, it needs to implement this method
-  //.to activate the child servants
-  virtual void activate_composite() {}
-private:
-  int                            _refcount;
-  PortableServer::POA_var        _poa;
+
+  class ServantBase : virtual public PortableServer::ServantBase,
+		      private DefaultPOA
+  {
+      friend class KitImpl;
+      friend class IdentifiableImpl;
+    public:
+      ServantBase();
+      ServantBase(const ServantBase &);
+      virtual ~ServantBase();
+      ServantBase &operator = (const ServantBase &);
+      virtual PortableServer::POA_ptr _default_POA();
+      virtual void _add_ref();
+      virtual void _remove_ref();
+      virtual void deactivate();
+    protected:
+      static void deactivate(ServantBase *);
+      //. In case this object serves as a factory,
+      //. this method allows to activate the manufactored objects
+      //. with the same POA this object is registered with
+      void activate(ServantBase *);
+      //. If the servant is a composite, it needs to implement this method
+      //. to activate the child servants
+      virtual void activate_composite() { }
+    private:
+      int                     my_refcount;
+      PortableServer::POA_var my_poa;
 };
+
+} // namespace
 
 #endif

@@ -19,24 +19,28 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Strut_hh
-#define _Strut_hh
+#ifndef _TextKit_Strut_hh
+#define _TextKit_Strut_hh
 
 #include <Berlin/GraphicImpl.hh>
 
-namespace Berlin {
-namespace TextKit {
-
-class Strut : public GraphicImpl
+namespace Berlin
 {
-public:
-  Strut(const Fresco::Graphic::Requisition &r) : requisition(r) {}
-  virtual void request(Fresco::Graphic::Requisition &r) { r = requisition;}
-private:
-  Fresco::Graphic::Requisition requisition;
-};
+  namespace TextKit
+  {
 
-} // namespace
+    class Strut : public GraphicImpl
+    {
+      public:
+	Strut(const Fresco::Graphic::Requisition &r) : my_requisition(r)
+	{ }
+	virtual void request(Fresco::Graphic::Requisition &r)
+	{ r = my_requisition;}
+      private:
+	Fresco::Graphic::Requisition my_requisition;
+    };
+
+  } // namespace
 } // namespace
 
 #endif

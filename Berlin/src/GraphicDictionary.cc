@@ -184,7 +184,7 @@ Berlin::GraphicDictionary::name(const Fresco::Graphic_ptr g) const
     return result;
 }
 
-const GraphicImpl * const
+const Berlin::GraphicImpl * const
 Berlin::GraphicDictionary::implementation(const Fresco::Graphic_ptr g) const
 {
     Prague::Guard<Prague::Mutex> guard(my_mutex);

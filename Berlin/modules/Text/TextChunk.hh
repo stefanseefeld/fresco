@@ -20,43 +20,47 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _TextChunk_hh
-#define _TextChunk_hh
+#ifndef _TextKit_TextChunk_hh
+#define _TextKit_TextChunk_hh
 
 #include <Fresco/config.hh>
 #include <Fresco/Unicode.hh>
 #include <Berlin/GraphicImpl.hh>
 
-namespace Berlin {
-namespace TextKit {
-
-//. A text chunk is constructed with a "canonical size", which is essentially its
-//. requisition within the font it was constructed for, on the drawable it was
-//. intended to be drawn on. This might not actually be the font it winds up
-//. drawing with, nor the drawable it winds up using, but that's for its
-//. container to compensate for. At this level, all the chunk needs to do is
-//. store and request how big it *thinks* it should be, and ignore how large it
-//. winds up being at draw-time.
-class TextChunk : public virtual GraphicImpl
+namespace Berlin
 {
-public:
-  TextChunk(const Fresco::Unichar ch, const Fresco::Graphic::Requisition &);
-  virtual ~TextChunk();
+  namespace TextKit
+  {
 
-  virtual void draw(Fresco::DrawTraversal_ptr);
-  virtual void request(Fresco::Graphic::Requisition &);
+    //. A text chunk is constructed with a "canonical size", which is
+    //. essentially its requisition within the font it was constructed for,
+    //. on the drawable it was intended to be drawn on. This might not
+    //. actually be the font it winds up drawing with, nor the drawable it
+    // winds up using, but that's for its container to compensate for. At
+    // this level, all the chunk needs to do is store and request how big
+    // it *thinks* it should be, and ignore how large it winds up being at
+    //. draw-time.
+    class TextChunk : public virtual GraphicImpl
+    {
+      public:
+	TextChunk(const Fresco::Unichar ch,
+		  const Fresco::Graphic::Requisition &);
+	virtual ~TextChunk();
+	
+	virtual void draw(Fresco::DrawTraversal_ptr);
+	virtual void request(Fresco::Graphic::Requisition &);
   
-  virtual const char *object_name();
-  void get_text(Babylon::String &); 
-  unsigned long get_length();
-protected:
-  Fresco::Coord     _width, _height;
-  Fresco::Alignment _xalign, _yalign;
-  Fresco::Unichar   _char;
-  const char       *_obj_name;
-};
+	virtual const char *object_name();
+	void get_text(Babylon::String &); 
+	unsigned long get_length();
+      protected:
+	Fresco::Coord     my_width, my_height;
+	Fresco::Alignment my_xalign, my_yalign;
+	Fresco::Unichar   my_char;
+	const char       *my_obj_name;
+    };
 
-} // namespace
+  } // namespace
 } // namespace
 
 #endif

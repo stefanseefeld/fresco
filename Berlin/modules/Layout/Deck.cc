@@ -29,40 +29,49 @@ using namespace Fresco;
 
 using namespace Berlin::LayoutKit;
 
-Deck::Deck() : _requested(false) {}
-Deck::~Deck() {}
+Deck::Deck() : my_requested(false) { }
+Deck::~Deck() { }
 
 void Deck::request(Fresco::Graphic::Requisition &r)
 {
-  if (!_requested)
+    if (!my_requested)
     {
-      GraphicImpl::init_requisition(_requisition);
-      long n = _children.size();
-      if (n > 0)
+	GraphicImpl::init_requisition(my_requisition);
+	long n = my_children.size();
+	if (n > 0)
 	{
-	  Fresco::Graphic::Requisition *r = children_requests();
-	  LayoutAlign x(xaxis);
-	  x.request(n, r, _requisition);
-	  LayoutAlign y(yaxis);
-	  y.request(n, r, _requisition);
-	  _pool.deallocate(r);
+	    Fresco::Graphic::Requisition *r = children_requests();
+	    LayoutAlign x(xaxis);
+	    x.request(n, r, my_requisition);
+	    LayoutAlign y(yaxis);
+	    y.request(n, r, my_requisition);
+	    my_pool.deallocate(r);
 	}
-      _requested = true;
+	my_requested = true;
     }
-  r = _requisition;
+    r = my_requisition;
 }
 
 void Deck::extension(const Allocation::Info &a, Region_ptr r)
 {
-  if (size_t n = _children.size()) _children[n - 1].peer->extension(a, r);
+    if (size_t n = my_children.size())
+	my_children[n - 1].peer->extension(a, r);
 }
 
 void Deck::traverse(Traversal_ptr t)
 {
-  size_t n = _children.size ();
-  if (n == 0) return;
-  try { t->traverse_child (_children [n-1].peer, _children [n-1].localId, Region::_nil(), Transform::_nil());}
-  catch (const CORBA::OBJECT_NOT_EXIST &) { _children [n-1].peer = Fresco::Graphic::_nil();}
-  catch (const CORBA::COMM_FAILURE &) { _children [n-1].peer = Fresco::Graphic::_nil();}
-  catch (const CORBA::TRANSIENT &) { _children [n-1].peer = Fresco::Graphic::_nil();}
+    size_t n = my_children.size ();
+    if (n == 0) return;
+    try
+    {
+	t->traverse_child(my_children [n-1].peer,
+			  my_children [n-1].localId, Region::_nil(),
+			  Transform::_nil());
+    }
+    catch (const CORBA::OBJECT_NOT_EXIST &)
+    { my_children[n-1].peer = Fresco::Graphic::_nil(); }
+    catch (const CORBA::COMM_FAILURE &)
+    { my_children[n-1].peer = Fresco::Graphic::_nil(); }
+    catch (const CORBA::TRANSIENT &)
+    { my_children[n-1].peer = Fresco::Graphic::_nil(); }
 }

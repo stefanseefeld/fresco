@@ -30,16 +30,17 @@
 
 using namespace Prague;
 using namespace Fresco;
+using namespace Berlin;
 
 namespace
 {
   Mutex mutex;
-};
+}
 
 KitImpl::KitImpl(const std::string &id,
 		 const Fresco::Kit::PropertySeq &p,
-		 ServerContextImpl *c)
-  : my_repo_id(id),
+		 ServerContextImpl *c) :
+    my_repo_id(id),
     my_props(new Fresco::Kit::PropertySeq(p)),
     my_refcount(1),
     my_context(c)
@@ -97,7 +98,7 @@ void KitImpl::activate(::ServantBase *servant)
       << std::endl;
 #endif
   PortableServer::ObjectId *oid = my_poa->activate_object(servant);
-  servant->_poa = PortableServer::POA::_duplicate(my_poa);
+  servant->my_poa = PortableServer::POA::_duplicate(my_poa);
   servant->_remove_ref();
   delete oid;
   servant->activate_composite();

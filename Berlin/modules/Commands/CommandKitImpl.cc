@@ -51,35 +51,35 @@ namespace Berlin
     {
       public:
         DebugCommand(Command_ptr c, std::ostream &os, const char *t) :
-          _command(Fresco::Command::_duplicate(c)), _os(os), _text(t) { }
+          my_command(Fresco::Command::_duplicate(c)), my_os(os), my_text(t) { }
         virtual void execute(const CORBA::Any &any)
         {
-            _os << _text << " : entering execute" << std::endl;
-            _command->execute(any);
-            _os << _text << " : leaving execute" << std::endl;
+            my_os << my_text << " : entering execute" << std::endl;
+            my_command->execute(any);
+            my_os << my_text << " : leaving execute" << std::endl;
         }
       private:
-        Command_var   _command;
-        std::ostream &_os;
-        std::string   _text;
+        Command_var   my_command;
+        std::ostream &my_os;
+        std::string   my_text;
     };
 
     class LogCommand : public CommandImpl
     {
       public:
-        LogCommand(std::ostream &os, const char *text) : _os(os), _text(text) {}
-        virtual void execute(const CORBA::Any &) { _os << _text << std::endl;}
+        LogCommand(std::ostream &os, const char *text) : my_os(os), my_text(text) {}
+        virtual void execute(const CORBA::Any &) { my_os << my_text << std::endl;}
       private:
-        std::ostream &_os;
-        std::string   _text;
+        std::ostream &my_os;
+        std::string   my_text;
     };
 
     class PrintCommand : public CommandImpl
     {
       public:
         PrintCommand(Graphic_ptr graphic, ServerContext_ptr server) :
-          _graphic(Graphic::_duplicate(graphic)),
-          _server(ServerContext::_duplicate(server))
+          my_graphic(Graphic::_duplicate(graphic)),
+          my_server(ServerContext::_duplicate(server))
         { }
         virtual void execute(const CORBA::Any &)
         {
@@ -88,10 +88,10 @@ namespace Berlin
             props[0].name = CORBA::string_dup("implementation");
             props[0].value = CORBA::string_dup("PSDrawingKit");
             RefCount_var<DrawingKit> print =
-              resolve_kit<DrawingKit>(_server, "IDL:fresco.org/Fresco/DrawingKit:1.0", props);
+              resolve_kit<DrawingKit>(my_server, "IDL:fresco.org/Fresco/DrawingKit:1.0", props);
             Fresco::Graphic::Requisition r;
             GraphicImpl::init_requisition(r);
-            _graphic->request(r);
+            my_graphic->request(r);
             Lease_var<RegionImpl> allocation(Provider<RegionImpl>::provide());
             allocation->valid = true;
             allocation->lower.x = allocation->lower.y = allocation->lower.z = 0;
@@ -103,11 +103,11 @@ namespace Berlin
             allocation->zalign = r.z.align;
 
             DrawTraversalImpl *traversal =
-              new DrawTraversalImpl(_graphic, allocation->_this(),
+              new DrawTraversalImpl(my_graphic, allocation->_this(),
                                     Transform::_nil(), print);
             print->start_traversal(Traversal_var(traversal->_this()));
             traversal->init();
-            try { _graphic->traverse(Traversal_var(traversal->_this())); }
+            try { my_graphic->traverse(Traversal_var(traversal->_this())); }
             catch (const CORBA::OBJECT_NOT_EXIST &)
             {
                 std::cerr << "PrintCommand: warning: corrupt scene graph!" << std::endl;
@@ -121,8 +121,8 @@ namespace Berlin
             print->finish_traversal();
         }
       private:
-        Graphic_var       _graphic;
-        ServerContext_var _server;
+        Graphic_var       my_graphic;
+        ServerContext_var my_server;
     };
 
     class MacroCommandImpl : public virtual POA_Fresco::MacroCommand, public CommandImpl
@@ -131,24 +131,24 @@ namespace Berlin
       public:
         virtual ~MacroCommandImpl()
         {
-            for (clist_t::iterator i = _commands.begin(); i != _commands.end(); ++i)
+            for (clist_t::iterator i = my_commands.begin(); i != my_commands.end(); ++i)
             (*i)->destroy();
         }
         virtual void append(Fresco::Command_ptr c)
         {
-            _commands.push_back(Fresco::Command::_duplicate(c));
+            my_commands.push_back(Fresco::Command::_duplicate(c));
         }
         virtual void prepend(Fresco::Command_ptr c)
         {
-            _commands.insert(_commands.begin(), Fresco::Command::_duplicate(c));
+            my_commands.insert(my_commands.begin(), Fresco::Command::_duplicate(c));
         }
         virtual void execute(const CORBA::Any &any)
         {
-            for (clist_t::iterator i = _commands.begin(); i != _commands.end(); ++i)
+            for (clist_t::iterator i = my_commands.begin(); i != my_commands.end(); ++i)
                 (*i)->execute(any);
         }
       private:
-        clist_t _commands;
+        clist_t my_commands;
     };
 
   } // namespace
@@ -164,7 +164,7 @@ Berlin::CommandKit::CommandKitImpl::~CommandKitImpl() { }
 
 void Berlin::CommandKit::CommandKitImpl::bind(ServerContext_ptr server)
 {
-    _server = ServerContext::_duplicate(server);
+    my_server = ServerContext::_duplicate(server);
 }
 
 Command_ptr Berlin::CommandKit::CommandKitImpl::debugger(Fresco::Command_ptr c, const char *text)
@@ -185,7 +185,7 @@ Command_ptr Berlin::CommandKit::CommandKitImpl::log(const char *text)
 
 Command_ptr Berlin::CommandKit::CommandKitImpl::print(Graphic_ptr graphic)
 {
-  PrintCommand *command = new PrintCommand(graphic, _server);
+  PrintCommand *command = new PrintCommand(graphic, my_server);
   activate(command);
   return command->_this();
 }
@@ -281,9 +281,9 @@ StreamBuffer_ptr Berlin::CommandKit::CommandKitImpl::stream(CORBA::Long b)
   return buffer->_this();
 }
 
-extern "C" KitImpl *load()
+extern "C" Berlin::KitImpl *load()
 {
   static std::string properties[] = {"implementation", "CommandKitImpl"};
-  return create_prototype<Berlin::CommandKit::CommandKitImpl>
+  return Berlin::create_prototype<Berlin::CommandKit::CommandKitImpl>
     ("IDL:fresco.org/Fresco/CommandKit:1.0", properties, 2);
 }

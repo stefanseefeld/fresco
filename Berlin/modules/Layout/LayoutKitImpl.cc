@@ -43,10 +43,12 @@ using namespace Berlin::LayoutKit;
 
 LayoutKitImpl::LayoutKitImpl(const std::string &id,
 			     const Fresco::Kit::PropertySeq &p,
-			     ServerContextImpl *c)
-    : KitImpl(id, p, c), my_fill(GraphicImpl::infinity) { }
+			     ServerContextImpl *c) :
+    KitImpl(id, p, c),
+    my_fill(GraphicImpl::infinity)
+{ }
 
-LayoutKitImpl::~LayoutKitImpl() {}
+LayoutKitImpl::~LayoutKitImpl() { }
 
 void LayoutKitImpl::fill(Coord c) { my_fill = c; }
 
@@ -54,42 +56,49 @@ Coord LayoutKitImpl::fill() { return my_fill; }
 
 Graphic_ptr LayoutKitImpl::clipper(Graphic_ptr g)
 {
+    // FIXME: NIY
     return Graphic::_nil();
     // return create<Clipper, Graphic_ptr> (new Clipper(g));
 }
 
-// Graphic_ptr LayoutKitImpl::create_backdrop() { return new Backdrop;}
-// AutoScroll_ptr LayoutKitImpl::create_auto_scroll(Adjustment_ptr x_adjustment, Adjustment_ptr y_adjustment)
+// Graphic_ptr LayoutKitImpl::create_backdrop() { return new Backdrop; }
+// AutoScroll_ptr
+// LayoutKitImpl::create_auto_scroll(Adjustment_ptr x_adjustment,
+//                                   Adjustment_ptr y_adjustment)
 // {
-//   return new AutoScrollImpl(x_adjustment, y_adjustment);
+//     return new AutoScrollImpl(x_adjustment, y_adjustment);
 // }
-// FullyVisibleConstraint_ptr LayoutKitImpl::create_fully_visible_constraint(Float usable, Float align)
+//
+// FullyVisibleConstraint_ptr
+// LayoutKitImpl::create_fully_visible_constraint(Float usable,
+//                                                Float align)
 // {
-//   return new FullyVisibleConstraintImpl(usable, align);
+//     return new FullyVisibleConstraintImpl(usable, align);
 // }
+//
 // Scrollable* LayoutKitImpl::scroll_box(Axis a)
 // {
-//   ScrollBox* b = nil;
-//   switch (a)
+//     ScrollBox* b = nil;
+//     switch (a)
 //     {
 //     case X_axis:
-//       // unimplemented
-//       break;
+// 	// unimplemented
+// 	break;
 //     case Y_axis:
-//       b = new TBScrollBox();
-//       break;
+// 	b = new TBScrollBox();
+// 	break;
 //     case Z_axis:
-//       // should raise an exception
-//       break;
+// 	// should raise an exception
+// 	break;
 //     }
-//   Scrollable* s = new Scrollable();
-//   if (is_not_nil(b))
+//     Scrollable* s = new Scrollable();
+//     if (is_not_nil(b))
 //     {
-//       s->glyph_ptr = b;
-//       s->adjustment_ptr = b->scroll_adjustment(Y_axis);
+// 	s->glyph_ptr = b;
+// 	s->adjustment_ptr = b->scroll_adjustment(Y_axis);
 //     }
-//   else fresco_fail("Layout kit can't create scroll box for given axis");
-//   return s;
+//     else fresco_fail("Layout kit can't create scroll box for given axis");
+//     return s;
 // }
 
 Viewport_ptr LayoutKitImpl::scrollable(Graphic_ptr g)
@@ -98,12 +107,13 @@ Viewport_ptr LayoutKitImpl::scrollable(Graphic_ptr g)
 					 "LayoutKit/scrollable");
 }
 
-// Layout::Splitter_ptr LayoutKitImpl::splitter(Graphic_ptr g, Graphic_ptr p, Axis a)
+// Layout::Splitter_ptr LayoutKitImpl::splitter(Graphic_ptr g,
+//                                              Graphic_ptr p, Axis a)
 // {
-//   SplitterImpl *sp = new SplitterImpl(a);
-//   activate(sp);
-//   sp->init(g, p);
-//   return sp->_this();
+//     SplitterImpl *sp = new SplitterImpl(a);
+//     activate(sp);
+//     sp->init(g, p);
+//     return sp->_this();
 // }
 
 Stage_ptr LayoutKitImpl::create_stage()
@@ -287,22 +297,29 @@ LayoutKitImpl::shape_of_xyz(Graphic_ptr gx, Graphic_ptr gy, Graphic_ptr gz)
 			   "LayoutKit/shape_of_xyz");
 }
 
-// Graphic_ptr LayoutKitImpl::strut(Font_ptr f, Coord natural, Coord stretch, Coord shrink)
+// Graphic_ptr LayoutKitImpl::strut(Font_ptr f, Coord natural,
+//                                  Coord stretch, Coord shrink)
 // {
-//   return new Strut(f, natural, stretch, shrink);
+//     return new Strut(f, natural, stretch, shrink);
 // }
 
-// Graphic_ptr LayoutKitImpl::hstrut(Coord right_bearing, Coord left_bearing, Coord natural, Coord stretch, Coord shrink)
+// Graphic_ptr LayoutKitImpl::hstrut(Coord right_bearing,
+//                                    Coord left_bearing,
+//                                    Coord natural, Coord stretch,
+//                                    Coord shrink)
 // {
 //   return new HStrut(right_bearing, left_bearing, natural, stretch, shrink);
 // }
 
-// Graphic_ptr LayoutKitImpl::vstrut(Coord ascent, Coord descent, Coord natural, Coord stretch, Coord shrink)
+// Graphic_ptr LayoutKitImpl::vstrut(Coord ascent, Coord descent,
+//                                   Coord natural, Coord stretch,
+//                                   Coord shrink)
 // {
 //   return new VStrut(ascent, descent, natural, stretch, shrink);
 // }
 
-// Graphic_ptr LayoutKitImpl::spaces(Long count, Coord each, Font_ptr f, Color_ptr c)
+// Graphic_ptr LayoutKitImpl::spaces(Long count, Coord each, Font_ptr f,
+//                                   Color_ptr c)
 // {
 //   return new Space(count, each, f, c);
 // }
@@ -316,7 +333,8 @@ Graphic_ptr LayoutKitImpl::align(Graphic_ptr g, Alignment x, Alignment y)
 					g, "LayoutKit/align");
 }
 
-Graphic_ptr LayoutKitImpl::align_axis(Graphic_ptr g, Axis a, Alignment align)
+Graphic_ptr LayoutKitImpl::align_axis(Graphic_ptr g, Axis a,
+				      Alignment align)
 {
     return create_and_set_body<Graphic>(new Placement(
 					    new LayoutCenter(a, align)), g,
@@ -581,8 +599,8 @@ LayoutKitImpl::tmargin_flexible(Graphic_ptr g,
 
 
 
-extern "C" KitImpl *load()
+extern "C" Berlin::KitImpl *load()
 {
   static std::string properties[] = {"implementation", "LayoutKitImpl"};
-  return create_prototype<LayoutKitImpl> ("IDL:fresco.org/Fresco/LayoutKit:1.0", properties, 2);
+  return Berlin::create_prototype<LayoutKitImpl> ("IDL:fresco.org/Fresco/LayoutKit:1.0", properties, 2);
 }

@@ -20,8 +20,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _TextBufferImpl_hh
-#define _TextBufferImpl_hh
+#ifndef _CommandKit_TextBufferImpl_hh
+#define _CommandKit_TextBufferImpl_hh
 
 #include <Prague/Sys/Thread.hh>
 #include <Fresco/config.hh>
@@ -53,8 +53,8 @@ namespace Berlin
         virtual void remove_forward(CORBA::ULong);
         virtual void clear();
       private:
-        GapBuffer<Fresco::Unichar, 32> _buffer;
-        Prague::Mutex _mutex;
+        GapBuffer<Fresco::Unichar, 32> my_buffer;
+        Prague::Mutex my_mutex;
     };
 
   } // namespace

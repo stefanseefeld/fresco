@@ -63,14 +63,15 @@ int main(int argc, char **argv)
 	return 0;
     }
 
-    RCManager::setup(getopt);
+    Berlin::RCManager::setup(getopt);
     
     std::string value;
     getopt.get("console",&value);
     try
     {
-	Console::open(value, argc, argv, PortableServer::POA::_nil(), 1, 1);}
-    
+	Berlin::Console::open(value, argc, argv,
+			      PortableServer::POA::_nil(), 1, 1);
+    }
     catch (const std::exception &e)
     {
 	std::cerr << "Exception: " << e.what() << std::endl;
@@ -80,6 +81,6 @@ int main(int argc, char **argv)
     {
 	std::cerr << "ERROR: *UNKNOWN* exception caught" << std::endl;
     }
-    Console::instance()->device_info(std::cout);
+    Berlin::Console::instance()->device_info(std::cout);
     return 0;
 }

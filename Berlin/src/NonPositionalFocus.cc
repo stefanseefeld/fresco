@@ -28,14 +28,15 @@
 
 using namespace Prague;
 using namespace Fresco;
+using namespace Berlin;
 
-NonPositionalFocus::NonPositionalFocus(Input::Device d, Controller_ptr root)
-  : FocusImpl(d)
-{
-  _controllers.push_back(Fresco::Controller::_duplicate(root));
-}
-NonPositionalFocus::~NonPositionalFocus() {}
-void NonPositionalFocus::activate_composite() { _controllers.back()->receive_focus(Focus_var(_this()));}
+NonPositionalFocus::NonPositionalFocus(Input::Device d, Controller_ptr root) :
+    FocusImpl(d)
+{ my_controllers.push_back(Fresco::Controller::_duplicate(root)); }
+
+NonPositionalFocus::~NonPositionalFocus() { }
+void NonPositionalFocus::activate_composite()
+{ my_controllers.back()->receive_focus(Focus_var(_this())); }
 void NonPositionalFocus::add_filter(Input::Filter_ptr)
 {
   // not implemented
@@ -43,51 +44,49 @@ void NonPositionalFocus::add_filter(Input::Filter_ptr)
 
 bool NonPositionalFocus::request(Controller_ptr c)
 {
-  Trace trace("NonPositionalFocus::request");
-  /*
-   * brute force method:
-   * construct stack of parent controllers and then
-   * call lose/receiveFocus as appropriate...
-   *
-   * a refinement will test in the neighborhood of
-   * the old controller holding the focus
-   *       -stefan
-   */
-  std::vector<Controller_var> tmp;
-  Controller_var p = Controller::_duplicate(c);
-  while (!CORBA::is_nil(p))
+    Trace trace("NonPositionalFocus::request");
+    /*
+     * brute force method:
+     * construct stack of parent controllers and then
+     * call lose/receiveFocus as appropriate...
+     *
+     * a refinement will test in the neighborhood of
+     * the old controller holding the focus
+     *       -stefan
+     */
+    std::vector<Controller_var> tmp;
+    Controller_var p = Controller::_duplicate(c);
+    while (!CORBA::is_nil(p))
     {
-      tmp.insert(tmp.begin(), p);
-      p = p->parent_controller();
+	tmp.insert(tmp.begin(), p);
+	p = p->parent_controller();
     }
-  cstack_t::iterator of = _controllers.begin();
-  std::vector<Controller_var>::iterator nf = tmp.begin();
-  /*
-   * ...skip the unchanged controllers,...
-   */
-  while (nf != tmp.end() &&
-	 of != _controllers.end() &&
-	 (*nf)->is_identical(*of)) ++nf, ++of;
-  /*
-   * ...remove the old controllers in reverse order,...
-   */
-  for (cstack_t::reverse_iterator o = _controllers.rbegin(); o.base() != of; ++o)
-    try { (*o)->lose_focus(device());}
-    catch (const CORBA::OBJECT_NOT_EXIST &) {}
-    catch (const CORBA::COMM_FAILURE &) {}
-    catch (const CORBA::TRANSIENT &) {}
+    Guard<Mutex> guard(my_mutex);
+    cstack_t::iterator of = my_controllers.begin();
+    std::vector<Controller_var>::iterator nf = tmp.begin();
+    // ... skip the unchanged controllers, ...
+    while (nf != tmp.end() &&
+	   of != my_controllers.end() &&
+	   (*nf)->is_identical(*of)) ++nf, ++of;
+    // ... remove the old controllers in reverse order, ...
+    for (cstack_t::reverse_iterator o = my_controllers.rbegin();
+	 o.base() != of;
+	 ++o)
+	try
+	{ (*o)->lose_focus(device()); }
+	catch (const CORBA::OBJECT_NOT_EXIST &) { }
+	catch (const CORBA::COMM_FAILURE &) { }
+	catch (const CORBA::TRANSIENT &) { }
 
-  _controllers.erase(of, _controllers.end());
-  /*
-   * ...add the new controllers,...
-   */
-  Focus_var __this = _this ();
-  for (; nf != tmp.end(); ++nf)
+    my_controllers.erase(of, my_controllers.end());
+    // ... add the new controllers, ...
+    Focus_var __this = _this ();
+    for (; nf != tmp.end(); ++nf)
     {
-      (*nf)->receive_focus (__this);
-      _controllers.push_back(Fresco::Controller::_duplicate(*nf));
+	(*nf)->receive_focus (__this);
+	my_controllers.push_back(Fresco::Controller::_duplicate(*nf));
     }
-  return true;
+    return true;
 }
 
 /*
@@ -97,14 +96,17 @@ bool NonPositionalFocus::request(Controller_ptr c)
  */
 void NonPositionalFocus::dispatch(Input::Event &event)
 {
-  Trace trace("NonPositionalFocus::dispatch");
-  CORBA::Boolean done = false;
-  Prague::Guard<Mutex> guard(_mutex);
-  for (int i = _controllers.size() - 1; i >= 0 && !done; --i)
+    Trace trace("NonPositionalFocus::dispatch");
+    CORBA::Boolean done = false;
+    Prague::Guard<Mutex> guard(my_mutex);
+    for (int i = my_controllers.size() - 1; i >= 0 && !done; --i)
     {
-      try { done = _controllers [i]->handle_non_positional(event);}
-      catch (const CORBA::OBJECT_NOT_EXIST &) { _controllers.resize (i);}
-      catch (const CORBA::COMM_FAILURE &) { _controllers.resize (i);}
-      catch (const CORBA::TRANSIENT &) { _controllers.resize (i);}
+	try { done = my_controllers [i]->handle_non_positional(event);}
+	catch (const CORBA::OBJECT_NOT_EXIST &)
+	{ my_controllers.resize(i); }
+	catch (const CORBA::COMM_FAILURE &)
+	{ my_controllers.resize(i); }
+	catch (const CORBA::TRANSIENT &)
+	{ my_controllers.resize(i); }
     }
 }

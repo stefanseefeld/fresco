@@ -34,103 +34,103 @@ using namespace Fresco;
  */
 class Berlin::CommandKit::SelectionImpl::Observer : public ObserverImpl
 {
-public:
-  Observer(SelectionImpl *, Telltale_ptr, Tag);
-  ~Observer();
-  Tag id() const { return t;}
-  bool toggled() { return cached;}
-  void update(const CORBA::Any &);
-private:
-  SelectionImpl *selection;
-  RefCount_var<Fresco::Telltale> item;
-  bool cached;
-  Tag t;
+  public:
+    Observer(SelectionImpl *, Telltale_ptr, Tag);
+    ~Observer();
+    Tag id() const { return my_t;}
+    bool toggled() { return my_cached;}
+    void update(const CORBA::Any &);
+  private:
+    SelectionImpl *my_selection;
+    RefCount_var<Fresco::Telltale> my_item;
+    bool my_cached;
+    Tag my_t;
 };
 
 bool Berlin::CommandKit::SelectionImpl::Id_eq::operator()(const SelectionImpl::Observer *o) const
 { return o->id() == id; }
 
-Berlin::CommandKit::SelectionImpl::Observer::Observer(SelectionImpl *s, Telltale_ptr i,
+Berlin::CommandKit::SelectionImpl::Observer::Observer(SelectionImpl *s,
+						      Telltale_ptr i,
                                                       Tag tt) :
-  selection(s),
-  item(RefCount_var<Fresco::Telltale>::increment(i)),
-  cached(item->test(Fresco::Controller::toggled)),
-  t(tt)
+    my_selection(s),
+    my_item(RefCount_var<Fresco::Telltale>::increment(i)),
+    my_cached(my_item->test(Fresco::Controller::toggled)),
+    my_t(tt)
 { }
 
 Berlin::CommandKit::SelectionImpl::Observer::~Observer()
 {
     Trace trace("SelectionImpl::Observer::~Observer");
-    item->detach(Observer_var(_this()));
-    selection->remove_observer(t);
+    my_item->detach(Observer_var(_this()));
+    my_selection->remove_observer(my_t);
 }
 
 void Berlin::CommandKit::SelectionImpl::Observer::update(const CORBA::Any &any)
 {
-    bool toggled = item->test(Fresco::Controller::toggled);
-    if (toggled == cached) return; // not for us...
-    cached = toggled;
-    selection->update(t, toggled);
+    bool toggled = my_item->test(Fresco::Controller::toggled);
+    if (toggled == my_cached) return; // not for us...
+    my_cached = toggled;
+    my_selection->update(my_t, toggled);
 }
 
 Berlin::CommandKit::SelectionImpl::SelectionImpl(Fresco::Selection::Policy p,
                                                  TelltaleConstraint_ptr c) :
-  policy(p),
-  constraint(RefCount_var<TelltaleConstraint>::increment(c))
-{
-    Trace trace("SelectionImpl::SelectionImpl");
-}
+  my_policy(p),
+  my_constraint(RefCount_var<TelltaleConstraint>::increment(c))
+{ Trace trace("SelectionImpl::SelectionImpl"); }
 
 Berlin::CommandKit::SelectionImpl::~SelectionImpl()
 {
     Trace trace("SelectionImpl::~SelectionImpl");
-    // for (list_t::iterator i = items.begin(); i != items.end(); i++)
+    // for (list_t::iterator i = my_items.begin(); i != my_items.end(); i++)
     // try { (*i)->deactivate();}
     // catch (CORBA::OBJECT_NOT_EXIST &) {}
 }
 
-Fresco::Selection::Policy Berlin::CommandKit::SelectionImpl::type() { return policy; }
+Fresco::Selection::Policy Berlin::CommandKit::SelectionImpl::type()
+{ return my_policy; }
 void Berlin::CommandKit::SelectionImpl::type(Fresco::Selection::Policy p)
 {
-    Prague::Guard<Mutex> guard(mutex);
-    policy = p;
+    Prague::Guard<Mutex> guard(my_mutex);
+    my_policy = p;
 }
 
 Tag Berlin::CommandKit::SelectionImpl::add(Telltale_ptr t)
 {
     Trace trace("SelectionImpl::add");
-    Prague::Guard<Mutex> guard(mutex);
+    Prague::Guard<Mutex> guard(my_mutex);
     Tag id = uniqueId();
     Observer *observer = new Observer(this, t, id);
     // activate(observer);
     t->attach(Observer_var(observer->_this()));
-    if (!CORBA::is_nil(constraint)) constraint->add(t);
-    items.push_back(observer);
+    if (!CORBA::is_nil(my_constraint)) my_constraint->add(t);
+    my_items.push_back(observer);
     return id;
 }
 
 void Berlin::CommandKit::SelectionImpl::remove(Tag t)
 {
     Trace trace("SelectionImpl::remove");
-    Prague::Guard<Mutex> guard(mutex);
+    Prague::Guard<Mutex> guard(my_mutex);
     size_t i = id_to_index(t);
-    if (i < items.size())
+    if (i < my_items.size())
     {
-        // if (!CORBA::is_nil(constraint)) constraint->remove(t);
-        items[i]->destroy();
-        items.erase(items.begin() + i);
+        // if (!CORBA::is_nil(my_constraint)) my_constraint->remove(t);
+        my_items[i]->destroy();
+        my_items.erase(my_items.begin() + i);
     }
 }
 
 Selection::Items * Berlin::CommandKit::SelectionImpl::toggled()
 {
     Trace trace("SelectionImpl::toggled");
-    Prague::Guard<Mutex> guard(mutex);
+    Prague::Guard<Mutex> guard(my_mutex);
     Fresco::Selection::Items_var ret = new Fresco::Selection::Items;
-    for (list_t::iterator i = items.begin(); i != items.end(); i++)
+    for (list_t::iterator i = my_items.begin(); i != my_items.end(); i++)
         if ((*i)->toggled())
         {
-            // FIXME: Use push_back() once we finally switch to gcc 3 -- tobias
+            // FIXME: Use push_back() once we finally switch to gcc 3
             ret->length(ret->length() + 1);
             ret[ret->length() - 1] = (*i)->id();
         }
@@ -151,21 +151,23 @@ void Berlin::CommandKit::SelectionImpl::update(Tag t, bool toggled)
 void Berlin::CommandKit::SelectionImpl::remove_observer(Tag t)
 {
     Trace trace("SelectionImpl::remove_observer");
-    Prague::Guard<Mutex> guard(mutex);
+    Prague::Guard<Mutex> guard(my_mutex);
     size_t i = id_to_index(t);
-    if (i < items.size()) items.erase(items.begin() + i);
+    if (i < my_items.size()) my_items.erase(my_items.begin() + i);
 }
 
 Tag Berlin::CommandKit::SelectionImpl::uniqueId()
 {
     Tag id;
     for (id = 0;
-        std::find_if(items.begin(), items.end(), Id_eq(id)) != items.end();
-        id++);
+	 std::find_if(my_items.begin(), my_items.end(),
+		      Id_eq(id)) != my_items.end();
+	 ++id) { }
         return id;
 }
 
 CORBA::Long Berlin::CommandKit::SelectionImpl::id_to_index(Tag id)
 {
-    return std::find_if(items.begin(), items.end(), Id_eq(id)) - items.begin();
+    return std::find_if(my_items.begin(), my_items.end(),
+			Id_eq(id)) - my_items.begin();
 }

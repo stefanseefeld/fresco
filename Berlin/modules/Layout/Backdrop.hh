@@ -19,26 +19,28 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Backdrop_hh
-#define _Backdrop_hh
+#ifndef _Layout_Backdrop_hh
+#define _Layout_Backdrop_hh
 
 #include <Berlin/MonoGraphic.hh>
 
-namespace Berlin {
-namespace LayoutKit {
-
-class Backdrop : public MonoGraphic
+namespace Berlin
 {
-public:
-  Backdrop();
-  ~Backdrop();
-  virtual void request(Requisition &);
+  namespace LayoutKit
+  {
 
-  virtual void traverse(Traversal_ptr);
-  virtual void draw(DrawTraversal_ptr);
-};
-
-} // namespace
+    class Backdrop : public MonoGraphic
+    {
+      public:
+	Backdrop();
+	~Backdrop();
+	virtual void request(Requisition &);
+	
+	virtual void traverse(Traversal_ptr);
+	virtual void draw(DrawTraversal_ptr);
+    };
+    
+  } // namespace
 } // namespace
 
 #endif

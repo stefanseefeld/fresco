@@ -19,32 +19,36 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _UViewImpl_hh
-#define _UViewImpl_hh
+#ifndef _UnidrawKit_ViewImpl_hh
+#define _UnidrawKit_ViewImpl_hh
 
 #include <Fresco/config.hh>
 #include <Fresco/UnidrawKit.hh>
 #include <Berlin/ControllerImpl.hh>
 
-namespace Berlin {
-namespace UnidrawKit {
-
-class UViewImpl : public virtual POA_Unidraw::View,
-		  public ControllerImpl
+namespace Berlin
 {
-public:
-  UViewImpl(Unidraw::Model_ptr);
-  virtual ~UViewImpl();
-  virtual Unidraw::Model_ptr subject();
-  virtual void traverse(Fresco::Traversal_ptr);
-  virtual void draw(Fresco::DrawTraversal_ptr);
-  virtual void pick(Fresco::PickTraversal_ptr);
-  virtual CORBA::Boolean handle_positional(Fresco::PickTraversal_ptr, const Fresco::Input::Event &);
-private:
-  Unidraw::Model_var _model;
-};
+  namespace UnidrawKit
+  {
 
-} // namespace
+    class UViewImpl : public virtual POA_Unidraw::View,
+		      public ControllerImpl
+    {
+      public:
+	UViewImpl(Unidraw::Model_ptr);
+	virtual ~UViewImpl();
+	virtual Unidraw::Model_ptr subject();
+	virtual void traverse(Fresco::Traversal_ptr);
+	virtual void draw(Fresco::DrawTraversal_ptr);
+	virtual void pick(Fresco::PickTraversal_ptr);
+	virtual CORBA::Boolean 
+	handle_positional(Fresco::PickTraversal_ptr,
+			  const Fresco::Input::Event &);
+      private:
+	Unidraw::Model_var my_model;
+    };
+
+  } // namespace
 } // namespace
 
 #endif

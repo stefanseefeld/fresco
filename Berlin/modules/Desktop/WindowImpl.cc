@@ -31,33 +31,30 @@ using namespace Layout;
 
 using namespace Berlin::DesktopKit;
 
-class WindowImpl::UnmappedStageHandle : public virtual POA_Layout::StageHandle,
-		                        public virtual ServantBase
+class WindowImpl::UnmappedStageHandle :
+    public virtual POA_Layout::StageHandle, public virtual ServantBase
 {
-public:
-  UnmappedStageHandle(Stage_ptr,
-		      Graphic_ptr,
-		      const Vertex &,
-		      const Vertex &,
-		      Stage::Index);
-  UnmappedStageHandle(StageHandle_ptr);
-  virtual ~UnmappedStageHandle();
-  virtual Stage_ptr parent() { return Stage::_duplicate(_parent);}
-  virtual Graphic_ptr child() { return Fresco::Graphic::_duplicate(_child);}
-  virtual void remove() {}
-  virtual Vertex position() { return _position;}
-  virtual void position(const Vertex &pp) { _position = pp;}
-  virtual Vertex size() { return _size;}
-  virtual void size(const Vertex &ss) { _size = ss;}
-  virtual Stage::Index layer() { return _layer;}
-  virtual void layer(Stage::Index ll) { _layer = ll;}
-
+  public:
+    UnmappedStageHandle(Stage_ptr, Graphic_ptr, const Vertex &,
+			const Vertex &,	Stage::Index);
+    UnmappedStageHandle(StageHandle_ptr);
+    virtual ~UnmappedStageHandle();
+    virtual Stage_ptr parent() { return Stage::_duplicate(my_parent); }
+    virtual Graphic_ptr child()
+    { return Fresco::Graphic::_duplicate(my_child); }
+    virtual void remove() { }
+    virtual Vertex position() { return my_position; }
+    virtual void position(const Vertex &pp) { my_position = pp; }
+    virtual Vertex size() { return my_size; }
+    virtual void size(const Vertex &ss) { my_size = ss; }
+    virtual Stage::Index layer() { return my_layer; }
+    virtual void layer(Stage::Index ll) { my_layer = ll; }
 private:
-  Stage_var    _parent;
-  Graphic_var  _child;
-  Vertex       _position;
-  Vertex       _size;
-  Stage::Index _layer;
+    Stage_var    my_parent;
+    Graphic_var  my_child;
+    Vertex       my_position;
+    Vertex       my_size;
+    Stage::Index my_layer;
 };
 
 WindowImpl::UnmappedStageHandle::UnmappedStageHandle(Stage_ptr par,
@@ -65,161 +62,157 @@ WindowImpl::UnmappedStageHandle::UnmappedStageHandle(Stage_ptr par,
 						     const Vertex &pp,
 						     const Vertex &ss,
 						     Stage::Index ll) :
-  _parent(Stage::_duplicate(par)),
-  _child(Fresco::Graphic::_duplicate(cc)),
-  _position(pp),
-  _size(ss),
-  _layer(ll) { }
+  my_parent(Stage::_duplicate(par)),
+  my_child(Fresco::Graphic::_duplicate(cc)),
+  my_position(pp),
+  my_size(ss),
+  my_layer(ll)
+{ }
 
 WindowImpl::UnmappedStageHandle::UnmappedStageHandle(StageHandle_ptr handle) :
-  _parent(handle->parent()),
-  _child(handle->child()),
-  _position(handle->position()),
-  _size(handle->size()),
-  _layer(handle->layer()) { }
+  my_parent(handle->parent()),
+  my_child(handle->child()),
+  my_position(handle->position()),
+  my_size(handle->size()),
+  my_layer(handle->layer())
+{ }
 
 WindowImpl::UnmappedStageHandle::~UnmappedStageHandle()
-{
-  Trace trace("UnmappedStageHandle::~UnmappedStageHandle");
-}
+{ Trace trace("UnmappedStageHandle::~UnmappedStageHandle"); }
 
-WindowImpl::WindowImpl()
-  : ControllerImpl(false)
-{
-  Trace trace("WindowImpl::WindowImpl");
-}
+WindowImpl::WindowImpl() : ControllerImpl(false)
+{ Trace trace("WindowImpl::WindowImpl"); }
 
 WindowImpl::~WindowImpl()
 {
-  Trace trace("WindowImpl::~WindowImpl");
-  mapped(false);
+    Trace trace("WindowImpl::~WindowImpl");
+    mapped(false);
 }
 
 void WindowImpl::need_resize()
 {
-  Trace trace("WindowImpl::need_resize");
-  Vertex size = _handle->size();
-  Fresco::Graphic::Requisition r;
-  GraphicImpl::init_requisition(r);
-  request(r);
-  if (r.x.minimum <= size.x && r.x.maximum >= size.x &&
-      r.y.minimum <= size.y && r.y.maximum >= size.y &&
-      r.z.minimum <= size.z && r.z.maximum >= size.z)
-    need_redraw();
-  else
+    Trace trace("WindowImpl::need_resize");
+    Vertex size = my_handle->size();
+    Fresco::Graphic::Requisition r;
+    GraphicImpl::init_requisition(r);
+    request(r);
+    if (r.x.minimum <= size.x && r.x.maximum >= size.x &&
+	r.y.minimum <= size.y && r.y.maximum >= size.y &&
+	r.z.minimum <= size.z && r.z.maximum >= size.z)
+	need_redraw();
+    else
     {
-      size.x = std::min(r.x.maximum, std::max(r.x.minimum, size.x));
-      size.y = std::min(r.y.maximum, std::max(r.y.minimum, size.y));
-      size.z = std::min(r.z.maximum, std::max(r.z.minimum, size.z));
-      _handle->size(size);
+	size.x = std::min(r.x.maximum, std::max(r.x.minimum, size.x));
+	size.y = std::min(r.y.maximum, std::max(r.y.minimum, size.y));
+	size.z = std::min(r.z.maximum, std::max(r.z.minimum, size.z));
+	my_handle->size(size);
     }
 }
 
-/*
- * cache the focus holding controllers so we can restore them when the window
- * receives focus again...
- */
-CORBA::Boolean WindowImpl::request_focus(Controller_ptr c, Fresco::Input::Device d)
+// cache the focus holding controllers so we can restore them when the
+//  window receives focus again...
+CORBA::Boolean WindowImpl::request_focus(Controller_ptr c,
+					 Fresco::Input::Device d)
 {
-  if (_unmapped) return false;
-  Controller_var parent = parent_controller();
-  if (CORBA::is_nil(parent)) return false;
-  if (parent->request_focus(c, d))
+    if (my_unmapped) return false;
+    Controller_var parent = parent_controller();
+    if (CORBA::is_nil(parent)) return false;
+    if (parent->request_focus(c, d))
     {
-      if (_focus.size() <= d) _focus.resize(d + 1);
-      _focus[d] = Fresco::Controller::_duplicate(c);
-      return true;
+	if (my_focus.size() <= d) my_focus.resize(d + 1);
+	my_focus[d] = Fresco::Controller::_duplicate(c);
+	return true;
     }
-  else return false;
+    else return false;
 }
 
 void WindowImpl::insert(Desktop_ptr desktop)
 {
-  Trace trace("WindowImpl::insert");
-  Vertex position, size;
-  position.x = position.y = 100., position.z = 0.;
-  Fresco::Graphic::Requisition r;
-  GraphicImpl::init_requisition(r);
-  request(r);
-  size.x = r.x.natural, size.y = r.y.natural, size.z = 0;
-  _unmapped = new UnmappedStageHandle(desktop,
-				      Graphic_var(_this()),
-				      position,
-				      size,
-				      0);
-  _handle = _unmapped->_this();
+    Trace trace("WindowImpl::insert");
+    Vertex position, size;
+    position.x = position.y = 100., position.z = 0.;
+    Fresco::Graphic::Requisition r;
+    GraphicImpl::init_requisition(r);
+    request(r);
+    size.x = r.x.natural, size.y = r.y.natural, size.z = 0;
+    my_unmapped = new UnmappedStageHandle(desktop,
+					  Graphic_var(_this()),
+					  position,
+					  size,
+					  0);
+    my_handle = my_unmapped->_this();
 }
 
 Vertex WindowImpl::position()
 {
-  Prague::Guard<Mutex> guard(_mutex);
-  return _handle->position();
+    Prague::Guard<Mutex> guard(my_mutex);
+    return my_handle->position();
 }
 
 void WindowImpl::position(const Vertex &p)
 {
-  Trace trace("WindowImpl::position");
-  Prague::Guard<Mutex> guard(_mutex);
-  _handle->position(p);
+    Trace trace("WindowImpl::position");
+    Prague::Guard<Mutex> guard(my_mutex);
+    my_handle->position(p);
 }
 
 Vertex WindowImpl::size()
 {
-  Prague::Guard<Mutex> guard(_mutex);
-  return _handle->size();
+    Prague::Guard<Mutex> guard(my_mutex);
+    return my_handle->size();
 }
 
 void WindowImpl::size(const Vertex &s)
 {
-  Trace trace("WindowImpl::size");
-  Prague::Guard<Mutex> guard(_mutex);
-  _handle->size(s);
+    Trace trace("WindowImpl::size");
+    Prague::Guard<Mutex> guard(my_mutex);
+    my_handle->size(s);
 }
 
 Stage::Index WindowImpl::layer()
 {
-  Prague::Guard<Mutex> guard(_mutex);
-  return _handle->layer();
+    Prague::Guard<Mutex> guard(my_mutex);
+    return my_handle->layer();
 }
 
 void WindowImpl::layer(Stage::Index l)
 {
-  Trace trace("WindowImpl::layer");
-  Prague::Guard<Mutex> guard(_mutex);
-  _handle->layer(l);
+    Trace trace("WindowImpl::layer");
+    Prague::Guard<Mutex> guard(my_mutex);
+    my_handle->layer(l);
 }
 
 CORBA::Boolean WindowImpl::mapped()
 {
-  Prague::Guard<Mutex> guard(_mutex);
-  return !_unmapped;
+    Prague::Guard<Mutex> guard(my_mutex);
+    return !my_unmapped;
 }
 
 void WindowImpl::mapped(CORBA::Boolean flag)
 {
-  Trace trace("WindowImpl::mapped");
-  if (flag)
+    Trace trace("WindowImpl::mapped");
+    if (flag)
     // map
     {
-      Prague::Guard<Mutex> guard(_mutex);
-      if (!_unmapped) return;
-      Stage_var stage = _handle->parent();
-      stage->lock();
-      StageHandle_var tmp = stage->insert(Graphic_var(_this()),
-					  _handle->position(),
-					  _handle->size(),
-					  _handle->layer());
-      stage->unlock();
-      _handle = tmp;
-      _unmapped = 0;
+	Prague::Guard<Mutex> guard(my_mutex);
+	if (!my_unmapped) return;
+	Stage_var stage = my_handle->parent();
+	stage->lock();
+	StageHandle_var tmp = stage->insert(Graphic_var(_this()),
+					    my_handle->position(),
+					    my_handle->size(),
+					    my_handle->layer());
+	stage->unlock();
+	my_handle = tmp;
+	my_unmapped = 0;
     }
-  else
+    else
     // unmap
     {
-      Prague::Guard<Mutex> guard(_mutex);
-      if (_unmapped) return;
-      _unmapped = new UnmappedStageHandle(_handle);
-      _handle->remove();
-      _handle = _unmapped->_this();
+	Prague::Guard<Mutex> guard(my_mutex);
+	if (my_unmapped) return;
+	my_unmapped = new UnmappedStageHandle(my_handle);
+	my_handle->remove();
+	my_handle = my_unmapped->_this();
     }
 }

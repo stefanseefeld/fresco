@@ -27,35 +27,39 @@ using namespace Fresco;
 
 using namespace Berlin::UnidrawKit;
 
-UViewImpl::UViewImpl(Unidraw::Model_ptr model) : ControllerImpl(false), _model(Unidraw::Model::_duplicate(model)) {}
-UViewImpl::~UViewImpl() {}
+UViewImpl::UViewImpl(Unidraw::Model_ptr model) :
+    ControllerImpl(false),
+    my_model(Unidraw::Model::_duplicate(model))
+{ }
+UViewImpl::~UViewImpl() { }
 
 void UViewImpl::traverse(Traversal_ptr traversal)
 {
-  Trace trace("UViewImpl::traverse");
-  traversal->visit(Graphic_var(_this()));
+    Trace trace("UViewImpl::traverse");
+    traversal->visit(Graphic_var(_this()));
 }
 
 void UViewImpl::draw(DrawTraversal_ptr traversal)
 {
-  Trace trace("UViewImpl::draw");
-  MonoGraphic::traverse(traversal);
+    Trace trace("UViewImpl::draw");
+    MonoGraphic::traverse(traversal);
 }
 
 void UViewImpl::pick(PickTraversal_ptr traversal)
 {
-  Trace trace("UViewImpl::pick");
-  if (traversal->intersects_allocation())
+    Trace trace("UViewImpl::pick");
+    if (traversal->intersects_allocation())
     {
-      traversal->enter_controller(Controller_var(_this()));
-      MonoGraphic::traverse(traversal);
-      if (traversal->ok()) traversal->hit();
-      traversal->leave_controller();
+	traversal->enter_controller(Controller_var(_this()));
+	MonoGraphic::traverse(traversal);
+	if (traversal->ok()) traversal->hit();
+	traversal->leave_controller();
     }
 }
 
-Unidraw::Model_ptr UViewImpl::subject() { return Unidraw::Model::_duplicate(_model);}
-CORBA::Boolean UViewImpl::handle_positional(PickTraversal_ptr traversal, const Input::Event &event)
-{
-  return false;
-}
+Unidraw::Model_ptr UViewImpl::subject()
+{ return Unidraw::Model::_duplicate(my_model); }
+
+CORBA::Boolean UViewImpl::handle_positional(PickTraversal_ptr traversal,
+					    const Input::Event &event)
+{ return false; }

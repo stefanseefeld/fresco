@@ -30,28 +30,33 @@
 #include <Berlin/ImplVar.hh>
 #include <vector>
 
-//. The Eventmanager keeps a list of Focus-Objects assoziated with Inputdevices.
-//. It queries these Devices through the Console and assoziates them to
-//. the Focus-Objects.
-
-//. For now we keep a list of global devices and a event descriptor map.
-//. Device 0 is the keyboard, device 1 the mouse.
-class EventManager
+namespace Berlin
 {
-  typedef std::vector<FocusImpl *> flist_t;
-public:
-  EventManager(Fresco::Controller_ptr, Fresco::Region_ptr);
-  ~EventManager();
-  bool request_focus(Fresco::Controller_ptr, Fresco::Input::Device);
-  //. This method is polled by the ScreenManager. It queries the Console
-  //. for new events and distributes them to the matching focus.
-  void next_event();
-  void restore(Fresco::Region_ptr);
-  void damage(Fresco::Region_ptr);
-private:
-  static void activate(FocusImpl *);
-  static void deactivate(FocusImpl *);
-  flist_t _foci;
-};
+
+  //. The Eventmanager keeps a list of Focus-Objects assoziated with
+  //. Inputdevices. It queries these Devices through the Console and
+  //. assoziates them to the Focus-Objects.
+
+  //. For now we keep a list of global devices and a event descriptor map.
+  //. Device 0 is the keyboard, device 1 the mouse.
+  class EventManager
+  {
+      typedef std::vector<FocusImpl *> flist_t;
+    public:
+      EventManager(Fresco::Controller_ptr, Fresco::Region_ptr);
+      ~EventManager();
+      bool request_focus(Fresco::Controller_ptr, Fresco::Input::Device);
+      //. This method is polled by the ScreenManager. It queries the Console
+      //. for new events and distributes them to the matching focus.
+      void next_event();
+      void restore(Fresco::Region_ptr);
+      void damage(Fresco::Region_ptr);
+    private:
+      static void activate(FocusImpl *);
+      static void deactivate(FocusImpl *);
+      flist_t my_foci;
+  };
+
+} // namespace
 
 #endif 

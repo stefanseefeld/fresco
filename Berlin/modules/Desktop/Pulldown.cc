@@ -31,29 +31,27 @@ using namespace Berlin::DesktopKit;
 
 CORBA::Boolean Pulldown::receive_focus(Fresco::Focus_ptr focus)
 {
-  Trace trace("Pulldown::receive_focus");
-  // Make sure we're mapped for keyboard focus
-  if (focus->device() == 0)
-    mapped(true);
+    Trace trace("Pulldown::receive_focus");
+    // Make sure we're mapped for keyboard focus
+    if (focus->device() == 0)
+	mapped(true);
 
-  return WindowImpl::receive_focus(focus);
+    return WindowImpl::receive_focus(focus);
 }
 
 void Pulldown::lose_focus(Input::Device device)
 {
-  Trace trace("Pulldown::lose_focus");
-  if (device == 0)
-    mapped(false);
-
-  WindowImpl::lose_focus(device);
+    Trace trace("Pulldown::lose_focus");
+    if (device == 0)
+	mapped(false);
+    
+    WindowImpl::lose_focus(device);
 }
 
 void Pulldown::mapped(CORBA::Boolean flag)
 {
-  Trace trace("Pulldown::mapped");
-  /*
-   * make sure we get focus before we are mapped
-   */
+    Trace trace("Pulldown::mapped");
+    // make sure we get focus before we are mapped
 //   if (!flag || request_focus(Controller_var(_this()), 1))
     WindowImpl::mapped(flag);
 }

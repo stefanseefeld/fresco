@@ -24,30 +24,36 @@
 
 #include <Berlin/GraphicImpl.hh>
 
-class MonoGraphic : public GraphicImpl
+namespace Berlin
 {
-public:
-  MonoGraphic();
-  virtual ~MonoGraphic();
 
-  virtual Fresco::Graphic_ptr body();
-  virtual void body(Fresco::Graphic_ptr);
-  virtual void append_graphic(Fresco::Graphic_ptr);
-  virtual void prepend_graphic(Fresco::Graphic_ptr);
-  virtual void remove_graphic(Fresco::Tag);
-  virtual void remove_child_graphic(Fresco::Tag);
-  virtual Fresco::GraphicIterator_ptr first_child_graphic();
-  virtual Fresco::GraphicIterator_ptr last_child_graphic();
-
-  virtual Fresco::Transform_ptr transformation();
-  virtual void request(Fresco::Graphic::Requisition &);
-  virtual void extension(const Fresco::Allocation::Info &, Fresco::Region_ptr);
-  virtual void shape(Fresco::Region_ptr);
-
-  virtual void traverse(Fresco::Traversal_ptr);
-protected:
-  Edge          _child;
-  Prague::Mutex _mutex;
-};
+  class MonoGraphic : public GraphicImpl
+  {
+    public:
+      MonoGraphic();
+      virtual ~MonoGraphic();
+      
+      virtual Fresco::Graphic_ptr body();
+      virtual void body(Fresco::Graphic_ptr);
+      virtual void append_graphic(Fresco::Graphic_ptr);
+      virtual void prepend_graphic(Fresco::Graphic_ptr);
+      virtual void remove_graphic(Fresco::Tag);
+      virtual void remove_child_graphic(Fresco::Tag);
+      virtual Fresco::GraphicIterator_ptr first_child_graphic();
+      virtual Fresco::GraphicIterator_ptr last_child_graphic();
+      
+      virtual Fresco::Transform_ptr transformation();
+      virtual void request(Fresco::Graphic::Requisition &);
+      virtual void extension(const Fresco::Allocation::Info &,
+			     Fresco::Region_ptr);
+      virtual void shape(Fresco::Region_ptr);
+      
+      virtual void traverse(Fresco::Traversal_ptr);
+    protected:
+      Edge          my_child;
+      Prague::Mutex my_mutex;
+  };
+  
+} // namespace
 
 #endif 

@@ -35,54 +35,60 @@ using namespace Berlin::UnidrawKit;
 
 class EditorImpl::Observer : public ObserverImpl
 {
-public:
-  Observer(EditorImpl *e) : _parent(e) { _parent->_add_ref();}
-  ~Observer() { _parent->_remove_ref();}
-  void update(const CORBA::Any &any)
-  {
-    Fresco::Selection::Item *item;
-    if (any >>= item)
-      {
-	if (item->toggled) _parent->_current = RefCount_var<Tool>::increment(_parent->_tools[item->id]);
-      }
-    else  std::cerr << "wrong message type" << std::endl;
-  }
-private:
-  EditorImpl *_parent;
+  public:
+    Observer(EditorImpl *e) : my_parent(e) { my_parent->_add_ref(); }
+    ~Observer() { my_parent->_remove_ref(); }
+    void update(const CORBA::Any &any)
+    {
+	Fresco::Selection::Item *item;
+	if (any >>= item)
+	{
+	    if (item->toggled)
+		my_parent->my_current =
+		    RefCount_var<Tool>::increment(my_parent->my_tools[item->id]);
+	}
+	else  std::cerr << "wrong message type" << std::endl;
+    }
+  private:
+    EditorImpl *my_parent;
 };
 
-EditorImpl::EditorImpl(UnidrawKitImpl *unidraw)
-  : _unidraw(unidraw),
-    _tool_setter(new Observer(this))
+EditorImpl::EditorImpl(UnidrawKitImpl *unidraw) :
+    my_unidraw(unidraw),
+    my_tool_setter(new Observer(this))
 {
-  _unidraw->_add_ref();
-  WidgetKit_var widgets = _unidraw->widgets();
-  _choice = widgets->toolbar();
-  Fresco::Selection_var selection = _choice->state();
-  selection->attach(Observer_var(_tool_setter->_this()));
+    my_unidraw->_add_ref();
+    WidgetKit_var widgets = my_unidraw->widgets();
+    my_choice = widgets->toolbar();
+    Fresco::Selection_var selection = my_choice->state();
+    selection->attach(Observer_var(my_tool_setter->_this()));
 }
 EditorImpl::~EditorImpl()
-{
-  _unidraw->_remove_ref();
-}
+{ my_unidraw->_remove_ref(); }
+
 void EditorImpl::append_tool(Tool_ptr tool, Graphic_ptr graphic)
 {
-  Tag tag = _choice->append_item(graphic);
-  _tools[tag] = RefCount_var<Tool>::increment(tool);
+    Tag tag = my_choice->append_item(graphic);
+    my_tools[tag] = RefCount_var<Tool>::increment(tool);
 }
-Unidraw::Tool_ptr EditorImpl::current_tool() { return Unidraw::Tool::_duplicate(_current);}
-void EditorImpl::current_tool(Tool_ptr current) { _current = Unidraw::Tool::_duplicate(current);}
-Controller_ptr EditorImpl::create_viewer(Unidraw::Model_ptr model, Fresco::Coord width, Fresco::Coord height)
+
+Unidraw::Tool_ptr EditorImpl::current_tool()
+{ return Unidraw::Tool::_duplicate(my_current); }
+
+void EditorImpl::current_tool(Tool_ptr current)
+{ my_current = Unidraw::Tool::_duplicate(current); }
+Controller_ptr EditorImpl::create_viewer(Unidraw::Model_ptr model,
+					 Fresco::Coord width,
+					 Fresco::Coord height)
 {
-  FigureKit_var figures = _unidraw->figures();
-  ToolKit_var tools = _unidraw->tools();
-  Viewer *viewer = new Viewer();
-  activate(viewer);
-  viewer->init(Editor_var(_this()), model, width, height, figures, tools);
-  return viewer->_this();
+    FigureKit_var figures = my_unidraw->figures();
+    ToolKit_var tools = my_unidraw->tools();
+    Viewer *viewer = new Viewer();
+    activate(viewer);
+    viewer->init(Editor_var(_this()), model, width, height,
+		 figures, tools);
+    return viewer->_this();
 }
 
 Controller_ptr EditorImpl::toolbar()
-{
-  return Widget::Choice::_duplicate(_choice);
-}
+{ return Widget::Choice::_duplicate(my_choice); }

@@ -19,81 +19,88 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _ObjectCache_hh
-#define _ObjectCache_hh
+#ifndef _Berlin_ObjectCache_hh
+#define _Berlin_ObjectCache_hh
 
 #include <vector>
 #include <list>
 #include <map>
 #include <algorithm>
 
-template <typename Remote, typename Local>
-struct DefaultObjectCacheTrait
+namespace Berlin
 {
-  static Local *create(Remote &r) { return new Local(r);}
-  static Remote remote(Local *l) { return l->remote;}
-};
 
-template <typename Remote, typename Local, typename Trait = DefaultObjectCacheTrait<Remote, Local> >
-class ObjectCache
-{
-  typedef std::vector<Local *> bucket_t;
-  typedef long hash_t;
-  typedef std::map<hash_t, bucket_t> cache_t;
-  typedef std::list<Local *> counter_t;
-  struct Predicate
+  template <typename Remote, typename Local>
+  struct DefaultObjectCacheTrait
   {
-    Predicate(Remote r) : remote(r) {}
-    bool operator () (Local *l) const { return remote->_is_equivalent(Trait::remote(l));}
-    Remote remote;
+      static Local *create(Remote &r) { return new Local(r); }
+      static Remote remote(Local *l) { return l->remote; }
   };
-public:
-  ObjectCache(int i, int b = 193) : _items(i), _buckets(b) {}
-  ~ObjectCache() { reduce(0);}
-  Local *lookup(Remote);
-  void reduce(int);
-private:
-  int       _items;
-  int       _buckets;
-  cache_t   _cache;
-  counter_t _counter;
-};
 
-/*
- * returns a cached form of r, creating it if necessary.
- * the local is moved to the end of the counter list so
- * we can eventually remove items from the head to reduce
- * the size of the cache elemminating the items not used
- * for the longest time
- */
-template <typename Remote, typename Local, typename Trait>
-inline Local *ObjectCache<Remote, Local, Trait>::lookup(Remote r)
-{
-  hash_t hash = r->_hash(_buckets);
-  bucket_t &bucket = _cache[hash];
-  typename bucket_t::iterator i =
-    find_if(bucket.begin(), bucket.end(), Predicate(r));
-  if (i == bucket.end())
-    {
-      Local *local = Trait::create(r);
-      bucket.push_back(local);
-      return bucket.back();
-    }
-  else
-    {
-      return *i;
-    }
-}
+  template <typename Remote, typename Local,
+	    typename Trait = DefaultObjectCacheTrait<Remote, Local> >
+  class ObjectCache
+  {
+      typedef std::vector<Local *> bucket_t;
+      typedef long hash_t;
+      typedef std::map<hash_t, bucket_t> cache_t;
+      typedef std::list<Local *> counter_t;
+      struct Predicate
+      {
+	  Predicate(Remote r) : remote(r) { }
+	  bool operator () (Local *l) const
+	  { return remote->_is_equivalent(Trait::remote(l));}
+	  Remote remote;
+      };
+    public:
+      ObjectCache(int i, int b = 193) : my_items(i), my_buckets(b) { }
+      ~ObjectCache() { reduce(0); }
+      Local *lookup(Remote);
+      void reduce(int);
+    private:
+      int       my_items;
+      int       my_buckets;
+      cache_t   my_cache;
+      counter_t my_counter;
+  };
 
-/*
- * reduce the cache to the new size
- * removing the items which have not been
- * used for the longest period first
- */
-template <typename Remote, typename Local, typename Trait>
-inline void ObjectCache<Remote, Local, Trait>::reduce(int size)
-{
-  //...to be implemented...
-}
+  /*
+   * returns a cached form of r, creating it if necessary.
+   * the local is moved to the end of the counter list so
+   * we can eventually remove items from the head to reduce
+   * the size of the cache elemminating the items not used
+   * for the longest time
+   */
+  template <typename Remote, typename Local, typename Trait>
+  inline Local *ObjectCache<Remote, Local, Trait>::lookup(Remote r)
+  {
+      hash_t hash = r->_hash(my_buckets);
+      bucket_t &bucket = my_cache[hash];
+      typename bucket_t::iterator i =
+	  find_if(bucket.begin(), bucket.end(), Predicate(r));
+      if (i == bucket.end())
+      {
+	  Local *local = Trait::create(r);
+	  bucket.push_back(local);
+	  return bucket.back();
+      }
+      else
+      {
+	  return *i;
+      }
+  }
+
+  /*
+   * reduce the cache to the new size
+   * removing the items which have not been
+   * used for the longest period first
+   */
+  template <typename Remote, typename Local, typename Trait>
+  inline void ObjectCache<Remote, Local, Trait>::reduce(int size)
+  {
+      // FIXME: ...to be implemented...
+  }
+  
+} // namespace
 
 #endif

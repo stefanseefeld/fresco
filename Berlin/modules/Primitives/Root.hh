@@ -20,29 +20,33 @@
  * MA 02139, USA.
  */
 
-#ifndef _Root_hh
-#define _Root_hh
+#ifndef _PrimitiveKit_Root_hh
+#define _PrimitiveKit_Root_hh
 
 #include <Fresco/config.hh>
 #include <Fresco/DrawingKit3D.hh>
 #include <Berlin/Allocator.hh>
 
-namespace Berlin {
-namespace PrimitiveKit {
-
-//. Root is supposed to be the root node in a 3D scene graph hierarchy.
-//. It therefor switches on all the necessary flags in the DrawingKit
-//. that are necessary only when rendering 3D
-class Root : public TransformAllocator
+namespace Berlin
 {
-public:
-  Root(Fresco::Alignment, Fresco::Alignment, Fresco::Alignment, Fresco::Alignment, Fresco::Alignment, Fresco::Alignment);
-  virtual void traverse(Fresco::Traversal_ptr);
-  virtual void draw(Fresco::DrawTraversal_ptr);
-  virtual void pick(Fresco::PickTraversal_ptr);
-};
+  namespace PrimitiveKit
+  {
 
-} // namespace
+    //. Root is supposed to be the root node in a 3D scene graph hierarchy.
+    //. It therefor switches on all the necessary flags in the DrawingKit
+    //. that are necessary only when rendering 3D
+    class Root : public TransformAllocator
+    {
+      public:
+	Root(Fresco::Alignment, Fresco::Alignment,
+	     Fresco::Alignment, Fresco::Alignment,
+	     Fresco::Alignment, Fresco::Alignment);
+	virtual void traverse(Fresco::Traversal_ptr);
+	virtual void draw(Fresco::DrawTraversal_ptr);
+	virtual void pick(Fresco::PickTraversal_ptr);
+    };
+
+  } // namespace
 } // namespace
 
 #endif

@@ -19,17 +19,22 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _RCManager_hh
-#define _RCManager_hh
+#ifndef _Berlin_RCManager_hh
+#define _Berlin_RCManager_hh
 
 #include <Prague/Sys/GetOpt.hh>
 #include <Prague/Sys/Path.hh>
 
-class RCManager
+namespace Berlin
 {
-  public:
-    static void setup(Prague::GetOpt const &);
-    static Prague::Path get_path(const std::string &);
-};
+
+  class RCManager
+  {
+    public:
+      static void setup(Prague::GetOpt const &);
+      static Prague::Path get_path(const std::string &);
+  };
+
+} // namespace
 
 #endif

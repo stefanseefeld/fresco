@@ -25,29 +25,35 @@
 #include <Fresco/config.hh>
 #include <Fresco/DrawingKit.hh>
 
-namespace Berlin {
-namespace DrawingKit {
-namespace openGL {
-
-class Quadric
+namespace Berlin
 {
-public:
-  enum orientation {in, out};
-  enum normals {none, flat, smooth};
-  Quadric(Fresco::DrawingKit::Fillstyle s, orientation o, normals n = none) : style(s), orient(o), norm(n) {}
-  ~Quadric() {}
-  void cylinder(double, double, double, int, int);
-  void sphere(double, int, int);
-  void disk(double, double, int, int);
-  void partialDisk(double, double, int, int, double, double);
-private:
-  Fresco::DrawingKit::Fillstyle style;
-  orientation orient;
-  normals norm;
-};
+  namespace DrawingKit
+  {
+    namespace openGL
+    {
 
-} // namespace
-} // namespace
+      class Quadric
+      {
+	public:
+	  enum orientation {in, out};
+	  enum normals {none, flat, smooth};
+	  Quadric(Fresco::DrawingKit::Fillstyle s,
+		  orientation o, normals n = none) :
+	      my_style(s), my_orient(o), my_norm(n)
+	  { }
+	  ~Quadric() { }
+	  void cylinder(double, double, double, int, int);
+	  void sphere(double, int, int);
+	  void disk(double, double, int, int);
+	  void partialDisk(double, double, int, int, double, double);
+	private:
+	  Fresco::DrawingKit::Fillstyle my_style;
+	  orientation my_orient;
+	  normals my_norm;
+      };
+      
+    } // namespace
+  } // namespace
 } // namespace
 
 #endif 

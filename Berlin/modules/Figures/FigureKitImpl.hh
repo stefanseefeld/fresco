@@ -43,8 +43,8 @@ namespace Berlin
 		      const Fresco::Kit::PropertySeq &,
 		      ServerContextImpl *);
 	virtual ~FigureKitImpl();
-	virtual KitImpl *clone(const Fresco::Kit::PropertySeq &p,
-			       ServerContextImpl *c)
+	virtual Berlin::KitImpl *clone(const Fresco::Kit::PropertySeq &p,
+				       ServerContextImpl *c)
 	{ return new FigureKitImpl(repo_id(), p, c); }
 	
 	Fresco::Graphic_ptr root(Fresco::Graphic_ptr);

@@ -31,29 +31,34 @@
 #include <Berlin/FocusImpl.hh>
 #include <vector>
 
-class ScreenImpl;
-
-class NonPositionalFocus : public FocusImpl
+namespace Berlin
 {
-  typedef std::vector<Fresco::Controller_var> cstack_t;
- public:
-  NonPositionalFocus(Fresco::Input::Device, Fresco::Controller_ptr);
-  virtual ~NonPositionalFocus();
 
-  virtual void grab() {}
-  virtual void ungrab() {}
-  virtual void set_cursor(Fresco::Raster_ptr) {}
-  virtual void add_filter(Fresco::Input::Filter_ptr);
+  class ScreenImpl;
+  
+  class NonPositionalFocus : public FocusImpl
+  {
+      typedef std::vector<Fresco::Controller_var> cstack_t;
+    public:
+      NonPositionalFocus(Fresco::Input::Device, Fresco::Controller_ptr);
+      virtual ~NonPositionalFocus();
+      
+      virtual void grab() { }
+      virtual void ungrab() { }
+      virtual void set_cursor(Fresco::Raster_ptr) { }
+      virtual void add_filter(Fresco::Input::Filter_ptr);
+      
+      virtual bool request(Fresco::Controller_ptr);
+      virtual void restore(Fresco::Region_ptr) { }
+      virtual void damage(Fresco::Region_ptr) { }
+      virtual void dispatch(Fresco::Input::Event &);
+    protected:
+      virtual void activate_composite();
+    private:
+      cstack_t      my_controllers;
+      Prague::Mutex my_mutex;
+  };
 
-  virtual bool request(Fresco::Controller_ptr);
-  virtual void restore(Fresco::Region_ptr) {}
-  virtual void damage(Fresco::Region_ptr) {}
-  virtual void dispatch(Fresco::Input::Event &);
-protected:
-  virtual void activate_composite();
-private:
-  cstack_t      _controllers;
-  Prague::Mutex _mutex;
-};
+} // namespace
 
 #endif 

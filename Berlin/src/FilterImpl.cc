@@ -24,17 +24,20 @@
 
 using namespace Fresco;
 
-Accelerator::Accelerator(Input::Device d, const Input::Toggle &t, Input::Bitset b, Command_ptr c)
-  : device(d), toggle(t), modifier(b), command(Command::_duplicate(c)) {}
+Berlin::Accelerator::Accelerator(Input::Device d, const Input::Toggle &t,
+				 Input::Bitset b, Command_ptr c) :
+    my_device(d),
+    my_toggle(t),
+    my_modifier(b),
+    my_command(Command::_duplicate(c))
+{ }
 
-CORBA::Boolean Accelerator::handle(const Input::Event &event)
+CORBA::Boolean Berlin::Accelerator::handle(const Input::Event &event)
 {
-  /*
-   * the device has to be the first one in the event list
-   */
-  bool found = true;
-//   for (size_t i = 0; i !=
-  CORBA::Any dummy;
-  if (found) command->execute(dummy);
-  return found;
+    // the device has to be the first one in the event list
+    bool found = true;
+//    for (size_t i = 0; i !=
+    CORBA::Any dummy;
+    if (found) my_command->execute(dummy);
+    return found;
 }

@@ -21,8 +21,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _TextViewer_hh
-#define _TextViewer_hh
+#ifndef _TextKit_TextViewer_hh
+#define _TextKit_TextViewer_hh
 
 #include <Fresco/config.hh>
 #include <Fresco/View.hh>
@@ -30,23 +30,26 @@
 #include <Berlin/ViewImpl.hh>
 #include "Composition.hh"
 
-namespace Berlin {
-namespace TextKit {
-
-class TextViewer : public virtual ViewImpl,
-		   public Composition
+namespace Berlin
 {
- public:
-  TextViewer(Fresco::TextBuffer_ptr, Fresco::TextKit_ptr, Fresco::DrawingKit_ptr, Compositor *);
-  virtual ~TextViewer();
-  virtual void update(const CORBA::Any &);
- protected:
-  virtual void activate_composite();
-  Fresco::TextKit_var _kit;
-  Fresco::TextBuffer_var _buffer;
-};
+  namespace TextKit
+  {
 
-} // namespace
+    class TextViewer : public virtual ViewImpl,
+		       public Composition
+    {
+      public:
+	TextViewer(Fresco::TextBuffer_ptr, Fresco::TextKit_ptr,
+		   Fresco::DrawingKit_ptr, Compositor *);
+	virtual ~TextViewer();
+	virtual void update(const CORBA::Any &);
+      protected:
+	virtual void activate_composite();
+	Fresco::TextKit_var my_kit;
+	Fresco::TextBuffer_var my_buffer;
+    };
+
+  } // namespace
 } // namespace
 
 #endif

@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Fresco Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@fresco.org>
  * http://www.fresco.org
  *
  * This library is free software; you can redistribute it and/or
@@ -26,53 +26,62 @@
 
 using namespace Prague;
 using namespace Fresco;
+using namespace Berlin;
 
-SubjectImpl::SubjectImpl() : _blocked(false) {}
+SubjectImpl::SubjectImpl() : my_blocked(false) { }
 
 void SubjectImpl::attach(Observer_ptr observer)
 {
-  Trace trace(this, "SubjectImpl::attach");
-  Prague::Guard<Mutex> guard(_observerMutex);
-  _observers.push_back(Fresco::Observer::_duplicate(observer));
+    Trace trace(this, "SubjectImpl::attach");
+    Prague::Guard<Mutex> guard(my_observerMutex);
+    my_observers.push_back(Fresco::Observer::_duplicate(observer));
 }
 
-struct Id_eq : public std::unary_function<Fresco::Identifiable_ptr, bool>
+namespace
 {
-  Id_eq(Fresco::Identifiable_ptr i) : id(i) {}
-  bool operator()(const Fresco::Identifiable_ptr i) const { return id->is_identical(i);}
-  Fresco::Identifiable_ptr id;
-};
+  struct Id_eq : public std::unary_function<Fresco::Identifiable_ptr, bool>
+  {
+      Id_eq(Fresco::Identifiable_ptr i) : id(i) {}
+      bool operator()(const Fresco::Identifiable_ptr i) const
+      { return id->is_identical(i); }
+      Fresco::Identifiable_ptr id;
+  };
+} // namespace
 
 void SubjectImpl::detach(Observer_ptr observer)
 {
-  Trace trace(this, "SubjectImpl::detach");
-  Prague::Guard<Mutex> guard(_observerMutex);
-  _observers.erase(find_if(_observers.begin(), _observers.end(), Id_eq(observer)));
+    Trace trace(this, "SubjectImpl::detach");
+    Prague::Guard<Mutex> guard(my_observerMutex);
+    my_observers.erase(find_if(my_observers.begin(), my_observers.end(),
+                               Id_eq(observer)));
 }
 
 
 void SubjectImpl::block(CORBA::Boolean blocked)
 {
-  Prague::Guard<Mutex> guard(_mutex);
-  _blocked = blocked;
+    Prague::Guard<Mutex> guard(my_mutex);
+    my_blocked = blocked;
 }
 
 void SubjectImpl::notify()
-{
-  this->notify(CORBA::Any());
-}
+{ this->notify(CORBA::Any()); }
 
 void SubjectImpl::notify(const CORBA::Any &change)
 {
-  Trace trace(this, "SubjectImpl::notify");
-  Prague::Guard<Mutex> guard(_mutex);
-  if (!_blocked)
+    Trace trace(this, "SubjectImpl::notify");
+    Prague::Guard<Mutex> guard(my_mutex);
+    if (!my_blocked)
     {
-      Prague::Guard<Mutex> guard(_observerMutex);
-      for(olist_t::iterator i = _observers.begin(); i != _observers.end(); ++i)
-	try { (*i)->update(change);}
-        catch (const CORBA::OBJECT_NOT_EXIST &) { *i = Observer::_nil();}
-	catch (const CORBA::COMM_FAILURE &) { *i = Observer::_nil();}
-	catch (const CORBA::TRANSIENT &) { *i = Observer::_nil();}
+        Prague::Guard<Mutex> guard(my_observerMutex);
+        for(olist_t::iterator i = my_observers.begin();
+            i != my_observers.end();
+            ++i)
+            try { (*i)->update(change);}
+            catch (const CORBA::OBJECT_NOT_EXIST &)
+            { *i = Observer::_nil(); }
+            catch (const CORBA::COMM_FAILURE &)
+            { *i = Observer::_nil(); }
+            catch (const CORBA::TRANSIENT &)
+            { *i = Observer::_nil(); }
     }
 }

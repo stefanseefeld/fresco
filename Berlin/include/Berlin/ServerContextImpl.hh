@@ -20,8 +20,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _ServerContextImpl_hh
-#define _ServerContextImpl_hh
+#ifndef _Berlin_ServerContextImpl_hh
+#define _Berlin_ServerContextImpl_hh
 
 #include <Prague/Sys/Thread.hh>
 #include <Fresco/config.hh>
@@ -30,39 +30,52 @@
 #include <Berlin/KitImpl.hh>
 #include <map>
 
-class ServerImpl;
-
-//. this is an encapsulated "entry point" which a client uses to manufacture
-//. new objects, look up singletons, look up the scene root, etc.
-class ServerContextImpl : public virtual POA_Fresco::ServerContext,
-			  public virtual PortableServer::RefCountServantBase,
-			  public DefaultPOA
+namespace Berlin
 {
-  typedef std::multimap<std::string, KitImpl *> klist_t;
-  friend class KitImpl;
-public:
-  ServerContextImpl(ServerImpl *, const CORBA::PolicyList &, Fresco::ClientContext_ptr);
-  ~ServerContextImpl();
-  PortableServer::POA_ptr _default_POA() { return DefaultPOA::_default_POA();}
 
-  Fresco::ClientContext_ptr client();
-  Fresco::Kit_ptr resolve(const char *, const Fresco::Kit::PropertySeq &)
-    throw (Fresco::SecurityException, Fresco::CreationFailureException);
-  void set_singleton(const char *, CORBA::Object_ptr) 
-    throw (Fresco::SecurityException, Fresco::SingletonFailureException);
-  void remove_singleton(const char *) 
-    throw (Fresco::SecurityException, Fresco::SingletonFailureException);
-  CORBA::Object_ptr get_singleton(const char *) 
-    throw (Fresco::SecurityException, Fresco::SingletonFailureException);
-  bool ping();
-private:
-  void erase(KitImpl *);
-  static unsigned long      my_counter;
-  ServerImpl               *my_server;
-  CORBA::PolicyList         my_policies;
-  Fresco::ClientContext_var my_client;
-  klist_t                   my_kits;
-  Prague::Mutex             my_mutex;
-};
+  class ServerImpl;
+
+  //. This is an encapsulated "entry point" which a client uses to
+  //. manufacture new objects, look up singletons, look up the scene root,
+  //. etc.
+  class ServerContextImpl : public virtual POA_Fresco::ServerContext,
+			    public virtual PortableServer::RefCountServantBase,
+			    public DefaultPOA
+  {
+      typedef std::multimap<std::string, KitImpl *> klist_t;
+      friend class KitImpl;
+    public:
+      ServerContextImpl(ServerImpl *, const CORBA::PolicyList &,
+			Fresco::ClientContext_ptr);
+      ~ServerContextImpl();
+      PortableServer::POA_ptr _default_POA()
+      { return DefaultPOA::_default_POA(); }
+
+      Fresco::ClientContext_ptr client();
+      Fresco::Kit_ptr resolve(const char *,
+			      const Fresco::Kit::PropertySeq &)
+	  throw (Fresco::SecurityException,
+		 Fresco::CreationFailureException);
+      void set_singleton(const char *, CORBA::Object_ptr) 
+	  throw (Fresco::SecurityException,
+		 Fresco::SingletonFailureException);
+      void remove_singleton(const char *) 
+	  throw (Fresco::SecurityException,
+		 Fresco::SingletonFailureException);
+      CORBA::Object_ptr get_singleton(const char *) 
+	  throw (Fresco::SecurityException,
+		 Fresco::SingletonFailureException);
+      bool ping();
+    private:
+      void erase(KitImpl *);
+      static unsigned long      my_counter;
+      ServerImpl               *my_server;
+      CORBA::PolicyList         my_policies;
+      Fresco::ClientContext_var my_client;
+      klist_t                   my_kits;
+      Prague::Mutex             my_mutex;
+  };
+
+} // namespace
 
 #endif

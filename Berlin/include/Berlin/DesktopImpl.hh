@@ -28,32 +28,37 @@
 #include <Berlin/RefCountVar.hh>
 #include <Prague/Sys/Thread.hh>
 
-class WindowImpl;
-
-class DesktopImpl : public virtual POA_Fresco::Desktop,
-                    public ControllerImpl
+namespace Berlin
 {
-public:
-  DesktopImpl(CORBA::ORB_ptr, Layout::Stage_ptr, Prague::Semaphore &);
-  virtual ~DesktopImpl();
-  virtual void body(Fresco::Graphic_ptr);
-  virtual Fresco::Graphic_ptr body();
-  virtual Fresco::Region_ptr bbox();
-  virtual CORBA::Long layers();
-  virtual Layout::StageHandle_ptr layer(Layout::Stage::Index);
-  virtual void lock();
-  virtual void unlock();
-  virtual Layout::StageHandle_ptr insert(Fresco::Graphic_ptr,
-					 const Fresco::Vertex &,
-					 const Fresco::Vertex &,
-					 Layout::Stage::Index);
 
-protected:
-  virtual void key_press(const Fresco::Input::Event &); 
-private:
-  RefCount_var<Layout::Stage> _stage;
-  CORBA::ORB_var              _orb;
-  Prague::Semaphore           & my_shutdown_semaphore;
-};
+  class WindowImpl;
+
+  class DesktopImpl : public virtual POA_Fresco::Desktop,
+		      public ControllerImpl
+  {
+    public:
+      DesktopImpl(CORBA::ORB_ptr, Layout::Stage_ptr, Prague::Semaphore &);
+      virtual ~DesktopImpl();
+      virtual void body(Fresco::Graphic_ptr);
+      virtual Fresco::Graphic_ptr body();
+      virtual Fresco::Region_ptr bbox();
+      virtual CORBA::Long layers();
+      virtual Layout::StageHandle_ptr layer(Layout::Stage::Index);
+      virtual void lock();
+      virtual void unlock();
+      virtual Layout::StageHandle_ptr insert(Fresco::Graphic_ptr,
+					     const Fresco::Vertex &,
+					     const Fresco::Vertex &,
+					     Layout::Stage::Index);
+      
+    protected:
+      virtual void key_press(const Fresco::Input::Event &); 
+    private:
+      RefCount_var<Layout::Stage> my_stage;
+      CORBA::ORB_var              my_orb;
+      Prague::Semaphore           & my_shutdown_semaphore;
+  };
+
+} // namespace
 
 #endif 

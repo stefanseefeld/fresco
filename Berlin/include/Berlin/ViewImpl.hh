@@ -19,18 +19,23 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _ViewImpl_hh
-#define _ViewImpl_hh
+#ifndef _Berlin_ViewImpl_hh
+#define _Berlin_ViewImpl_hh
 
 #include <Fresco/config.hh>
 #include <Fresco/View.hh>
 #include <Berlin/ObserverImpl.hh>
 
-class ViewImpl : public virtual POA_Fresco::View,
-		 public virtual ObserverImpl
+namespace Berlin
 {
-public:
-  virtual void destroy() {}
-};
+
+  class ViewImpl : public virtual POA_Fresco::View,
+		   public virtual ObserverImpl
+  {
+    public:
+      virtual void destroy() { }
+  };
+
+} // namespace
 
 #endif 

@@ -25,55 +25,64 @@
 #include <Berlin/ImplVar.hh>
 #include <Berlin/MonoGraphic.hh>
 
-//. An Allocator is a graphic that always gives its child
-//. an allocation that matches the child's requisition.
-//. This functionality is useful as a gateway between
-//. figure objects, which ignore their allocation, and
-//. layout objects.
-class Allocator : public MonoGraphic
+namespace Berlin
 {
-public:
-  Allocator();
-  virtual ~Allocator();
 
-  virtual void request(Fresco::Graphic::Requisition &);
-
-  virtual void traverse(Fresco::Traversal_ptr);
-
-  virtual void allocate(Fresco::Tag, const Fresco::Allocation::Info &);
-  virtual void need_resize();
-// private:
-  bool _requested : 1;
-  bool _allocated : 1;
-  Fresco::Graphic::Requisition _requisition;
-  Impl_var<RegionImpl> _natural;
-  Impl_var<RegionImpl> _extension;
+  //. An Allocator is a graphic that always gives its child
+  //. an allocation that matches the child's requisition.
+  //. This functionality is useful as a gateway between
+  //. figure objects, which ignore their allocation, and
+  //. layout objects.
+  class Allocator : public MonoGraphic
+  {
+    public:
+      Allocator();
+      virtual ~Allocator();
+      
+      virtual void request(Fresco::Graphic::Requisition &);
+      
+      virtual void traverse(Fresco::Traversal_ptr);
+      
+      virtual void allocate(Fresco::Tag, const Fresco::Allocation::Info &);
+      virtual void need_resize();
+//   private:
+      bool my_requested : 1;
+      bool my_allocated : 1;
+      Fresco::Graphic::Requisition my_requisition;
+      Impl_var<RegionImpl> my_natural;
+      Impl_var<RegionImpl> my_extension;
   
-  void cache_requisition();
-  void cache_allocation();
-  void need_damage(RegionImpl *, Fresco::Allocation_ptr);
-  static void natural_allocation(const Fresco::Graphic::Requisition &, RegionImpl &);
-};
+      void cache_requisition();
+      void cache_allocation();
+      void need_damage(RegionImpl *, Fresco::Allocation_ptr);
+      static void natural_allocation(const Fresco::Graphic::Requisition &,
+				     RegionImpl &);
+  };
 
-//. A TransformAllocator maps its allocate to a translation
-//. during traversal and always gives its child the child's
-//. natural allocation.  This functionality is useful
-//. as a gateway between layout objects and figure objects
-//. (which ignore their allocation).
-class TransformAllocator : public Allocator
-{
-public:
-  TransformAllocator(Fresco::Alignment, Fresco::Alignment, Fresco::Alignment, Fresco::Alignment, Fresco::Alignment, Fresco::Alignment);
-  ~TransformAllocator();
+  //. A TransformAllocator maps its allocate to a translation
+  //. during traversal and always gives its child the child's
+  //. natural allocation.  This functionality is useful
+  //. as a gateway between layout objects and figure objects
+  //. (which ignore their allocation).
+  class TransformAllocator : public Allocator
+  {
+    public:
+      TransformAllocator(Fresco::Alignment, Fresco::Alignment,
+			 Fresco::Alignment, Fresco::Alignment,
+			 Fresco::Alignment, Fresco::Alignment);
+      ~TransformAllocator();
 
-  virtual void request(Fresco::Graphic::Requisition &);
-  virtual void traverse(Fresco::Traversal_ptr);
-  virtual void allocate(Fresco::Tag, const Fresco::Allocation::Info &);
-protected:
-  Fresco::Alignment _xparent, _yparent, _zparent;
-  Fresco::Alignment _xchild, _ychild, _zchild;
+      virtual void request(Fresco::Graphic::Requisition &);
+      virtual void traverse(Fresco::Traversal_ptr);
+      virtual void allocate(Fresco::Tag, const Fresco::Allocation::Info &);
+    protected:
+      Fresco::Alignment my_xparent, my_yparent, my_zparent;
+      Fresco::Alignment my_xchild, my_ychild, my_zchild;
+      
+      void compute_delta(const Fresco::Vertex &, const Fresco::Vertex &,
+			 Fresco::Vertex &);
+  };
 
-  void compute_delta(const Fresco::Vertex &, const Fresco::Vertex &, Fresco::Vertex &);
-};
+} // namespace
 
 #endif 

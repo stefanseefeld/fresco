@@ -19,28 +19,30 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Filler_hh
-#define _Filler_hh
+#ifndef _ToolKit_Filler_hh
+#define _ToolKit_Filler_hh
 
 #include <Berlin/MonoGraphic.hh>
 
-namespace Berlin {
-namespace ToolKit {
-
-class Filler : public MonoGraphic
+namespace Berlin
 {
-public:
-  Filler(const Color &c) : color(c) {}
-  ~Filler() {}
+  namespace ToolKit
+  {
 
-  virtual void request(Requisition &);
-  virtual void traverse(Traversal_ptr);
-  virtual void draw(DrawTraversal_ptr);
-protected:
-  Color color;
-};
+    class Filler : public MonoGraphic
+    {
+      public:
+	Filler(const Color &c) : my_color(c) { }
+	~Filler() {}
 
+	virtual void request(Requisition &);
+	virtual void traverse(Traversal_ptr);
+	virtual void draw(DrawTraversal_ptr);
+      protected:
+	Color my_color;
+    };
+    
+  } // namespace
 } // namespace
-} // namespace
 
-#endif /* _Filler_hh */
+#endif

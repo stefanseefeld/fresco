@@ -19,8 +19,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _MainControllerImpl_hh
-#define _MainControllerImpl_hh
+#ifndef _ToolKit_MainControllerImpl_hh
+#define _ToolKit_MainControllerImpl_hh
 
 #include <Fresco/config.hh>
 #include <Fresco/Raster.hh>
@@ -28,25 +28,27 @@
 #include <Berlin/ControllerImpl.hh>
 #include <Berlin/RefCountVar.hh>
 
-namespace Berlin {
-namespace ToolKit {
-
-class MainControllerImpl : public virtual POA_Fresco::MainController,
-			   public ControllerImpl
+namespace Berlin
 {
- public:
-  MainControllerImpl(bool);
-  virtual ~MainControllerImpl();
-  virtual void cursor(Fresco::Raster_ptr);
-  virtual Fresco::Raster_ptr cursor();
+  namespace ToolKit
+  {
 
-  virtual CORBA::Boolean receive_focus(Fresco::Focus_ptr f);
- private:
-  Prague::Mutex      _mutex;
-  Fresco::Raster_var _cursor;
-};
-
-} // namespace
+    class MainControllerImpl : public virtual POA_Fresco::MainController,
+			       public ControllerImpl
+    {
+      public:
+	MainControllerImpl(bool);
+	virtual ~MainControllerImpl();
+	virtual void cursor(Fresco::Raster_ptr);
+	virtual Fresco::Raster_ptr cursor();
+	
+	virtual CORBA::Boolean receive_focus(Fresco::Focus_ptr f);
+      private:
+	Prague::Mutex      my_mutex;
+	Fresco::Raster_var my_cursor;
+    };
+    
+  } // namespace
 } // namespace
 
 #endif

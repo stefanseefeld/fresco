@@ -22,29 +22,40 @@
 #ifndef _Berlin_DebugGraphic_hh
 #define _Berlin_DebugGraphic_hh
 
-#include <Fresco/config.hh>
-#include <Fresco/Region.hh>
-#include "Berlin/MonoGraphic.hh"
+#include <Berlin/MonoGraphic.hh>
 #include <iostream>
 #include <string>
 
-class DebugGraphic : public MonoGraphic
+namespace Berlin
 {
-public:
-  enum Flags {none = 0x0, requests = 0x1, draws = 0x2, picks = 0x4, traversals = 0x7};
-  DebugGraphic(std::ostream &, const std::string &, unsigned int f = traversals);
-  virtual ~DebugGraphic();
 
-  virtual void request(Fresco::Graphic::Requisition &);
-  virtual void traverse(Fresco::Traversal_ptr);
-  virtual void draw(Fresco::DrawTraversal_ptr);
-  virtual void pick(Fresco::PickTraversal_ptr);
-  virtual void allocate(Fresco::Tag, const Fresco::Allocation::Info &);
-private:
-  void         heading(const char *);
-  std::ostream &_os;
-  std::string   _message;
-  unsigned int  _flags;
-};
+  class DebugGraphic : public MonoGraphic
+  {
+    public:
+      enum Flags
+      {
+	  none = 0x0,
+	  requests = 0x1,
+	  draws = 0x2,
+	  picks = 0x4,
+	  traversals = 0x7
+      };
+      DebugGraphic(std::ostream &, const std::string &,
+		   unsigned int f = traversals);
+      virtual ~DebugGraphic();
+      
+      virtual void request(Fresco::Graphic::Requisition &);
+      virtual void traverse(Fresco::Traversal_ptr);
+      virtual void draw(Fresco::DrawTraversal_ptr);
+      virtual void pick(Fresco::PickTraversal_ptr);
+      virtual void allocate(Fresco::Tag, const Fresco::Allocation::Info &);
+    private:
+      void         heading(const char *);
+      std::ostream &my_os;
+      std::string   my_message;
+      unsigned int  my_flags;
+  };
+
+} // namespace
 
 #endif 

@@ -30,135 +30,145 @@
 #include "Berlin/Console.hh"
 
 using namespace Prague;
+using namespace Berlin;
 
 namespace
 {
   Plugin<Console::Loader> *plugin = 0;
-};
+}
 
 // ---------------------------------------------------------------
 // class Console
 // ---------------------------------------------------------------
 
-Console *Console::_console = 0;
+Console *Console::my_console = 0;
 
 Console::Reaper::~Reaper()
 {
-  delete Console::_console;
-  delete plugin;
+    delete Console::my_console;
+    delete plugin;
 }
 
 Console::console_list_t Console::my_available_consoles;
 
 void Console::cache_available_consoles()
 {
-  static bool cached = false;
-  if (cached) return;
+    static bool cached = false;
+    if (cached) return;
 
-  Prague::Path path = RCManager::get_path("modulepath");
-  for (Prague::Path::iterator path_elt = path.begin(), path_end = path.end();
-       path_elt != path_end; ++path_elt)
-  {
-    Directory dir(*path_elt + "/Console", Directory::alpha, "\\.so$");
-    for (Directory::iterator file = dir.begin(), last_file = dir.end();
-         file != last_file; ++file)
+    Prague::Path path = RCManager::get_path("modulepath");
+    for (Prague::Path::iterator path_elt = path.begin(),
+	     path_end = path.end();
+	 path_elt != path_end;
+	 ++path_elt)
     {
-      try { plugin = new Plugin<Console::Loader>((*file)->long_name());}
-      catch (const std::runtime_error &e)
-      { 
-        Logger::log(Logger::loader) << "Plugin '" << (*file)->name() 
-                                    << "' is not loadable [" << e.what() << "]"
-                                    << std::endl;
-        continue;
-      }
-      delete plugin;
-      plugin = 0;
-      std::string name = (*file)->name();
-      unsigned const dotpos = name.find(".so"); // FIXME breaks if in middle
-      name = name.substr(0,dotpos);
-      my_available_consoles.insert(std::make_pair(name,(*file)->long_name()));
+	Directory dir(*path_elt + "/Console", Directory::alpha, "\\.so$");
+	for (Directory::iterator file = dir.begin(), last_file = dir.end();
+	     file != last_file; ++file)
+	{
+	    try
+	    { plugin = new Plugin<Console::Loader>((*file)->long_name());}
+	    catch (const std::runtime_error &e)
+	    { 
+		Logger::log(Logger::loader) << "Plugin '"
+					    << (*file)->name() 
+					    << "' is not loadable ["
+					    << e.what() << "]"
+					    << std::endl;
+		continue;
+	    }
+	    delete plugin;
+	    plugin = 0;
+	    std::string name = (*file)->name();
+	    unsigned const dotpos = name.find(".so");
+            // FIXME: breaks if in middle ?
+	    name = name.substr(0,dotpos);
+	    my_available_consoles.insert(std::make_pair(name, (*file)->long_name()));
+	}
     }
-  }
-  cached = true;
+    cached = true;
 }
 
 void Console::list_available(std::ostream & o)
 {
-  cache_available_consoles();
-  for (console_list_t::const_iterator iter = my_available_consoles.begin(),
-                                       end = my_available_consoles.end();
-       iter != end; ++iter)
-  {
-    o << iter->first << " (" << iter->second << ")" << std::endl;
-  }
+    cache_available_consoles();
+    for (console_list_t::const_iterator iter = my_available_consoles.begin(),
+	     end = my_available_consoles.end();
+	 iter != end;
+	 ++iter)
+    {
+	o << iter->first << " (" << iter->second << ")" << std::endl;
+    }
 }
 
 bool Console::is_available(std::string const &console)
 {
-  cache_available_consoles();
-  if (my_available_consoles.find(console) != my_available_consoles.end())
-      return true;
-  return false;
+    cache_available_consoles();
+    if (my_available_consoles.find(console) != my_available_consoles.end())
+	return true;
+    return false;
 }
 
 int Console::open(const std::string &console, int argc, char **argv, 
                   PortableServer::POA_ptr poa, 
                   Fresco::PixelCoord x, Fresco::PixelCoord y)
 
-  throw(std::runtime_error)
+    throw(std::runtime_error)
 {
-  cache_available_consoles();
-  if (my_available_consoles.size()==0)
-  {
-    throw std::runtime_error("No valid consoles found in modulepath");
-  }
-  if (!console.empty())
-  {
-      // Console name given: Load exactly the one specified
-      if (!is_available(console))
-      {
-        std::string const msg = "No console named \"" + console + 
-                                "\" found in modulepath.";
-        throw std::runtime_error(msg);
-      }
-      else plugin = new Plugin<Console::Loader>(my_available_consoles[console]);
-  }
-  else
-  {
-    // No specific console requested: load the one which is found first
-    std::string const & console_name = my_available_consoles.begin()->first;
-    try
+    cache_available_consoles();
+    if (my_available_consoles.size()==0)
     {
-      plugin = new Plugin<Console::Loader>(my_available_consoles[console_name]);
+	throw std::runtime_error("No valid consoles found in modulepath");
     }
-    catch (std::runtime_error const &)
+    if (!console.empty())
     {
-      std::string const msg = "Previously-found console " + console_name +
-                              " not available.";
-      throw std::runtime_error(msg);
+	// Console name given: Load exactly the one specified
+	if (!is_available(console))
+	{
+	    std::string const msg = "No console named \"" + console + 
+		"\" found in modulepath.";
+	    throw std::runtime_error(msg);
+	}
+	else plugin = new Plugin<Console::Loader>(my_available_consoles[console]);
     }
-  }
-  _console = (*plugin)->load(argc, argv, x, y);
-  _console->_poa = PortableServer::POA::_duplicate(poa);
-  return argc;
+    else
+    {
+	// No specific console requested: load the one which is found first
+	std::string const & console_name = my_available_consoles.begin()->first;
+	try
+	{
+	    plugin = new Plugin<Console::Loader>(my_available_consoles[console_name]);
+	}
+	catch (std::runtime_error const &)
+	{
+	    std::string const msg = "Previously-found console " +
+		console_name + " not available.";
+	    throw std::runtime_error(msg);
+	}
+    }
+    my_console = (*plugin)->load(argc, argv, x, y);
+    my_console->my_poa = PortableServer::POA::_duplicate(poa);
+    return argc;
 }
 
-Console *Console::instance() { return _console;}
+Console *Console::instance() { return my_console; }
 
-PortableServer::Servant Console::reference_to_servant(Fresco::Drawable_ptr drawable)
+PortableServer::Servant
+Console::reference_to_servant(Fresco::Drawable_ptr drawable)
 {
-  Trace trace("Console::reference_to_servant");
-  try { return _poa->reference_to_servant(drawable);}
-  catch (const PortableServer::POA::ObjectNotActive &) {}
-  catch (const PortableServer::POA::WrongAdapter &) {}
-  catch (const CORBA::OBJECT_NOT_EXIST &) {}
-  return 0;
+    Trace trace("Console::reference_to_servant");
+    try
+    { return my_poa->reference_to_servant(drawable); }
+    catch (const PortableServer::POA::ObjectNotActive &) { }
+    catch (const PortableServer::POA::WrongAdapter &) { }
+    catch (const CORBA::OBJECT_NOT_EXIST &) { }
+    return 0;
 }
 
 Fresco::Drawable_ptr Console::activate_drawable(Console::Drawable *d)
 {
-  Trace trace("Console::activate_drawable");
-  PortableServer::ObjectId_var oid = _poa->activate_object(d);
-  d->_remove_ref();
-  return d->_this();
+    Trace trace("Console::activate_drawable");
+    PortableServer::ObjectId_var oid = my_poa->activate_object(d);
+    d->_remove_ref();
+    return d->_this();
 }

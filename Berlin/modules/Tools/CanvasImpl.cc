@@ -33,72 +33,67 @@
 
 using namespace Prague;
 using namespace Fresco;
+using namespace Berlin::Console_Extension;
 
 using namespace Berlin::ToolKit;
 
-SHMDrawableFactory *CanvasImpl::_factory = 0;
+SHMDrawableFactory *CanvasImpl::my_factory = 0;
 
-CanvasImpl::CanvasImpl(PixelCoord w, PixelCoord h)
-  : _width(w), _height(h)
+CanvasImpl::CanvasImpl(PixelCoord w, PixelCoord h) :
+    my_width(w), my_height(h)
 {
-  Trace trace("CanvasImpl::CanvasImpl");
-  Console *console = Console::instance();
-  std::cout << "I'm still here" << std::endl;
-  if (!_factory) _factory = console->get_extension<SHMDrawableFactory>("SHMDrawableFactory");
-  std::cout << "I'm still here" << std::endl;
-  Fresco::Drawable::PixelFormat format = console->drawable()->pixel_format();
-  size_t size = w * h * format.size;
-  _shm = SHM::allocate(size);
-  Console::Drawable *drawable = _factory->create_drawable(_shm, w, h, 3);
-  _drawable = console->activate_drawable(drawable);
+    Trace trace("CanvasImpl::CanvasImpl");
+    Console *console = Console::instance();
+    if (!my_factory)
+	my_factory = console->get_extension<SHMDrawableFactory>("SHMDrawableFactory");
+    Fresco::Drawable::PixelFormat format =
+	console->drawable()->pixel_format();
+    size_t size = w * h * format.size;
+    my_shm = SHM::allocate(size);
+    Console::Drawable *drawable =
+	my_factory->create_drawable(my_shm, w, h, 3);
+    my_drawable = console->activate_drawable(drawable);
 }
 
 CanvasImpl::~CanvasImpl()
 {
-  Trace trace("CanvasImpl::~CanvasImpl");
-  SHM::deallocate(_shm);
+    Trace trace("CanvasImpl::~CanvasImpl");
+    SHM::deallocate(my_shm);
 }
 
-CORBA::Long CanvasImpl::shm_id()
-{
-  return _shm;
-}
+CORBA::Long CanvasImpl::shm_id() { return my_shm; }
 
 Fresco::Canvas::PixelFormat CanvasImpl::pixel_format()
-{
-  return _drawable->pixel_format();
-}
+{ return my_drawable->pixel_format(); }
 
 Fresco::Canvas::BufferFormat CanvasImpl::buffer_format()
-{
-  return _drawable->buffer_format();
-}
+{ return my_drawable->buffer_format(); }
 
 void CanvasImpl::lock()
-{
-  _mutex.lock();
-}
+{ my_mutex.lock(); }
 
 void CanvasImpl::unlock()
-{
-  _mutex.unlock();
-}
+{ my_mutex.unlock(); }
 
 void CanvasImpl::request(Fresco::Graphic::Requisition &requisition)
 {
-  Trace trace("CanvasImpl::request");
-  requisition.x.defined = true;
-  requisition.x.natural = requisition.x.maximum = requisition.x.minimum = _width * 10;// / _drawable->resolution(xaxis);
-  requisition.x.align = 0.;
-  requisition.y.defined = true;
-  requisition.y.natural = requisition.y.maximum = requisition.y.minimum = _height * 10;// / _drawable->resolution(yaxis);
-  requisition.y.align = 0.;
-  requisition.z.defined = false;
+    Trace trace("CanvasImpl::request");
+    requisition.x.defined = true;
+    requisition.x.natural = requisition.x.maximum =
+	requisition.x.minimum = my_width * 10;
+        // FIXME: my_drawable->resolution(xaxis);
+    requisition.x.align = 0.;
+    requisition.y.defined = true;
+    requisition.y.natural = requisition.y.maximum =
+	requisition.y.minimum = my_height * 10;
+        // FIXME: my_drawable->resolution(yaxis);
+    requisition.y.align = 0.;
+    requisition.z.defined = false;
 }
 
 void CanvasImpl::draw(DrawTraversal_ptr traversal)
 {
-  Trace trace("CanvasImpl::draw");
-  DrawingKit_var drawing = traversal->drawing();
-  drawing->copy_drawable(_drawable, 0, 0, _width, _height);
+    Trace trace("CanvasImpl::draw");
+    DrawingKit_var drawing = traversal->drawing();
+    drawing->copy_drawable(my_drawable, 0, 0, my_width, my_height);
 }

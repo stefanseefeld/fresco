@@ -19,8 +19,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _CanvasImpl_hh
-#define _CanvasImpl_hh
+#ifndef _ToolKit_CanvasImpl_hh
+#define _ToolKit_CanvasImpl_hh
 
 #include <Prague/Sys/Thread.hh>
 #include <Fresco/config.hh>
@@ -29,33 +29,35 @@
 #include <Berlin/Console.hh>
 #include <Berlin/Console/SHMDrawableFactory.hh>
 
-namespace Berlin {
-namespace ToolKit {
-
-class CanvasImpl : public virtual POA_Fresco::Canvas,
-                   public GraphicImpl
+namespace Berlin 
 {
-public:
-  CanvasImpl(Fresco::PixelCoord, Fresco::PixelCoord);
-  virtual ~CanvasImpl();
-  virtual CORBA::Long shm_id();
-  virtual Fresco::Canvas::PixelFormat pixel_format();
-  virtual Fresco::Canvas::BufferFormat buffer_format();
-  virtual void lock();
-  virtual void unlock();
-  
-  virtual void request(Fresco::Graphic::Requisition &);
-  virtual void draw(Fresco::DrawTraversal_ptr);
-private:
-  static SHMDrawableFactory *_factory;
-  Fresco::PixelCoord         _width;
-  Fresco::PixelCoord         _height;
-  Fresco::Drawable_var       _drawable;
-  Prague::Mutex              _mutex;
-  CORBA::Long                _shm;
-};
+  namespace ToolKit
+  {
 
-} // namespace
+    class CanvasImpl : public virtual POA_Fresco::Canvas,
+		       public GraphicImpl
+    {
+      public:
+	CanvasImpl(Fresco::PixelCoord, Fresco::PixelCoord);
+	virtual ~CanvasImpl();
+	virtual CORBA::Long shm_id();
+	virtual Fresco::Canvas::PixelFormat pixel_format();
+	virtual Fresco::Canvas::BufferFormat buffer_format();
+	virtual void lock();
+	virtual void unlock();
+	
+	virtual void request(Fresco::Graphic::Requisition &);
+	virtual void draw(Fresco::DrawTraversal_ptr);
+      private:
+	static Console_Extension::SHMDrawableFactory *my_factory;
+	Fresco::PixelCoord my_width;
+	Fresco::PixelCoord my_height;
+	Fresco::Drawable_var my_drawable;
+	Prague::Mutex my_mutex;
+	CORBA::Long my_shm;
+    };
+
+  } // namespace
 } // namespace
 
 #endif

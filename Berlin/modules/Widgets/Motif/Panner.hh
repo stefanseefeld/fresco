@@ -28,39 +28,44 @@
 #include <Berlin/TransformImpl.hh>
 #include "Adjustable.hh"
 
-namespace Berlin {
-namespace WidgetKit {
-namespace Motif {
-
-class Panner : public Adjustable
+namespace Berlin
 {
-  struct Offset
+  namespace WidgetKit
   {
-    Fresco::Coord lower;
-    Fresco::Coord upper;
-  }; 
-public:
-  Panner(Fresco::BoundedRange_ptr, Fresco::BoundedRange_ptr);
-  void init(Fresco::Controller_ptr);
-  virtual void draw(Fresco::DrawTraversal_ptr);
-  virtual void pick(Fresco::PickTraversal_ptr);
-  virtual void allocate(Fresco::Tag, const Fresco::Allocation::Info &);
-protected:
-  virtual void update(const CORBA::Any &any);
-  virtual void adjust(const Fresco::OriginatedDelta &);
-private:
-  void traverse_thumb(Fresco::Traversal_ptr);
-  RefCount_var<Fresco::BoundedRange> _xvalue;
-  RefCount_var<Fresco::BoundedRange> _yvalue;
-  Offset _offset[2];
-  TransformImpl _pickTrafo;
-  Fresco::Vertex _upperBounds; // upper bounds from last pick traversal, in
-                               // local coords.
-  Fresco::Vertex _scale;
-};
+    namespace Motif
+    {
 
-} // namespace
-} // namespace
+      class Panner : public Adjustable
+      {
+	  struct Offset
+	  {
+	      Fresco::Coord lower;
+	      Fresco::Coord upper;
+	  }; 
+	public:
+	  Panner(Fresco::BoundedRange_ptr, Fresco::BoundedRange_ptr);
+	  void init(Fresco::Controller_ptr);
+	  virtual void draw(Fresco::DrawTraversal_ptr);
+	  virtual void pick(Fresco::PickTraversal_ptr);
+	  virtual void allocate(Fresco::Tag,
+				const Fresco::Allocation::Info &);
+	protected:
+	  virtual void update(const CORBA::Any &any);
+	  virtual void adjust(const Fresco::OriginatedDelta &);
+	private:
+	  void traverse_thumb(Fresco::Traversal_ptr);
+	  RefCount_var<Fresco::BoundedRange> my_xvalue;
+	  RefCount_var<Fresco::BoundedRange> my_yvalue;
+	  Offset my_offset[2];
+	  TransformImpl my_pickTrafo;
+	  Fresco::Vertex my_upperBounds; //.< upper bounds from last
+	                                 //.< pick traversal, in
+                                         //.< local coords.
+	  Fresco::Vertex my_scale;
+      };
+      
+    } // namespace
+  } // namespace
 } // namespace
 
 #endif

@@ -34,19 +34,19 @@ using namespace Berlin::ToolKit;
 
 void Terminal::key_press(const Input::Event &event)
 {
-  Trace trace("Terminal::key_press");
-  StreamBuffer::Data data;
-  data.length(1);
-  const Input::Toggle &toggle = event[0].attr.selection();
-  Char uc(UCS4(toggle.number));
-  char ascii = uc.value();
-  if (isprint(ascii) || ascii == '\r' || ascii == '\n') data[0] = ascii;
-  else switch(toggle.number)
+    Trace trace("Terminal::key_press");
+    StreamBuffer::Data data;
+    data.length(1);
+    const Input::Toggle &toggle = event[0].attr.selection();
+    Char uc(UCS4(toggle.number));
+    char ascii = uc.value();
+    if (isprint(ascii) || ascii == '\r' || ascii == '\n') data[0] = ascii;
+    else switch(toggle.number)
     {
     case Babylon::UC_HORIZONTAL_TABULATION: data[0] = '\t'; break;
     case Babylon::UC_BACKSPACE:             data[0] = '\b'; break;
     default: return; // don't know how to handle...
     }
-  _buffer->write(data);
-//   buffer->flush();
+    my_buffer->write(data);
+//   my_buffer->flush();
 }

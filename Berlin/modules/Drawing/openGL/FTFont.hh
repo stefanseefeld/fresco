@@ -20,8 +20,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _FTFont_hh
-#define _FTFont_hh
+#ifndef _openGL_FTFont_hh
+#define _openGL_FTFont_hh
 
 #include <Prague/Sys/MMap.hh>
 #include <Fresco/config.hh>
@@ -37,47 +37,52 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-namespace Berlin {
-namespace DrawingKit {
-namespace openGL {
-
-class FTFont
-//. This is a Freetype font.
+namespace Berlin
 {
-public:
-  FTFont(GLContext *my_glcontext);
-  virtual ~FTFont();
-  virtual CORBA::ULong size();
-  virtual CORBA::ULong weight();
-  virtual Fresco::Unistring *family();
-  virtual Fresco::Unistring *subfamily();
-  virtual Fresco::Unistring *fullname();
-  virtual Fresco::Unistring *style();
-  virtual Fresco::DrawingKit::FontMetrics metrics();
-  virtual Fresco::DrawingKit::GlyphMetrics metrics(Fresco::Unichar);
+  namespace DrawingKit
+  {
+    namespace openGL
+    {
 
-  virtual void set_transform(const Fresco::Transform_var);
-  virtual void size(CORBA::ULong);
+      //. This is a Freetype font.
+      class FTFont
+      {
+	public:
+	  FTFont(Console_Extension::GLContext *my_glcontext);
+	  virtual ~FTFont();
+	  virtual CORBA::ULong size();
+	  virtual CORBA::ULong weight();
+	  virtual Fresco::Unistring *family();
+	  virtual Fresco::Unistring *subfamily();
+	  virtual Fresco::Unistring *fullname();
+	  virtual Fresco::Unistring *style();
+	  virtual Fresco::DrawingKit::FontMetrics metrics();
+	  virtual Fresco::DrawingKit::GlyphMetrics
+	  metrics(Fresco::Unichar);
 
-  void draw_char(Fresco::Unichar);
-  void allocate_char(Fresco::Unichar, Fresco::Graphic::Requisition &);
-private:
-  class DrawChar;
-  friend class DrawChar;
-  FT_Face    my_face;
-  Fresco::Transform_var _tr;
-  CORBA::ULong my_size;
-  FT_Library my_library;
-  Fresco::Unistring _family;
-  Fresco::Unistring _subfamily;
-  Fresco::Unistring _fullname;
-  Fresco::Unistring _style;
+	  virtual void set_transform(const Fresco::Transform_var);
+	  virtual void size(CORBA::ULong);
+	  
+	  void draw_char(Fresco::Unichar);
+	  void allocate_char(Fresco::Unichar,
+			     Fresco::Graphic::Requisition &);
+	private:
+	  class DrawChar;
+	  friend class DrawChar;
+	  FT_Face  my_face;
+	  Fresco::Transform_var my_tr;
+	  CORBA::ULong my_size;
+	  FT_Library my_library;
+	  Fresco::Unistring my_family;
+	  Fresco::Unistring my_subfamily;
+	  Fresco::Unistring my_fullname;
+	  Fresco::Unistring my_style;
 
-  GLContext *my_glcontext;
-};
+	  Console_Extension::GLContext *my_glcontext;
+      };
 
-} // namespace
-} // namespace
+    } // namespace
+  } // namespace
 } // namespace
 
 #endif

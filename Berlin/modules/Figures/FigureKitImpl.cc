@@ -142,8 +142,8 @@ Graphic_ptr FigureKitImpl::transformer(Graphic_ptr g)
 }
 
 
-extern "C" KitImpl *load()
+extern "C" Berlin::KitImpl *load()
 {
     static std::string properties[] = {"implementation", "FigureKitImpl"};
-    return create_prototype<FigureKitImpl> ("IDL:fresco.org/Fresco/FigureKit:1.0", properties, 2);
+    return Berlin::create_prototype<FigureKitImpl> ("IDL:fresco.org/Fresco/FigureKit:1.0", properties, 2);
 }

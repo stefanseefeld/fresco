@@ -19,32 +19,37 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Dragger_hh
-#define _Dragger_hh
+#ifndef _ToolKit_Dragger_hh
+#define _ToolKit_Dragger_hh
 
 #include <Fresco/config.hh>
 #include <Fresco/Command.hh>
 #include <Berlin/ControllerImpl.hh>
 #include <Berlin/RefCountVar.hh>
 
-namespace Berlin {
-namespace ToolKit {
-
-class Dragger : public ControllerImpl
+namespace Berlin
 {
-public:
-  Dragger(Fresco::Command_ptr);
-  virtual ~Dragger();
-//protected:
-  virtual void press(Fresco::PickTraversal_ptr, const Fresco::Input::Event &);
-  virtual void drag(Fresco::PickTraversal_ptr, const Fresco::Input::Event &);
-  virtual void release(Fresco::PickTraversal_ptr, const Fresco::Input::Event &);
-private:
-  Fresco::Vertex      _offset;
-  Fresco::Command_var _command;
-};
+  namespace ToolKit
+  {
 
-} // namespace
+    class Dragger : public ControllerImpl
+    {
+      public:
+	Dragger(Fresco::Command_ptr);
+	virtual ~Dragger();
+      // protected:
+	virtual void press(Fresco::PickTraversal_ptr,
+			   const Fresco::Input::Event &);
+	virtual void drag(Fresco::PickTraversal_ptr,
+			  const Fresco::Input::Event &);
+	virtual void release(Fresco::PickTraversal_ptr,
+			     const Fresco::Input::Event &);
+      private:
+	Fresco::Vertex      my_offset;
+	Fresco::Command_var my_command;
+    };
+    
+  } // namespace
 } // namespace
 
 #endif

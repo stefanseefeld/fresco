@@ -19,8 +19,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _TerminalView_hh
-#define _TerminalView_hh
+#ifndef _TextKit_TerminalView_hh
+#define _TextKit_TerminalView_hh
 
 #include <Fresco/config.hh>
 #include <Fresco/View.hh>
@@ -29,31 +29,34 @@
 #include "Composition.hh"
 #include <vector>
 
-namespace Berlin {
-namespace TextKit {
-
-class TerminalView : public virtual ViewImpl,
-		     public Composition
+namespace Berlin
 {
-  typedef std::vector<Composition *> lines_t;
- public:
-  TerminalView(Fresco::StreamBuffer_ptr, Fresco::TextKit_ptr, Fresco::DrawingKit_ptr, Compositor *, Compositor *);
-  virtual ~TerminalView();
-  virtual void request(Fresco::Graphic::Requisition &);
-  virtual void need_resize();
-  virtual void update(const CORBA::Any &);
- protected:
-  void begin();
-  void end();
-  Fresco::StreamBuffer_ptr _stream;
-  Fresco::TextKit_var      _kit;
-  Fresco::DrawingKit_var   _canonicalDK;
-  Compositor              *_compositor;
-  lines_t                  _lines;
-  bool                     _locked;
-};
+  namespace TextKit
+  {
 
-} // namespace
+    class TerminalView : public virtual ViewImpl,
+			 public Composition
+    {
+	typedef std::vector<Composition *> lines_t;
+      public:
+	TerminalView(Fresco::StreamBuffer_ptr, Fresco::TextKit_ptr,
+		     Fresco::DrawingKit_ptr, Compositor *, Compositor *);
+	virtual ~TerminalView();
+	virtual void request(Fresco::Graphic::Requisition &);
+	virtual void need_resize();
+	virtual void update(const CORBA::Any &);
+      protected:
+	void begin();
+	void end();
+	Fresco::StreamBuffer_ptr my_stream;
+	Fresco::TextKit_var      my_kit;
+	Fresco::DrawingKit_var   my_canonicalDK;
+	Compositor              *my_compositor;
+	lines_t                  my_lines;
+	bool                     my_locked;
+    };
+
+  } // namespace
 } // namespace
 
 #endif

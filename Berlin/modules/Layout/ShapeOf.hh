@@ -24,23 +24,26 @@
 
 #include <Berlin/GraphicImpl.hh>
 
-namespace Berlin {
-namespace LayoutKit {
-
-class ShapeOf : public GraphicImpl
+namespace Berlin
 {
-public:
-  ShapeOf(Fresco::Graphic_ptr, Fresco::Graphic_ptr, Fresco::Graphic_ptr);
-  virtual ~ShapeOf();
+  namespace LayoutKit
+  {
 
-  virtual void request(Fresco::Graphic::Requisition &);
-private:
-  Fresco::Graphic_var x;
-  Fresco::Graphic_var y;
-  Fresco::Graphic_var z;
-};
+    class ShapeOf : public GraphicImpl
+    {
+      public:
+	ShapeOf(Fresco::Graphic_ptr, Fresco::Graphic_ptr,
+		Fresco::Graphic_ptr);
+	virtual ~ShapeOf();
 
-} // namespace
+	virtual void request(Fresco::Graphic::Requisition &);
+      private:
+	Fresco::Graphic_var my_x;
+	Fresco::Graphic_var my_y;
+	Fresco::Graphic_var my_z;
+    };
+
+  } // namespace
 } // namespace
 
 #endif

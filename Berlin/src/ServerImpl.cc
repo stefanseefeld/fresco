@@ -30,6 +30,7 @@
 
 using namespace Prague;
 using namespace Fresco;
+using namespace Berlin;
 
 ServerImpl *ServerImpl::my_server = 0;;
 

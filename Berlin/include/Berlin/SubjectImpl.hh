@@ -30,23 +30,28 @@
 #include "Berlin/IdentifiableImpl.hh"
 #include <vector>
 
-class SubjectImpl : public virtual POA_Fresco::Subject,
-		    public virtual RefCountBaseImpl,
-                    public virtual IdentifiableImpl
+namespace Berlin
 {
-  typedef std::vector<Fresco::Observer_var> olist_t;
-public:
-  SubjectImpl();
-  void attach(Fresco::Observer_ptr);
-  void detach(Fresco::Observer_ptr);
-  void notify(const CORBA::Any &);
-  virtual void notify();
-  void block(CORBA::Boolean);  
-private:
-  olist_t        _observers;
-  CORBA::Boolean _blocked;
-  Prague::Mutex  _mutex;
-  Prague::Mutex  _observerMutex;
-};
+
+  class SubjectImpl : public virtual POA_Fresco::Subject,
+		      public virtual RefCountBaseImpl,
+		      public virtual IdentifiableImpl
+  {
+      typedef std::vector<Fresco::Observer_var> olist_t;
+    public:
+      SubjectImpl();
+      void attach(Fresco::Observer_ptr);
+      void detach(Fresco::Observer_ptr);
+      void notify(const CORBA::Any &);
+      virtual void notify();
+      void block(CORBA::Boolean);  
+    private:
+      olist_t        my_observers;
+      CORBA::Boolean my_blocked;
+      Prague::Mutex  my_mutex;
+      Prague::Mutex  my_observerMutex;
+  };
+
+} // namespace
 
 #endif 

@@ -19,151 +19,164 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _GapBuffer_hh
-#define _GapBuffer_hh
+#ifndef _Berlin_GapBuffer_hh
+#define _Berlin_GapBuffer_hh
 
 #include <vector>
 
-/*
- * the design of a gap buffer should follow the typical behavior
- * when editing text. Editing text has two parts: modifying it
- * and simply browsing it. The text contains a 'cursor', which indicates
- * the actual position. When in editing mode, we have to take care to
- * use smart memory management. For this purpose we introduce a little
- * memory gap into the string where new characters can be inserted,
- * so not on every insert() all the following characters have to be moved
- *
- * a gap buffer is layed out like this:
- *   
- *   |***********************..........**********|
- *   ^                      ^         ^          ^
- *  begin()                gbegin()  gend()     end()
- *
- * the following (in)equalities should always hold:
- * 
- * gend() > gbegin()
- * gend() - gbegin() <= gmaxsize()
- * end() >= gend()
- * 
- */
-template <class T, short gapsize>
-class GapBuffer : private std::vector<T>
+namespace Berlin
 {
-  typedef std::vector<T> rep_type;
-  typedef typename rep_type::value_type value_type;
-  typedef typename rep_type::iterator iterator;
-  typedef unsigned int size_type;
-  iterator gbegin() { return begin() + _gapbegin;}
-  iterator gend() { return begin() + _gapend;}
-  iterator cursor() { return begin() + _cursor;}
-  void newgap()
+
+  /*
+   * the design of a gap buffer should follow the typical behavior
+   * when editing text. Editing text has two parts: modifying it
+   * and simply browsing it. The text contains a 'cursor', which indicates
+   * the actual position. When in editing mode, we have to take care to
+   * use smart memory management. For this purpose we introduce a little
+   * memory gap into the string where new characters can be inserted,
+   * so not on every insert() all the following characters have to be moved
+   *
+   * a gap buffer is layed out like this:
+   *   
+   *   |***********************..........**********|
+   *   ^                      ^         ^          ^
+   *  begin()                gbegin()  gend()     end()
+   *
+   * the following (in)equalities should always hold:
+   * 
+   * gend() > gbegin()
+   * gend() - gbegin() <= gmaxsize()
+   * end() >= gend()
+   * 
+   */
+  template <class T, short gapsize>
+  class GapBuffer : private std::vector<T>
   {
-    rep_type::insert(gbegin(), gapsize, value_type(0));
-    _gapend += gapsize;
-  }
-  void movegap(int d)
-  {
-    if (d > 0)
+      typedef std::vector<T> rep_type;
+      typedef typename rep_type::value_type value_type;
+      typedef typename rep_type::iterator iterator;
+      typedef unsigned int size_type;
+      iterator gbegin() { return begin() + my_gapbegin;}
+      iterator gend() { return begin() + my_gapend;}
+      iterator cursor() { return begin() + my_cursor;}
+      void newgap()
       {
-	if (gend() + d > end()) rep_type::insert(end(), size_type(gend() + d - end()), value_type(0));
-	copy(gend(), gend() + d, gbegin());
+	  rep_type::insert(gbegin(), gapsize, value_type(0));
+	  my_gapend += gapsize;
       }
-    else
-      copy(rep_type::reverse_iterator(gbegin()),
-	   rep_type::reverse_iterator(gbegin() + d),
-	   rep_type::reverse_iterator(gend()));
-    _gapbegin += d, _gapend += d;
-  }
-  size_type gap() { return _gapend - _gapbegin; }
-  void editing() { size_type d = _cursor - _gapbegin; if (d != 0) movegap(d); }
-  void compact() { size_type d = end() - gend(); if (d > 0) movegap(d); }
-public:
-  GapBuffer() : _cursor(0), _gapbegin(0), _gapend(0) {}
-  size_type size() { compact(); return gbegin() - begin(); }
-  void forward()
-    {
-      if (_cursor == _gapbegin && gend() != end()) _cursor += gap();
-      else if (cursor() < end()) _cursor++;
-    }
-  void backward()
-    {
-      if (_cursor == _gapend) _cursor -= gap();
-      else if (cursor() > begin()) _cursor--;
-    }
-  void shift(size_type d)
-    {
-      size_type tmp = _cursor + d;
-      if ((_cursor > _gapend && tmp > _gapend) || (_cursor <= _gapbegin && tmp <= _gapbegin)) _cursor = tmp;
-      else if (d < 0) _cursor += d - gap();
-      else _cursor += d + gap();
-    }
-  size_type position() { return _cursor > _gapend ? _cursor - gap() : _cursor;}
-  void position(size_type p) { shift(p - _cursor);}
-  void insert(value_type u)
-    {
-      editing();
-      if (!gap()) newgap();
-      *cursor() = u;
-      _cursor++, _gapbegin++;
-    }
-  void insert(value_type *u, size_type n)
-    {
-      editing();
-      rep_type::insert(cursor(), u, u + n);
-      _cursor += n, _gapbegin += n, _gapend += n;
-    }
-  void remove_backward(size_type n)
-    {
-      if (_cursor <= _gapbegin)
-	{
-	  if (_cursor < n) n = _cursor;
-	  erase(cursor() - n, cursor());
-	  _cursor -= n, _gapbegin -= n, _gapend -= n;
-	}
-      else if (_cursor - _gapend > n)
-	{
-	  erase(cursor() - n, cursor());
-	  _cursor -= n;
-	}
-      else
-	{
-	  size_type d = _cursor - _gapend;
-	  erase(gbegin() - (n - d), gbegin());
-	  erase(cursor() - d, cursor());
-	  _gapbegin -= n - d, _gapend -= n - d;
-	  _cursor -= n;
-	}
-    }
-  void remove_forward(size_type n)
-    {
-      if (_cursor >= _gapend)
-	{
-	  if (size_type(end() - cursor()) < n) n = end() - cursor();
-	  erase(cursor(), cursor() + n);
-	}
-      else if (_gapbegin - _cursor > n)
-	{
-	  erase(cursor(), cursor() + n);
-	  _gapbegin -= n, _gapend -= n;
-	}
-      else
-	{
-	  size_type d = _gapbegin - _cursor;
-	  erase(gend(), gend() + (n - d));
-	  erase(cursor(), cursor() + d);
-	  _gapbegin -= d, _gapend -= d;
-	}
-    }
-  const value_type *get() { compact(); return &*begin();}
-  void clear_buffer()
-  {
-    position(0);
-    remove_forward(size());
-  }
-private:
-  size_type _cursor;
-  size_type _gapbegin;
-  size_type _gapend;
-};
+      void movegap(int d)
+      {
+	  if (d > 0)
+	  {
+	      if (gend() + d > end())
+		  rep_type::insert(end(), size_type(gend() + d - end()),
+				   value_type(0));
+	      copy(gend(), gend() + d, gbegin());
+	  }
+	  else
+	      copy(rep_type::reverse_iterator(gbegin()),
+		   rep_type::reverse_iterator(gbegin() + d),
+		   rep_type::reverse_iterator(gend()));
+	  my_gapbegin += d, my_gapend += d;
+      }
+      size_type gap() { return my_gapend - my_gapbegin; }
+      void editing()
+      { size_type d = my_cursor - my_gapbegin; if (d != 0) movegap(d); }
+      void compact()
+      { size_type d = end() - gend(); if (d > 0) movegap(d); }
+    public:
+      GapBuffer() : my_cursor(0), my_gapbegin(0), my_gapend(0) {}
+      size_type size() { compact(); return gbegin() - begin(); }
+      void forward()
+      {
+	  if (my_cursor == my_gapbegin && gend() != end())
+	      my_cursor += gap();
+	  else if (cursor() < end()) my_cursor++;
+      }
+      void backward()
+      {
+	  if (my_cursor == my_gapend) my_cursor -= gap();
+	  else if (cursor() > begin()) my_cursor--;
+      }
+      void shift(size_type d)
+      {
+	  size_type tmp = my_cursor + d;
+	  if ((my_cursor > my_gapend && tmp > my_gapend) ||
+	      (my_cursor <= my_gapbegin && tmp <= my_gapbegin))
+	      my_cursor = tmp;
+	  else if (d < 0) my_cursor += d - gap();
+	  else my_cursor += d + gap();
+      }
+      size_type position()
+      { return my_cursor > my_gapend ? my_cursor - gap() : my_cursor;}
+      void position(size_type p) { shift(p - my_cursor);}
+      void insert(value_type u)
+      {
+	  editing();
+	  if (!gap()) newgap();
+	  *cursor() = u;
+	  my_cursor++, my_gapbegin++;
+      }
+      void insert(value_type *u, size_type n)
+      {
+	  editing();
+	  rep_type::insert(cursor(), u, u + n);
+	  my_cursor += n, my_gapbegin += n, my_gapend += n;
+      }
+      void remove_backward(size_type n)
+      {
+	  if (my_cursor <= my_gapbegin)
+	  {
+	      if (my_cursor < n) n = my_cursor;
+	      erase(cursor() - n, cursor());
+	      my_cursor -= n, my_gapbegin -= n, my_gapend -= n;
+	  }
+	  else if (my_cursor - my_gapend > n)
+	  {
+	      erase(cursor() - n, cursor());
+	      my_cursor -= n;
+	  }
+	  else
+	  {
+	      size_type d = my_cursor - my_gapend;
+	      erase(gbegin() - (n - d), gbegin());
+	      erase(cursor() - d, cursor());
+	      my_gapbegin -= n - d, my_gapend -= n - d;
+	      my_cursor -= n;
+	  }
+      }
+      void remove_forward(size_type n)
+      {
+	  if (my_cursor >= my_gapend)
+	  {
+	      if (size_type(end() - cursor()) < n) n = end() - cursor();
+	      erase(cursor(), cursor() + n);
+	  }
+	  else if (my_gapbegin - my_cursor > n)
+	  {
+	      erase(cursor(), cursor() + n);
+	      my_gapbegin -= n, my_gapend -= n;
+	  }
+	  else
+	  {
+	      size_type d = my_gapbegin - my_cursor;
+	      erase(gend(), gend() + (n - d));
+	      erase(cursor(), cursor() + d);
+	      my_gapbegin -= d, my_gapend -= d;
+	  }
+      }
+      const value_type *get() { compact(); return &*begin(); }
+      void clear_buffer()
+      {
+	  position(0);
+	  remove_forward(size());
+      }
+    private:
+      size_type my_cursor;
+      size_type my_gapbegin;
+      size_type my_gapend;
+  };
+
+} // namespace
 
 #endif

@@ -19,8 +19,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _ObserverImpl_hh
-#define _ObserverImpl_hh
+#ifndef _Berlin_ObserverImpl_hh
+#define _Berlin_ObserverImpl_hh
 
 #include <Fresco/config.hh>
 #include <Fresco/Observer.hh>
@@ -28,12 +28,17 @@
 #include <Berlin/ServantBase.hh>
 #include <Berlin/IdentifiableImpl.hh>
 
-class ObserverImpl : public virtual POA_Fresco::Observer,
-		     public virtual ServantBase,
-		     public virtual IdentifiableImpl
+namespace Berlin
 {
-public:
-  virtual void destroy() { deactivate();}
-};
+
+  class ObserverImpl : public virtual POA_Fresco::Observer,
+		       public virtual ServantBase,
+		       public virtual IdentifiableImpl
+  {
+    public:
+      virtual void destroy() { deactivate(); }
+  };
+
+} // namespace
 
 #endif 

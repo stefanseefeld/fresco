@@ -56,20 +56,22 @@ void Berlin::FigureKit::PolyFigure::update_bbox()
         {
             Allocation::Info info;
             for (CORBA::ULong i = 0; i < n; i++)
-		_children[i].peer->extension(info,
-					     Region_var(my_bbox->_this()));
+		my_children[i].peer->
+		    extension(info, Region_var(my_bbox->_this()));
         }
     }
 }
 
-void Berlin::FigureKit::PolyFigure::allocate(Tag, const Allocation::Info &info)
+void Berlin::FigureKit::PolyFigure::allocate(Tag,
+					     const Allocation::Info &info)
 {
     // undefine the allocation...how ? -Stefan
     // info.allocation->;
     info.transformation->premultiply(Transform_var(my_tx->_this()));
 }
 
-void Berlin::FigureKit::PolyFigure::request(Fresco::Graphic::Requisition &r)
+void
+Berlin::FigureKit::PolyFigure::request(Fresco::Graphic::Requisition &r)
 {
     GraphicImpl::init_requisition(r);
     Impl_var<RegionImpl> region(new RegionImpl);
@@ -125,21 +127,21 @@ void Berlin::FigureKit::PolyFigure::traverse(Traversal_ptr traversal)
     CORBA::Long n = num_children();
     for (CORBA::Long i = 0; i != n && traversal->ok(); i++)
     {
-        Graphic_var child = _children[i].peer;
+        Graphic_var child = my_children[i].peer;
         if (CORBA::is_nil(child)) continue;
         try
         {
-            traversal->traverse_child(child, _children[i].localId,
+            traversal->traverse_child(child, my_children[i].localId,
                                       Region_var(my_bbox->_this()),
                                       Transform_var(my_tx->_this()));
         }
         catch (const CORBA::OBJECT_NOT_EXIST &)
         {
-            _children [i].peer = Fresco::Graphic::_nil ();
+            my_children [i].peer = Fresco::Graphic::_nil ();
         }
         catch (const CORBA::COMM_FAILURE &)
         {
-            _children [i].peer = Fresco::Graphic::_nil ();
+            my_children [i].peer = Fresco::Graphic::_nil ();
         }
     }
 }
@@ -166,13 +168,13 @@ void Berlin::FigureKit::PolyFigure::need_resize()
     PolyGraphic::need_resize();
 }
 
-Berlin::FigureKit::UPolyFigure::UPolyFigure(const UPolyFigure &up) : PolyFigure(up) { }
+Berlin::FigureKit::UPolyFigure::UPolyFigure(const UPolyFigure &up) :
+    PolyFigure(up)
+{ }
 
 /*
  * FIXME !!!: implement this according to Fresco's comments
  *            in figures.idl: FigureKit::ugroup()
  */
 void Berlin::FigureKit::UPolyFigure::traverse(Traversal_ptr traversal)
-{
-    Trace trace("UPolyFigure::traverse");
-}
+{ Trace trace("UPolyFigure::traverse"); }

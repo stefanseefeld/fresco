@@ -25,38 +25,35 @@ using namespace Fresco;
 
 using namespace Berlin::LayoutKit;
 
-ShapeOf::ShapeOf(Graphic_ptr xx, Graphic_ptr yy, Graphic_ptr zz)
-  : x(Fresco::Graphic::_duplicate(xx)),
-    y(Fresco::Graphic::_duplicate(yy)),
-    z(Fresco::Graphic::_duplicate(zz))
-{
-}
+ShapeOf::ShapeOf(Graphic_ptr xx, Graphic_ptr yy, Graphic_ptr zz) :
+    my_x(Fresco::Graphic::_duplicate(xx)),
+    my_y(Fresco::Graphic::_duplicate(yy)),
+    my_z(Fresco::Graphic::_duplicate(zz))
+{ }
 
-ShapeOf::~ShapeOf()
-{
-}
+ShapeOf::~ShapeOf() { }
 
 void ShapeOf::request(Fresco::Graphic::Requisition &r)
 {
-  if (CORBA::is_nil(y) && CORBA::is_nil(z)) x->request(r);
-  else
+    if (CORBA::is_nil(my_y) && CORBA::is_nil(my_z)) my_x->request(r);
+    else
     {
-      Fresco::Graphic::Requisition req;
-      GraphicImpl::init_requisition(req);
-      if (!CORBA::is_nil(x))
+	Fresco::Graphic::Requisition req;
+	GraphicImpl::init_requisition(req);
+	if (!CORBA::is_nil(my_x))
 	{
-	  x->request(req);
-	  r.x = req.x;
+	    my_x->request(req);
+	    r.x = req.x;
 	}
-      if (!CORBA::is_nil(y))
+	if (!CORBA::is_nil(my_y))
 	{
-	  y->request(req);
-	  r.y = req.y;
+	    my_y->request(req);
+	    r.y = req.y;
 	}
-      if (CORBA::is_nil(z))
+	if (CORBA::is_nil(my_z))
 	{
-	  z->request(req);
-	  r.z = req.z;
+	    my_z->request(req);
+	    r.z = req.z;
 	}
     }
 }

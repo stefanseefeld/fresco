@@ -35,6 +35,7 @@
 
 using namespace Prague;
 using namespace Fresco;
+using namespace Berlin;
 
 unsigned long ServerContextImpl::my_counter = 0;
 

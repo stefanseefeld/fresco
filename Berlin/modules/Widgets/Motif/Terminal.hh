@@ -19,8 +19,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Motif_Terminal_hh
-#define _Motif_Terminal_hh
+#ifndef _WidgetKit_Motif_Terminal_hh
+#define _WidgetKit_Motif_Terminal_hh
 
 #include <Fresco/config.hh>
 #include <Fresco/CommandKit.hh>
@@ -31,44 +31,49 @@
 #include <Berlin/RefCountVar.hh>
 #include <Prague/IPC/TTYAgent.hh>
 
-namespace Berlin {
-namespace WidgetKit {
-namespace Motif {
-
-class Terminal : public MonoGraphic
+namespace Berlin
 {
-  class Input : public ObserverImpl
+  namespace WidgetKit
   {
-  public:
-    Input(Terminal *t) : terminal(t) {}
-    virtual void update(const CORBA::Any &);
-  private:
-    Terminal *terminal;
-  };
-  class Output : public Prague::Coprocess::IONotifier
-  {
-  public:
-    Output(Terminal *t) : terminal(t) {}
-    virtual bool notify(Prague::Agent::iomask);
-  private:
-    Terminal *terminal;
-  };
-  friend class Input;
-  friend class Output;
- public:
-  Terminal(Fresco::CommandKit_ptr);
-  Fresco::StreamBuffer_ptr input() { return Fresco::StreamBuffer::_duplicate(ibuf);}
-  Fresco::StreamBuffer_ptr output() { return Fresco::StreamBuffer::_duplicate(obuf);}
- private:
-  Input *_input;
-  Output *_output;
-  Prague::TTYAgent *agent;
-  RefCount_var<Fresco::StreamBuffer> ibuf;
-  RefCount_var<Fresco::StreamBuffer> obuf;
-};
+    namespace Motif
+    {
 
-} // namespace
-} // namespace
+      class Terminal : public MonoGraphic
+      {
+	  class Input : public ObserverImpl
+	  {
+	    public:
+	      Input(Terminal *t) : my_terminal(t) { }
+	      virtual void update(const CORBA::Any &);
+	    private:
+	      Terminal *my_terminal;
+	  };
+	  class Output : public Prague::Coprocess::IONotifier
+	  {
+	    public:
+	      Output(Terminal *t) : my_terminal(t) { }
+	      virtual bool notify(Prague::Agent::iomask);
+	    private:
+	      Terminal *my_terminal;
+	  };
+	  friend class Input;
+	  friend class Output;
+	public:
+	  Terminal(Fresco::CommandKit_ptr);
+	  Fresco::StreamBuffer_ptr input()
+	  { return Fresco::StreamBuffer::_duplicate(my_ibuf); }
+	  Fresco::StreamBuffer_ptr output()
+	  { return Fresco::StreamBuffer::_duplicate(my_obuf); }
+	private:
+	  Input *my_input;
+	  Output *my_output;
+	  Prague::TTYAgent *my_agent;
+	  RefCount_var<Fresco::StreamBuffer> my_ibuf;
+	  RefCount_var<Fresco::StreamBuffer> my_obuf;
+      };
+
+    } // namespace
+  } // namespace
 } // namespace
 
 #endif

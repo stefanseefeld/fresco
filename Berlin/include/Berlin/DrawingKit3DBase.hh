@@ -21,8 +21,8 @@
  * MA 02139, USA.
  */
 
-#ifndef _DrawingKit3DBase_hh
-#define _DrawingKit3DBase_hh
+#ifndef _Berlin_DrawingKit3DBase_hh
+#define _Berlin_DrawingKit3DBase_hh
 
 #include <Fresco/config.hh>
 #include <Fresco/DrawingKit3D.hh>
@@ -30,118 +30,121 @@
 
 #include <stack>
 
-class DrawingKit3DBase : public virtual POA_Fresco::DrawingKit3D
+namespace Berlin
 {
- private:
 
-    // Which parts of the state was stored?
-    enum g3dstate {
-	st3d_material,
-	st3d_textures,
-	st3d_tex_mode,
-	st3d_fog_mode,
-	st3d_last 
-    };
+  class DrawingKit3DBase : public virtual POA_Fresco::DrawingKit3D
+  {
+    private:
+
+      // Which parts of the state was stored?
+      enum g3dstate
+      {
+	  st3d_material,
+	  st3d_textures,
+	  st3d_tex_mode,
+	  st3d_fog_mode,
+	  st3d_last 
+      };
     
-    // 3D drawing state
-    struct Draw3DState {
-	unsigned long flags;
-	MaterialAttr_var saved_material;
-	Rasters_var saved_textures;
-	TextureMode saved_texmode;
-	FoggingMode saved_fogmode;
-	// need lights and lots of other stuff here as well
-    };
+      // 3D drawing state
+      struct Draw3DState
+      {
+	  unsigned long flags;
+	  MaterialAttr_var saved_material;
+	  Rasters_var saved_textures;
+	  TextureMode saved_texmode;
+	  FoggingMode saved_fogmode;
+	  // need lights and lots of other stuff here as well
+      };
     
- public:
+    public:
     
-    // Save and restore the current drawing state. Some drawing
-    // targets may be able to do this themselves, so we keep these
-    // functions virtual.
-    virtual void saveState() { DrawState3D st; states.push(st); }
-    virtual void restoreState(); 
-    
-    virtual MaterialAttr material() = 0;
-    virtual void material(const MaterialAttr&) = 0;
-    virtual Rasters* textures() = 0;
-    virtual void textures(const Rasters&) = 0;
-    virtual TextureMode texMode() = 0;
-    virtual void texMode(TextureMode) = 0;
-    virtual FoggingMode fogMode() = 0;
-    virtual void fogMode(FoggingMode) = 0;
-    virtual void drawTriangles(const Vertices &, const Vertices &,
-			       const TexCoords &) = 0;
-    virtual void drawLines(const Vertices &, const TexCoords &) = 0;
-    virtual void drawPoints(const Vertices &) = 0;
+      // Save and restore the current drawing state. Some drawing
+      // targets may be able to do this themselves, so we keep these
+      // functions virtual.
+      virtual void saveState() { DrawState3D st; states.push(st); }
+      virtual void restoreState(); 
+      
+      virtual MaterialAttr material() = 0;
+      virtual void material(const MaterialAttr&) = 0;
+      virtual Rasters* textures() = 0;
+      virtual void textures(const Rasters&) = 0;
+      virtual TextureMode texMode() = 0;
+      virtual void texMode(TextureMode) = 0;
+      virtual FoggingMode fogMode() = 0;
+      virtual void fogMode(FoggingMode) = 0;
+      virtual void drawTriangles(const Vertices &, const Vertices &,
+				 const TexCoords &) = 0;
+      virtual void drawLines(const Vertices &, const TexCoords &) = 0;
+      virtual void drawPoints(const Vertices &) = 0;
+      
+      virtual void flush() = 0;
 
-    virtual void flush() = 0;
+    protected:
 
- protected:
+      // -- Helper functions (should be able to keep these protected)
+      virtual void setMaterial(const MaterialAttr&) = 0;
+      virtual void setTextures(const Rasters&) = 0;
+      virtual void setTexMode(TextureMode) = 0;
+      virtual void setFogMode(FoggingMode) = 0;
+      
+    private:
+      
+      // Drawing state stack
+      stack<DrawState3D> my_states;
+  };
 
-    // -- Helper functions (should be able to keep these protected)
-    virtual void setMaterial(const MaterialAttr&) = 0;
-    virtual void setTextures(const Rasters&) = 0;
-    virtual void setTexMode(TextureMode) = 0;
-    virtual void setFogMode(FoggingMode) = 0;
-	
- private:
+  //  -- Inline class methods
 
-    // Drawing state stack
-    stack<DrawState3D> states;
-};
+  inline void DrawingKit3DBase::restoreState()
+  {
+      // Sanity check
+      if (states.empty()) return;
+      
+      // We need to restore _only_ those states that were changed 
+      DrawState3D prev = states.top();
+      if (prev.flags & (1 << st3d_material))
+	  ; // FIXME: Huch? This code is broken!
+  }
 
-//  -- Inline class methods
-
-inline void DrawingKit3DBase::restoreState()
-{
-    // Sanity check
-    if (states.empty()) return;
-
-    enum g3dstate {
-	st3d_material,
-	st3d_textures,
-	st3d_texmode,
-	st3d_fogmode,
-	st3d_last 
-    };
-
-    // We need to restore _only_ those states that were changed 
-    DrawState3D prev = states.top();
-    if (prev.flags & (1 << st3d_material)) 
-}
-
-// This code is unashamedly lifted from the DrawingKitBase.hh...
+  // This code is unashamedly lifted from the DrawingKitBase.hh...
+  // It states there:
+  // sorry, I hate macros as much as the next guy,
+  // but in this case, templates are simply not cutting it.
 #define REMEMBER(state,ty,val) \
- if (!(states.empty() || states.top().flags & (1 << st_## state)))\
+ if (!(my_states.empty() || my_states.top().flags & (1 << st_## state)))\
 { \
-  DrawState &st = states.top(); \
+  DrawState &st = my_states.top(); \
   ty tmp(val); \
-  st.saved_## state = tmp; \
+  st.saved_## my_state = tmp; \
   st.flags |= (1 << st_## state); \
 }
 
-inline DrawingKit3DBase::material(const MaterialAttr &m)
-{
-    REMEMBER(material, MaterialAttr_var, material());
-    setMaterial(m);
-}
+  inline DrawingKit3DBase::material(const MaterialAttr &m)
+  {
+      REMEMBER(material, MaterialAttr_var, material());
+      setMaterial(m);
+  }
 
-inline DrawingKit3DBase::textures(const Rasters &rs)
-{
-    REMEMBER(textures, Rasters_var, textures());
-    setTextures(rs);
-}
+  inline DrawingKit3DBase::textures(const Rasters &rs)
+  {
+      REMEMBER(textures, Rasters_var, textures());
+      setTextures(rs);
+  }
 
-inline DrawingKit3DBase::texMode(TextureMode tm) 
-{
-    REMEMBER(tex_mode, TextureMode, texMode());
-    setTexMode(tm);
-}
+  inline DrawingKit3DBase::texMode(TextureMode tm) 
+  {
+      REMEMBER(tex_mode, TextureMode, texMode());
+      setTexMode(tm);
+  }
 
-inline DrawingKit3DBase::fogMode(FoggingMode fm)
-{
-    REMEMBER(fog_mode, FoggingMode, fogMode());
-    setFogMode(fm);
-}
+  inline DrawingKit3DBase::fogMode(FoggingMode fm)
+  {
+      REMEMBER(fog_mode, FoggingMode, fogMode());
+      setFogMode(fm);
+  }
+  
+} // namespace
 
 #endif /* DrawingKit3DBase.hh */

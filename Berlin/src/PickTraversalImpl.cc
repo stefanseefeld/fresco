@@ -28,123 +28,131 @@
 
 using namespace Prague;
 using namespace Fresco;
+using namespace Berlin;
 
-PickTraversalImpl::PickTraversalImpl(Graphic_ptr g, Region_ptr r, Transform_ptr t, PositionalFocus *f)
-  : TraversalImpl(g, r, t),
-    _focus(f),
-    _cursor(0)
+PickTraversalImpl::PickTraversalImpl(Graphic_ptr g, Region_ptr r,
+				     Transform_ptr t, PositionalFocus *f) :
+    TraversalImpl(g, r, t),
+    my_focus(f),
+    my_cursor(0)
 {
-  Trace trace("PickTraversalImpl::PickTraversalImpl");
-  __this = POA_Fresco::PickTraversal::_this();
+    Trace trace("PickTraversalImpl::PickTraversalImpl");
+    my_this = POA_Fresco::PickTraversal::_this();
 }
 
-PickTraversalImpl::PickTraversalImpl(const PickTraversalImpl &traversal)
-  : TraversalImpl(traversal),
-    _controllers(traversal._controllers),
-    _positions(traversal._positions),
-    _focus(traversal._focus),
-    _cursor(traversal._positions.back() - 1)
+PickTraversalImpl::PickTraversalImpl(const PickTraversalImpl &traversal) :
+    TraversalImpl(traversal),
+    my_controllers(traversal.my_controllers),
+    my_positions(traversal.my_positions),
+    my_focus(traversal.my_focus),
+    my_cursor(traversal.my_positions.back() - 1)
 {
-  __this = POA_Fresco::PickTraversal::_this();
+    my_this = POA_Fresco::PickTraversal::_this();
 }
 
-PickTraversalImpl::~PickTraversalImpl() {}
+PickTraversalImpl::~PickTraversalImpl() { }
 
-PickTraversalImpl &PickTraversalImpl::operator = (const PickTraversalImpl &traversal)
+PickTraversalImpl &
+PickTraversalImpl::operator = (const PickTraversalImpl &traversal)
 {
-  Trace trace("PickTraversalImpl::operator =");
-  TraversalImpl::operator = (traversal);
-  _controllers = traversal._controllers;
-  _positions = traversal._positions;
-  _focus = traversal._focus;
-  // the current graphic after a pick isn't the top most graphic in the trail
-  // but the top most controller, as it's the controller which will receive the event...
-  _cursor = traversal._positions.back() - 1;
-  return *this;
+    Trace trace("PickTraversalImpl::operator =");
+    TraversalImpl::operator = (traversal);
+    my_controllers = traversal.my_controllers;
+    my_positions = traversal.my_positions;
+    my_focus = traversal.my_focus;
+    // the current graphic after a pick isn't the top most graphic in the
+    // trail but the top most controller, as it's the controller which will
+    // receive the event...
+    my_cursor = traversal.my_positions.back() - 1;
+    return *this;
 }
 
 PickTraversal_ptr PickTraversalImpl::_this()
 {
-  return Fresco::PickTraversal::_duplicate(__this);
+    return Fresco::PickTraversal::_duplicate(my_this);
 }
 
 Region_ptr PickTraversalImpl::current_allocation()
 {
-  Trace trace("PickTraversalImpl::current_allocation");
-  return get_allocation(_cursor)->_this();
+    Trace trace("PickTraversalImpl::current_allocation");
+    return get_allocation(my_cursor)->_this();
 }
 
 Transform_ptr PickTraversalImpl::current_transformation() 
 {
-  Trace trace("PickTraversalImpl::current_transformation");
-  return get_transformation(_cursor)->_this();
+    Trace trace("PickTraversalImpl::current_transformation");
+    return get_transformation(my_cursor)->_this();
 }
 
 Graphic_ptr PickTraversalImpl::current_graphic()
 {
-  Trace trace("PickTraversalImpl::current_graphic");
-  return Graphic::_duplicate(get_graphic(_cursor));
+    Trace trace("PickTraversalImpl::current_graphic");
+    return Graphic::_duplicate(get_graphic(my_cursor));
 }
 
-void PickTraversalImpl::traverse_child(Graphic_ptr child, Tag tag, Region_ptr region, Transform_ptr transform)
+void PickTraversalImpl::traverse_child(Graphic_ptr child, Tag tag,
+				       Region_ptr region,
+				       Transform_ptr transform)
 {
-  Trace trace("PickTraversalImpl::traverse_child");
-  if (CORBA::is_nil(region)) region = Region_var(current_allocation());
-  Lease_var<RegionImpl> allocation(Provider<RegionImpl>::provide());
-  allocation->copy(region);
-  Lease_var<TransformImpl> cumulative(Provider<TransformImpl>::provide());
-  *cumulative = *get_transformation(_cursor);
-  if (!CORBA::is_nil(transform)) cumulative->premultiply(transform);
-  push(child, tag, allocation, cumulative); // Keep ownership of cumulative!
-  _cursor++;
-  try
+    Trace trace("PickTraversalImpl::traverse_child");
+    if (CORBA::is_nil(region)) region = Region_var(current_allocation());
+    Lease_var<RegionImpl> allocation(Provider<RegionImpl>::provide());
+    allocation->copy(region);
+    Lease_var<TransformImpl> cumulative(Provider<TransformImpl>::provide());
+    *cumulative = *get_transformation(my_cursor);
+    if (!CORBA::is_nil(transform)) cumulative->premultiply(transform);
+    push(child, tag, allocation, cumulative); // Keep ownership of cumulative!
+    my_cursor++;
+    try
     {
-      child->traverse(__this);
+	child->traverse(my_this);
     }
-  catch (...)
+    catch (...)
     {
-      // Make sure cumulative does not go out of scope before the pop() ;-)
-      _cursor--;
-      pop();
-      throw;
+	// Make sure cumulative does not go out of scope before the pop() ;-)
+	my_cursor--;
+	pop();
+	throw;
     }
-  _cursor--;
-  pop(); // cumulative still in scope... 
+    my_cursor--;
+    pop(); // cumulative still in scope... 
 }
 
-void PickTraversalImpl::visit(Fresco::Graphic_ptr g) { g->pick(__this);}
-Fresco::Traversal::order PickTraversalImpl::direction() { return Fresco::Traversal::down;}
-CORBA::Boolean PickTraversalImpl::ok() { return !picked();}
+void PickTraversalImpl::visit(Fresco::Graphic_ptr g) { g->pick(my_this); }
+Fresco::Traversal::order PickTraversalImpl::direction()
+{ return Fresco::Traversal::down; }
+CORBA::Boolean PickTraversalImpl::ok() { return !picked(); }
 
 CORBA::Boolean PickTraversalImpl::intersects_allocation()
 {
-  Region_var region = current_allocation();
-  return intersects_region(region);
+    Region_var region = current_allocation();
+    return intersects_region(region);
 }
 
 void PickTraversalImpl::enter_controller(Controller_ptr c)
 {
-  Trace trace("PickTraversal::enter_controller");
-  _controllers.push_back(Controller::_duplicate(c));
-  _positions.push_back(size());
+    Trace trace("PickTraversal::enter_controller");
+    my_controllers.push_back(Controller::_duplicate(c));
+    my_positions.push_back(size());
 }
 
 void PickTraversalImpl::leave_controller()
 {
-  Trace trace("PickTraversal::leave_controller");
-  _controllers.pop_back();
-  _positions.pop_back();
+    Trace trace("PickTraversal::leave_controller");
+    my_controllers.pop_back();
+    my_positions.pop_back();
 }
 
-Focus_ptr PickTraversalImpl::get_focus() { return _focus ? _focus->_this() : Focus::_nil();}
+Focus_ptr PickTraversalImpl::get_focus()
+{ return my_focus ? my_focus->_this() : Focus::_nil(); }
 CORBA::Boolean PickTraversalImpl::forward()
 {
-  if (_cursor + 1 < size()) { ++_cursor; return true;}
-  return false;
+    if (my_cursor + 1 < size()) { ++my_cursor; return true; }
+    return false;
 }
 
 CORBA::Boolean PickTraversalImpl::backward()
 {
-  if (_cursor > _positions.back()) { --_cursor; return true;}
-  return false;
+    if (my_cursor > my_positions.back()) { --my_cursor; return true; }
+    return false;
 }

@@ -20,8 +20,8 @@
  * MA 02139, USA.
  */
 
-#ifndef _Console_GGIDrawableFactory_hh
-#define _Console_GGIDrawableFactory_hh
+#ifndef _Berlin_Console_GGIDrawableFactory_hh
+#define _Berlin_Console_GGIDrawableFactory_hh
 
 #include <Berlin/config.hh>
 #include <Berlin/Console.hh>
@@ -31,23 +31,31 @@ extern "C"
 #include <ggi/ggi-unix.h>
 }
 
-class GGIDrawable : public virtual ::Console::Drawable
+namespace Berlin
 {
-public:
-  virtual const std::string &name() const = 0;
-  virtual ggi_mode           mode() const = 0;
-  virtual ggi_visual_t       visual() const = 0;
-};
+  namespace Console_Extension
+  {
 
-class GGIDrawableFactory : virtual public Console::Extension
-{
-public:
-  //. Creates a new Drawable of the given size (x, y) and depth. It is accessable
-  //. under the given shm-id.
-  virtual GGIDrawable *create_drawable(int shmid,
-				       Fresco::PixelCoord,
-				       Fresco::PixelCoord,
-				       Fresco::PixelCoord) = 0;
-};
+    class GGIDrawable : public virtual Berlin::Console::Drawable
+    {
+      public:
+	virtual const std::string &name() const = 0;
+	virtual ggi_mode           mode() const = 0;
+	virtual ggi_visual_t       visual() const = 0;
+    };
+
+    class GGIDrawableFactory : virtual public Berlin::Console::Extension
+    {
+      public:
+      //. Creates a new Drawable of the given size (x, y) and depth.
+      //. It is accessable under the given shm-id.
+	virtual GGIDrawable *create_drawable(int shmid,
+					     Fresco::PixelCoord,
+					     Fresco::PixelCoord,
+					     Fresco::PixelCoord) = 0;
+    };
+    
+  } // namespace
+} // namespace
 
 #endif

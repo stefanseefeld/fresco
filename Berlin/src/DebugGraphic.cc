@@ -19,82 +19,88 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include <Fresco/config.hh>
 #include <Fresco/Traversal.hh>
 #include <Fresco/DrawTraversal.hh>
 #include <Fresco/PickTraversal.hh>
 #include <Fresco/IO.hh>
 #include <Prague/Sys/Tracer.hh>
-#include "Berlin/ImplVar.hh"
-#include "Berlin/RegionImpl.hh"
-#include "Berlin/DebugGraphic.hh"
-#include "Berlin/Math.hh"
+#include <Berlin/ImplVar.hh>
+#include <Berlin/RegionImpl.hh>
+#include <Berlin/DebugGraphic.hh>
+#include <Berlin/Math.hh>
 #include <iomanip>
 
 using namespace Prague;
 using namespace Fresco;
+using namespace Berlin;
 
-DebugGraphic::DebugGraphic(std::ostream &os, const std::string &msg, unsigned int f) : _os(os), _message(msg), _flags(f) {}
-DebugGraphic::~DebugGraphic() {}
+DebugGraphic::DebugGraphic(std::ostream &os, const std::string &msg,
+			   unsigned int f) :
+    my_os(os),
+    my_message(msg),
+    my_flags(f)
+{ }
+DebugGraphic::~DebugGraphic() { }
 
 void DebugGraphic::request(Fresco::Graphic::Requisition &r)
 {
-  Trace trace(this, "DebugGraphic::request");
-  MonoGraphic::request(r);
-  if (_flags & requests)
+    Trace trace(this, "DebugGraphic::request");
+    MonoGraphic::request(r);
+    if (my_flags & requests)
     {
-      heading(" request\t");
-      _os << r << '\n';
+	heading(" request\t");
+	my_os << r << std::endl;
     }
 }
 
 void DebugGraphic::traverse(Traversal_ptr traversal)
 {
-  Trace trace(this, "DebugGraphic::traverse");
-  if (_flags & traversals) traversal->visit(Graphic_var(_this()));
-  else MonoGraphic::traverse(traversal);
+    Trace trace(this, "DebugGraphic::traverse");
+    if (my_flags & traversals) traversal->visit(Graphic_var(_this()));
+    else MonoGraphic::traverse(traversal);
 }
 
 void DebugGraphic::draw(DrawTraversal_ptr traversal)
 {
-  Trace trace(this, "DebugGraphic::draw");
-  if (_flags & draws)
+    Trace trace(this, "DebugGraphic::draw");
+    if (my_flags & draws)
     {
-      heading(" draw\t");
-      Region_var r = traversal->current_allocation();
-      Transform_var t = traversal->current_transformation();
-      Impl_var<RegionImpl> region(new RegionImpl(r, t));
-      _os << "region: " << '\n' << Region_var(region->_this()) << std::endl;
+	heading(" draw\t");
+	Region_var r = traversal->current_allocation();
+	Transform_var t = traversal->current_transformation();
+	Impl_var<RegionImpl> region(new RegionImpl(r, t));
+	my_os << "region: " << '\n' << Region_var(region->_this())
+	      << std::endl;
     }
-  MonoGraphic::traverse(traversal);
+    MonoGraphic::traverse(traversal);
 };
 
 void DebugGraphic::pick(PickTraversal_ptr traversal)
 {
-  Trace trace(this, "DebugGraphic::pick");
-  if (_flags & picks)
+    Trace trace(this, "DebugGraphic::pick");
+    if (my_flags & picks)
     {
-      heading(" pick\t");
-      Region_var r = traversal->current_allocation();
-      Transform_var t = traversal->current_transformation();
-      Impl_var<RegionImpl> region(new RegionImpl(r, t));
-      _os << Region_var(region->_this()) << std::endl;
+	heading(" pick\t");
+	Region_var r = traversal->current_allocation();
+	Transform_var t = traversal->current_transformation();
+	Impl_var<RegionImpl> region(new RegionImpl(r, t));
+	my_os << Region_var(region->_this()) << std::endl;
     }
-  MonoGraphic::traverse(traversal);
+    MonoGraphic::traverse(traversal);
 }
 
 void DebugGraphic::allocate(Tag tag, const Allocation::Info &info)
 {
-  heading(" allocate\t");
-  Region_var r = info.allocation;
-  Transform_var t = info.transformation;
-  Impl_var<RegionImpl> region(new RegionImpl(r, t));
-  _os << Region_var(region->_this()) << std::endl;
-  MonoGraphic::allocate(tag, info);
+    heading(" allocate\t");
+    Region_var r = info.allocation;
+    Transform_var t = info.transformation;
+    Impl_var<RegionImpl> region(new RegionImpl(r, t));
+    my_os << Region_var(region->_this()) << std::endl;
+    MonoGraphic::allocate(tag, info);
 }
 
 void DebugGraphic::heading(const char *s)
 {
-  Graphic_var g = body();
-  _os << _message << " (" << g << ')' << s;
+    Graphic_var g = body();
+    my_os << my_message << " (" << g << ')' << s;
 }

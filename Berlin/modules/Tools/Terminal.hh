@@ -19,28 +19,33 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Terminal_hh
-#define _Terminal_hh
+#ifndef _ToolKit_Terminal_hh
+#define _ToolKit_Terminal_hh
 
 #include <Fresco/config.hh>
 #include <Fresco/StreamBuffer.hh>
 #include <Berlin/ControllerImpl.hh>
 
-namespace Berlin {
-namespace ToolKit {
-
-class Terminal : public ControllerImpl
+namespace Berlin
 {
- public:
-  Terminal(Fresco::StreamBuffer_ptr b) : ControllerImpl(false), _buffer(Fresco::StreamBuffer::_duplicate(b)) {}
-  ~Terminal() {}
-// protected:
-  virtual void key_press(const Fresco::Input::Event &);
- private:
-  Fresco::StreamBuffer_var _buffer;
-};
+  namespace ToolKit
+  {
 
-} // namespace
+    class Terminal : public ControllerImpl
+    {
+      public:
+	Terminal(Fresco::StreamBuffer_ptr b) :
+	    ControllerImpl(false),
+	    my_buffer(Fresco::StreamBuffer::_duplicate(b))
+	{ }
+	~Terminal() { }
+// protected:
+	virtual void key_press(const Fresco::Input::Event &);
+      private:
+	Fresco::StreamBuffer_var my_buffer;
+    };
+    
+  } // namespace
 } // namespace
 
 #endif

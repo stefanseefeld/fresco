@@ -32,21 +32,21 @@ using namespace Prague;
 using namespace Fresco;
 
 Berlin::FigureKit::ImageImpl::ImageImpl(Raster_ptr r) :
-  raster(RefCount_var<Fresco::Raster>::increment(r))
+    my_raster(RefCount_var<Fresco::Raster>::increment(r))
 {
-    Fresco::Raster::Info info = raster->header();
-    width = info.width*10.;
-    height = info.height*10.;
+    Fresco::Raster::Info info = my_raster->header();
+    my_width = info.width*10.;
+    my_height = info.height*10.;
 }
 Berlin::FigureKit::ImageImpl::~ImageImpl()
 { Trace trace("ImageImpl::~ImageImpl"); }
 void Berlin::FigureKit::ImageImpl::request(Fresco::Graphic::Requisition &r)
 {
     r.x.defined = true;
-    r.x.natural = r.x.maximum = r.x.minimum = width;
+    r.x.natural = r.x.maximum = r.x.minimum = my_width;
     r.x.align = 0.;
     r.y.defined = true;
-    r.y.natural = r.y.maximum = r.y.minimum = height;
+    r.y.natural = r.y.maximum = r.y.minimum = my_height;
     r.y.align = 0.;
 }
 
@@ -54,21 +54,18 @@ void Berlin::FigureKit::ImageImpl::draw(DrawTraversal_ptr traversal)
 {
     if (!traversal->intersects_allocation()) return;
     DrawingKit_var drawing = traversal->drawing();
-    drawing->draw_image(raster);
+    drawing->draw_image(my_raster);
 }
 
 void Berlin::FigureKit::ImageImpl::update(const CORBA::Any &)
-{
-    need_redraw();
-}
+{ need_redraw(); }
 
 void Berlin::FigureKit::ImageImpl::activate_composite()
-{
-    raster->attach(Observer_var(_this()));
-}
+{ my_raster->attach(Observer_var(_this())); }
 
 Berlin::FigureKit::Texture::Texture(Raster_ptr r) :
-  raster(RefCount_var<Fresco::Raster>::increment(r)) { }
+  my_raster(RefCount_var<Fresco::Raster>::increment(r))
+{ }
 Berlin::FigureKit::Texture::~Texture() { }
 void Berlin::FigureKit::Texture::traverse(Traversal_ptr traversal)
 { traversal->visit(Graphic_var(_this())); }
@@ -76,7 +73,7 @@ void Berlin::FigureKit::Texture::draw(DrawTraversal_ptr traversal)
 {
     DrawingKit_var drawing = traversal->drawing();
     drawing->save();
-    drawing->texture(raster);
+    drawing->texture(my_raster);
     drawing->surface_fillstyle(DrawingKit::textured);
     MonoGraphic::traverse(traversal);
     drawing->restore();

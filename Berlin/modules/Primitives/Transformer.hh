@@ -20,8 +20,8 @@
  * MA 02139, USA.
  */
 
-#ifndef _Transformer_hh
-#define _Transformer_hh
+#ifndef _PrimitiveKit_Transformer_hh
+#define _PrimitiveKit_Transformer_hh
 
 #include <Fresco/config.hh>
 #include <Berlin/TransformImpl.hh>
@@ -35,25 +35,25 @@ namespace Berlin
 
     class Transformer : public Allocator
     {
-    public:
+      public:
 	Transformer();
 	virtual ~Transformer();
 	virtual void request(Fresco::Graphic::Requisition &);
 	virtual void traverse(Fresco::Traversal_ptr);
 	virtual Fresco::Transform_ptr transformation();
 	void allocate(Fresco::Tag, const Fresco::Allocation::Info &);
-    private:
+      private:
 	Impl_var<TransformImpl> transform;
     };
     
     class BodyTransformer : public Transformer
     {
-    public:
+      public:
 	BodyTransformer(Transformer*, unsigned d = 0);
 	BodyTransformer(Fresco::Transform_ptr, unsigned d = 0);
 	virtual void body(Fresco::Graphic_ptr);
 	virtual Fresco::Graphic_ptr body();
-    protected:
+      protected:
 	unsigned depth;
     };
     

@@ -32,10 +32,10 @@ const std::string sysconfdir = RC_SYSCONFDIR;
 const std::string sysconfdir = "";
 #endif
 
-// -----------------------------------------------------------------------------
+// ----------------------------------------------------------------------
 // Internals
-// -----------------------------------------------------------------------------
-static std::map<std::string, Prague::Path> _paths;
+// ----------------------------------------------------------------------
+static std::map<std::string, Prague::Path> my_paths;
 
 namespace RCManager_internals
 {
@@ -50,28 +50,29 @@ namespace RCManager_internals
           ifs.ignore(1024, '=');
           std::string path;
           ifs >> path;
-          _paths.insert(std::make_pair(name, path));
+          my_paths.insert(std::make_pair(name, path));
       }
   }
 
   void add_to_path(const std::string &name, const std::string &value)
   {
-      Prague::Path &path = _paths[name];
+      Prague::Path &path = my_paths[name];
       path.append(value);
   }
 }
 
-// -----------------------------------------------------------------------------
+// ----------------------------------------------------------------------
 // Public functions
-// -----------------------------------------------------------------------------
-Prague::Path RCManager::get_path(const std::string &name)
+// ----------------------------------------------------------------------
+Prague::Path Berlin::RCManager::get_path(const std::string &name)
 {
-    // NOTE: default (empty) path is constructed if not present in _paths yet
-    return _paths[name];
+    // NOTE: default (empty) path is constructed if not present in
+    //       my_paths yet
+    return my_paths[name];
 }
 
 // Find our resource file:
-void RCManager::setup(Prague::GetOpt const &getopt)
+void Berlin::RCManager::setup(Prague::GetOpt const &getopt)
 {
     std::string value;
     if (getopt.get("resource", &value))
@@ -97,7 +98,7 @@ void RCManager::setup(Prague::GetOpt const &getopt)
     {
         // Search for berlinrc in default places:
         value = sysconfdir + "/berlinrc";
-
+	
         bool is_configured = 0;
         try
         {
@@ -113,7 +114,7 @@ void RCManager::setup(Prague::GetOpt const &getopt)
                       << "\" failed to load: "
                       << e.what() << std::endl;
         }
-
+	
         // FIXME: merge additional configuration:
         if(getenv("BERLINRC")) value = std::string(getenv("BERLINRC"));
         else value ="";

@@ -32,36 +32,36 @@ Berlin::CommandKit::TextBufferImpl::~TextBufferImpl() { }
 CORBA::ULong Berlin::CommandKit::TextBufferImpl::size()
 {
     Prague::Trace trace("TextBufferImpl::size()");
-    Prague::Guard<Mutex> guard(_mutex);
-    return _buffer.size();
+    Prague::Guard<Mutex> guard(my_mutex);
+    return my_buffer.size();
 }
 
 Unistring * Berlin::CommandKit::TextBufferImpl::value()
 {
     Prague::Trace trace("TextBufferImpl::value()");
-    Prague::Guard<Mutex> guard(_mutex);
-    Unistring *us = new Unistring(_buffer.size(), _buffer.size(),
-                                  const_cast<Unichar *>(_buffer.get()), false);
+    Prague::Guard<Mutex> guard(my_mutex);
+    Unistring *us = new Unistring(my_buffer.size(), my_buffer.size(),
+                                  const_cast<Unichar *>(my_buffer.get()), false);
     return us;
 }
 
 Unistring * Berlin::CommandKit::TextBufferImpl::get_chars(CORBA::ULong pos, CORBA::ULong len)
 {
     Prague::Trace trace("TextBufferImpl::get_chars(...)");
-    Prague::Guard<Mutex> guard(_mutex);
-    CORBA::ULong fin = _buffer.size();
+    Prague::Guard<Mutex> guard(my_mutex);
+    CORBA::ULong fin = my_buffer.size();
     CORBA::ULong start = pos > fin ? fin : pos;
     CORBA::ULong end = start + len > fin ? fin : start + len;
     Unistring *us = new Unistring(end-start, end-start,
-                                  const_cast<Unichar *>(_buffer.get() + start), false);
+                                  const_cast<Unichar *>(my_buffer.get() + start), false);
     return us;
 }
 
 CORBA::ULong Berlin::CommandKit::TextBufferImpl::position()
 {
     Prague::Trace trace("TextBufferImpl::position()");
-    Prague::Guard<Mutex> guard(_mutex);
-    return _buffer.position();
+    Prague::Guard<Mutex> guard(my_mutex);
+    return my_buffer.position();
 }
 
 void Berlin::CommandKit::TextBufferImpl::position(CORBA::ULong p)
@@ -69,10 +69,10 @@ void Berlin::CommandKit::TextBufferImpl::position(CORBA::ULong p)
     Prague::Trace trace("TextBufferImpl::position(...)");
     Fresco::TextBuffer::Change ch;
     {
-        Prague::Guard<Mutex> guard(_mutex);
-        if (p < 0 || p > _buffer.size()) return;
-        _buffer.position(p);
-        ch.pos = _buffer.position();
+        Prague::Guard<Mutex> guard(my_mutex);
+        if (p < 0 || p > my_buffer.size()) return;
+        my_buffer.position(p);
+        ch.pos = my_buffer.position();
     }
     ch.len = 0;
     ch.type = Fresco::TextBuffer::cursor;
@@ -87,10 +87,10 @@ void Berlin::CommandKit::TextBufferImpl::forward()
     Prague::Trace trace("TextBufferImpl::forward()");
     Fresco::TextBuffer::Change ch;
     {
-        Prague::Guard<Mutex> guard(_mutex);
-        if (_buffer.position() >= _buffer.size()) return;
-        _buffer.forward();
-        ch.pos = _buffer.position();
+        Prague::Guard<Mutex> guard(my_mutex);
+        if (my_buffer.position() >= my_buffer.size()) return;
+        my_buffer.forward();
+        ch.pos = my_buffer.position();
     }
     ch.len = 0;
     ch.type = Fresco::TextBuffer::cursor;
@@ -105,10 +105,10 @@ void Berlin::CommandKit::TextBufferImpl::backward()
     Prague::Trace trace("TextBufferImpl::backward()");
     Fresco::TextBuffer::Change ch;
     {
-        Prague::Guard<Mutex> guard(_mutex);
-        if (_buffer.position() <= 0) return;
-        _buffer.backward();
-        ch.pos = _buffer.position();
+        Prague::Guard<Mutex> guard(my_mutex);
+        if (my_buffer.position() <= 0) return;
+        my_buffer.backward();
+        ch.pos = my_buffer.position();
     }
     ch.len = 0;
     ch.type = Fresco::TextBuffer::cursor;
@@ -123,9 +123,9 @@ void Berlin::CommandKit::TextBufferImpl::shift(CORBA::Long d)
     Prague::Trace trace("TextBufferImpl::size()");
     Fresco::TextBuffer::Change ch;
     {
-        Prague::Guard<Mutex> guard(_mutex);
-        _buffer.shift(d);
-        ch.pos = _buffer.position();
+        Prague::Guard<Mutex> guard(my_mutex);
+        my_buffer.shift(d);
+        ch.pos = my_buffer.position();
     }
     ch.len = 0;
     ch.type = Fresco::TextBuffer::cursor;
@@ -140,9 +140,9 @@ void Berlin::CommandKit::TextBufferImpl::insert_char(Unichar u)
     Prague::Trace trace("TextBufferImpl::insert_char(...)");
     Fresco::TextBuffer::Change ch;
     {
-        Prague::Guard<Mutex> guard(_mutex);
-        ch.pos = _buffer.position();
-        _buffer.insert(u);
+        Prague::Guard<Mutex> guard(my_mutex);
+        ch.pos = my_buffer.position();
+        my_buffer.insert(u);
     }
     ch.len = 1;
     ch.type = Fresco::TextBuffer::insert;
@@ -164,9 +164,9 @@ void Berlin::CommandKit::TextBufferImpl::insert_string(const Unistring &s)
         u[i] = s[i];
 
     {
-        Prague::Guard<Mutex> guard(_mutex);
-        ch.pos = _buffer.position();
-        _buffer.insert(u,ch.len);
+        Prague::Guard<Mutex> guard(my_mutex);
+        ch.pos = my_buffer.position();
+        my_buffer.insert(u,ch.len);
     }
 
     ch.type = Fresco::TextBuffer::insert;
@@ -181,11 +181,11 @@ void Berlin::CommandKit::TextBufferImpl::remove_backward(CORBA::ULong n)
     Prague::Trace trace("TextBufferImpl::remove_backward(...)");
     Fresco::TextBuffer::Change ch;
     {
-        Prague::Guard<Mutex> guard(_mutex);
-        ch.pos = _buffer.position();
+        Prague::Guard<Mutex> guard(my_mutex);
+        ch.pos = my_buffer.position();
         n = std::min(n, ch.pos);
         if (n == 0) return;
-        _buffer.remove_backward(n);
+        my_buffer.remove_backward(n);
     }
     ch.len = -n;
     ch.type = Fresco::TextBuffer::remove;
@@ -200,11 +200,11 @@ void Berlin::CommandKit::TextBufferImpl::remove_forward(CORBA::ULong n)
     Prague::Trace trace("TextBufferImpl::remove_forward(...)");
     Fresco::TextBuffer::Change ch;
     {
-        Prague::Guard<Mutex> guard(_mutex);
-        ch.pos = _buffer.position();
-        n = std::min(n, _buffer.size() - ch.pos);
+        Prague::Guard<Mutex> guard(my_mutex);
+        ch.pos = my_buffer.position();
+        n = std::min(n, my_buffer.size() - ch.pos);
         if (n == 0) return;
-        _buffer.remove_forward(n);
+        my_buffer.remove_forward(n);
     }
     ch.len = n;
     ch.type = Fresco::TextBuffer::remove;
@@ -219,10 +219,10 @@ void Berlin::CommandKit::TextBufferImpl::clear() {
     Fresco::TextBuffer::Change ch;
     ch.type = Fresco::TextBuffer::remove;
     {
-        Prague::Guard<Mutex> guard(_mutex);
-        ch.len = _buffer.size();
+        Prague::Guard<Mutex> guard(my_mutex);
+        ch.len = my_buffer.size();
         ch.pos = 0;
-        _buffer.clear_buffer();
+        my_buffer.clear_buffer();
     }
 
     CORBA::Any any;

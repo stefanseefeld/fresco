@@ -33,17 +33,19 @@
 using namespace Prague;
 using namespace Fresco;
 using namespace Layout;
+using namespace Berlin;
 
 DesktopImpl::DesktopImpl(CORBA::ORB_ptr orb,
 			 Stage_ptr stage,
                          Prague::Semaphore &shutdown_sem) :
-  ControllerImpl(false),
-  _stage(RefCount_var<Layout::Stage>::increment(stage)),
-  _orb(CORBA::ORB::_duplicate(orb)),
-  my_shutdown_semaphore(shutdown_sem)
+    ControllerImpl(false),
+    my_stage(RefCount_var<Layout::Stage>::increment(stage)),
+    my_orb(CORBA::ORB::_duplicate(orb)),
+    my_shutdown_semaphore(shutdown_sem)
 {
-  // Attention !!: this invokes _this(), which implicitely activates the desktop.
-  ControllerImpl::body(_stage);
+    // Attention !!: this invokes _this(), which implicitely activates
+    // the desktop.
+    ControllerImpl::body(my_stage);
 }
 
 DesktopImpl::~DesktopImpl() { }
@@ -52,29 +54,25 @@ void DesktopImpl::body(Fresco::Graphic_ptr) { }
 
 Fresco::Graphic_ptr DesktopImpl::body()
 {
-  return CORBA::is_nil(_stage) ?
-    Layout::Stage::_nil() : Layout::Stage::_duplicate(_stage);
+    return CORBA::is_nil(my_stage) ?
+	Layout::Stage::_nil() : Layout::Stage::_duplicate(my_stage);
 }
 
-Fresco::Region_ptr DesktopImpl::bbox() { return _stage->bbox();}
+Fresco::Region_ptr DesktopImpl::bbox() { return my_stage->bbox(); }
 
-CORBA::Long DesktopImpl::layers() { return _stage->layers();}
+CORBA::Long DesktopImpl::layers() { return my_stage->layers();}
 
 Layout::StageHandle_ptr DesktopImpl::layer(Layout::Stage::Index l)
-{
-  return _stage->layer(l);
-}
+{ return my_stage->layer(l); }
 
-void DesktopImpl::lock() { _stage->lock();}
-void DesktopImpl::unlock() { _stage->unlock();}
+void DesktopImpl::lock() { my_stage->lock(); }
+void DesktopImpl::unlock() { my_stage->unlock(); }
 
 Layout::StageHandle_ptr DesktopImpl::insert(Fresco::Graphic_ptr g,
 					    const Fresco::Vertex &p,
 					    const Fresco::Vertex &s,
 					    Layout::Stage::Index l)
-{
-  return _stage->insert(g, p, s, l);
-}
+{ return my_stage->insert(g, p, s, l); }
 
 /*
  * little hack: stop the server when the <escape> key is hit

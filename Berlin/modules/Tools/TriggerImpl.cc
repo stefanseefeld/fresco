@@ -31,83 +31,88 @@ using namespace Fresco;
 
 using namespace Berlin::ToolKit;
 
-TriggerImpl::TriggerImpl() : ControllerImpl(false), _data(new CORBA::Any) {
-}
+TriggerImpl::TriggerImpl() :
+    ControllerImpl(false), my_data(new CORBA::Any)
+{ }
+
 TriggerImpl::~TriggerImpl()
 {
-  Trace trace("Trigger::~Trigger");
-  if (!CORBA::is_nil(_command))
-    try { _command->destroy();}
-    catch (const CORBA::OBJECT_NOT_EXIST &) {}
-    catch (const CORBA::COMM_FAILURE &) {}
-    catch (const CORBA::TRANSIENT &) {}
+    Trace trace("Trigger::~Trigger");
+    if (!CORBA::is_nil(my_command))
+	try {my_command->destroy(); }
+	catch (const CORBA::OBJECT_NOT_EXIST &) { }
+	catch (const CORBA::COMM_FAILURE &) { }
+	catch (const CORBA::TRANSIENT &) { }
 }
 void TriggerImpl::action(Command_ptr c)
 {
-  Trace trace("TriggerImpl::action");
-  Prague::Guard<Mutex> guard(_mutex);
-  if (!CORBA::is_nil(_command))
-    try { _command->destroy();}
-    catch (const CORBA::OBJECT_NOT_EXIST &) {}
-    catch (const CORBA::COMM_FAILURE &) {}
-    catch (const CORBA::TRANSIENT &) {}
-  _command = Command::_duplicate(c);
+    Trace trace("TriggerImpl::action");
+    Prague::Guard<Mutex> guard(my_mutex);
+    if (!CORBA::is_nil(my_command))
+	try { my_command->destroy(); }
+	catch (const CORBA::OBJECT_NOT_EXIST &) { }
+	catch (const CORBA::COMM_FAILURE &) { }
+	catch (const CORBA::TRANSIENT &) { }
+    my_command = Command::_duplicate(c);
 }
 
 Command_ptr TriggerImpl::action()
 {
-  Prague::Guard<Mutex> guard(_mutex);
-  return Command::_duplicate(_command);
+    Prague::Guard<Mutex> guard(my_mutex);
+    return Command::_duplicate(my_command);
 }
 
 void TriggerImpl::payload(const CORBA::Any &a)
 {
-  Trace trace("TriggerImpl::payload");
-  _data = new CORBA::Any(a);
+    Trace trace("TriggerImpl::payload");
+    my_data = new CORBA::Any(a);
 }
 
 CORBA::Any *TriggerImpl::payload()
 {
-  CORBA::Any_var any(_data);
-  return any._retn();
+    CORBA::Any_var any(my_data);
+    return any._retn();
 }
 
-void TriggerImpl::release(PickTraversal_ptr traversal, const Input::Event &event)
+void TriggerImpl::release(PickTraversal_ptr traversal,
+			  const Input::Event &event)
 {
-  /*
-   * once we have real focus management the command should be executed
-   * if we have focus and the Telltale::toggle is to be released... -stefan
-   */
-  if (inside(traversal) && test(Fresco::Controller::pressed))
+    // once we have real focus management the command should be executed
+    // if we have focus and the Telltale::toggle is to be released...
+    // -stefan
+    if (inside(traversal) && test(Fresco::Controller::pressed))
     {
-      try { execute();}
-      catch (...) {}
+	try { execute(); }
+	catch (...) { }
     }
-  ControllerImpl::release(traversal, event);
+    ControllerImpl::release(traversal, event);
 }
 
 void TriggerImpl::key_press(const Input::Event &event)
 {
-  const Input::Toggle &toggle = event[0].attr.selection();
-  if (toggle.number == 32) // space
+    const Input::Toggle &toggle = event[0].attr.selection();
+    if (toggle.number == 32) // space
     {
-      set(Fresco::Controller::pressed);
-      if (test(Fresco::Controller::pressed))
+	set(Fresco::Controller::pressed);
+	if (test(Fresco::Controller::pressed))
 	{
-	  execute();
-	  clear(Fresco::Controller::pressed);
+	    execute();
+	    clear(Fresco::Controller::pressed);
 	}
     }
-  else ControllerImpl::key_press(event);
+    else ControllerImpl::key_press(event);
 }
 
 void TriggerImpl::execute()
 {
-  Trace trace("TriggerImpl::execute");
-  Prague::Guard<Mutex> guard(_mutex);
-  if (!CORBA::is_nil(_command))
-    try { _command->execute(_data);}
-    catch (const CORBA::OBJECT_NOT_EXIST &) { _command = Fresco::Command::_nil();}
-    catch (const CORBA::COMM_FAILURE &) { _command = Fresco::Command::_nil();}
-    catch (const CORBA::TRANSIENT &) { _command = Fresco::Command::_nil();}
+    Trace trace("TriggerImpl::execute");
+    Prague::Guard<Mutex> guard(my_mutex);
+    if (!CORBA::is_nil(my_command) )
+	try { my_command->execute(my_data); }
+	catch (const CORBA::OBJECT_NOT_EXIST &)
+	{ my_command = Fresco::Command::_nil(); }
+	catch (const CORBA::COMM_FAILURE &)
+	{ my_command = Fresco::Command::_nil(); }
+	catch (const CORBA::TRANSIENT &)
+	{ my_command = Fresco::Command::_nil(); }
 }

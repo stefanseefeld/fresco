@@ -29,29 +29,32 @@
 #include <Berlin/ControllerImpl.hh>
 #include <Berlin/RefCountVar.hh>
 
-namespace Berlin {
-namespace ToolKit {
-
-class TriggerImpl : public virtual POA_Fresco::Trigger,
-		    public ControllerImpl
+namespace Berlin
 {
- public:
-  TriggerImpl();
-  ~TriggerImpl();
-  void action(Fresco::Command_ptr);
-  Fresco::Command_ptr action();
-  void payload(const CORBA::Any &);
-  CORBA::Any *payload();
-  virtual void release(Fresco::PickTraversal_ptr, const Fresco::Input::Event &);
-  virtual void key_press(const Fresco::Input::Event &);
-  void execute();
- private:
-  CORBA::Any_var      _data;
-  Prague::Mutex       _mutex;
-  Fresco::Command_var _command;
-};
+  namespace ToolKit
+  {
 
-} // namespace
+    class TriggerImpl : public virtual POA_Fresco::Trigger,
+			public ControllerImpl
+    {
+      public:
+	TriggerImpl();
+	~TriggerImpl();
+	void action(Fresco::Command_ptr);
+	Fresco::Command_ptr action();
+	void payload(const CORBA::Any &);
+	CORBA::Any *payload();
+	virtual void release(Fresco::PickTraversal_ptr,
+			     const Fresco::Input::Event &);
+	virtual void key_press(const Fresco::Input::Event &);
+	void execute();
+      private:
+	CORBA::Any_var      my_data;
+	Prague::Mutex       my_mutex;
+	Fresco::Command_var my_command;
+    };
+
+  } // namespace
 } // namespace
 
 #endif

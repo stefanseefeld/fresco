@@ -29,63 +29,62 @@
 
 using namespace Prague;
 using namespace Fresco;
+using namespace Berlin;
 
-AllocationImpl::AllocationImpl()
-{
-}
+AllocationImpl::AllocationImpl() { }
 
 AllocationImpl::~AllocationImpl()
 {
-  for (list_t::iterator i = _list.begin(); i != _list.end(); i++)
+    for (list_t::iterator i = my_list.begin(); i != my_list.end(); i++)
     {
-      Provider<RegionImpl>::adopt((*i).allocation);
-      Provider<TransformImpl>::adopt((*i).transformation);
+	Provider<RegionImpl>::adopt((*i).allocation);
+	Provider<TransformImpl>::adopt((*i).transformation);
     }
 }
 
 void AllocationImpl::add(Region_ptr region, Screen_ptr root)
 {
-  Trace trace("Allocation::add");
-  Lease_var<RegionImpl> reg(Provider<RegionImpl>::provide());
-  reg->copy(region);
-
-  Lease_var<TransformImpl> trafo(Provider<TransformImpl>::provide());
-  trafo->load_identity();
-
-  Screen_ptr scrn = Screen::_duplicate(root);
-  try
+    Trace trace("Allocation::add");
+    Lease_var<RegionImpl> reg(Provider<RegionImpl>::provide());
+    reg->copy(region);
+    
+    Lease_var<TransformImpl> trafo(Provider<TransformImpl>::provide());
+    trafo->load_identity();
+    
+    Screen_ptr scrn = Screen::_duplicate(root);
+    try
     {
-      _list.push_back (State());
+	my_list.push_back (State());
   
-      State &state = _list.back();
-      state.allocation = reg._retn();
-      state.transformation = trafo._retn();
-      state.root = scrn;
+	State &state = my_list.back();
+	state.allocation = reg._retn();
+	state.transformation = trafo._retn();
+	state.root = scrn;
     }
-  catch (...)
+    catch (...)
     {
-      CORBA::release(scrn);
-      throw;
+	CORBA::release(scrn);
+	throw;
     }
 }
 
-CORBA::Long AllocationImpl::size() { return _list.size();}
+CORBA::Long AllocationImpl::size() { return my_list.size(); }
 
 void AllocationImpl::clear()
 { 
-  for (list_t::iterator i = _list.begin(); i != _list.end(); i++)
+    for (list_t::iterator i = my_list.begin(); i != my_list.end(); i++)
     {
-      Provider<RegionImpl>::adopt((*i).allocation);
-      Provider<TransformImpl>::adopt((*i).transformation);
+	Provider<RegionImpl>::adopt((*i).allocation);
+	Provider<TransformImpl>::adopt((*i).transformation);
     }  
-  _list.clear();
+    my_list.clear();
 }
 
 Allocation::Info *AllocationImpl::get(CORBA::Long l)
 {
-  Fresco::Allocation::Info_var info = new Fresco::Allocation::Info;
-  info->allocation = _list[l].allocation->_this();
-  info->transformation = _list[l].transformation->_this();
-  info->root = _list[l].root;
-  return info._retn();
+    Fresco::Allocation::Info_var info = new Fresco::Allocation::Info;
+    info->allocation = my_list[l].allocation->_this();
+    info->transformation = my_list[l].transformation->_this();
+    info->root = my_list[l].root;
+    return info._retn();
 }

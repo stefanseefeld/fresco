@@ -32,51 +32,58 @@ using namespace Fresco;
 namespace
 {
   Mutex mutex;
-};
+}
 
-RefCountBaseImpl::RefCountBaseImpl() : _refcount(1)
+Berlin::RefCountBaseImpl::RefCountBaseImpl() : my_refcount(1)
 {
 #ifdef LCLOG
-  Logger::log(Logger::lifecycle) << "RefCountBaseImpl::RefCountBaseImpl: " << this << " constructed" << std::endl;
+    Logger::log(Logger::lifecycle)
+	<< "RefCountBaseImpl::RefCountBaseImpl: " << this
+	<< " constructed" << std::endl;
 #endif
 }
 
-RefCountBaseImpl::~RefCountBaseImpl()
+Berlin::RefCountBaseImpl::~RefCountBaseImpl()
 {
-  Trace trace("RefCountBaseImpl::~RefCountBaseImpl");
+    Trace trace("RefCountBaseImpl::~RefCountBaseImpl");
 #ifdef LCLOG
-  Logger::log(Logger::lifecycle) << "RefCountBaseImpl::~RefCountBaseImpl: " << this << " destructed" << std::endl;
+    Logger::log(Logger::lifecycle)
+	<< "RefCountBaseImpl::~RefCountBaseImpl: " << this
+	<< " destructed" << std::endl;
 #endif
 }
 
-void RefCountBaseImpl::increment()
+void Berlin::RefCountBaseImpl::increment()
 {
-  Trace trace("RefCountBaseImpl::increment");
-  Prague::Guard<Mutex> guard(mutex);
-  ++_refcount;
-#ifdef LCLOG
-  Logger::log(Logger::lifecycle) << "RefCountBaseImpl::increment on " << this << " (" << typeid(*this).name() << "): new count is " << _refcount << std::endl;
-#endif
-}
-
-void RefCountBaseImpl::decrement()
-{
-  Trace trace("RefCountBaseImpl::decrement");
-  bool done;
-  {
+    Trace trace("RefCountBaseImpl::increment");
     Prague::Guard<Mutex> guard(mutex);
-    done = --_refcount;
+    ++my_refcount;
 #ifdef LCLOG
-    Logger::log(Logger::lifecycle) << "RefCountBaseImpl::decrement on " << this << " (" << typeid(*this).name() << "): new count is " << _refcount << std::endl;
+    Logger::log(Logger::lifecycle)
+	<< "RefCountBaseImpl::increment on " << this
+	<< " (" << typeid(*this).name() << "): new count is "
+	<< my_refcount << std::endl;
 #endif
-  }
-  if (done) return;
-  else
+}
+
+void Berlin::RefCountBaseImpl::decrement()
+{
+    Trace trace("RefCountBaseImpl::decrement");
+    bool done;
     {
+	Prague::Guard<Mutex> guard(mutex);
+	done = --my_refcount;
 #ifdef LCLOG
-      Logger::log(Logger::lifecycle) << "deactivating " << this << std::endl;
+	Logger::log(Logger::lifecycle)
+	    << "RefCountBaseImpl::decrement on " << this
+	    << " (" << typeid(*this).name() << "): new count is "
+	    << done << std::endl;
 #endif
-      deactivate();
     }
+    if (done) return;
+#ifdef LCLOG
+    Logger::log(Logger::lifecycle) << "deactivating " << this << std::endl;
+#endif
+    deactivate();
 }
 

@@ -40,25 +40,32 @@ namespace Berlin
                           public KitImpl
     {
       public:
-        GadgetKitImpl(const std::string &, const Fresco::Kit::PropertySeq &,
+        GadgetKitImpl(const std::string &,
+		      const Fresco::Kit::PropertySeq &,
                       ServerContextImpl *);
         virtual ~GadgetKitImpl();
-        virtual KitImpl *clone(const Fresco::Kit::PropertySeq &p, ServerContextImpl *c)
-        { return new GadgetKitImpl(repo_id(), p, c);}
+        virtual Berlin::KitImpl *clone(const Fresco::Kit::PropertySeq &p,
+				       ServerContextImpl *c)
+        { return new GadgetKitImpl(repo_id(), p, c); }
         virtual void bind(Fresco::ServerContext_ptr);
-        virtual Fresco::Graphic_ptr rgb(Fresco::Graphic_ptr, Fresco::BoundedValue_ptr,
-                                        Fresco::BoundedValue_ptr, Fresco::BoundedValue_ptr);
-        virtual Fresco::Graphic_ptr alpha(Fresco::Graphic_ptr, Fresco::BoundedValue_ptr);
+        virtual Fresco::Graphic_ptr rgb(Fresco::Graphic_ptr,
+					Fresco::BoundedValue_ptr,
+                                        Fresco::BoundedValue_ptr,
+					Fresco::BoundedValue_ptr);
+        virtual Fresco::Graphic_ptr alpha(Fresco::Graphic_ptr,
+					  Fresco::BoundedValue_ptr);
         virtual Fresco::Graphic_ptr lighting(Fresco::Graphic_ptr,
                                              Fresco::BoundedValue_ptr,
                                              Fresco::BoundedValue_ptr,
                                              Fresco::BoundedValue_ptr);
-        virtual Fresco::Graphic_ptr rotator(Fresco::Graphic_ptr, Fresco::BoundedValue_ptr,
+        virtual Fresco::Graphic_ptr rotator(Fresco::Graphic_ptr,
+					    Fresco::BoundedValue_ptr,
                                             Fresco::Axis);
-        virtual Fresco::Graphic_ptr zoomer(Fresco::Graphic_ptr, Fresco::BoundedValue_ptr);
+        virtual Fresco::Graphic_ptr zoomer(Fresco::Graphic_ptr,
+					   Fresco::BoundedValue_ptr);
       private:
-        Fresco::CommandKit_var _command;
-        Fresco::FigureKit_var  _figure;
+        Fresco::CommandKit_var my_command;
+        Fresco::FigureKit_var  my_figure;
     };
 
   } // namespace

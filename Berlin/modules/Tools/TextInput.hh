@@ -19,28 +19,33 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _TextInput_hh
-#define _TextInput_hh
+#ifndef _ToolKit_TextInput_hh
+#define _ToolKit_TextInput_hh
 
 #include <Fresco/config.hh>
 #include <Fresco/TextBuffer.hh>
 #include <Berlin/ControllerImpl.hh>
 
-namespace Berlin {
-namespace ToolKit {
-
-class TextInput : public ControllerImpl
+namespace Berlin
 {
- public:
-  TextInput(Fresco::TextBuffer_ptr b) : ControllerImpl(false), buffer(Fresco::TextBuffer::_duplicate(b)) {}
-  ~TextInput() {}
-// protected:
-  virtual void key_press(const Fresco::Input::Event &);
- private:
-  Fresco::TextBuffer_var buffer;
-};
+  namespace ToolKit
+  {
 
-} // namespace
+    class TextInput : public ControllerImpl
+    {
+      public:
+	TextInput(Fresco::TextBuffer_ptr b) :
+	    ControllerImpl(false),
+	    my_buffer(Fresco::TextBuffer::_duplicate(b))
+	{ }
+	~TextInput() { }
+//      protected:
+	virtual void key_press(const Fresco::Input::Event &);
+      private:
+	Fresco::TextBuffer_var my_buffer;
+    };
+    
+  } // namespace
 } // namespace
 
 #endif

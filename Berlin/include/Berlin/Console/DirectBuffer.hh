@@ -20,61 +20,63 @@
  * MA 02139, USA.
  */
 
-#ifndef _Console_DirectBuffer_hh
-#define _Console_DirectBuffer_hh
+#ifndef _Berlin_Console_DirectBuffer_hh
+#define _Berlin_Console_DirectBuffer_hh
 
 #include <Berlin/config.hh>
 #include <Berlin/Console.hh>
 
-class DirectBuffer : virtual public Console::Drawable::Extension
+namespace Berlin
 {
-public:
-  typedef Console::Drawable::data_type data_type;
-
-  class Guard
+  namespace Console_Extension
   {
-  public:
-    Guard(const Console::Drawable *drawable, data_type *data)
-      : _drawable(drawable), _data(data)
-    {
-    }
 
-    ~Guard()
+    class DirectBuffer : virtual public Console::Drawable::Extension
     {
-    }
+      public:
+	typedef Console::Drawable::data_type data_type;
+	
+	class Guard
+	{
+	  public:
+	    Guard(const Console::Drawable *drawable, data_type *data) :
+		my_drawable(drawable), my_data(data)
+	    { }
+	    
+	    ~Guard() { }
+	    
+	    Guard(const Guard &buffer)
+	    {
+		my_data = buffer.release();
+		my_drawable = buffer.my_drawable;
+	    }
+	    Guard &operator = (const Guard &buffer)
+	    {
+		my_data = buffer.release();
+		my_drawable = buffer.my_drawable;
+		return *this;
+	    }
 
-    Guard(const Guard &buffer)
-    {
-      _data = buffer.release();
-      _drawable = buffer._drawable;
-    }
-    Guard &operator = (const Guard &buffer)
-    {
-      _data = buffer.release();
-      _drawable = buffer._drawable;
-      return *this;
-    }
+	    data_type *get() const { return my_data; }
+	    
+	    data_type *release() const
+	    {
+		data_type *tmp = my_data;
+		my_data = 0;
+		return tmp;
+	    }
+	  private:
+	    const Console::Drawable *my_drawable;
+	    mutable data_type       *my_data;
+	};
+	
+	//. Get the read buffer for this Drawable
+	virtual Guard read_buffer() = 0;
+	//. Get the write buffer for this Drawable
+	virtual Guard write_buffer() = 0;
+    };
 
-    data_type *get() const
-    {
-      return _data;
-    }
-
-    data_type *release() const
-    {
-      data_type *tmp = _data;
-      _data = 0;
-      return tmp;
-    }
-  private:
-    const Console::Drawable *_drawable;
-    mutable data_type       *_data;
-  };
-
-  //. Get the read buffer for this Drawable
-  virtual Guard read_buffer() = 0;
-  //. Get the write buffer for this Drawable
-  virtual Guard write_buffer() = 0;
-};
+  } // namespace
+} // namespace
 
 #endif

@@ -339,10 +339,14 @@ void FigureImpl::resize()
 	CORBA::ULong n = my_path->nodes.length();
 	for (CORBA::ULong i = 1; i < n; i++)
 	{
-	    my_ext->lower.x = Math::min(my_ext->lower.x, my_path->nodes[i].x);
-	    my_ext->upper.x = Math::max(my_ext->upper.x, my_path->nodes[i].x);
-	    my_ext->lower.y = Math::min(my_ext->lower.y, my_path->nodes[i].y);
-	    my_ext->upper.y = Math::max(my_ext->upper.y, my_path->nodes[i].y);
+	    my_ext->lower.x = Math::min(my_ext->lower.x,
+					my_path->nodes[i].x);
+	    my_ext->upper.x = Math::max(my_ext->upper.x,
+					my_path->nodes[i].x);
+	    my_ext->lower.y = Math::min(my_ext->lower.y,
+					my_path->nodes[i].y);
+	    my_ext->upper.y = Math::max(my_ext->upper.y,
+					my_path->nodes[i].y);
         }
 // 	// in case of vertical/horizontal line with nil brush, 
 // 	// painter->is_visible will be return false, so add 1

@@ -33,33 +33,32 @@ using namespace Berlin::WidgetKit::Motif;
 
 class Adjustable::Adjust : public CommandImpl
 {
-public:
-  Adjust(Adjustable *a) : _adjustable(a) { _adjustable->_add_ref();}
-  ~Adjust() { _adjustable->_remove_ref();}
-  virtual void execute(const CORBA::Any &any)
-  {
-    OriginatedDelta *od;
-    if (any >>= od) {
-      _adjustable->adjust(*od);
-    } else {
-      std::cerr << "Adjustable::Adjust::execute : wrong message type !" << std::endl;
+  public:
+    Adjust(Adjustable *a) : my_adjustable(a) { my_adjustable->_add_ref(); }
+    ~Adjust() { my_adjustable->_remove_ref(); }
+    virtual void execute(const CORBA::Any &any)
+    {
+	OriginatedDelta *od;
+	if (any >>= od)
+	    my_adjustable->adjust(*od);
+	else
+	    std::cerr << "Adjustable::Adjust::execute: "
+		      << "wrong message type !" << std::endl;
     }
-  }
-private:
-  Adjustable *_adjustable;
+  private:
+    Adjustable *my_adjustable;
 };
 
-Adjustable::Adjustable() : ControllerImpl(false), _translate(new Observer(this)) {}
+Adjustable::Adjustable() :
+    ControllerImpl(false), my_translate(new Observer(this))
+{ }
 
 Command_ptr Adjustable::create_adjust_cmd()
 {
-  Adjust *a = new Adjust(this);
-  activate(a);
-  return a->_this();
+    Adjust *a = new Adjust(this);
+    activate(a);
+    return a->_this();
 }
 
 Fresco::Observer_ptr Adjustable::observer()
-{
-  return _translate->_this();
-}
-
+{ return my_translate->_this(); }

@@ -30,42 +30,43 @@ using namespace Fresco;
 
 using namespace Berlin::ToolKit;
 
-Dragger::Dragger(Command_ptr c) : ControllerImpl(false), _command(Command::_duplicate(c))
-{
-  Trace trace("Dragger::Dragger");
-}
+Dragger::Dragger(Command_ptr c) :
+    ControllerImpl(false),
+    my_command(Command::_duplicate(c))
+{ Trace trace("Dragger::Dragger"); }
 
 Dragger::~Dragger()
 {
   Trace trace("Dragger::~Dragger");
-  if (!CORBA::is_nil(_command))
-    try { _command->destroy();}
-    catch (const CORBA::OBJECT_NOT_EXIST &) {}
-    catch (const CORBA::COMM_FAILURE &) {}
+  if (!CORBA::is_nil(my_command))
+    try { my_command->destroy(); }
+    catch (const CORBA::OBJECT_NOT_EXIST &) { }
+    catch (const CORBA::COMM_FAILURE &) { }
 }
 void Dragger::press(PickTraversal_ptr traversal, const Input::Event &event)
 {
-  ControllerImpl::press(traversal, event);
-  _offset = event[1].attr.location();
+    ControllerImpl::press(traversal, event);
+    my_offset = event[1].attr.location();
 }
 
 void Dragger::drag(PickTraversal_ptr traversal, const Input::Event &event)
 {
-  Vertex delta = event[0].attr.location() - _offset;
-  OriginatedDelta od;
-  od.delta = delta;
-  od.origin = _offset;
+    Vertex delta = event[0].attr.location() - my_offset;
+    OriginatedDelta od;
+    od.delta = delta;
+    od.origin = my_offset;
 
-  CORBA::Any any;
-  any <<= od;
-  if (!CORBA::is_nil(_command))
-    try { _command->execute(any);}
-    catch (const CORBA::OBJECT_NOT_EXIST &) { _command = Fresco::Command::_nil();}
-    catch (const CORBA::COMM_FAILURE &) { _command = Fresco::Command::_nil();}
-  _offset += delta;
+    CORBA::Any any;
+    any <<= od;
+    if (!CORBA::is_nil(my_command))
+	try { my_command->execute(any); }
+	catch (const CORBA::OBJECT_NOT_EXIST &)
+	{ my_command = Fresco::Command::_nil(); }
+	catch (const CORBA::COMM_FAILURE &)
+	{ my_command = Fresco::Command::_nil(); }
+    my_offset += delta;
 }
 
-void Dragger::release(PickTraversal_ptr traversal, const Input::Event &event)
-{
-  ControllerImpl::release(traversal, event);
-}
+void Dragger::release(PickTraversal_ptr traversal,
+		      const Input::Event &event)
+{ ControllerImpl::release(traversal, event); }

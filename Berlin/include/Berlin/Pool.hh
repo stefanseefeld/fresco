@@ -19,67 +19,72 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Pool_hh
-#define _Pool_hh
+#ifndef _Berlin_Pool_hh
+#define _Berlin_Pool_hh
 
 #include <vector>
 
-template <class T>
-class Pool
+namespace Berlin
 {
-public:
-  Pool() {}
-  inline ~Pool();
-  inline T *allocate(unsigned int);
-  inline void deallocate(T *);
-private:
-  struct bucket
+
+  template <class T>
+  class Pool
   {
-    bucket(T *d, unsigned int s) : data(d), size(s), used(true) {};
-    T *data;
-    unsigned int size;
-    bool used;
+    public:
+      Pool() { }
+      inline ~Pool();
+      inline T *allocate(unsigned int);
+      inline void deallocate(T *);
+    private:
+      struct bucket
+      {
+	  bucket(T *d, unsigned int s) : data(d), size(s), used(true) {};
+	  T *data;
+	  unsigned int size;
+	  bool used;
+      };
+      std::vector<bucket> my_buckets;
   };
-  std::vector<bucket> buckets;
-};
 
-template <class T>
-inline Pool<T>::~Pool()
-{
-  for (typename std::vector<bucket>::iterator i = buckets.begin();
-       i != buckets.end(); ++i)
-    delete (*i).data;
-}
-
-template <class T>
-inline T *Pool<T>::allocate(unsigned int size)
-{
-  for (typename std::vector<bucket>::iterator i = buckets.begin();
-       i != buckets.end(); ++i)
-    if (!(*i).used && (*i).size >= size)
-      {
-	(*i).used = true;
-	return (*i).data;
-      }
+  template <class T>
+  inline Pool<T>::~Pool()
+  {
+      for (typename std::vector<bucket>::iterator i = my_buckets.begin();
+	   i != my_buckets.end(); ++i)
+	  delete (*i).data;
+  }
+  
+  template <class T>
+  inline T *Pool<T>::allocate(unsigned int size)
+  {
+      for (typename std::vector<bucket>::iterator i = my_buckets.begin();
+	   i != my_buckets.end(); ++i)
+	  if (!(*i).used && (*i).size >= size)
+	  {
+	      (*i).used = true;
+	      return (*i).data;
+	  }
 #if 1
-  bucket b(static_cast<T *>(::operator new(static_cast<size_t>(size * sizeof(T)))), size);
+      bucket b(static_cast<T *>(::operator new(static_cast<size_t>(size * sizeof(T)))), size);
 #else
-  bucket b(new T[size], size);
+      bucket b(new T[size], size);
 #endif
-  buckets.push_back(b);
-  return b.data;
-}
+      my_buckets.push_back(b);
+      return b.data;
+  }
+  
+  template <class T>
+  inline void Pool<T>::deallocate(T *d)
+  {
+      for (typename std::vector<bucket>::iterator i = my_buckets.begin();
+	   i != my_buckets.end(); ++i)
+	  if ((*i).data == d)
+	  {
+	      (*i).used = false;
+	      break;
+	  }
+  };
+  
+} // namespace
 
-template <class T>
-inline void Pool<T>::deallocate(T *d)
-{
-  for (typename std::vector<bucket>::iterator i = buckets.begin();
-       i != buckets.end(); ++i)
-    if ((*i).data == d)
-      {
-	(*i).used = false;
-	break;
-      }
-};
-
-#endif /* _Pool_hh */
+#endif

@@ -28,105 +28,103 @@ using namespace Fresco;
 
 Berlin::CommandKit::BoundedRangeImpl::BoundedRangeImpl(Coord l, Coord u,
                                                        Coord lv, Coord uv,
-                                                       Coord s, Coord p)
-  : _s(s), _p(p)
+                                                       Coord s, Coord p) :
+    my_s(s), my_p(p)
 {
-  _settings.lower = l;
-  _settings.upper = u;
-  _settings.lvalue = lv;
-  _settings.uvalue = uv;
-};
+  my_settings.lower = l;
+  my_settings.upper = u;
+  my_settings.lvalue = lv;
+  my_settings.uvalue = uv;
+}
 
-Berlin::CommandKit::BoundedRangeImpl::~BoundedRangeImpl()
-{
-};
+Berlin::CommandKit::BoundedRangeImpl::~BoundedRangeImpl() { }
 
 BoundedRange::Settings Berlin::CommandKit::BoundedRangeImpl::state()
 {
-  Prague::Guard<Mutex> guard(_mutex);
-  return _settings;
+  Prague::Guard<Mutex> guard(my_mutex);
+  return my_settings;
 }
 
 void Berlin::CommandKit::BoundedRangeImpl::state(const Fresco::BoundedRange::Settings &s)
 {
-  Prague::Guard<Mutex> guard(_mutex);
-  _settings = s;
+  Prague::Guard<Mutex> guard(my_mutex);
+  my_settings = s;
 }
 
 Coord Berlin::CommandKit::BoundedRangeImpl::lower()
 {
-  Prague::Guard<Mutex> guard(_mutex);
-  return _settings.lower;
+  Prague::Guard<Mutex> guard(my_mutex);
+  return my_settings.lower;
 }
 
 void Berlin::CommandKit::BoundedRangeImpl::lower(Coord l)
 {
   CORBA::Any any;
   {
-    Prague::Guard<Mutex> guard(_mutex);
-    if (l == _settings.lower) return;
-    _settings.lower = l;
-    _settings.lvalue = std::max(_settings.lvalue, _settings.lower);
-    _settings.uvalue = std::max(_settings.uvalue, _settings.lower);
-    any <<= _settings;
+    Prague::Guard<Mutex> guard(my_mutex);
+    if (l == my_settings.lower) return;
+    my_settings.lower = l;
+    my_settings.lvalue = std::max(my_settings.lvalue, my_settings.lower);
+    my_settings.uvalue = std::max(my_settings.uvalue, my_settings.lower);
+    any <<= my_settings;
   }
   notify(any);
 }
 
 Coord Berlin::CommandKit::BoundedRangeImpl::upper()
 {
-  Prague::Guard<Mutex> guard(_mutex);
-  return _settings.upper;
+  Prague::Guard<Mutex> guard(my_mutex);
+  return my_settings.upper;
 }
 
 void Berlin::CommandKit::BoundedRangeImpl::upper(Coord u)
 {
   CORBA::Any any;
   {
-    Prague::Guard<Mutex> guard(_mutex);
-    if (_settings.upper == u) return;
-    _settings.upper = u;
-    _settings.lvalue = std::min(_settings.lvalue, _settings.upper);
-    _settings.uvalue = std::min(_settings.uvalue, _settings.upper);
-    any <<= _settings;
+    Prague::Guard<Mutex> guard(my_mutex);
+    if (my_settings.upper == u) return;
+    my_settings.upper = u;
+    my_settings.lvalue = std::min(my_settings.lvalue, my_settings.upper);
+    my_settings.uvalue = std::min(my_settings.uvalue, my_settings.upper);
+    any <<= my_settings;
   }
   notify(any);
 }
 
 Coord Berlin::CommandKit::BoundedRangeImpl::step()
 {
-  Prague::Guard<Mutex> guard(_mutex);
-  return _s;
+  Prague::Guard<Mutex> guard(my_mutex);
+  return my_s;
 }
 
 void Berlin::CommandKit::BoundedRangeImpl::step(Coord s)
 {
-  Prague::Guard<Mutex> guard(_mutex);
-  _s = s;
+  Prague::Guard<Mutex> guard(my_mutex);
+  my_s = s;
 }
 
 Coord Berlin::CommandKit::BoundedRangeImpl::page()
 {
-  Prague::Guard<Mutex> guard(_mutex);
-  return _p;
+  Prague::Guard<Mutex> guard(my_mutex);
+  return my_p;
 }
 
 void Berlin::CommandKit::BoundedRangeImpl::page(Coord p)
 {
-  Prague::Guard<Mutex> guard(_mutex);
-  _p = p;
+  Prague::Guard<Mutex> guard(my_mutex);
+  my_p = p;
 }
 
 void Berlin::CommandKit::BoundedRangeImpl::forward()
 {
   CORBA::Any any;
   {
-    Prague::Guard<Mutex> guard(_mutex);
-    Coord t = std::min(_s, _settings.upper - _settings.uvalue);
+    Prague::Guard<Mutex> guard(my_mutex);
+    Coord t = std::min(my_s, my_settings.upper - my_settings.uvalue);
     if (t <= 0.) return;
-    _settings.lvalue += t;
-    _settings.uvalue += t;
-    any <<= _settings;
+    my_settings.lvalue += t;
+    my_settings.uvalue += t;
+    any <<= my_settings;
   }
   notify(any);
 }
@@ -135,12 +133,12 @@ void Berlin::CommandKit::BoundedRangeImpl::backward()
 {
   CORBA::Any any;
   {
-    Prague::Guard<Mutex> guard(_mutex);
-    Coord t = std::min(_s, _settings.lvalue - _settings.lower);
+    Prague::Guard<Mutex> guard(my_mutex);
+    Coord t = std::min(my_s, my_settings.lvalue - my_settings.lower);
     if (t <= 0.) return;
-    _settings.lvalue -= t;
-    _settings.uvalue -= t;
-    any <<= _settings;
+    my_settings.lvalue -= t;
+    my_settings.uvalue -= t;
+    any <<= my_settings;
   }
   notify(any);
 }
@@ -149,12 +147,12 @@ void Berlin::CommandKit::BoundedRangeImpl::fastforward()
 {
   CORBA::Any any;
   {
-    Prague::Guard<Mutex> guard(_mutex);
-    Coord t = std::min(_p, _settings.upper - _settings.uvalue);
+    Prague::Guard<Mutex> guard(my_mutex);
+    Coord t = std::min(my_p, my_settings.upper - my_settings.uvalue);
     if (t <= 0.) return;
-    _settings.lvalue += t;
-    _settings.uvalue += t;
-    any <<= _settings;
+    my_settings.lvalue += t;
+    my_settings.uvalue += t;
+    any <<= my_settings;
   }
   notify(any);
 }
@@ -163,12 +161,12 @@ void Berlin::CommandKit::BoundedRangeImpl::fastbackward()
 {
   CORBA::Any any;
   {
-    Prague::Guard<Mutex> guard(_mutex);
-    Coord t = std::min(_p, _settings.lvalue - _settings.lower);
+    Prague::Guard<Mutex> guard(my_mutex);
+    Coord t = std::min(my_p, my_settings.lvalue - my_settings.lower);
     if (t <= 0.) return;
-    _settings.lvalue -= t;
-    _settings.uvalue -= t;
-    any <<= _settings;
+    my_settings.lvalue -= t;
+    my_settings.uvalue -= t;
+    any <<= my_settings;
   }
   notify(any);
 }
@@ -177,12 +175,12 @@ void Berlin::CommandKit::BoundedRangeImpl::begin()
 {
   CORBA::Any any;
   {
-    Prague::Guard<Mutex> guard(_mutex);
-    Coord t = _settings.lvalue - _settings.lower;
+    Prague::Guard<Mutex> guard(my_mutex);
+    Coord t = my_settings.lvalue - my_settings.lower;
     if (t == 0.) return;
-    _settings.lvalue -= t;
-    _settings.uvalue -= t;
-    any <<= _settings;
+    my_settings.lvalue -= t;
+    my_settings.uvalue -= t;
+    any <<= my_settings;
   }
   notify(any);
 }
@@ -191,12 +189,12 @@ void Berlin::CommandKit::BoundedRangeImpl::end()
 {
   CORBA::Any any;
   {
-    Prague::Guard<Mutex> guard(_mutex);
-    Coord t = _settings.upper - _settings.uvalue;
+    Prague::Guard<Mutex> guard(my_mutex);
+    Coord t = my_settings.upper - my_settings.uvalue;
     if (t == 0.) return;
-    _settings.lvalue += t;
-    _settings.uvalue += t;
-    any <<= _settings;
+    my_settings.lvalue += t;
+    my_settings.uvalue += t;
+    any <<= my_settings;
   }
   notify(any);
 }
@@ -205,19 +203,19 @@ void Berlin::CommandKit::BoundedRangeImpl::lvalue(Coord lv)
 {
   CORBA::Any any;
   {
-    lv = std::min(std::max(_settings.lower, lv), _settings.upper);
-    Prague::Guard<Mutex> guard(_mutex);
-    if (lv == _settings.lvalue) return;
-    _settings.lvalue = lv;
-    any <<= _settings;
+    lv = std::min(std::max(my_settings.lower, lv), my_settings.upper);
+    Prague::Guard<Mutex> guard(my_mutex);
+    if (lv == my_settings.lvalue) return;
+    my_settings.lvalue = lv;
+    any <<= my_settings;
   }
   notify(any);
 }
 
 Coord Berlin::CommandKit::BoundedRangeImpl::lvalue()
 {
-  Prague::Guard<Mutex> guard(_mutex);
-  return _settings.lvalue;
+  Prague::Guard<Mutex> guard(my_mutex);
+  return my_settings.lvalue;
 }
 
 
@@ -225,18 +223,18 @@ void Berlin::CommandKit::BoundedRangeImpl::uvalue(Coord uv)
 {
   CORBA::Any any;
   {
-    uv = std::min(std::max(_settings.lower, uv), _settings.upper);
-    Prague::Guard<Mutex> guard(_mutex);
-    if (_settings.uvalue == uv) return;
-    _settings.uvalue = uv;
+    uv = std::min(std::max(my_settings.lower, uv), my_settings.upper);
+    Prague::Guard<Mutex> guard(my_mutex);
+    if (my_settings.uvalue == uv) return;
+    my_settings.uvalue = uv;
   }
   notify(any);
 }
 
 Coord Berlin::CommandKit::BoundedRangeImpl::uvalue()
 {
-  Prague::Guard<Mutex> guard(_mutex);
-  return _settings.uvalue;
+  Prague::Guard<Mutex> guard(my_mutex);
+  return my_settings.uvalue;
 }
 
 
@@ -244,13 +242,13 @@ void Berlin::CommandKit::BoundedRangeImpl::adjust(Coord d)
 {
   CORBA::Any any;
   {
-    Prague::Guard<Mutex> guard(_mutex);
-    Coord t = std::min(std::max(d, _settings.lower - _settings.lvalue),
-                       _settings.upper - _settings.uvalue);
+    Prague::Guard<Mutex> guard(my_mutex);
+    Coord t = std::min(std::max(d, my_settings.lower - my_settings.lvalue),
+                       my_settings.upper - my_settings.uvalue);
     if (t == 0.) return;
-    _settings.lvalue += t;
-    _settings.uvalue += t;
-    any <<= _settings;
+    my_settings.lvalue += t;
+    my_settings.uvalue += t;
+    any <<= my_settings;
   }
   notify(any);
 }

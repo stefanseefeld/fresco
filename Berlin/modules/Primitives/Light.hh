@@ -19,67 +19,71 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Light_hh
-#define _Light_hh
+#ifndef _PrimitiveKit_Light_hh
+#define _PrimitiveKit_Light_hh
 
 #include <Fresco/config.hh>
 #include <Fresco/DrawingKit3D.hh>
 #include <Berlin/MonoGraphic.hh>
 
-namespace Berlin {
-namespace PrimitiveKit {
-
-//. Abstract base light source node
-class Light : public MonoGraphic
+namespace Berlin
 {
-public:
-  Light(const Fresco::Color &, double);
-  virtual ~Light();
-  virtual void traverse(Fresco::Traversal_ptr);
-  virtual void draw(Fresco::DrawTraversal_ptr);
-  virtual void pick(Fresco::PickTraversal_ptr);  
-protected:
-  virtual void do_draw(Fresco::DrawingKit3D_ptr) = 0;
-//   //. Whether light is on
-//   bool          _on;
-  //. RGB source color
-  Fresco::Color _color;
-  //. Source intensity (0 to 1)
-  double        _intensity;
-};
+  namespace PrimitiveKit
+  {
 
-class DirectionalLight : public Light
-{
-public:
-  DirectionalLight(const Fresco::Color &, double, const Fresco::Vertex &);
-protected:
-  virtual void do_draw(Fresco::DrawingKit3D_ptr);
-  Fresco::Vertex _direction;
-};
+    //. Abstract base light source node
+    class Light : public MonoGraphic
+    {
+      public:
+	Light(const Fresco::Color &, double);
+	virtual ~Light();
+	virtual void traverse(Fresco::Traversal_ptr);
+	virtual void draw(Fresco::DrawTraversal_ptr);
+	virtual void pick(Fresco::PickTraversal_ptr);  
+      protected:
+	virtual void do_draw(Fresco::DrawingKit3D_ptr) = 0;
+//        //. Whether light is on
+//        bool          _on;
+          //. RGB source color
+	Fresco::Color my_color;
+	//. Source intensity (0 to 1)
+	double        my_intensity;
+    };
 
-class PointLight : public Light
-{
-public:
-  PointLight(const Fresco::Color &, double, const Fresco::Vertex &);
-protected:
-  virtual void do_draw(Fresco::DrawingKit3D_ptr);
-  Fresco::Vertex _position;
-};
+    class DirectionalLight : public Light
+    {
+      public:
+	DirectionalLight(const Fresco::Color &, double,
+			 const Fresco::Vertex &);
+      protected:
+	virtual void do_draw(Fresco::DrawingKit3D_ptr);
+	Fresco::Vertex my_direction;
+    };
 
-class SpotLight : public Light
-{
-public:
-  SpotLight(const Fresco::Color &, double, const Fresco::Vertex &, const Fresco::Vertex &,
-	    double, double);
-protected:
-  virtual void do_draw(Fresco::DrawingKit3D_ptr);
-  Fresco::Vertex _direction;
-  Fresco::Vertex _position;
-  double         _dropoffrate;
-  double         _cutoffangle;
-};
+    class PointLight : public Light
+    {
+      public:
+	PointLight(const Fresco::Color &, double, const Fresco::Vertex &);
+      protected:
+	virtual void do_draw(Fresco::DrawingKit3D_ptr);
+	Fresco::Vertex my_position;
+    };
 
-} // namespace
+    class SpotLight : public Light
+    {
+      public:
+	SpotLight(const Fresco::Color &, double, const Fresco::Vertex &,
+		  const Fresco::Vertex &,
+		  double, double);
+      protected:
+	virtual void do_draw(Fresco::DrawingKit3D_ptr);
+	Fresco::Vertex my_direction;
+	Fresco::Vertex my_position;
+	double         my_dropoffrate;
+	double         my_cutoffangle;
+    };
+    
+  } // namespace
 } // namespace
 
 #endif

@@ -26,18 +26,24 @@
 #include <Fresco/Input.hh>
 #include <Fresco/Command.hh>
 
-class Accelerator : public virtual POA_Fresco::Input::Filter,
-                    public virtual PortableServer::RefCountServantBase
+namespace Berlin
 {
- public:
-  Accelerator(Fresco::Input::Device, const Fresco::Input::Toggle &, Fresco::Input::Bitset, Fresco::Command_ptr);
-  virtual ~Accelerator() {}
-  virtual CORBA::Boolean handle(const Fresco::Input::Event &);
- private:
-  const Fresco::Input::Device device;
-  const Fresco::Input::Toggle toggle;
-  const Fresco::Input::Bitset modifier;
-  const Fresco::Command_var command;
-};
+
+  class Accelerator : public virtual POA_Fresco::Input::Filter,
+		      public virtual PortableServer::RefCountServantBase
+  {
+    public:
+      Accelerator(Fresco::Input::Device, const Fresco::Input::Toggle &,
+		  Fresco::Input::Bitset, Fresco::Command_ptr);
+      virtual ~Accelerator() { }
+      virtual CORBA::Boolean handle(const Fresco::Input::Event &);
+    private:
+      const Fresco::Input::Device my_device;
+      const Fresco::Input::Toggle my_toggle;
+      const Fresco::Input::Bitset my_modifier;
+      const Fresco::Command_var my_command;
+  };
+
+} // namespace
 
 #endif 

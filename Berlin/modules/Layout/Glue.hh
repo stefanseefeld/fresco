@@ -19,29 +19,33 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Glue_hh
-#define _Glue_hh
+#ifndef _Layout_Glue_hh
+#define _Layout_Glue_hh
 
 #include <Berlin/GraphicImpl.hh>
 
-namespace Berlin {
-namespace LayoutKit {
-
-class Glue : public GraphicImpl
+namespace Berlin
 {
-public:
-  Glue(Fresco::Axis, Fresco::Coord, Fresco::Coord, Fresco::Coord, Fresco::Alignment);
-  Glue(const Fresco::Graphic::Requisition &);
-  virtual ~Glue();
+  namespace LayoutKit 
+  {
 
-  virtual void request(Fresco::Graphic::Requisition &);
+    class Glue : public GraphicImpl
+    {
+      public:
+	Glue(Fresco::Axis,
+	     Fresco::Coord, Fresco::Coord, Fresco::Coord,
+	     Fresco::Alignment);
+	Glue(const Fresco::Graphic::Requisition &);
+	virtual ~Glue();
+	
+	virtual void request(Fresco::Graphic::Requisition &);
 
-  virtual const char *object_name() { return "Layout/Glue";}
-private:
-  Fresco::Graphic::Requisition _requisition;
-};
-
-} // namespace
+	virtual const char *object_name() { return "Layout/Glue";}
+      private:
+	Fresco::Graphic::Requisition my_requisition;
+    };
+    
+  } // namespace
 } // namespace
 
 #endif

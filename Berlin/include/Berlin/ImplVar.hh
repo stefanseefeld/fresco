@@ -29,57 +29,75 @@
 #include <Berlin/Logger.hh>
 #include <typeinfo>
 
-//.these smart pointers take care of the activation/deactivation of
-//.servants they get assigned to
-//.as such, it is *not* meant to be used for RefCountBase objects as
-//.they deactivate themselfs when the ref counter drops to zero
-//.
-//.The Impl_var class is similar to auto_ptr, i.e. it owns the assigned
-//.object. If you assign one Impl_var to another, the first will lose
-//.ownership.
-template <class T>
-class Impl_var
+namespace Berlin
 {
-public:
-  explicit Impl_var(T *tt = 0) : t(tt) { if (t) activate(t);}
-  Impl_var(Impl_var<T> &i) : t(i._retn()) {}
-  ~Impl_var() { if (t) deactivate(t);}
-  Impl_var<T> &operator = (Impl_var<T> &i) { if (&i != this) { if (t) deactivate(t); t = i._retn();} return *this;}
-  Impl_var<T> &operator = (T *tt) { if (t) deactivate(t); t = tt; if (t) activate(t); return *this;}
-  T &operator *() const { return *t;}
-  T *operator->() const { return  t;}
-  operator T *() const { return  t;}
-  T *_retn() { T *tmp = t; t = 0; return tmp;}
-  static void activate(T *);
-  static void deactivate(T *);
-private:
-  T *t;
-};
 
-template <class T>
-inline void Impl_var<T>::activate(T *t)
-{
-  Prague::Trace trace("Impl_var::activate");
-  PortableServer::POA_var poa = t->_default_POA();
+  //.these smart pointers take care of the activation/deactivation of
+  //.servants they get assigned to
+  //.as such, it is *not* meant to be used for RefCountBase objects as
+  //.they deactivate themselfs when the ref counter drops to zero
+  //.
+  //.The Impl_var class is similar to auto_ptr, i.e. it owns the assigned
+  //.object. If you assign one Impl_var to another, the first will lose
+  //.ownership.
+  template <class T>
+  class Impl_var
+  {
+    public:
+      explicit Impl_var(T *tt = 0) : t(tt) { if (t) activate(t); }
+      Impl_var(Impl_var<T> &i) : t(i._retn()) { }
+      ~Impl_var() { if (t) deactivate(t); }
+      Impl_var<T> &operator = (Impl_var<T> &i)
+      {
+	  if (&i != this)
+	  {
+	      if (t) deactivate(t);
+	      t = i._retn();
+	  }
+	  return *this;
+      }
+      Impl_var<T> &operator = (T *tt)
+      { if (t) deactivate(t); t = tt; if (t) activate(t); return *this; }
+      T &operator *() const { return *t; }
+      T *operator->() const { return  t; }
+      operator T *() const { return  t; }
+      T *_retn() { T *tmp = t; t = 0; return tmp; }
+      static void activate(T *);
+      static void deactivate(T *);
+    private:
+      T *t;
+  };
+
+  template <class T>
+  inline void Impl_var<T>::activate(T *t)
+  {
+      Prague::Trace trace("Impl_var::activate");
+      PortableServer::POA_var poa = t->_default_POA();
 #ifdef LCLOG
-  Logger::log(Logger::lifecycle) << "activating " << t << " (" << typeid(*t).name() << ")" << std::endl;
+      Logger::log(Logger::lifecycle) << "activating " << t << " ("
+				     << typeid(*t).name() << ")"
+				     << std::endl;
 #endif
-  PortableServer::ObjectId *oid = poa->activate_object(t);
-  t->_remove_ref();
-  delete oid;
-}
+      PortableServer::ObjectId *oid = poa->activate_object(t);
+      t->_remove_ref();
+      delete oid;
+  }
 
-template <class T>
-inline void Impl_var<T>::deactivate(T *t)
-{
-  Prague::Trace trace("Impl_var::deactivate");
-  PortableServer::POA_var poa = t->_default_POA();
-  PortableServer::ObjectId *oid = poa->servant_to_id(t);
+  template <class T>
+  inline void Impl_var<T>::deactivate(T *t)
+  {
+      Prague::Trace trace("Impl_var::deactivate");
+      PortableServer::POA_var poa = t->_default_POA();
+      PortableServer::ObjectId *oid = poa->servant_to_id(t);
 #ifdef LCLOG
-  Logger::log(Logger::lifecycle) << "deactivating " << t << " (" << typeid(*t).name() << ")" << std::endl;
+      Logger::log(Logger::lifecycle) << "deactivating " << t << " ("
+				     << typeid(*t).name() << ")"
+				     << std::endl;
 #endif
-  poa->deactivate_object(*oid);
-  delete oid;
-}
+      poa->deactivate_object(*oid);
+      delete oid;
+  }
 
+} // namespace
+  
 #endif

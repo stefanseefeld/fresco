@@ -34,49 +34,47 @@ using namespace Fresco;
 
 using namespace Berlin::TextKit;
 
-TextChunk::TextChunk(Unichar u, const Fresco::Graphic::Requisition &r)
-  : _width(r.x.natural), _height(r.y.natural), _xalign(r.x.align), _yalign(r.y.align), _char(u), _obj_name(0)
-{
-}
+TextChunk::TextChunk(Unichar u, const Fresco::Graphic::Requisition &r) :
+    my_width(r.x.natural),
+    my_height(r.y.natural),
+    my_xalign(r.x.align),
+    my_yalign(r.y.align),
+    my_char(u),
+    my_obj_name(0)
+{ }
 
 TextChunk::~TextChunk()
-{
-  if (_obj_name) free(const_cast<char*>(_obj_name));
-}
+{ if(my_obj_name) free(const_cast<char*>(my_obj_name)); }
 
 void TextChunk::request(Fresco::Graphic::Requisition &r)
 {
-  r.x.defined = true;
-  r.x.minimum = r.x.natural = r.x.maximum = _width;
-  r.x.align   = _xalign;
-  r.y.defined = true;
-  r.y.minimum = r.y.natural = r.y.maximum = _height;
-  r.y.align   = _yalign;
+    r.x.defined = true;
+    r.x.minimum = r.x.natural = r.x.maximum = my_width;
+    r.x.align   = my_xalign;
+    r.y.defined = true;
+    r.y.minimum = r.y.natural = r.y.maximum = my_height;
+    r.y.align   = my_yalign;
 }
 
 const char *TextChunk::object_name()
 {
-  if (_obj_name) return _obj_name;
-  std::ostringstream buf;
-  buf << "Char ";
-  if (_char < 128) buf << (char)_char << std::ends;
-  else buf << _char << std::ends;
-  _obj_name = strdup(buf.str().c_str());
-  return _obj_name;
+    if (my_obj_name) return my_obj_name;
+    std::ostringstream buf;
+    buf << "Char ";
+    if (my_char < 128) buf << (char)my_char << std::ends;
+    else buf << my_char << std::ends;
+    my_obj_name = strdup(buf.str().c_str());
+    return my_obj_name;
 }
 
 void TextChunk::get_text(Babylon::String &u) 
-{ 
-  u = Babylon::String(1, _char);
-}
+{ u = Babylon::String(1, my_char); }
 
 unsigned long TextChunk::get_length() 
-{ 
-  return 1;
-}
+{ return 1; }
 
 void TextChunk::draw(DrawTraversal_ptr traversal)
 {
   DrawingKit_var drawing = traversal->drawing();
-  drawing->draw_char(_char);  
+  drawing->draw_char(my_char);  
 }

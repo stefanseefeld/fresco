@@ -22,8 +22,8 @@
  * MA 02139, USA.
  */
 
-#ifndef _RasterKitImpl_hh
-#define _RasterKitImpl_hh
+#ifndef _RasterKit_RasterKitImpl_hh
+#define _RasterKit_RasterKitImpl_hh
 
 #include <Fresco/config.hh>
 #include <Fresco/RasterKit.hh>
@@ -34,25 +34,27 @@ class RasterImpl;
 
 namespace Berlin 
 {
-namespace RasterKit 
-{
+  namespace RasterKit 
+  {
 
-class RasterKitImpl : public virtual POA_Fresco::RasterKit,
-                      public KitImpl
-{
-public:
-  RasterKitImpl(const std::string &,
-                const Fresco::Kit::PropertySeq &,
-                ServerContextImpl *);
-  virtual ~RasterKitImpl();
-  virtual KitImpl *clone(const Fresco::Kit::PropertySeq &p, ServerContextImpl *c)
-  { return new RasterKitImpl(repo_id(), p, c);}
+    class RasterKitImpl : public virtual POA_Fresco::RasterKit,
+			  public KitImpl
+    {
+      public:
+	RasterKitImpl(const std::string &,
+		      const Fresco::Kit::PropertySeq &,
+		      ServerContextImpl *);
+	virtual ~RasterKitImpl();
+	virtual Berlin::KitImpl *clone(const Fresco::Kit::PropertySeq &p,
+				       ServerContextImpl *c)
+	{ return new RasterKitImpl(repo_id(), p, c); }
 
-  Fresco::Raster_ptr create_empty_raster(const Fresco::Raster::Info &);
-  Fresco::Raster_ptr create_raster(const char *file);
-};
+	Fresco::Raster_ptr
+	create_empty_raster(const Fresco::Raster::Info &);
+	Fresco::Raster_ptr create_raster(const char *file);
+    };
 
-} // namespace
+  } // namespace
 } // namespace
 
 #endif

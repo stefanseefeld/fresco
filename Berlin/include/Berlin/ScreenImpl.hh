@@ -28,40 +28,49 @@
 #include <Berlin/MonoGraphic.hh>
 #include <Berlin/ControllerImpl.hh>
 
-class ScreenManager;
-class EventManager;
-class RegionImpl;
-
-class ScreenImpl : public virtual POA_Fresco::Screen,
-                   public ControllerImpl
+namespace Berlin
 {
-public:
-    //. Sets up the screen to the sizes given by the console in use.
-    ScreenImpl();
-    virtual ~ScreenImpl();
-    //. Sets up the Event- and Screenmanager for this screen.
-    void bind_managers(EventManager *, ScreenManager *);
+
+  class ScreenManager;
+  class EventManager;
+  class RegionImpl;
+  
+  class ScreenImpl : public virtual POA_Fresco::Screen,
+		     public ControllerImpl
+  {
+    public:
+      //. Sets up the screen to the sizes given by the console in use.
+      ScreenImpl();
+      virtual ~ScreenImpl();
+      //. Sets up the Event- and Screenmanager for this screen.
+      void bind_managers(EventManager *, ScreenManager *);
+      
+      virtual void pick(Fresco::PickTraversal_ptr);
+      virtual void allocations(Fresco::Allocation_ptr);
+      virtual void need_resize() { need_redraw();}
+      
+      virtual Fresco::Coord width();
+      virtual Fresco::Coord height();
+      virtual void damage(Fresco::Region_ptr);
+      
+      virtual CORBA::Boolean request_focus(Fresco::Controller_ptr,
+					   Fresco::Input::Device);
+      virtual CORBA::Boolean receive_focus(Fresco::Focus_ptr) { return true; }
+      virtual void lose_focus(Fresco::Input::Device) { }
+      virtual CORBA::Boolean handle_positional(Fresco::PickTraversal_ptr,
+					       const Fresco::Input::Event &)
+      { return false; }
+      virtual CORBA::Boolean
+      handle_non_positional(const Fresco::Input::Event &) { return false; }
     
-    virtual void pick(Fresco::PickTraversal_ptr);
-    virtual void allocations(Fresco::Allocation_ptr);
-    virtual void need_resize() { need_redraw();}
-    
-    virtual Fresco::Coord width();
-    virtual Fresco::Coord height();
-    virtual void damage(Fresco::Region_ptr);
-    
-    virtual CORBA::Boolean request_focus(Fresco::Controller_ptr, Fresco::Input::Device);
-    virtual CORBA::Boolean receive_focus(Fresco::Focus_ptr) { return true;}
-    virtual void lose_focus(Fresco::Input::Device) {}
-    virtual CORBA::Boolean handle_positional(Fresco::PickTraversal_ptr, const Fresco::Input::Event &) { return false;}
-    virtual CORBA::Boolean handle_non_positional(const Fresco::Input::Event &) { return false;}
-    
-    Fresco::Region_ptr allocation();
-protected:
-    Fresco::Screen_ptr    __this;
-    EventManager          *_emanager;
-    ScreenManager         *_smanager;
-    Impl_var<RegionImpl>   _region;
-};
+      Fresco::Region_ptr allocation();
+    protected:
+      Fresco::Screen_ptr     my_this;
+      EventManager          *my_emanager;
+      ScreenManager         *my_smanager;
+      Impl_var<RegionImpl>   my_region;
+  };
+
+} // namespace
 
 #endif 

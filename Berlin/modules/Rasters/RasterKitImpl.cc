@@ -33,24 +33,20 @@ using namespace Berlin::RasterKit;
 
 RasterKitImpl::RasterKitImpl(const std::string &id,
                              const Fresco::Kit::PropertySeq &p,
-                             ServerContextImpl *c)
-   : KitImpl(id, p, c) { }
+                             ServerContextImpl *c) :
+    KitImpl(id, p, c)
+{ }
 RasterKitImpl::~RasterKitImpl() { }
 
-Raster_ptr RasterKitImpl::create_empty_raster(const Fresco::Raster::Info &rinfo)
-{
-  return create<Fresco::Raster>(new RasterImpl(rinfo));
-}
+Raster_ptr
+RasterKitImpl::create_empty_raster(const Fresco::Raster::Info &rinfo)
+{ return create<Fresco::Raster>(new RasterImpl(rinfo)); }
 
 Raster_ptr RasterKitImpl::create_raster(const char *file)
+{ return create<Raster>(new RasterImpl(file)); }
+
+extern "C" Berlin::KitImpl *load()
 {
-  return create<Raster>(new RasterImpl(file));
-}
-
-
-
-extern "C" KitImpl *load()
-{
-  static std::string properties[] = {"implementation", "RasterKitImpl"};
-  return create_prototype<RasterKitImpl> ("IDL:fresco.org/Fresco/RasterKit:1.0", properties, 2);
+    static std::string properties[] = {"implementation", "RasterKitImpl"};
+    return Berlin::create_prototype<RasterKitImpl> ("IDL:fresco.org/Fresco/RasterKit:1.0", properties, 2);
 }

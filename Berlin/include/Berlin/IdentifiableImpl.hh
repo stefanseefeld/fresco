@@ -26,18 +26,23 @@
 #include <Fresco/Identifiable.hh>
 #include <Berlin/ServantBase.hh>
 
-class IdentifiableImpl : public virtual POA_Fresco::Identifiable,
-			 public virtual ServantBase,
-			 public virtual Prague::NamedObject
-
+namespace Berlin
 {
-public:
-  CORBA::Boolean is_identical(Fresco::Identifiable_ptr);
 
-  //. Default implementation of this method from NamedObject. Remove this to
-  //. let the compiler tell you which classes you forgot to fix this in :)
-  virtual const char *object_name() { return 0;}
+  class IdentifiableImpl : public virtual POA_Fresco::Identifiable,
+			   public virtual ServantBase,
+			   public virtual Prague::NamedObject
 
-};
+  {
+    public:
+      CORBA::Boolean is_identical(Fresco::Identifiable_ptr);
+
+      //. Default implementation of this method from NamedObject. Remove
+      //. this to let the compiler tell you which classes you forgot to
+      // fix this in :)
+      virtual const char *object_name() { return 0;}  
+  };
+
+} // namespace
 
 #endif

@@ -35,6 +35,7 @@
 
 using namespace Prague;
 using namespace Fresco;
+using namespace Berlin;
 
 TraversalImpl::TraversalImpl(Graphic_ptr g, Region_ptr a, Transform_ptr t)
 {

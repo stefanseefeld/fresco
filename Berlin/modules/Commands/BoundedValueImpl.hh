@@ -20,8 +20,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _BoundedValueImpl_hh
-#define _BoundedValueImpl_hh
+#ifndef _CommandKit_BoundedValueImpl_hh
+#define _CommandKit_BoundedValueImpl_hh
 
 #include <Prague/Sys/Thread.hh>
 #include <Fresco/config.hh>
@@ -60,12 +60,12 @@ namespace Berlin
         virtual void end();
         virtual void adjust(Fresco::Coord);
       private:
-        Fresco::Coord _l;
-        Fresco::Coord _u;
-        Fresco::Coord _v;
-        Fresco::Coord _s;
-        Fresco::Coord _p;
-        Prague::Mutex _mutex;
+        Fresco::Coord my_l;
+        Fresco::Coord my_u;
+        Fresco::Coord my_v;
+        Fresco::Coord my_s;
+        Fresco::Coord my_p;
+        Prague::Mutex my_mutex;
     };
 
   } // namespace

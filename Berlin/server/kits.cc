@@ -38,14 +38,12 @@ const std::string version = VERSION;
 const std::string version = "unknown";
 #endif
 
-using namespace Prague;
-
 int main(int argc, char **argv)
 {
-    GetOpt getopt(argv[0], "a module inspection tool");
-    getopt.add('h', "help", GetOpt::novalue, "help message");
-    getopt.add('v', "version", GetOpt::novalue, "version number");
-    getopt.add('r', "resource", GetOpt::mandatory,
+    Prague::GetOpt getopt(argv[0], "a module inspection tool");
+    getopt.add('h', "help", Prague::GetOpt::novalue, "help message");
+    getopt.add('v', "version", Prague::GetOpt::novalue, "version number");
+    getopt.add('r', "resource", Prague::GetOpt::mandatory,
 	       "the resource file to load");
     size_t argo = getopt.parse(argc, argv);
     argc -= argo;
@@ -61,18 +59,18 @@ int main(int argc, char **argv)
 	exit(0);
     }
     
-    RCManager::setup(getopt);
+    Berlin::RCManager::setup(getopt);
     
     CORBA::PolicyList policies;
-    ServerImpl *server =
-	ServerImpl::create(PortableServer::POA::_nil(),policies);
+    Berlin::ServerImpl *server =
+	Berlin::ServerImpl::create(PortableServer::POA::_nil(),policies);
 
-    Prague::Path path = RCManager::get_path("modulepath");
+    Prague::Path path = Berlin::RCManager::get_path("modulepath");
     for (Prague::Path::iterator i = path.begin(); i != path.end(); ++i)
 	server->scan(*i);
 
-    ServerImpl::PluginList listing = server->list();
-    for (ServerImpl::PluginList::iterator i = listing.begin();
+    Berlin::ServerImpl::PluginList listing = server->list();
+    for (Berlin::ServerImpl::PluginList::iterator i = listing.begin();
 	 i != listing.end();
 	 ++i)
     {

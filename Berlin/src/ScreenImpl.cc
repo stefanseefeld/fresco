@@ -33,53 +33,52 @@
 
 using namespace Prague;
 using namespace Fresco;
+using namespace Berlin;
 
-ScreenImpl::ScreenImpl()
-  : ControllerImpl(false),
-    __this(POA_Fresco::Screen::_this()),
-    _emanager(0),
-    _smanager(0),
-    _region(new RegionImpl())
+ScreenImpl::ScreenImpl() :
+    ControllerImpl(false),
+    my_this(POA_Fresco::Screen::_this()),
+    my_emanager(0),
+    my_smanager(0),
+    my_region(new RegionImpl())
 {
-  Trace trace(this, "ScreenImpl::ScreenImpl");
-  Console *console = Console::instance();
-  Console::Drawable *drawable = console->drawable();
-  _region->valid = true;
-  _region->lower.x = _region->lower.y = _region->lower.z = 0;
-  _region->upper.x = drawable->width() / drawable->resolution(xaxis);
-  _region->upper.y = drawable->height() / drawable->resolution(yaxis);
-  _region->upper.z = 0;
+    Trace trace(this, "ScreenImpl::ScreenImpl");
+    Console *console = Console::instance();
+    Console::Drawable *drawable = console->drawable();
+    my_region->valid = true;
+    my_region->lower.x = my_region->lower.y = my_region->lower.z = 0;
+    my_region->upper.x = drawable->width() / drawable->resolution(xaxis);
+    my_region->upper.y = drawable->height() / drawable->resolution(yaxis);
+    my_region->upper.z = 0;
 }
-ScreenImpl::~ScreenImpl() {}
+ScreenImpl::~ScreenImpl() { }
 void ScreenImpl::bind_managers(EventManager *e, ScreenManager *s)
 {
-  _emanager = e;
-  _smanager = s;
+  my_emanager = e;
+  my_smanager = s;
 }
 
 void ScreenImpl::pick(PickTraversal_ptr traversal)
 {
-  Trace trace(this, "ScreenImpl::pick");
-  if (traversal->intersects_allocation())
+    Trace trace(this, "ScreenImpl::pick");
+    if (traversal->intersects_allocation())
     {
-      traversal->enter_controller(__this);
-      MonoGraphic::traverse(traversal);
-      if (!traversal->picked()) traversal->hit();
-      traversal->leave_controller();
+	traversal->enter_controller(my_this);
+	MonoGraphic::traverse(traversal);
+	if (!traversal->picked()) traversal->hit();
+	traversal->leave_controller();
     }
-  else std::cout << "no intersection !" << std::endl;
+    else std::cout << "no intersection !" << std::endl;
 }
 
 void ScreenImpl::allocations(Allocation_ptr allocation)
 {
-  allocation->add(Region_var(_region->_this()), __this);
+    allocation->add(Region_var(my_region->_this()), my_this);
 }
 
-void ScreenImpl::damage(Region_ptr region) { _smanager->damage(region);}
+void ScreenImpl::damage(Region_ptr region) { my_smanager->damage(region); }
 CORBA::Boolean ScreenImpl::request_focus(Controller_ptr c, Input::Device d)
-{
-  return _emanager->request_focus(c, d);
-}
-Region_ptr ScreenImpl::allocation() { return _region->_this();}
-Coord ScreenImpl::width() { return _region->upper.x;}
-Coord ScreenImpl::height() { return _region->upper.y;}
+{ return my_emanager->request_focus(c, d); }
+Region_ptr ScreenImpl::allocation() { return my_region->_this(); }
+Coord ScreenImpl::width() { return my_region->upper.x;}
+Coord ScreenImpl::height() { return my_region->upper.y;}
