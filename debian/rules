@@ -6,6 +6,240 @@
 # This is the debhelper compatability version to use.
 export DH_COMPAT=3
 
+# These are used for cross-compiling and for saving the configure script
+# from having to guess our platform (since we know it already)
+DEB_HOST_GNU_TYPE   ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
+DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+
+CC = gcc-3.2
+CXX = g++-3.2
+
+CFLAGS = -O2
+CPPFLAGS = -Wno-deprecated
+
+ifneq (,$(findstring debug,$(DEB_BUILD_OPTIONS)))
+	CFLAGS += -ggdb
+endif
+ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
+	INSTALL_PROGRAM += -s
+endif
+
+CXXFLAGS=$(CFLAGS)
+export CC CXX CFLAGS CPPFLAGS CXXFLAGS
+
+build/config.status: configure
+	dh_testdir
+
+	-mkdir build
+	cd build && ../configure \
+		--host=$(DEB_HOST_GNU_TYPE) \
+		--build=$(DEB_BUILD_GNU_TYPE) \
+		--prefix=/usr \
+		--mandir=\$${prefix}/share/man \
+		--infodir=\$${prefix}/share/info \
+		--sysconfdir=/etc \
+		--enable-tracer
+
+build-arch: build/config.status build-arch-stamp
+build-arch-stamp:
+	dh_testdir
+
+	$(MAKE) -C build
+
+	touch build-arch-stamp
+
+build-indep: build/config.status build-indep-stamp
+build-indep-stamp:
+	dh_testdir
+
+	#$(MAKE) -C build doc
+
+	touch build-indep-stamp
+
+build: build-arch build-indep
+
+clean:
+	dh_testdir
+	dh_testroot
+	rm -f build-arch-stamp build-indep-stamp 
+
+	rm -rf build
+
+	-test -r /usr/share/misc/config.sub && \
+	  cp -f /usr/share/misc/config.sub config.sub
+	-test -r /usr/share/misc/config.guess && \
+	  cp -f /usr/share/misc/config.guess config.guess
+
+	dh_clean
+
+install: DH_OPTIONS=
+install: build
+	dh_testdir
+	dh_testroot
+	dh_clean -k
+	dh_installdirs
+
+	cd build/Babylon && make install DESTDIR=$(CURDIR)/debian/libbabylon-dev
+
+	install $(CURDIR)/debian/libbabylon-dev/usr/lib/Babylon/* \
+		$(CURDIR)/debian/libbabylon/usr/lib/Babylon
+	rm -r $(CURDIR)/debian/libbabylon-dev/usr/lib/Babylon
+	install $(CURDIR)/debian/libbabylon-dev/usr/lib/* \
+		$(CURDIR)/debian/libbabylon/usr/lib
+	rm -r $(CURDIR)/debian/libbabylon-dev/usr/lib
+	install -m644 $(CURDIR)/debian/Babylon-config.1 \
+		$(CURDIR)/debian/libbabylon-dev/usr/share/man/man1/
+
+	cd build/Berlin && make install DESTDIR=$(CURDIR)/debian/libberlin-dev
+
+	install $(CURDIR)/debian/libberlin-dev/usr/bin/devices \
+		$(CURDIR)/debian/berlin/usr/bin/berlin-devices
+	install $(CURDIR)/debian/libberlin-dev/usr/bin/kits \
+		$(CURDIR)/debian/berlin/usr/bin/berlin-kits
+	install $(CURDIR)/debian/libberlin-dev/usr/bin/berlin \
+		$(CURDIR)/debian/berlin/usr/bin/
+	rm -r $(CURDIR)/debian/libberlin-dev/usr/bin
+	mv $(CURDIR)/debian/libberlin-dev/etc \
+		$(CURDIR)/debian/berlin/
+	mv $(CURDIR)/debian/libberlin-dev/usr/share/Fresco/ \
+		$(CURDIR)/debian/berlin/usr/share/
+
+	install $(CURDIR)/debian/libberlin-dev/usr/lib/Fresco/GLDrawingKit.so \
+		$(CURDIR)/debian/berlin-kit-drawing-opengl/usr/lib/Fresco
+	install $(CURDIR)/debian/libberlin-dev/usr/lib/Fresco/GadgetKit.so \
+		$(CURDIR)/debian/berlin-kit-gadget/usr/lib/Fresco
+	install $(CURDIR)/debian/libberlin-dev/usr/lib/Fresco/PrimitiveKit.so \
+		$(CURDIR)/debian/berlin-kit-primitive/usr/lib/Fresco
+	install $(CURDIR)/debian/libberlin-dev/usr/lib/Fresco/UnidrawKit.so \
+		$(CURDIR)/debian/berlin-kit-unidraw/usr/lib/Fresco
+	install $(CURDIR)/debian/libberlin-dev/usr/lib/Fresco/UnidrawKit.so \
+		$(CURDIR)/debian/libberlin-dev/usr/lib/Fresco/ToolKit.so \
+		$(CURDIR)/debian/libberlin-dev/usr/lib/Fresco/TextKit.so \
+		$(CURDIR)/debian/libberlin-dev/usr/lib/Fresco/LayoutKit.so \
+		$(CURDIR)/debian/libberlin-dev/usr/lib/Fresco/FigureKit.so \
+		$(CURDIR)/debian/libberlin-dev/usr/lib/Fresco/DesktopKit.so \
+		$(CURDIR)/debian/libberlin-dev/usr/lib/Fresco/CommandKit.so \
+		$(CURDIR)/debian/libberlin-dev/usr/lib/Fresco/LibArtDrawingKit.so \
+		$(CURDIR)/debian/libberlin-dev/usr/lib/Fresco/PSDrawingKit.so \
+		$(CURDIR)/debian/libberlin-dev/usr/lib/Fresco/ImageKit.so \
+		$(CURDIR)/debian/libberlin-dev/usr/lib/Fresco/PrimitiveKit.so \
+		$(CURDIR)/debian/libberlin-dev/usr/lib/Fresco/MotifKit.so \
+		$(CURDIR)/debian/berlin/usr/lib/Fresco
+	rm -r $(CURDIR)/debian/libberlin-dev/usr/lib/Fresco
+
+	install $(CURDIR)/debian/libberlin-dev/usr/lib/* \
+		$(CURDIR)/debian/libberlin/usr/lib
+	rm -r $(CURDIR)/debian/libberlin-dev/usr/lib
+
+	install -m644 $(CURDIR)/debian/berlin.1 \
+		$(CURDIR)/debian/berlin/usr/share/man/man1/
+	install -m644 $(CURDIR)/debian/Berlin-config.1 \
+		$(CURDIR)/debian/libberlin-dev/usr/share/man/man1/
+
+	cd build/Fresco-C++ && make install DESTDIR=$(CURDIR)/debian/libfresco-dev
+
+	install $(CURDIR)/debian/libfresco-dev/usr/lib/* \
+		$(CURDIR)/debian/libfresco/usr/lib
+	rm -r $(CURDIR)/debian/libfresco-dev/usr/lib
+	install -m644 $(CURDIR)/debian/Fresco-config.1 \
+		$(CURDIR)/debian/libfresco-dev/usr/share/man/man1/
+
+	install -m755 $(CURDIR)/build/Fresco-C++-demos/bin/demo \
+		$(CURDIR)/debian/fresco-demos-c++/usr/bin/fresco-demo
+	install -m755 $(CURDIR)/build/Fresco-C++-demos/bin/demo3D \
+		$(CURDIR)/debian/fresco-demos-c++/usr/bin/fresco-demo3D
+	install -m755 $(CURDIR)/build/Fresco-C++-demos/bin/pinyin_demo \
+		$(CURDIR)/debian/fresco-demos-c++/usr/bin/fresco-pinyin_demo
+
+	cd build/Fresco-IDL && make install DESTDIR=$(CURDIR)/debian/fresco-idl
+
+	cd build/GGI && make install DESTDIR=$(CURDIR)/debian/berlin-kit-ggi
+
+	rm -r $(CURDIR)/debian/berlin-kit-ggi/usr/bin
+	install $(CURDIR)/debian/berlin-kit-ggi/usr/include/Fresco/* \
+		$(CURDIR)/debian/libfresco-dev/usr/include/Fresco/
+	rm -r $(CURDIR)/debian/berlin-kit-ggi/usr/include/Fresco
+
+	cd build/Prague && make install DESTDIR=$(CURDIR)/debian/libprague-dev
+
+	install $(CURDIR)/debian/libprague-dev/usr/lib/* \
+		$(CURDIR)/debian/libprague/usr/lib
+	rm -r $(CURDIR)/debian/libprague-dev/usr/lib
+	install -m644 $(CURDIR)/debian/Prague-config.1 \
+		$(CURDIR)/debian/libprague-dev/usr/share/man/man1/
+
+	cd build/SDL && make install DESTDIR=$(CURDIR)/debian/berlin-kit-sdl
+
+# Build architecture-independent files here.
+# Pass -i to all debhelper commands in this target to reduce clutter.
+binary-indep: build install
+	dh_testdir -i
+	dh_testroot -i
+	dh_install -i
+#	dh_installdebconf -i
+	dh_installdocs -i
+#	dh_installexamples -i
+#	dh_installmenu -i
+#	dh_installlogrotate -i
+#	dh_installemacsen -i
+#	dh_installpam -i
+#	dh_installmime -i
+#	dh_installinit -i
+#	dh_installcron -i
+#	dh_installman -i
+#	dh_installinfo -i
+#	dh_undocumented -i
+	dh_installchangelogs  -i
+	dh_link -i
+	dh_compress -i
+	dh_fixperms -i
+	dh_installdeb -i
+#	dh_perl -i
+	dh_gencontrol -i
+	dh_md5sums -i
+	dh_builddeb -i
+
+# Build architecture-dependent files here.
+binary-arch: build install
+	dh_testdir -a
+	dh_testroot -a
+	dh_install
+#	dh_installdebconf -a
+	dh_installdocs -a
+#	dh_installexamples -a
+#	dh_installmenu -a
+#	dh_installlogrotate -a
+#	dh_installemacsen -a
+#	dh_installpam -a
+#	dh_installmime -a
+#	dh_installinit -a
+#	dh_installcron -a
+#	dh_installman -a
+#	dh_installinfo -a
+#	dh_undocumented -a
+	dh_installchangelogs  -a
+	dh_strip -a
+	dh_link -a
+	dh_compress -a
+	dh_fixperms -a
+#	dh_makeshlibs -a
+	dh_installdeb -a
+#	dh_perl -a
+	dh_shlibdeps -a
+	dh_gencontrol -a
+	dh_md5sums -a
+	dh_builddeb -a
+
+binary: binary-indep binary-arch
+.PHONY: build clean binary-indep binary-arch binary install 
+#!/usr/bin/make -f
+
+# Uncomment this to turn on verbose mode. 
+#export DH_VERBOSE=1
+
+# This is the debhelper compatability version to use.
+export DH_COMPAT=3
+
 CFLAGS = -O2
 CXXFLAGS = -O2
 ifneq (,$(findstring debug,$(DEB_BUILD_OPTIONS)))

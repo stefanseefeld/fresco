@@ -1,3 +1,121 @@
+fresco (0.2.99.cvs20021116-1) unstable; urgency=low
+
+  * new cvs version
+
+ -- Bastian Blank <waldi@debian.org>  Sat, 16 Nov 2002 16:17:40 +0100
+
+fresco (0.2.99.cvs20021101-1) unstable; urgency=low
+
+  * new cvs version
+  * cleanup debian/
+  * prepare for release
+
+ -- Bastian Blank <waldi@debian.org>  Fri, 01 Nov 2002 17:27:27 +0100
+
+fresco (0.2.99.cvs20020901-1) unstable; urgency=low
+
+  * new cvs version
+  * build-depend on libart-2.0-dev, libomniorb4-dev, xlibmesa-dev
+  * fresco-clients-c++: rename demos
+
+ -- Bastian Blank <waldi@debian.org>  Mon, 02 Sep 2002 08:55:17 +0000
+
+fresco (0.2.99.cvs20020805-1) unstable; urgency=low
+
+  * new upstream version (closes: #123367, #130193)
+  * rename to fresco
+  * build-depend on omniidl (closes: #135760, #147244)
+  * build-depend on libpng3-dev (closes: #154228)
+  * new packages:
+    - berlin-kit-drawing-opengl
+    - berlin-kit-sdl
+    - libfresco and libfresco-dev
+    - fresco-idl
+  * fix spelling (closes: #124443, #124444, #124445, #124446
+    #124895, #124896, #125073, #125074, #140785)
+
+ -- Bastian Blank <waldi@debian.org>  Tue, 06 Aug 2002 20:51:57 +0200
+
+berlin (0.0.20011029-1) unstable; urgency=low
+
+  * rename berlin to berlin-server
+  * rename berlin-clients to berlin-demos-c++
+  * berlin-server:
+    - merge berlin-kit-command, berlin-kit-desktop, berlin-kit-figure,
+      berlin-kit-layout, berlin-kit-text, berlin-kit-tool
+    - depend on xfonts-scalable
+    - change fontdir in berlinrc to /usr/lib/Berlin/fonts and add
+      a link to a working font in it
+  * berlin-kit-*:
+    - depend on berlin-server
+  * change optimization
+
+ -- Bastian Blank <waldi@debian.org>  Sat,  3 Nov 2001 00:25:53 +0100
+
+berlin (0.0.20010828-2) unstable; urgency=low
+
+  * change section of libprague-dev from libs to devel.
+  * remove depency to warsaw-idl from libwarsaw.
+  * berlin:
+    - fix bashism in script Berlin. (closes: #111166, #111188)
+  * berlin-clients:
+    - add script for demo called Berlin-demo.
+    - add manpage for script Berlin-demo.
+
+ -- Bastian Blank <waldi@debian.org>  Tue,  4 Sep 2001 13:33:32 +0200
+
+berlin (0.0.20010828-1) unstable; urgency=low
+
+  * CVS update.
+  * Initial Release. (closes: #109421)
+
+ -- Bastian Blank <waldi@debian.org>  Tue, 28 Aug 2001 19:13:36 +0200
+
+berlin (0.0.20010825-1) unstable; urgency=low
+
+  * CVS update.
+  * forgot depency to libwarsaw-idl, removed
+  * delete depency to berlin-kit-unidraw because it isn't used yet
+  * berlin:
+    - rename /usr/bin/berlin to /usr/bin/Berlin
+    - add manpage Berlin.1
+    - fix permissions of /usr/lib/Berlin/etc/berlinrc
+    - remove upstream INSTALL
+  * remove berlin-doc because the doc can't be build
+
+ -- Bastian Blank <waldi@debian.org>  Sat, 25 Aug 2001 20:50:14 +0200
+
+berlin (0.0.20010823-1) unstable; urgency=low
+
+  * CVS update.
+  * rename libwarsaw-idl to warsaw-idl (idl files are also used by none
+    C clients)
+
+ -- Bastian Blank <waldi@debian.org>  Thu, 23 Aug 2001 19:17:43 +0200
+
+berlin (0.0.20010821-1) unstable; urgency=low
+
+  * CVS update.
+  * insert description (thanks to tobias hunger)
+
+ -- Bastian Blank <waldi@debian.org>  Tue, 21 Aug 2001 19:44:02 +0200
+
+berlin (0.0.20010820-1) unstable; urgency=low
+
+  * CVS update.
+  * Build-Depends update for potato.
+
+ -- Bastian Blank <waldi@debian.org>  Mon, 20 Aug 2001 19:39:07 +0200
+
+berlin (0.0.20010819-1) unstable; urgency=low
+
+  * Initial inoffical Release.
+
+ -- Bastian Blank <waldi@debian.org>  Sat, 18 Aug 2001 20:37:51 +0200
+
+Local variables:
+mode: debian-changelog
+End:
 berlin (0.0.20011029-1) unstable; urgency=low
 
   * rename berlin to berlin-server

@@ -1,3 +1,168 @@
+Source: fresco
+Section: misc
+Priority: optional
+Maintainer: Bastian Blank <waldi@debian.org>
+Build-Depends: debhelper (>> 3.0.0), libart-2.0-dev, libfreetype6-dev, libggi2-dev, libsdl-dev, xlibmesa-dev, libomniorb4-dev, omniidl4-cxx, omniidl4-python, zlib1g-dev, libpng3-dev, g++-3.2
+Standards-Version: 3.5.2
+
+Package: berlin
+Architecture: any
+Depends: ${shlibs:Depends}, libbabylon (= ${Source-Version}), libberlin (= ${Source-Version}), libfresco (= ${Source-Version}), libprague (= ${Source-Version}), berlin-kit-gadget (= ${Source-Version}), berlin-kit-ggi (= ${Source-Version}), berlin-kit-primitive (= ${Source-Version}), gsfonts-x11
+Recommends: fresco-demos-c++
+Replaces: berlin-server
+Conflicts: berlin-server
+Description: The Berlin display server
+ Berlin is a windowing system derived from Fresco, a powerful structured
+ graphics toolkit originally based on InterViews. Berlin extends Fresco
+ to a full, network-transparent windowing system that is not based on X.
+ It features a rich drawing interface with multiple backends, device
+ independent vector based graphics, a Unicode-based text system and is
+ 3D-aware. Its CORBA-based architecture allows clients in any language
+ with CORBA bindings.
+
+Package: libbabylon
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, libprague (= ${Source-Version})
+Description: Unicode handling library for the Berlin display server
+ This library contains the Unicode-string and Unicode char classes used
+ in Berlin's C++ code. It allows to query all properties of Unicode
+ characters and has some very rudimentary bidir-support.
+
+Package: libbabylon-dev
+Section: devel
+Architecture: all
+Depends: libbabylon (= ${Source-Version})
+Description: Unicode handling library for the Berlin display server (development files)
+ This library contains the Unicode-string and Unicode char classes used
+ in Berlin's C++ code. It allows to query all properties of Unicode
+ characters and has some very rudimentary bidir-support.
+
+Package: libberlin
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, libbabylon (= ${Source-Version}), libfresco (= ${Source-Version}), libprague (= ${Source-Version})
+Description: Core library for the Berlin display server
+ This is the server-side implementation of Fresco's CORBA interfaces.
+
+Package: libberlin-dev
+Section: devel
+Architecture: all
+Depends: libberlin (= ${Source-Version})
+Description: Core library for the Berlin display server (development files)
+ This is the server-side implementation of Fresco's CORBA interfaces.
+
+Package: libfresco
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, libbabylon (= ${Source-Version})
+Replaces: libwarsaw
+Conflicts: libwarsaw
+Description: Communication library for the Fresco display system
+ This is the client-side implementation of Fresco's CORBA interfaces in C++.
+
+Package: libfresco-dev
+Section: devel
+Architecture: all
+Depends: libfresco (= ${Source-Version}), libberlin-dev (= ${Source-Version})
+Replaces: libwarsaw-dev
+Conflicts: libwarsaw-dev
+Description: Communication library for the Fresco display server (development files)
+ This is the client-side implementation of Fresco's CORBA interfaces in C++.
+
+Package: libprague
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: OS wrapper library for the Fresco display system
+ This OffiX-based library is used to encapsulate OS-specifics like
+ threading, IPC and so on.
+
+Package: libprague-dev
+Section: devel
+Architecture: all
+Depends: libprague (= ${Source-Version})
+Description: OS wrapper library for the Fresco display system (development files)
+ This OffiX-based library is used to encapsulate OS-specifics like
+ threading, IPC and so on.
+
+Package: fresco-idl
+Section: devel
+Architecture: all
+Description: Communication library for the Fresco display system (CORBA IDL)
+ These IDL-files define the Fresco display system's interfaces. They are
+ its equivalent to the X-protocol.
+
+Package: berlin-kit-drawing-opengl
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, berlin (= ${Source-Version}), libberlin (= ${Source-Version}), libfresco (= ${Source-Version}), libprague (= ${Source-Version})
+Suggests: gs, gv
+Description: Postscript DrawingKit for the Berlin display server
+ DrawingKits are highlevel graphic drivers for the Berlin display server.
+ They turn the vector-based graphics stored in the server into a format
+ some support-library can work on. As all Kits it gets loaded into the
+ server at runtime.
+ .
+ TODO
+
+Package: berlin-kit-gadget
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, berlin (= ${Source-Version}), libberlin (= ${Source-Version}), libfresco (= ${Source-Version}), libprague (= ${Source-Version})
+Description: GadgetKit for the Berlin display server
+ The GadgetKit contains simple graphics to manipulate others. Examples
+ are rotators, zoomer and such. As all Kits it gets loaded into the
+ server at runtime.
+ .
+ This Kit is used in one of the C++-demos.
+
+Package: berlin-kit-ggi
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, berlin (= ${Source-Version}), libberlin (= ${Source-Version}), libfresco (= ${Source-Version}), libprague (= ${Source-Version})
+Description: GGIKit for the Berlin display server
+ This Kit allows to access the underlying GGI-library. As all Kits it
+ gets loaded into the server at runtime.
+ .
+ This Kit is used in some of the C++-demos.
+
+Package: berlin-kit-sdl
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, berlin (= ${Source-Version}), libberlin (= ${Source-Version}), libfresco (= ${Source-Version}), libprague (= ${Source-Version})
+Description: SDLKit for the Berlin display server
+ This Kit allows to access the underlying SDL-library. As all Kits it
+ gets loaded into the server at runtime.
+ .
+ TODO
+
+Package: berlin-kit-unidraw
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, berlin (= ${Source-Version}), libberlin (= ${Source-Version}), libfresco (= ${Source-Version}), libprague (= ${Source-Version})
+Description: UnidrawKit for the Berlin display server
+ This Kit contains a framework for writing vector-based graphic programs.
+ As all Kits it gets loaded into the server at runtime.
+ .
+ This Kit is very much work in progress and not used right now.
+
+Package: fresco-demos-c++
+Architecture: any
+Depends: ${shlibs:Depends}, libbabylon (= ${Source-Version}), libfresco (= ${Source-Version}), libprague (= ${Source-Version})
+Recommends: berlin
+Replaces: berlin-demos-c++
+Conflicts: berlin-demos-c++
+Description: Demo clients for the Fresco display system
+ Simple demo applications for the Fresco display system written in C++.
+
+Package: fresco-demos-python
+Architecture: all
+Depends: python-fresco (= ${Source-Version})
+Recommends: berlin
+Description: Demo clients for the Fresco display system
+ Simple demo applications for the Fresco display system written in Python.
+
 Source: berlin
 Section: misc
 Priority: optional
