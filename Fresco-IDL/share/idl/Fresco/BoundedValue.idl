@@ -28,19 +28,36 @@
 
 module Warsaw
 {
+  //. A BoundedValue describes a 'value within a range'
+  //. such as a Slider.
+  //. The value will allways stay contained in the range.
   interface BoundedValue : Subject
     {
+      //. The current lower bound of the range.
       attribute Coord lower;
+      //. The current upper bound of the range.
       attribute Coord upper;
+      //. The current step size.
       attribute Coord step;
+      //. The current page size.
       attribute Coord page;
+      //. The current value. It will allways be contained in ]lower, upper[.
       attribute Coord value;
+      //. Move the value a step forward.
       void forward();
+      //. Move the value a step backward.
       void backward();
+      //. Move the value a page forward.
       void fastforward();
+      //. Move the value a page backward.
       void fastbackward();
+      //. Move the value to the begining of the range (value=lower).
       void begin();
+      //. Move the value to the end of the range (value=upper).
       void end();
+      //. Move the value for the given value. A positive value
+      //. of d moves the value forward, a negative value of d
+      //. moves it backward.
       void adjust(in Coord d);
     };
 };

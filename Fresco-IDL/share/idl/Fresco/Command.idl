@@ -25,17 +25,25 @@
 
 module Warsaw
 {
-  //. commands are anonymous encapsulated actions. 
+  //. Commands are anonymous encapsulated actions. 
   interface Command
     {
+      //. The action performed by this Command. The passed parameter contains
+      //. additional information this Command might need.
       void execute(in any a);
+      //. Destroy this Command.
       void destroy();
     };
   
-  //. a composite command
+  //. A composite Command. You can add other Command to this and those
+  //. will get executed in order whenever the MacroCommand gets executed.
   interface MacroCommand : Command
     {
+      //. Add a Command to the end of the list of Commands of this
+      //. MacroCommand.
       void append(in Command c);
+      //. Add a Command to the begining of the list of Commands of this
+      //. MacroCommand.
       void prepend(in Command c);
     };
 };

@@ -27,32 +27,56 @@
 
 module Warsaw
 {
-  //.a BoundedRange describes a 'range within a range'
-  //.such as a viewport (a 'window') manipulated by a
-  //.scrollbar
+  //. A BoundedRange describes a 'range within a range'
+  //. such as a Viewport (a 'window') manipulated by a
+  //. scrollbar. The 'internal' range will allways stay
+  //. completly contained in the 'external' range.
   interface BoundedRange : Subject
     {
+      //. Stores the state of the BoundedRange.
       struct Settings
       {
-	Coord lower;
-	Coord upper;
-	Coord lvalue;
-	Coord uvalue;
+	  Coord lower; //.< The lower bound of the 'external' range.
+	  Coord upper; //.< The upper bound of the 'external' range.
+	  Coord lvalue; //.< The lower bound of the 'internal' range.
+	  Coord uvalue; //.< The upper bound of the 'internal' range.
       };
+      //. The current state of this BoundedRange.
       attribute Settings state;
+      //. The current lower bound of the 'external' range.
       attribute Coord lower;
+      //. The current upper bound of the 'external' range.
       attribute Coord upper;
+      //. The current step size.
       attribute Coord step;
+      //. The current page size.
       attribute Coord page;
+      //. The current lower bound of the 'internal' range. This is allways
+      //. in ]lower, uvalue].
       attribute Coord lvalue;
+      //. The current upper bound of the 'internal' range. This is allways
+      //. in [lvalue, upper[.
       attribute Coord uvalue;
-      
+
+      //. Move the 'internal' range a step forward.
       void forward();
+      //. Move the 'internal' range a step backward.
       void backward();
+      //. Move the 'internal' range a page forward.
       void fastforward();
+      //. Move the 'internal' range a page backward.
       void fastbackward();
+      //. Move the 'internal' range to the begining of the 'external' range
+      //. (lvalue = lower). The size of the range (uvalue - lvalue) will
+      //. stay unchanged.
       void begin();
+      //. Move the 'internal' range to the end of the 'external' range
+      //. (uvalue = upper). The size of the range (uvalue - lvalue) will
+      //. stay unchanged.
       void end();
+      //. Move the 'internal' range for the given value. A positive value
+      //. of d moves the 'internal' range forward, a negative value of d
+      //. moves it backward.
       void adjust(in Coord d);
     };
 };

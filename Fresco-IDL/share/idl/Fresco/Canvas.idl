@@ -27,15 +27,24 @@
 
 module Warsaw
 {
+  // FIXME: How do I use bold in the comments for the reference manual?
+  //. The Canvas is an object that allows *location intransparent*
+  //. access to a chunk of video memory. It is intended for use in Kits
+  //. only. Do not use it in applications.
   interface Canvas : Graphic
     {
       typedef Drawable::PixelFormat PixelFormat;
       typedef Drawable::BufferFormat BufferFormat;
 
+      //. Get the shared memory ID needed to access the Canvas.
       readonly attribute long shm_id;
+      //. The color encoding of each pixel used in this Canvas.
       readonly attribute PixelFormat pixel_format;
+      //. The encoding of the pixels in the Canvas.
       readonly attribute BufferFormat buffer_format;
+      //. Lock the Canvas.
       void lock();
+      //. Unlock the Canvas.
       void unlock();
     };
 };

@@ -37,8 +37,8 @@ module Warsaw
       //. this selection refers to
       typedef long Policy;
 
-      const Policy exclusive = 0x1; //.< FIXME: Add info on me!
-      const Policy required = 0x2; //.< FIXME: Add info on me!
+      const Policy exclusive = 0x1; //.< Make sure that a maximum of one Telltale is set at any given time.
+      const Policy required = 0x2; //.< Makes sure at least one Telltale is set at any given time.
 
       //. An Item is used as the payload in the notify call, i.e. it is
       //. what observers get in the delivered any
@@ -50,7 +50,8 @@ module Warsaw
 
       //. A list of Tags.
       // FIXME: From the name I suspected that Items was supposed
-      //        to be sequence<Item>... Should we change one of those -- tobias
+      //        to be sequence<Item>... Should we change one of those? 
+      //        -- tobias
       typedef sequence<Tag> Items;
       
       //. This is the Policy for this Selection.

@@ -97,6 +97,7 @@ CommandKitImpl::~CommandKitImpl() {}
 
 Command_ptr CommandKitImpl::debugger(Warsaw::Command_ptr c, const char *text)
 {
+  // FIXME: Shouldn't this be std::cerr? -- tobias
   DebugCommand *command = new DebugCommand(c, std::cout, text);
   activate(command);
   return command->_this();
@@ -104,6 +105,7 @@ Command_ptr CommandKitImpl::debugger(Warsaw::Command_ptr c, const char *text)
 
 Command_ptr CommandKitImpl::log(const char *text)
 {
+  // FIXME: Shouldn't this be std::cerr? -- tobias
   LogCommand *command = new LogCommand(std::cout, text);
   activate(command);
   return command->_this();

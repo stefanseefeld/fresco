@@ -72,6 +72,8 @@ module Warsaw
   interface Controller : Graphic, Telltale
     {
       typedef ControllerIterator Iterator;
+
+      //. FIXME: What do these do?
       const Mask enabled = 0x1;
       const Mask pressed = 0x2;
       const Mask active  = 0x4;

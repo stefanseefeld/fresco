@@ -37,24 +37,47 @@ module Warsaw
   interface StreamBuffer;
   interface Command;
   
-  //. the command kit is a collection of strategy objects. they form the
+  //. The CommandKit is a collection of strategy objects. They form the
   //. basis of any control protocol between widgets and subjects. The
-  //. kit also encapsulates the constructors for command dispatchers
+  //. Kit also encapsulates the constructors for command dispatchers
   //. (a.k.a. reactors), which you can think of as threading strategies
   //. if that suits you.
   interface CommandKit : Kit
     {
+      //. This Command dumps the given string to stdout before calling
+      //. into the given Command. The given text will be dumped again
+      //. after the given Command returns. 
       Command debugger(in Command c, in string s);
+      //. This Command just dumps the given text whenever this Command
+      //. gets executed.
       Command log(in string t);
+      //. Get a MacroCommand.
       MacroCommand composite();
+
+      //. This constraint will make sure that a maximum of one of the
+      //. Telltales will be set.
       TelltaleConstraint exclusive(in Telltale::Mask m);
+      //. This constraint will make sure that at least one of the
+      //. Telltales will be set.
       TelltaleConstraint selection_required();
+      // FIXME: Why is there no exclusive_required()? -- tobias
+
+      //. Get a unconstrained Telltale.
       Telltale     normal_telltale();
+      //. Get a Telltale with the given constraint set.
       Telltale     constrained_telltale(in TelltaleConstraint c);
+      //. Gets a Selection that enforces the given Policy.
       Selection    group(in Selection::Policy p);
+      //. Get a BoundedValue with a lower bound of l, a upper boundary of u,
+      //. a value of v, a step size of s and a pagesize of p.
       BoundedValue bvalue(in Coord l, in Coord u, in Coord v, in Coord s, in Coord p);
+      //. Get a BoundedRange with a lower bound of l, a upper boundary of u,
+      //. a inner range with the bounds of lv and uv, a step size of s and
+      //. a pagesize of p.
       BoundedRange brange(in Coord l, in Coord u, in Coord lv, in Coord uv, in Coord s, in Coord p);
+      //. Gets a TextBuffer.
       TextBuffer   text();
+      //. Gets a StreamBuffer.
       StreamBuffer stream(in long buffer);
     };
 };
