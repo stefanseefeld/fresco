@@ -632,6 +632,12 @@ namespace Babylon {
 	bool is_Numeric() const throw (Block_Error) {
 	    return Dictionary::instance()->is_Numeric(m_value);
 	}
+
+	bool is_Private_Use() const {
+	    return ((m_value >= 0xE000 && m_value <= 0xF8FF) ||
+		    (m_value >= 0xF0000 && m_value <= 0xFFFFD) ||
+		    (m_value >= 0x100000 && m_value <= 0x10FFFD));
+	}
 	
 	// ------------------------------------------------------------
 	// TRANSFORMATIONS:

@@ -312,7 +312,12 @@ namespace Babylon {
 	UC_APPLICATION_PROGRAMM_COMMAND= 0x009F,
 	
 	// PRIVATE USE:
+	KEY_SHIFT                   = 0xE000,
+	KEY_CTRL                    = 0xE001,
+	KEY_MENUE                   = 0xE019,
+	KEY_PRINT_SCREEN            = 0xE01B,
 	KEY_INSERT                  = 0xE022,
+	KEY_BREAK                   = 0XE029,
 	KEY_CURSOR_UP               = 0xE032,
 	KEY_CURSOR_DOWN             = 0xE033,
 	KEY_CURSOR_LEFT             = 0xE034,
@@ -333,6 +338,12 @@ namespace Babylon {
 	KEY_F10                     = 0xE10A,
 	KEY_F11                     = 0xE10B,
 	KEY_F12                     = 0xE10C,
+	KEY_ALT                     = 0xE302,
+	KEY_WIN                     = 0xE303,
+	KEY_ALT_GR                  = 0xE306,
+	KEY_CAPS_LOCK               = 0xE387,
+	KEY_NUM_LOCK                = 0xE388,
+	KEY_SCROLL_LOCK             = 0xE389,
 
 	// IMPLEMENTATION DEPENDENT
 	UC_MAX_DEFINED              = 0x10FFFE
