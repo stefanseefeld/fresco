@@ -24,6 +24,9 @@
 
 #include <Berlin/MonoGraphic.hh>
 
+namespace Berlin {
+namespace ToolKit {
+
 class Filler : public MonoGraphic
 {
 public:
@@ -36,5 +39,8 @@ public:
 protected:
   Color color;
 };
+
+} // namespace
+} // namespace
 
 #endif /* _Filler_hh */

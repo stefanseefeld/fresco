@@ -33,6 +33,8 @@
 
 using namespace Fresco;
 
+using namespace Berlin::ToolKit;
+
 void InvisibleDiamond::draw(DrawTraversal_ptr traversal)
 {
   Region_var allocation = traversal->current_allocation();

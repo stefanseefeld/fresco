@@ -33,6 +33,8 @@
 using namespace Prague;
 using namespace Fresco;
 
+using namespace Berlin::ToolKit;
+
 Switch::Switch(Telltale::Mask m)
   : my_on(true), my_mask(m)
 {

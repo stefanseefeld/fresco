@@ -33,6 +33,8 @@
 
 using namespace Fresco;
 
+using namespace Berlin::ToolKit;
+
 void InvisibleTriangle::draw(DrawTraversal_ptr traversal)
 {
   Region_var allocation = traversal->current_allocation();
@@ -47,25 +49,25 @@ void InvisibleTriangle::draw(DrawTraversal_ptr traversal)
       path.nodes.length(4);
       switch (_direction)
 	{
-	case ToolKit::left:
+	case Fresco::ToolKit::left:
 	  path.nodes[0].x = l.x, path.nodes[0].y = (l.y + u.y)/2, path.nodes[0].z = 0;
 	  path.nodes[1].x = u.x, path.nodes[1].y = l.y, path.nodes[1].z = 0;
 	  path.nodes[2].x = u.x, path.nodes[2].y = u.y, path.nodes[2].z = 0;
 	  path.nodes[3] = path.nodes[0];
 	  break;
-	case ToolKit::right:
+	case Fresco::ToolKit::right:
 	  path.nodes[0].x = l.x, path.nodes[0].y = l.y, path.nodes[0].z = 0;
 	  path.nodes[1].x = u.x, path.nodes[1].y = (l.y + u.y)/2, path.nodes[1].z = 0;
 	  path.nodes[2].x = l.x, path.nodes[2].y = u.y, path.nodes[2].z = 0;
 	  path.nodes[3] = path.nodes[0];
 	  break;
-	case ToolKit::up:
+	case Fresco::ToolKit::up:
 	  path.nodes[0].x = l.x, path.nodes[0].y = u.y, path.nodes[0].z = 0;
 	  path.nodes[1].x = (l.x + u.x)/2, path.nodes[1].y = l.y, path.nodes[1].z = 0;
 	  path.nodes[2].x = u.x, path.nodes[2].y = u.y, path.nodes[2].z = 0;
 	  path.nodes[3] = path.nodes[0];
 	  break;
-	case ToolKit::down:
+	case Fresco::ToolKit::down:
 	  path.nodes[0].x = l.x, path.nodes[0].y = l.y, path.nodes[0].z = 0;
 	  path.nodes[1].x = (l.x + u.x)/2, path.nodes[1].y = u.y, path.nodes[1].z = 0;
 	  path.nodes[2].x = l.x, path.nodes[2].y = l.y, path.nodes[2].z = 0;
@@ -83,25 +85,25 @@ void InvisibleTriangle::draw(DrawTraversal_ptr traversal)
       path.nodes.length(4);
       switch (_direction)
 	{
-	case ToolKit::left:
+	case Fresco::ToolKit::left:
 	  path.nodes[0].x = l.x, path.nodes[0].y = (l.y + u.y)/2, path.nodes[0].z = 0;
 	  path.nodes[1].x = u.x, path.nodes[1].y = l.y, path.nodes[1].z = 0;
 	  path.nodes[2].x = u.x, path.nodes[2].y = u.y, path.nodes[2].z = 0;
 	  path.nodes[3] = path.nodes[0];
 	  break;
-	case ToolKit::right:
+	case Fresco::ToolKit::right:
 	  path.nodes[0].x = l.x, path.nodes[0].y = l.y, path.nodes[0].z = 0;
 	  path.nodes[1].x = u.x, path.nodes[1].y = (l.y + u.y)/2, path.nodes[1].z = 0;
 	  path.nodes[2].x = l.x, path.nodes[2].y = u.y, path.nodes[2].z = 0;
 	  path.nodes[3] = path.nodes[0];
 	  break;
-	case ToolKit::up:
+	case Fresco::ToolKit::up:
 	  path.nodes[0].x = l.x, path.nodes[0].y = u.y, path.nodes[0].z = 0;
 	  path.nodes[1].x = (l.x + u.x)/2, path.nodes[1].y = l.y, path.nodes[1].z = 0;
 	  path.nodes[2].x = u.x, path.nodes[2].y = u.y, path.nodes[2].z = 0;
 	  path.nodes[3] = path.nodes[0];
 	  break;
-	case ToolKit::down:
+	case Fresco::ToolKit::down:
 	  path.nodes[0].x = l.x, path.nodes[0].y = l.y, path.nodes[0].z = 0;
 	  path.nodes[1].x = (l.x + u.x)/2, path.nodes[1].y = u.y, path.nodes[1].z = 0;
 	  path.nodes[2].x = l.x, path.nodes[2].y = l.y, path.nodes[2].z = 0;
@@ -116,16 +118,16 @@ void InvisibleTriangle::draw(DrawTraversal_ptr traversal)
       Color color = drawing->foreground();
       switch (_direction)
 	{
-	case ToolKit::left:
+	case Fresco::ToolKit::left:
 	  Beveler::leftArrow(traversal, _thickness, color, color, color, l.x, u.x, l.y, u.y, _fill);
 	  break;
-	case ToolKit::right:
+	case Fresco::ToolKit::right:
 	  break;
 	  Beveler::leftArrow(traversal, _thickness, color, color, color, l.x, u.x, l.y, u.y, _fill);
-	case ToolKit::up:
+	case Fresco::ToolKit::up:
 	  break;
 	  Beveler::leftArrow(traversal, _thickness, color, color, color, l.x, u.x, l.y, u.y, _fill);
-	case ToolKit::down:
+	case Fresco::ToolKit::down:
 	  break;
 	  Beveler::leftArrow(traversal, _thickness, color, color, color, l.x, u.x, l.y, u.y, _fill);
 	}
@@ -148,7 +150,7 @@ void BeveledTriangle::draw(DrawTraversal_ptr traversal)
 
   switch (_direction)
     {
-    case ToolKit::left:
+    case Fresco::ToolKit::left:
       switch (_style)
 	{
 	case inset:
@@ -169,7 +171,7 @@ void BeveledTriangle::draw(DrawTraversal_ptr traversal)
 	  break;
 	}
       break;
-    case ToolKit::right:
+    case Fresco::ToolKit::right:
       switch (_style)
 	{
 	case inset:
@@ -190,7 +192,7 @@ void BeveledTriangle::draw(DrawTraversal_ptr traversal)
 	  break;
 	}
       break;
-    case ToolKit::up:
+    case Fresco::ToolKit::up:
       switch (_style)
 	{
 	case inset:
@@ -211,7 +213,7 @@ void BeveledTriangle::draw(DrawTraversal_ptr traversal)
 	  break;
 	}
       break;
-    case ToolKit::down:
+    case Fresco::ToolKit::down:
       switch (_style)
 	{
 	case inset:

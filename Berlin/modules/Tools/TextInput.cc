@@ -29,6 +29,8 @@
 using namespace Prague;
 using namespace Fresco;
 
+using namespace Berlin::ToolKit;
+
 void TextInput::key_press(const Input::Event &event)
 {
   Trace trace("TextInput::key_press");

@@ -26,6 +26,9 @@
 #include <Fresco/ToolKit.hh>
 #include "Frame.hh"
 
+namespace Berlin {
+namespace ToolKit {
+
 class InvisibleDiamond : public Frame::Renderer
 {
 public:
@@ -46,5 +49,8 @@ public:
   ColoredDiamond(Fresco::Coord t, const Fresco::Color &c, bool f) : ColoredFrame(t, c, f) {}
   virtual void draw(Fresco::DrawTraversal_ptr);
 };
+
+} // namespace
+} // namespace
 
 #endif

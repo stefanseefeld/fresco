@@ -29,6 +29,9 @@
 #include <Berlin/ControllerImpl.hh>
 #include <Berlin/RefCountVar.hh>
 
+namespace Berlin {
+namespace ToolKit {
+
 class TriggerImpl : public virtual POA_Fresco::Trigger,
 		    public ControllerImpl
 {
@@ -47,5 +50,8 @@ class TriggerImpl : public virtual POA_Fresco::Trigger,
   Prague::Mutex       _mutex;
   Fresco::Command_var _command;
 };
+
+} // namespace
+} // namespace
 
 #endif

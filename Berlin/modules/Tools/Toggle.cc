@@ -25,6 +25,8 @@
 using namespace Prague;
 using namespace Fresco;
 
+using namespace Berlin::ToolKit;
+
 Toggle::Toggle(bool f) : ControllerImpl(f) {}
 Toggle::~Toggle() {}
 

@@ -26,6 +26,9 @@
 #include <Fresco/StreamBuffer.hh>
 #include <Berlin/ControllerImpl.hh>
 
+namespace Berlin {
+namespace ToolKit {
+
 class Terminal : public ControllerImpl
 {
  public:
@@ -36,5 +39,8 @@ class Terminal : public ControllerImpl
  private:
   Fresco::StreamBuffer_var _buffer;
 };
+
+} // namespace
+} // namespace
 
 #endif

@@ -30,6 +30,9 @@
 
 class GraphicImpl;
 
+namespace Berlin {
+namespace ToolKit {
+
 class ToolKitImpl : public virtual POA_Fresco::ToolKit,
 		    public KitImpl
 {
@@ -60,5 +63,8 @@ class ToolKitImpl : public virtual POA_Fresco::ToolKit,
   Fresco::Controller_ptr   toggle(Fresco::Graphic_ptr);
   Fresco::Canvas_ptr       create_canvas(Fresco::PixelCoord, Fresco::PixelCoord) throw (Fresco::SecurityException, Fresco::CreationFailureException);
 };
+
+} // namespace
+} // namespace
 
 #endif

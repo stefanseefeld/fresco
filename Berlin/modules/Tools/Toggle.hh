@@ -24,6 +24,9 @@
 
 #include <Berlin/ControllerImpl.hh>
 
+namespace Berlin {
+namespace ToolKit {
+
 class Toggle : public ControllerImpl
 //. The Toggle class implements a chosable controller
 {
@@ -36,5 +39,8 @@ public:
   virtual void key_press(const Fresco::Input::Event &);
 private:
 };
+
+} // namespace
+} // namespace
 
 #endif

@@ -30,6 +30,9 @@
 #include <Berlin/ImplVar.hh>
 #include <Berlin/RefCountVar.hh>
 
+namespace Berlin {
+namespace ToolKit {
+
 class Switch : public virtual ViewImpl,
 	       public MonoGraphic
 {
@@ -47,5 +50,8 @@ private:
   bool                   my_on;
   Fresco::Telltale::Mask my_mask;
 };
+
+} // namespace
+} // namespace
 
 #endif

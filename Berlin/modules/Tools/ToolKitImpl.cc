@@ -46,6 +46,8 @@
 using namespace Prague;
 using namespace Fresco;
 
+using namespace Berlin::ToolKit;
+
 class RGBDecorator : public MonoGraphic
 {
 public:
@@ -322,5 +324,5 @@ Canvas_ptr ToolKitImpl::create_canvas(PixelCoord width, PixelCoord height) throw
 extern "C" KitImpl *load()
 {
   static std::string properties[] = {"implementation", "ToolKitImpl"};
-  return create_kit<ToolKitImpl> ("IDL:fresco.org/Fresco/ToolKit:1.0", properties, 2);
+  return create_kit<Berlin::ToolKit::ToolKitImpl> ("IDL:fresco.org/Fresco/ToolKit:1.0", properties, 2);
 }

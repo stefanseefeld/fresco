@@ -31,10 +31,9 @@
 
 using namespace Fresco;
 
-namespace Beveler
-{
+using namespace Berlin::ToolKit;
 
-void rect(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, const Color &light, const Color &dark,
+void Beveler::rect(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, const Color &light, const Color &dark,
 	  Coord left, Coord right, Coord top, Coord bottom, bool fill)
 {
   Coord lefti = left + thickness;
@@ -107,7 +106,7 @@ void rect(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, con
   drawing->restore();
 }
 
-void leftArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, const Color &light, const Color &dark,
+void Beveler::leftArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, const Color &light, const Color &dark,
 	       Coord left, Coord right, Coord top, Coord bottom, bool fill)
 {
   Vertex center = {(right + left)/2, (bottom + top)/2, 0.};
@@ -165,7 +164,7 @@ void leftArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &medium
   drawing->restore();
 }
 
-void rightArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, const Color &light, const Color &dark,
+void Beveler::rightArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, const Color &light, const Color &dark,
 		Coord left, Coord right, Coord top, Coord bottom, bool fill)
 {
   Vertex center = {(right + left)/2, (bottom + top)/2, 0.};
@@ -222,7 +221,7 @@ void rightArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &mediu
   drawing->restore();
 }
 
-void upArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, const Color &light, const Color &dark,
+void Beveler::upArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, const Color &light, const Color &dark,
 	     Coord left, Coord right, Coord top, Coord bottom, bool fill)
 {
   Vertex center = {(right + left)/2, (bottom + top)/2, 0.};
@@ -279,7 +278,7 @@ void upArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, 
   drawing->restore();
 }
 
-void downArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, const Color &light, const Color &dark,
+void Beveler::downArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, const Color &light, const Color &dark,
 	       Coord left, Coord right, Coord top, Coord bottom, bool fill)
 {
   Vertex center = {(right + left)/2, (bottom + top)/2, 0.};
@@ -336,7 +335,7 @@ void downArrow(DrawTraversal_ptr traversal, Coord thickness, const Color &medium
   drawing->restore();
 }
 
-void diamond(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, const Color &light, const Color &dark,
+void Beveler::diamond(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, const Color &light, const Color &dark,
 	     Coord left, Coord right, Coord top, Coord bottom, bool fill)
 {
   Vertex center = {(right + left)/2, (bottom + top)/2, 0.};
@@ -401,9 +400,7 @@ void diamond(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, 
   drawing->restore();
 }
 
-void circle(DrawTraversal_ptr, Coord thickness, const Color &medium, const Color &light, const Color &dark,
+void Beveler::circle(DrawTraversal_ptr, Coord thickness, const Color &medium, const Color &light, const Color &dark,
 	    Coord left, Coord bottom, Coord right, Coord top, bool fill)
 {
 }
-
-};

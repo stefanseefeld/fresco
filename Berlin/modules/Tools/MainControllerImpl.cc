@@ -28,6 +28,8 @@
 using namespace Prague;
 using namespace Fresco;
 
+using namespace Berlin::ToolKit;
+
 MainControllerImpl::MainControllerImpl(bool transparent) : ControllerImpl(transparent) {}
 MainControllerImpl::~MainControllerImpl() {}
 void MainControllerImpl::cursor(Raster_ptr r)

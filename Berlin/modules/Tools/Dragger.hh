@@ -27,6 +27,9 @@
 #include <Berlin/ControllerImpl.hh>
 #include <Berlin/RefCountVar.hh>
 
+namespace Berlin {
+namespace ToolKit {
+
 class Dragger : public ControllerImpl
 {
 public:
@@ -40,5 +43,8 @@ private:
   Fresco::Vertex      _offset;
   Fresco::Command_var _command;
 };
+
+} // namespace
+} // namespace
 
 #endif

@@ -35,6 +35,8 @@
 using namespace Prague;
 using namespace Fresco;
 
+using namespace Berlin::ToolKit;
+
 Frame::Frame(Coord t, Frame::Renderer *r) : _thickness(t), _allocation(new RegionImpl), _renderer(r) {}
 Frame::~Frame() { Trace trace("Frame::~Frame");}
 void Frame::request(Fresco::Graphic::Requisition &requisition)

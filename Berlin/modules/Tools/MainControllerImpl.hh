@@ -28,6 +28,9 @@
 #include <Berlin/ControllerImpl.hh>
 #include <Berlin/RefCountVar.hh>
 
+namespace Berlin {
+namespace ToolKit {
+
 class MainControllerImpl : public virtual POA_Fresco::MainController,
 			   public ControllerImpl
 {
@@ -42,5 +45,8 @@ class MainControllerImpl : public virtual POA_Fresco::MainController,
   Prague::Mutex      _mutex;
   Fresco::Raster_var _cursor;
 };
+
+} // namespace
+} // namespace
 
 #endif

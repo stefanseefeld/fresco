@@ -26,6 +26,9 @@
 #include <Prague/Sys/Timer.hh>
 #include "TriggerImpl.hh"
 
+namespace Berlin {
+namespace ToolKit {
+
 //. The Stepper class implements a button with autorepeat.
 class Stepper : public TriggerImpl
 {
@@ -46,5 +49,8 @@ private:
   Notifier     *_notifier;
   Prague::Timer _timer;
 };
+
+} // namespace
+} // namespace
 
 #endif

@@ -30,6 +30,8 @@
 using namespace Prague;
 using namespace Fresco;
 
+using namespace Berlin::ToolKit;
+
 DrawingStateImpl::DrawingStateImpl() : _enabled(0) {}
 DrawingStateImpl::~DrawingStateImpl() {}
 

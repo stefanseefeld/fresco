@@ -26,6 +26,8 @@
 #include <Warsaw/DrawingKit.hh>
 #include <Warsaw/DrawTraversal.hh>
 
+using namespace Berlin::ToolKit;
+
 void Filler::request(Requisition &requisition)
 {
   Graphic_var child = body();

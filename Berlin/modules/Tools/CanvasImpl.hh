@@ -29,6 +29,9 @@
 #include <Berlin/Console.hh>
 #include <Berlin/Console/SHMDrawableFactory.hh>
 
+namespace Berlin {
+namespace ToolKit {
+
 class CanvasImpl : public virtual POA_Fresco::Canvas,
                    public GraphicImpl
 {
@@ -51,5 +54,8 @@ private:
   Prague::Mutex              _mutex;
   CORBA::Long                _shm;
 };
+
+} // namespace
+} // namespace
 
 #endif

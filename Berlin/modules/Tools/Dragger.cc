@@ -28,6 +28,8 @@
 using namespace Prague;
 using namespace Fresco;
 
+using namespace Berlin::ToolKit;
+
 Dragger::Dragger(Command_ptr c) : ControllerImpl(false), _command(Command::_duplicate(c))
 {
   Trace trace("Dragger::Dragger");

@@ -25,8 +25,11 @@
 #include <Fresco/config.hh>
 #include <Fresco/DrawTraversal.hh>
 
-namespace Beveler
-{
+namespace Berlin {
+namespace ToolKit {
+
+namespace Beveler {
+
   void rect(Fresco::DrawTraversal_ptr, Fresco::Coord,
 	    const Fresco::Color &, const Fresco::Color &, const Fresco::Color&,
 	    Fresco::Coord, Fresco::Coord, Fresco::Coord, Fresco::Coord, bool);
@@ -48,6 +51,9 @@ namespace Beveler
   void circle(Fresco::DrawTraversal_ptr, Fresco::Coord,
 	      const Fresco::Color &, const Fresco::Color &, const Fresco::Color&,
 	      Fresco::Coord, Fresco::Coord, Fresco::Coord, Fresco::Coord, bool);
-};
+} // namespace
+
+} // namespace
+} // namespace
 
 #endif

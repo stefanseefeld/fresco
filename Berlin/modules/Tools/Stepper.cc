@@ -26,6 +26,8 @@
 using namespace Prague;
 using namespace Fresco;
 
+using namespace Berlin::ToolKit;
+
 class Stepper::Notifier : public Timer::Notifier
 {
 public:

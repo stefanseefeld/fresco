@@ -26,6 +26,9 @@
 #include <Fresco/TextBuffer.hh>
 #include <Berlin/ControllerImpl.hh>
 
+namespace Berlin {
+namespace ToolKit {
+
 class TextInput : public ControllerImpl
 {
  public:
@@ -36,5 +39,8 @@ class TextInput : public ControllerImpl
  private:
   Fresco::TextBuffer_var buffer;
 };
+
+} // namespace
+} // namespace
 
 #endif

@@ -30,6 +30,8 @@ using namespace Prague;
 using namespace Fresco;
 using namespace Babylon;
 
+using namespace Berlin::ToolKit;
+
 void Terminal::key_press(const Input::Event &event)
 {
   Trace trace("Terminal::key_press");

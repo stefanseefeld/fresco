@@ -30,6 +30,9 @@
 #include <Berlin/ImplVar.hh>
 #include <Berlin/RefCountVar.hh>
 
+namespace Berlin {
+namespace ToolKit {
+
 class Frame : public MonoGraphic
 {
 public:
@@ -83,5 +86,8 @@ public:
 protected:
   Fresco::Color _color;
 };
+
+} // namespace
+} // namespace
 
 #endif

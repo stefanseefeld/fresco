@@ -27,6 +27,9 @@
 #include <Fresco/State.hh>
 #include <Berlin/MonoGraphic.hh>
 
+namespace Berlin {
+namespace ToolKit {
+
 class DrawingStateImpl : public virtual POA_Fresco::DrawingState,
 			 public MonoGraphic
 {
@@ -63,5 +66,8 @@ private:
   Fresco::DrawingKit::Fillstyle _fstyle;
   Fresco::Raster_var            _texture;
 };
+
+} // namespace
+} // namespace
 
 #endif

@@ -34,6 +34,8 @@
 using namespace Prague;
 using namespace Fresco;
 
+using namespace Berlin::ToolKit;
+
 SHMDrawableFactory *CanvasImpl::_factory = 0;
 
 CanvasImpl::CanvasImpl(PixelCoord w, PixelCoord h)

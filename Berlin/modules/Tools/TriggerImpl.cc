@@ -29,6 +29,8 @@
 using namespace Prague;
 using namespace Fresco;
 
+using namespace Berlin::ToolKit;
+
 TriggerImpl::TriggerImpl() : ControllerImpl(false), _data(new CORBA::Any) {
 }
 TriggerImpl::~TriggerImpl()

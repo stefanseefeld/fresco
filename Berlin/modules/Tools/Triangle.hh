@@ -26,6 +26,9 @@
 #include <Fresco/ToolKit.hh>
 #include "Frame.hh"
 
+namespace Berlin {
+namespace ToolKit {
+
 class InvisibleTriangle : public Frame::Renderer
 {
 public:
@@ -52,5 +55,8 @@ public:
 protected:
   Fresco::ToolKit::Direction _direction;
 };
+
+} // namespace
+} // namespace
 
 #endif
