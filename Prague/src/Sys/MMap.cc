@@ -59,7 +59,7 @@ MMap::MMap(const std::string &filename, int l, int prot, int share, void *addr, 
   else
     fd = open(filename.c_str(), O_RDWR|O_CREAT, 0666);
 
-  if (fd == -1) throw runtime_error(strerror(errno));
+  if (fd == -1) throw std::runtime_error(strerror(errno));
   struct stat sb;
   _length = fstat(fd, &sb) == -1 ? -1 : sb.st_size;
   if (l > static_cast<int>(_length))
