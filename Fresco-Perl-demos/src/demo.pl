@@ -85,7 +85,7 @@ my $string = ucs2($unimap->to16("Camels invade Germany, news at 11"));
 my $label = $kits->{TextKit}->chunk([ $string->unpack() ]);
 print "Got label\n";
 
-my $raster = $kits->{ImageKit}->create("/home/njs/pics/berlin-perl.png");
+my $raster = $kits->{ImageKit}->create("./berlin-perl.png");
 print "Got raster\n";
 my $pic = $kits->{FigureKit}->pixmap($raster);
 print "Got pic\n";
