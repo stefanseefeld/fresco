@@ -1,4 +1,6 @@
 // MenuKit
+// Note that MenuKit will be integrated into WidgetKit once the prototype
+// stage is complete.
 
 #ifndef _Warsaw_MenuKit_idl
 #define _Warsaw_MenuKit_idl
@@ -7,32 +9,20 @@
 #include <Warsaw/Command.idl>
 
 module Warsaw {
-    interface Menu;
-
-    //. A menu item
-    interface MenuItem : Controller {
-	const Mask hover = 0x100;
-	const Mask active = 0x200;
-    };
-
-    //. A menu of menu items. This may be a popup menu or a menubar, depending
-    //. on what MenuKit operation you use. Currently you can only add items.
-    interface Menu : Controller {
-	//. Add the given item to this menu
-	void append_item(in MenuItem item);
-    };
 
     //. Menu kit that implements menubar and popup menus
     interface MenuKit {
 	//. Create a new horizontal menu bar
-	Menu menu_bar();
+	Controller menu_bar();
 	//. Create a new popup menu. This may be stand-alone or the submenu
 	//. for a MenuItem
-	Menu menu_popup();
-	//. Create a menu item with the given label and callback
-	MenuItem menu_item(in Graphic label, in Command callback);
+	Controller menu_popup();
+	//. Create a menu item with the given label and callback. The menu
+	//. argument is the top-level menu, and is used to test the 'running'
+	//. state
+	Controller menu_item(in Controller menu, in Graphic label, in Warsaw::Axis axis, in Command callback);
 	//. Create a menu item with a sub menu
-	MenuItem submenu_item(in Graphic label, in Menu submenu);
+	Controller submenu_item(in Controller menu, in Graphic label, in Warsaw::Axis axis, in Controller submenu);
     };
 };
 
