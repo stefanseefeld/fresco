@@ -24,6 +24,7 @@
 #include <GL/gl.h>
 #include <string.h>
 #include <iostream>
+#include <stdlib.h>
 
 // This is a default font, just in case -- a character cell bitmapped unicode
 // font which is generated "on the fly" from the GNU unifont, which we're storing
@@ -45,7 +46,8 @@ GLUnifont::GLUnifont()
 {
     myDescriptor.pointsize = 16;
     myDescriptor.name = UNIFY("GNU Unifont");
-    Db::open("glyphs.db", DB_BTREE, DB_RDONLY, 0644, NULL, NULL,&glyphdb);
+    char *glyphdbName = getenv("GLYPH_DB");
+    Db::open(glyphdbName, DB_BTREE, DB_RDONLY, 0644, NULL, NULL,&glyphdb);
 }
 
 GLUnifont::~GLUnifont() {}

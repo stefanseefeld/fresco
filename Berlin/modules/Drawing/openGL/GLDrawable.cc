@@ -117,6 +117,8 @@ GLDrawable::GLDrawable()
   // If we get here, we've successfully set a mode from GGI_DEFMODE.
   // I know, I'm paranoid, but this implementation will save trouble in the
   // long run. --Aaron
+
+  ggiAddFlags(visual, GGIFLAG_ASYNC);
     
   if (GGIMesaSetVisual(context, visual, GL_TRUE, GL_FALSE))
     {

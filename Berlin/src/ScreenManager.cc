@@ -29,13 +29,19 @@
 #include "Drawing/openGL/Pointer.hh"
 #include "Berlin/Logger.hh"
 
+extern "C" {
+#include <ggi/ggi-unix.h>
+}
+
 static Mutex ggi_mutex;
 static ggi_event event;
+static int wakeupPipe[2];
 
 ScreenManager::ScreenManager(ScreenImpl *s, EventManager *em, GLDrawingKit *d)
   : screen(s), emanager(em), drawing(d), visual(drawing->getVisual())
 {
   pointer = new Pointer(visual);
+  pipe(wakeupPipe);
 }
 
 ScreenManager::~ScreenManager()
@@ -51,21 +57,13 @@ void ScreenManager::damage(Region_ptr r)
   region->_obj_is_ready(CORBA::BOA::getBOA());
   damages.push_back(region);
   Logger::log(Logger::drawing) << "ScreenManager::damage region " << *region << endl;
-  // this injects a damage notice into the event queue, waking up
-  // the sleeping event thread.
 
-  // sadly it appears that GGI's event queue is not threadsafe, so
-  // we must use a poll loop with a timeout. this is not totally
-  // awful, it just means we are zooming through a short loop once
-  // every 20000 microseconds. it doesn't take too much CPU time on my
-  // machine, and if it takes too much on yours, hey, go fix GGI. 
+  // this injects a byte into a "wakeup" pipe, which terminates the select()
+  // that the sleeping event-processor thread is in.
 
-  //     ggi_mutex.lock();
-  //     ggi_event *damageEvent = new ggi_event;
-  //     gettimeofday(&(damageEvent->any.time), NULL);
-  //     damageEvent->any.type = evCommand;
-  //     ggiEventSend (visual, damageEvent);    
-  //     ggi_mutex.unlock();
+  char c = 'z';
+  write(wakeupPipe[1],&c,1);
+
 }
 
 void ScreenManager::repair()
@@ -78,9 +76,9 @@ void ScreenManager::repair()
   
   for (dlist_t::iterator i = tmp.begin(); i != tmp.end(); i++)
     {
-      Logger::log(Logger::drawing) << "repairing region "
-				   << '(' << (*i)->lower.x << ',' << (*i)->lower.y
-				   << ',' << (*i)->upper.x << ',' << (*i)->upper.y << ')' << endl;
+//       Logger::log(Logger::drawing) << "repairing region "
+// 				   << '(' << (*i)->lower.x << ',' << (*i)->lower.y
+// 				   << ',' << (*i)->upper.x << ',' << (*i)->upper.y << ')' << endl;
       bool ptr = pointer->intersects((*i)->lower.x, (*i)->upper.x, (*i)->lower.y, (*i)->upper.y);
       drawing->clear((*i)->lower.x, (*i)->lower.y, (*i)->upper.x, (*i)->upper.y);
       if (ptr) pointer->restore();
@@ -91,7 +89,6 @@ void ScreenManager::repair()
       traversal->_obj_is_ready(CORBA::BOA::getBOA());
       screen->traverse(Traversal_var(traversal->_this()));
       traversal->_dispose();
-      drawing->sync();
       if (ptr)
 	{
 	  pointer->backup();
@@ -104,17 +101,22 @@ void ScreenManager::repair()
 
 void ScreenManager::nextEvent()
 {
-  ggi_event_mask mask = ggi_event_mask (emCommand | emKeyboard | emPtrMove | emPtrButtonPress | emPtrButtonRelease);
-  timeval t;
+  ggi_event_mask mask = ggi_event_mask (emKeyboard | emPtrMove | emPtrButtonPress | emPtrButtonRelease);
 
-  t.tv_sec = 0;
-  t.tv_usec = 20000; 
-    
-  if (ggiEventPoll(visual, mask, &t)) ggiEventRead(visual, &event, mask);
-  else return;
-
-  // we are being woken up by the damage subsystem
-  if (event.any.origin == GII_EV_ORIGIN_SENDEVENT) return;
+  fd_set rfds;
+  FD_ZERO(&rfds);
+  FD_SET(wakeupPipe[0], &rfds);
+  switch (ggiEventSelect(visual, &mask, (wakeupPipe[0] +1), &rfds, NULL, NULL, NULL)) {
+  case 0:
+    ggiEventRead(visual, &event, mask);		     
+    break;
+  case -1:
+    return;
+  case 1:
+    char c;
+    read(wakeupPipe[0],&c,1);
+    return;
+  }
 
   // we can process this, it's a legitimate event.
   switch (event.any.type)
@@ -132,6 +134,7 @@ void ScreenManager::nextEvent()
 	ptrPositionX = event.pmove.x;
 	ptrPositionY = event.pmove.y;
 	pointer->move(ptrPositionX, ptrPositionY);
+	ggiFlush(visual);
 	// absence of break statement here is intentional
       }
     case evPtrButtonPress:
@@ -154,6 +157,9 @@ void ScreenManager::nextEvent()
 
 void ScreenManager::run()
 {
+  struct timeval lastPost, currentTime;
+  lastPost.tv_sec = 0;
+  lastPost.tv_usec = 0;
   while (true)
     {
       mutex.lock();
@@ -162,6 +168,15 @@ void ScreenManager::run()
       if (amountOfDamage > 0)
 	{
 	  repair();
+	  gettimeofday(&currentTime,NULL);
+	  long a = (lastPost.tv_sec * 1000000) + lastPost.tv_usec;
+	  long b = (currentTime.tv_sec * 1000000) + currentTime.tv_usec;
+	  
+	  if (b - a > 33333) {
+	    drawing->sync();
+	    ggiFlush(visual);
+	    lastPost = currentTime;
+	  }
 	}
       nextEvent();
     }

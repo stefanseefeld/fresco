@@ -70,7 +70,7 @@ Graphic_ptr TextKitImpl::chunk(const Unistring &u, Text::Font_ptr f) {
     if (glyphCache.find(k) == glyphCache.end() ) {
 	Graphic::Requisition r;
 	f->allocateText(u,r);
-	cerr << " allocated space tor text: " << r.x.natural << "x" << r.y.natural << endl;
+	//	cerr << " allocated space tor text: " << r.x.natural << "x" << r.y.natural << endl;
 	TextChunk *t = new TextChunk(u,r);
 	t->_obj_is_ready(_boa());
 	glyphCache[k] = t->_this();
@@ -85,4 +85,4 @@ Graphic_ptr TextKitImpl::fontChange(const Text::FontDescriptor &fd, const Style:
 }
 
 
-// EXPORT_PLUGIN(TextKitImpl, interface(TextKit))
+EXPORT_PLUGIN(TextKitImpl, interface(TextKit))
