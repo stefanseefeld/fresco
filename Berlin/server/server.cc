@@ -294,6 +294,8 @@ int main(int argc, char **argv) /*FOLD00*/
        ScreenManager *smanager = new ScreenManager(Graphic_var(screen->_this()), emanager, drawing);
        screen->bind_managers(emanager, smanager);
 
+       Logger::log(Logger::loader) << "screen is setup and managers are bound to it." << std::endl;
+
        props.length(0);
        LayoutKit_var layout = server->resolve<LayoutKit>("IDL:Warsaw/LayoutKit:1.0", props, poa);
        Layout::Stage_var stage = layout->create_stage();
@@ -326,15 +328,15 @@ int main(int argc, char **argv) /*FOLD00*/
 	 }
        
        Logger::log(Logger::corba) << "listening for clients" << std::endl;
-       // initialize the event distributor and draw thread
-       Logger::log(Logger::corba) << "event manager is constructed" << std::endl;
        
        // Start client via --execute argument
        value = "";
        getopt.get("execute", &value);
-       if (!value.empty())
+       if (!value.empty()) {
 	   exec_child(child, value);
-       
+	   Logger::log(Logger::loader) << "client started." << std::endl;
+       }
+
        smanager->run();
     }
   catch (const CORBA::SystemException &e)
