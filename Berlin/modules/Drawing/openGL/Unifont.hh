@@ -1,6 +1,3 @@
-#ifndef _GLUnifont_hh
-#define _GLUnifont_hh
-
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
@@ -22,11 +19,14 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
+#ifndef _GLUnifont_hh
+#define _GLUnifont_hh
 
 #include <GL/gl.h>
 #include <vector>
 #include "Warsaw/config.hh"
 #include "Warsaw/Types.hh"
+#include "Warsaw/Graphic.hh"
 #include "Prague/Sys/MMap.hh"
 #include <Warsaw/Unicode.hh>
 
@@ -39,20 +39,15 @@
 
 class GLUnifont 
 {
-
- public:
-    GLUnifont();
-    virtual ~GLUnifont();
-    
-    void drawText(const Unistring &u, const Vertex &v);
-    void allocateText(const Unistring &u, Graphic::Requisition &r);
-    void setColor(Color c);
-
- protected:
-    MMap *glyphmap;
-    Text::FontDescriptor myDescriptor;
-    Color myColor;
+public:
+  GLUnifont();
+  virtual ~GLUnifont();
+  
+  void drawText(const Unistring &u, const Vertex &v);
+  void allocateText(const Unistring &u, Graphic::Requisition &r);
+  void setColor(Color c); 
+protected:
+  MMap *glyphmap;
 };
-
 
 #endif

@@ -72,7 +72,7 @@ public:
 
   virtual void setTransformation(Transform_ptr);
   virtual void setClipping(Region_ptr);
-  virtual void setForeground(Color);
+  virtual void setForeground(const Color &);
   virtual void setPointSize(Coord);
   virtual void setLineWidth(Coord);
   virtual void setLineEndstyle(Endstyle);

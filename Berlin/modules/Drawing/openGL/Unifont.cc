@@ -25,52 +25,35 @@
 
 #include <GL/gl.h>
 #include <string>
-#include <string.h>
 #include <iostream>
-#include <stdlib.h>
+#include <cstring>
+#include <cstdlib>
+#include <cerrno>
 
 #include <sys/stat.h>
 #include <sys/mman.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <stdio.h>
-#include <errno.h>
-
-
-// This is a default font, just in case -- a character cell bitmapped unicode
-// font which is generated "on the fly" from the GNU unifont, which we're
-// storing in a packed binary array we mmap() in. this is so that, even if all
-// the font manufactureres in the world turn against us, we can still render
-// multilingual text, albeit not quite as well as certain (ahem) proprietary
-// text systems
 
 GLUnifont::GLUnifont()
 {
-    myDescriptor.pointsize = 16;
-    myDescriptor.name = Unicode::toCORBA(Unicode::String("GNU Unifont"));
-    char *env = getenv("BERLIN_ROOT");
-    if (!env)
-      {
-	cerr << "Please set environment variable BERLIN_ROOT first" << endl;
-	exit(-1);
-      }
-    string glyphDB = string(env) + "/etc/glyph.dat";
-    glyphmap = new MMap(glyphDB, -1, MMap::read, MMap::shared, 0, 0);
+  char *env = getenv("BERLIN_ROOT");
+  if (!env)
+    {
+      cerr << "Please set environment variable BERLIN_ROOT first" << endl;
+      exit(-1);
+    }
+  string glyphDB = string(env) + "/etc/glyph.dat";
+  glyphmap = new MMap(glyphDB, -1, MMap::read, MMap::shared, 0, 0);
 }
 
-GLUnifont::~GLUnifont() { delete glyphmap ; }
-
-void GLUnifont::setColor(Color c) 
-{
-    myColor = c;
-}
+GLUnifont::~GLUnifont() { delete glyphmap ;}
 
 void GLUnifont::drawText(const Unistring &u, const Vertex &p) 
 {
   unsigned char *glyphs = (unsigned char *)glyphmap->addr();
   // prepare GL to draw
-  glColor4d(myColor.red,myColor.green,myColor.blue,myColor.alpha); // load color
   glPixelStorei(GL_UNPACK_ROW_LENGTH,0);
   glPixelStorei(GL_UNPACK_ALIGNMENT,1); // set to byte-aligned unpacking
 //   glRasterPos2i((int)(p.x/10.),(int)(p.y/10. - 16));  // position pen
@@ -90,18 +73,19 @@ void GLUnifont::drawText(const Unistring &u, const Vertex &p)
 }
 
 void GLUnifont::allocateText(const Unistring &u, Graphic::Requisition &r)
-{    
+{
   unsigned char *glyphs = (unsigned char *)glyphmap->addr();
   
   int width = 0;
   int height = 16;
   
-  for(unsigned int idx = 0; idx < u.length(); idx++) {
-    unsigned int stride = 33;
-    unsigned int base = stride * u[idx];
-    bool is_halfwidth = (glyphs[base] == (unsigned char)0xFF) ? 1 : 0;
-    width += is_halfwidth ? 8 : 16; 
-  }
+  for(unsigned int idx = 0; idx < u.length(); idx++)
+    {
+      unsigned int stride = 33;
+      unsigned int base = stride * u[idx];
+      bool is_halfwidth = (glyphs[base] == (unsigned char)0xFF) ? 1 : 0;
+      width += is_halfwidth ? 8 : 16; 
+    }
   
   r.x.natural = r.x.minimum = r.x.maximum = width*10.;
   r.x.defined = true;

@@ -34,11 +34,10 @@
 #include <iostream>
 
 GLDrawingKit::GLDrawingKit()
-  : drawable(GGI::drawable()), tr(new TransformImpl), cl(new RegionImpl), textures(100), images(500), tx(0)
+  : drawable(GGI::drawable()), tr(new TransformImpl), cl(new RegionImpl), tx(0), textures(100), images(500)
 {
   tr->_obj_is_ready(_boa());
   cl->_obj_is_ready(_boa());
-  unifont._obj_is_ready(_boa());
 
   context = GGIMesaCreateContext();
   if (!context)
@@ -99,10 +98,9 @@ void GLDrawingKit::setClipping(Region_ptr r)
   glScissor(x, y, w, h);
 }
 
-void GLDrawingKit::setForeground(Color c)
+void GLDrawingKit::setForeground(const Color &c)
 {
   fg = c;
-  unifont.setColor(c);
   glColor4d(fg.red, fg.green, fg.blue, fg.alpha);
 }
 
@@ -136,16 +134,6 @@ void GLDrawingKit::setTexture(Raster_ptr t)
 {
   tx = CORBA::is_nil(t) ? 0 : textures.lookup(t);
   if (tx) glBindTexture(GL_TEXTURE_2D, tx->texture);
-}
-
-Text::Font_ptr GLDrawingKit::findFont(const Text::FontDescriptor &f)
-{
-  return unifont._this();
-}
-
-Text::Font_ptr GLDrawingKit::font()
-{
-  return unifont._this();
 }
 
 // void GLDrawingKit::clear(Coord l, Coord t, Coord r, Coord b)
@@ -242,27 +230,29 @@ void GLDrawingKit::drawImage(Raster_ptr raster)
 }
 
 CORBA::ULong GLDrawingKit::fontSize() { return 16; }
-CORBA::ULong GLDrawingKit::fontWeight() { return 100; }
-Unistring* GLDrawingKit::fontFamily() 
+CORBA::ULong GLDrawingKit::fontWeight() { return 100;}
+Unistring* GLDrawingKit::fontFamily()
 { 
-  static Unistring name = toCORBA(Unicode::Unistring("GNU Unifont")); 
+  static Unistring name = Unicode::toCORBA(Unicode::String("GNU Unifont")); 
   return &name; 
 }
 Unistring* GLDrawingKit::fontSubFamily() { return 0; }
 Unistring* GLDrawingKit::fontFullName() { return 0; }
 Unistring* GLDrawingKit::fontStyle() 
 {
-  static Unistring name = toCORBA(Unicode::Unistring("monospace")); 
+  static Unistring name = Unicode::toCORBA(Unicode::String("monospace")); 
   return &name; 
 }
+
 FontMetrics GLDrawingKit::metrics() 
 {
   FontMetrics m;
   return m;
 }
-CORBA::Any * GLDrawingKit::getFontAttr(const Unistring & name) 
+
+CORBA::Any *GLDrawingKit::getFontAttr(const Unistring &name) 
 {
-  return new Any;
+  return new CORBA::Any();
 }
 
 void GLDrawingKit::setFontSize(CORBA::ULong) {}

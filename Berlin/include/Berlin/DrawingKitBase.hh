@@ -59,19 +59,8 @@ class DrawingKitBase : lcimplements(DrawingKit)
 
   struct StateMarker : State { void restore(DrawingKitBase *) const {}};
 
-  template <class Ptr> struct PtrState : State
-  {
-    typedef void (DrawingKitBase::*method)(typename Ptr::_ptr_type);
-    PtrState(typename Ptr::_ptr_type v, method mm) : val(v), m(mm) {} // the absence of _duplicate() is intentional...
-    void restore(DrawingKitBase *dk) const
-    {
-      (dk->*m)(val);
-      dk->continueRestoring();
-    }
-    typename Ptr::_var_type val;
-    method m;
-  };
   template <class T> struct SimpleState : State
+  //. for primitive types...
   {
     typedef void (DrawingKitBase::*method)(T);
     SimpleState(T v, method mm) : val(v), m(mm) {}
@@ -83,7 +72,45 @@ class DrawingKitBase : lcimplements(DrawingKit)
     T val;
     method m;
   };
- 
+  template <class T> struct RefState : State
+  //. for fixed size structs...
+  {
+    typedef void (DrawingKitBase::*method)(const T &);
+    RefState(const T &v, method mm) : val(v), m(mm) {}
+    void restore(DrawingKitBase *dk) const
+    {
+      (dk->*m)(val);
+      dk->continueRestoring();
+    }
+    T val;
+    method m;
+  }; 
+  template <class T> struct VarState : State
+  //. for var size structs...
+  {
+    typedef void (DrawingKitBase::*method)(const T &);
+    VarState(T *v, method mm) : val(v), m(mm) {}
+    void restore(DrawingKitBase *dk) const
+    {
+      (dk->*m)(val);
+      dk->continueRestoring();
+    }
+    typename T::_var_type val;
+    method m;
+  };
+  template <class Ptr> struct PtrState : State
+  //. for CORBA object references...
+  {
+    typedef void (DrawingKitBase::*method)(typename Ptr::_ptr_type);
+    PtrState(typename Ptr::_ptr_type v, method mm) : val(v), m(mm) {} // the absence of _duplicate() is intentional...
+    void restore(DrawingKitBase *dk) const
+    {
+      (dk->*m)(val);
+      dk->continueRestoring();
+    }
+    typename Ptr::_var_type val;
+    method m;
+  };
   typedef stack<State *> stack_t;
 public:
 
@@ -130,7 +157,7 @@ public:
 
   virtual void setTransformation(Transform_ptr) = 0;
   virtual void setClipping(Region_ptr) = 0;
-  virtual void setForeground(Color) = 0;
+  virtual void setForeground(const Color &) = 0;
   virtual void setPointSize(Coord) = 0;
   virtual void setLineWidth(Coord) = 0;
   virtual void setLineEndstyle(Endstyle) = 0;
@@ -163,7 +190,7 @@ inline void DrawingKitBase::clipping(Region_ptr c)
 
 inline void DrawingKitBase::foreground(const Color &c)
 {
-  states.push(new SimpleState<Color>(foreground(), &DrawingKitBase::setForeground));
+  states.push(new RefState<Color>(foreground(), &DrawingKitBase::setForeground));
   setForeground(c);
 }
 
@@ -213,37 +240,37 @@ inline void DrawingKitBase::fontWeight(CORBA::ULong w)
   setFontWeight(w);
 }
 
-inline void DrawingKitBase::fontFamily(const Unistring& f)
+inline void DrawingKitBase::fontFamily(const Unistring &f)
 {
-  states.push(new SimpleState<const Unistring &>(fontFamily(), &DrawingKitBase::setFontFamily));
+  states.push(new VarState<Unistring>(fontFamily(), &DrawingKitBase::setFontFamily));
   setFontFamily(f);
 }
 
-inline void DrawingKitBase::fontSubFamily(const Unistring& f)
+inline void DrawingKitBase::fontSubFamily(const Unistring &f)
 {
-  states.push(new SimpleState<const Unistring &>(fontSubFamily(), &DrawingKitBase::setFontSubFamily));
+  states.push(new VarState<Unistring>(fontSubFamily(), &DrawingKitBase::setFontSubFamily));
   setFontSubFamily(f);
 }
 
-inline void DrawingKitBase::fontFullName(const Unistring& f)
+inline void DrawingKitBase::fontFullName(const Unistring &f)
 {
-  states.push(new SimpleState<const Unistring &>(fontFullName(), &DrawingKitBase::setFontFullName));
+  states.push(new VarState<Unistring>(fontFullName(), &DrawingKitBase::setFontFullName));
   setFontFullName(f);
 }
 
-inline void DrawingKitBase::fontStyle(const Unistring& s)
+inline void DrawingKitBase::fontStyle(const Unistring &s)
 {
-  states.push(new SimpleState<const Unistring &>(fontStyle(), &DrawingKitBase::setFontStyle));
+  states.push(new VarState<Unistring>(fontStyle(), &DrawingKitBase::setFontStyle));
   setFontStyle(s);
 }
 
-inline void DrawingKitBase::fontAttr(const NVPair & nvp)
+inline void DrawingKitBase::fontAttr(const NVPair &nvp)
 {
-  NVPair save;
-  save.name = nvp.name;
-  save.val = getFontAttr(nvp.name);
-  states.push(new SimpleState<const NVPair &>(save, &DrawingKitBase::setFontAttr));
-  setFontAttr(nvp);
+//   NVPair save;
+//   save.name = nvp.name;
+//   save.val = getFontAttr(nvp.name);
+//   states.push(new RefState<NVPair>(save, &DrawingKitBase::setFontAttr));
+//   setFontAttr(nvp);
 }
 
 
