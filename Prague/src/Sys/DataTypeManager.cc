@@ -222,13 +222,9 @@ unsigned short DataTypeManager::Type::matchName(const string &file)
 
 bool DataTypeManager::Type::Magic::Part::match(const unsigned char *d, int l)
 {
-  cout << "DataTypeManager::Type::Magic::Part::match " << offset << ' ' << length << ' ' << l << endl;
   if (offset + length > l) return false;
   for (unsigned short i = 0, o = offset; i != length; i++, o++)
-    {
-      cout << "DataTypeManager::Type::Magic::Part::match " << (int) d[o] << ' ' << (int) mask[i] << ' ' << data[i] << endl;
-      if ((d[o] & mask[i]) != data[i]) return false;
-    }
+    if ((d[o] & mask[i]) != data[i]) return false;
   return true;
 }
 
@@ -284,11 +280,6 @@ string DataTypeManager::match(const string &file)
   string name = File::BaseName(file);
   unsigned char data[4096];
   ifs.read(data, 4096);
-  for (int i = 0; i != 10; i++)
-    {
-      char c = data[i];
-      cout << (int) c << ' ' << (void *) c << endl;
-    }
   return match(name, data, ifs.gcount());
 }
 

@@ -6,9 +6,6 @@ Lock:		Lock.o
 Timer:		Timer.o
 		$(CXX) $(LDFLAGS) -o $@ $< $(LIBS)
 
-Diner:		Diner.o
-		$(CXX) $(LDFLAGS) -o $@ $< $(LIBS)
-
 DataType:	DataType.o
 		$(CXX) $(LDFLAGS) -o $@ $< $(LIBS)
 
@@ -20,7 +17,7 @@ Logger:		Logger.o
 
 
 DataType.o:	DataType.cc
-		$(CXX) $(CXXFLAGS) $(GDBFLAGS) $(SOFLAGS) -ftemplate-depth-23 -c $< -o $@
+		$(CXX) $(CXXFLAGS) $(OPTFLAGS) $(SOFLAGS) -ftemplate-depth-23 -c $< -o $@
 
 clean:	
 		rm -f *.o *.d *~ core Timer DataType

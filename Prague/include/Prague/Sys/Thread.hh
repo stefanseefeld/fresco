@@ -24,6 +24,9 @@
 
 #include <Prague/Sys/Time.hh>
 #include <pthread.h>
+#if 1
+#include <semaphore.h>
+#endif
 #include <vector>
 #include <pair.h>
 
@@ -71,21 +74,43 @@ private:
   Mutex &mutex;
 };
 
+#if 0
+
 class Semaphore
 {
 public:
-  Semaphore(unsigned int v) : condition(mutex), value(v) {}
+  Semaphore(unsigned int vv) : condition(mutex), v(vv) {}
   ~Semaphore() {}
-  void wait() { MutexGuard guard(mutex); while (value == 0) condition.wait(); value--;}
-  bool trywait() { MutexGuard guard(mutex); if (value == 0) return false; value--; return true;}
-  void post() { { MutexGuard guard(mutex); value++;} condition.signal();}
+  void wait() { MutexGuard guard(mutex); while (v == 0) condition.wait(); v--;}
+  bool trywait() { MutexGuard guard(mutex); if (v == 0) return false; v--; return true;}
+  void post() { { MutexGuard guard(mutex); v++;} condition.signal();}
+  unsigned int value() { MutexGuard guard(mutex); return v;}
 private:
   Semaphore(const Semaphore &);
   Semaphore &operator = (const Semaphore &);
   Mutex mutex;
   Condition condition;
-  int value;
+  int v;
 };
+
+#else
+
+class Semaphore
+{
+public:
+  Semaphore(unsigned int v = 0) { sem_init(&semaphore, 0, v);}
+  ~Semaphore() { sem_destroy(&semaphore);}
+  void wait() { sem_wait(&semaphore);}
+  bool trywait() { return sem_trywait(&semaphore);}
+  void post() { sem_post(&semaphore);}
+  int value() { int v; sem_getvalue(&semaphore, &v); return v;}
+private:
+  Semaphore(const Semaphore &);
+  Semaphore &operator = (const Semaphore &);
+  sem_t semaphore;
+};
+
+#endif
 
 class SemaphoreGuard
 {

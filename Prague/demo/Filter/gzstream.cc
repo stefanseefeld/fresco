@@ -2,8 +2,6 @@
 
 using namespace Prague;
 
-void foo(istream &is) {}
-
 int main()
 {
   // Construct a stream object with this filebuffer.  Anything sent
@@ -21,9 +19,6 @@ int main()
     << "I'm compressing again" << endl;
 
   os.close();
-
-  gzifstream gzifs("blabla");
-  foo(gzifs);
 
   return 0;
 }

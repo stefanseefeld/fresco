@@ -22,6 +22,7 @@
 
 #include <Prague/Sys/Signal.hh>
 #include <Prague/Sys/Timer.hh>
+#include <unistd.h>
 
 using namespace Prague;
 
