@@ -145,15 +145,15 @@ DirectFBConsole::DirectFBConsole(int &argc,
     DFBResult ret;
     DFBSurfaceDescription dsc;
     
-//     ret = DirectFBInit(&argc, &argv);
-//     if (ret) {
-// 	DirectFBError("DirectFBInit failed", ret);
-// 	Logger::log(Logger::drawing) << "DirectFBInit failed (" << ret << ")" << endl;
-// 	exit(-1);
-//     }
-//     cerr << "Finished initializing DirectFB." << endl;
+     ret = DirectFBInit(&argc, &argv);
+     if (ret) {
+ 	DirectFBError("DirectFBInit failed", ret);
+ 	Logger::log(Logger::drawing) << "DirectFBInit failed (" << ret << ")" << endl;
+ 	exit(-1);
+     }
+     cerr << "Finished initializing DirectFB." << endl;
 
-    ret = DirectFBCreate(&argc, &argv, &s_dfb);
+    ret = DirectFBCreate(&s_dfb);
     if(ret) {
 	DirectFBError("DirectFBCreate failed", ret);
 	Logger::log(Logger::drawing) << "DirectFBCreate failed (" << ret << ")" << endl;
