@@ -26,13 +26,14 @@ sub new {
 sub userName ($) {
     my($self) = @_;
 #    return $self->{'userName'};
-    return "";
+    return [];
 }
 
 # operation ping (IDL:ClientContext/ping:1.0)
 
 sub ping ($) {
     my($self) = @_;
+#    print "Pinged\n";
 }
 
 
