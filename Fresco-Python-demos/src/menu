@@ -111,13 +111,28 @@ class MenuItem (pywarsaw.PyController):
 	    self.callback_command = Callback(self.clicked)._this()
 	return self.callback_command
 
+    def _should_open(self):
+	"""Returns true if the menu should open.. ie: if some parent menu has an
+	active menu already"""
+	if not self.submenu: return 0
+	item = self
+	while item:
+	    menu = item._get_parent_menu()
+	    current_submenu = menu._current_submenu
+	    if current_submenu and current_submenu.test(Toggle_active):
+		return 1
+	    item = menu.parent_item
+	return 0
     def receive_focus(self, focus):
-	print "receive focus"
 	self.set(Toggle_hover)
-	self.__parent_menu.set_active_submenu(self)
+	if self._should_open():
+	    # Steal active state from current menu
+	    self.show_submenu()
+	else:
+	    # Just become the current
+	    self.__parent_menu.set_active_submenu(self)
 	return pywarsaw.PyController.receive_focus(self, focus)
     def lose_focus(self, device):
-	print "lose focus"
 	if not self.test(Toggle_active): self.clear(Toggle_hover)
 	pywarsaw.PyController.lose_focus(self, device)
     def press(self, traversal, event):
@@ -129,27 +144,38 @@ class MenuItem (pywarsaw.PyController):
 		self.callback.execute(nullAny)
 	    # Show submenu
 	    if self.submenu is not None:
-		self.set(Toggle_active)
-		sub = self.submenu.get_pulldown()
-		self.__parent_menu.set_active_submenu(self)
-		# Move to right place
-		lower, upper = traversal.current_allocation().bounds()
-		if self.__orientation:to = Warsaw.Vertex(upper.x, lower.y, 0.)
-		else: to = Warsaw.Vertex(lower.x, upper.y, 0.)
-		to = traversal.current_transformation().transform_vertex(to)
-		pos = sub._get_position()
-		pos.x = to.x-pos.x; pos.y = to.y-pos.y
-		# Do the move, and map
-		any = CORBA.Any(Warsaw._tc_Vertex, pos)
-		kits.desktop.move(sub).execute(any)
-		kits.desktop.map(sub, 1).execute(nullAny)
-	    # Else close this menu and all parents
+		self.show_submenu()
+		# Else close this menu and all parents
 	    else: self.cascade_close_up()
 	except:
 	    print "An error occurred somewhere in clicked()"
 	    import traceback
 	    traceback.print_exc()
 	    self.cascade_close_up()
+    def get_alloc(self):
+	alloc = pywarsaw.PyAllocation()
+	self.allocations(alloc._this())
+	info = alloc.get(0) # controller only has one parent
+	region = pywarsaw.PyRegion()
+	self.extension(info, region._this())
+	return region
+
+    def show_submenu(self):
+	region = self.get_alloc()
+	self.set(Toggle_active)
+	sub = self.submenu.get_pulldown()
+	self.__parent_menu.set_active_submenu(self)
+	# Move to right place
+	lower, upper = region.bounds()
+	if self.__orientation:to = Warsaw.Vertex(upper.x, lower.y, 0.)
+	else: to = Warsaw.Vertex(lower.x, upper.y, 0.)
+	pos = sub._get_position()
+	pos.x = to.x-pos.x; pos.y = to.y-pos.y
+	# Do the move, and map
+	any = CORBA.Any(Warsaw._tc_Vertex, pos)
+	kits.desktop.move(sub).execute(any)
+	kits.desktop.map(sub, 1).execute(nullAny)
+
     def cascade_close_down(self):
 	if self.test(Toggle_active):
 	    self.clear(Toggle_active)
@@ -172,6 +198,10 @@ class Menu (pywarsaw.PyController):
 	
 	self._init()
     
+    def receive_focus(self, focus):
+	return pywarsaw.PyController.receive_focus(self, focus)
+    def lose_focus(self, device):
+	pywarsaw.PyController.lose_focus(self, device)
     def add_item(self, item):
 	self.items.append(item)
 	self._add_item(item)
@@ -199,6 +229,7 @@ class Menu (pywarsaw.PyController):
 	    self._current_submenu.cascade_close_down()
 	self._current_submenu = item
     def cascade_close_down(self):
+	"""Close this menu and any active submenu"""
 	self.set_active_submenu(None)
 	kits.desktop.map(self.get_pulldown(), 0).execute(nullAny)
     def cascade_close_up(self):
@@ -221,7 +252,7 @@ class MenuBar(Menu):
     def _init(self):
 	"""Returns or creates the controller/graphic for this Menu"""
 	# Create menu
-	self.box = kits.layout.hbox()
+	self.box = kits.layout.hbox_align_elements(0.)
 
 	self.hspace = kits.layout.hspace(80.)
 	map(self._add_item, self.items)
@@ -232,6 +263,7 @@ class MenuBar(Menu):
 
 	fspec = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.outset, 0.2)
 	frame = kits.tool.frame(spacer_box, 10.0, fspec, 1)
+	
 	self._set_body(frame)
     def cascade_close_up(self):
 	"""Terminate the cascade traversal"""
