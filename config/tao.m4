@@ -67,7 +67,7 @@ dnl 	AC_noREQUIRE(BERLIN_LIB_NSL)
 		LIBS="$ORB_LIBS $LIBS"
 	fi
 
-	CPPFLAGS="$save_CPPFLAGS"
+dnl	CPPFLAGS="$save_CPPFLAGS"
 
 	if test ".$no_tao" = "." ; then
 		berlin_cv_lib_tao="yes"
