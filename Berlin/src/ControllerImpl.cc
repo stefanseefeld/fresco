@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -144,7 +144,7 @@ CORBA::Boolean ControllerImpl::receiveFocus(Focus_ptr f)
 {
   SectionLog section("ControllerImpl::receiveFocus");  
   setFocus(f->device());
-  if (f->device() == 0) set(Telltale::active);
+  if (f->device() == 0) set(Controller::active);
   return true;
 }
 
@@ -152,7 +152,7 @@ void ControllerImpl::loseFocus(Input::Device d)
 {
   SectionLog section("ControllerImpl::loseFocus");
   clearFocus(d);
-  if (d == 0) clear(Telltale::active);
+  if (d == 0) clear(Controller::active);
 }
 
 CORBA::Boolean ControllerImpl::firstFocus(Input::Device d)
@@ -193,36 +193,36 @@ CORBA::Boolean ControllerImpl::prevFocus(Input::Device d)
   else return parent->prevFocus(d);
 }
 
-void ControllerImpl::set(Telltale::Flag f)
+void ControllerImpl::set(Telltale::Mask m)
 {
   SectionLog section("ControllerImpl::set");
-  if (!CORBA::is_nil(myConstraint)) myConstraint->trymodify(Telltale_var(_this()), f, true);
-  else modify(f, true);
+  if (!CORBA::is_nil(myConstraint)) myConstraint->trymodify(Telltale_var(_this()), m, true);
+  else modify(m, true);
 }
 
-void ControllerImpl::clear(Telltale::Flag f)
+void ControllerImpl::clear(Telltale::Mask m)
 {
   SectionLog section("ControllerImpl::clear");
-  if (!CORBA::is_nil(myConstraint)) myConstraint->trymodify(Telltale_var(_this()), f, false);
-  else modify(f, false);
+  if (!CORBA::is_nil(myConstraint)) myConstraint->trymodify(Telltale_var(_this()), m, false);
+  else modify(m, false);
 }
 
-CORBA::Boolean ControllerImpl::test(Telltale::Flag f)
+CORBA::Boolean ControllerImpl::test(Telltale::Mask m)
 {
   MutexGuard guard(mutex);
-  return telltale & (1 << f);
+  return (telltale & m) == m;
 }
 
-void ControllerImpl::modify(Telltale::Flag f, CORBA::Boolean on)
+void ControllerImpl::modify(Telltale::Mask m, CORBA::Boolean on)
 {
-  unsigned long fs = 1 << f;
-  unsigned long nf = on ? telltale | fs : telltale & ~fs;
+  unsigned long nf = on ? telltale | m : telltale & ~m;
   {
     MutexGuard guard(mutex);
     if (nf == telltale) return;
     else telltale = nf;
   }
   CORBA::Any any;
+  any <<= nf;
   notify(any);
 }
 
@@ -255,7 +255,7 @@ CORBA::Boolean ControllerImpl::handlePositional(PickTraversal_ptr traversal, con
     }
   else if (event[0].attr._d() == Input::positional)
     {
-      if (test(Telltale::toggle)) drag(traversal, event);
+      if (test(Controller::pressed)) drag(traversal, event);
       else move(traversal, event);
     }
   else other(event);
@@ -289,7 +289,7 @@ void ControllerImpl::press(PickTraversal_ptr traversal, const Input::Event &)
 {
   grab(traversal);
   requestFocus(Controller_var(_this()), 0);
-  set(Telltale::toggle);
+  set(Controller::pressed);
 }
 
 void ControllerImpl::drag(PickTraversal_ptr, const Input::Event &)
@@ -298,7 +298,7 @@ void ControllerImpl::drag(PickTraversal_ptr, const Input::Event &)
 
 void ControllerImpl::release(PickTraversal_ptr traversal, const Input::Event &)
 {
-  clear(Telltale::toggle);
+  clear(Controller::pressed);
   ungrab(traversal);
 }
 

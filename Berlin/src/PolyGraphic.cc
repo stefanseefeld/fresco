@@ -1,13 +1,8 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
- *
- * this code is based on Fresco.
- * Copyright (c) 1987-91 Stanford University
- * Copyright (c) 1991-94 Silicon Graphics, Inc.
- * Copyright (c) 1993-94 Fujitsu, Ltd.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -45,7 +40,7 @@ void PolyGraphic::append(Graphic_ptr child)
   childMutex.lock();
   edge_t edge(Graphic::_duplicate(child), tag());
   children.push_back(edge);
-  child->addParent(Graphic_var(_this()), edge.second);
+  if (!CORBA::is_nil(child)) child->addParent(Graphic_var(_this()), edge.second);
   childMutex.unlock();
   needResize();
 }
@@ -55,7 +50,16 @@ void PolyGraphic::prepend(Graphic_ptr child)
   childMutex.lock();
   edge_t edge(Graphic::_duplicate(child), tag());
   children.insert(children.begin(), edge);
-  child->addParent(Graphic_var(_this()), edge.second);
+  if (!CORBA::is_nil(child)) child->addParent(Graphic_var(_this()), edge.second);
+  childMutex.unlock();
+  needResize();
+}
+
+void PolyGraphic::remove(Tag t)
+{
+  childMutex.lock();
+  size_t i = index(t);
+  if (i < children.size()) children.erase(children.begin() + i);
   childMutex.unlock();
   needResize();
 }
@@ -115,5 +119,6 @@ void PolyGraphic::deallocateRequisitions(Graphic::Requisition *r)
 void PolyGraphic::childExtension(size_t i, const Allocation::Info &info, Region_ptr region)
 {
   MutexGuard guard(childMutex);
-  children[i].first->extension(info, region);
+  Graphic_var child = children[i].first;
+  if (!CORBA::is_nil(child)) child->extension(info, region);
 }

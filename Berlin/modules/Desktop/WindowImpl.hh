@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -58,15 +58,15 @@ class WindowImpl : implements(Window), public ControllerImpl
   virtual ~WindowImpl();
   virtual CORBA::Boolean requestFocus(Controller_ptr, Input::Device);
   void insert(Desktop_ptr, bool);
-  CORBA::Boolean mapped() { Prague::MutexGuard guard(mutex); return !unmapped;}
-  Command_ptr move();
-  Command_ptr resize();
-  Command_ptr moveResize(Alignment, Alignment, CORBA::Short);
-  Command_ptr relayer();
-  Command_ptr map(CORBA::Boolean);
+  virtual CORBA::Boolean mapped() { Prague::MutexGuard guard(mutex); return !unmapped;}
+  virtual Command_ptr move();
+  virtual Command_ptr resize();
+  virtual Command_ptr moveResize(Alignment, Alignment, CORBA::Short);
+  virtual Command_ptr relayer();
+  virtual Command_ptr map(CORBA::Boolean);
 //   virtual void pick(PickTraversal_ptr);
-  void map();
-  void unmap();
+  virtual void map();
+  virtual void unmap();
  private:
   StageHandle_var handle;
   UnmappedStageHandle *unmapped;
@@ -90,6 +90,7 @@ class UnmappedStageHandle : implements(StageHandle)
     {}
   virtual Stage_ptr parent() { return Stage::_duplicate(stage);}
   virtual Graphic_ptr child() { return Graphic::_duplicate(c);}
+  virtual void remove() {}
   virtual Vertex position() { return p;}
   virtual void position(const Vertex &pp) { p = pp;}
   virtual Vertex size() { return s;}

@@ -51,9 +51,9 @@ MacroCommand_ptr CommandKitImpl::composite()
   return command->_this();
 }
 
-TelltaleConstraint_ptr CommandKitImpl::exclusive()
+TelltaleConstraint_ptr CommandKitImpl::exclusive(Telltale::Mask m)
 {
-  ExclusiveChoice *constraint = new ExclusiveChoice();
+  ExclusiveChoice *constraint = new ExclusiveChoice(m);
   constraint->_obj_is_ready(_boa());
 //   subjects.push_back(constraint);
   return constraint->_this();

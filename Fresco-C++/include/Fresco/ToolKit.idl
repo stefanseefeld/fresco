@@ -60,16 +60,16 @@ interface ToolKit : Kit
 
   Graphic      frame(in Graphic g, in Coord thickness, in FrameSpec spec, in boolean fill);
   Graphic      dynamic(in Graphic g, in Coord thickness,
-		       in Telltale::Flag mask, in FrameSpec s1, in FrameSpec s2,
+		       in Telltale::Mask mask, in FrameSpec s1, in FrameSpec s2,
 		       in boolean fill, in Telltale t);
   Graphic      framedTriangle(in Graphic g, in Coord thickness, in FrameSpec spec, in boolean fill, in Direction d);
   Graphic      dynamicTriangle(in Graphic g, in Coord thickness,
-			       in Telltale::Flag mask, in FrameSpec s1, in FrameSpec s2,
+			       in Telltale::Mask mask, in FrameSpec s1, in FrameSpec s2,
 			       in boolean fill, in Direction d, in Telltale t);
 
   Graphic      framedDiamond(in Graphic g, in Coord thickness, in FrameSpec spec, in boolean fill);
   Graphic      dynamicDiamond(in Graphic g, in Coord thickness,
-			      in Telltale::Flag mask, in FrameSpec s1, in FrameSpec s2,
+			      in Telltale::Mask mask, in FrameSpec s1, in FrameSpec s2,
 			      in boolean fill, in Telltale t);
 
 //   Graphic      filler(in Graphic g, in Color c);

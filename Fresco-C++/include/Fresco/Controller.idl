@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -45,6 +45,12 @@ interface Controller : Graphic, Telltale
 //. a strict hierarchy.  Using a hierarchy simplifies
 //. input handling and focus management.
 {
+  const Mask enabled = 0x1;
+  const Mask pressed = 0x2;
+  const Mask active  = 0x4;
+  const Mask toggled = 0x8;
+  const Mask running = 0x10;
+  const Mask stepping = 0x20;
   Controller parentController();
   Controller nextController();
   Controller prevController();

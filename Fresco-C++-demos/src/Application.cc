@@ -31,21 +31,18 @@ using namespace Prague;
 
 void Application::Mapper::execute(const CORBA::Any &)
 {
-  for (Application::list_t::iterator i = examples.begin(); i != examples.end(); i++)
-    if ((*i).toggle->test(Telltale::chosen))
-      {
-	CORBA::Any any;
-	(*i).map->execute(any);
-	return;
-      }
+  Choice::SelectionSeq *sel = choice->selections();
+  if (!sel->length()) return;
+  CORBA::Long s = (*sel)[sel->length() - 1];
+  delete sel;
+  CORBA::Any any;
+  demos[s]->execute(any);
 }
 
 class ExitCommand : implements(Command) 
 {
  public:
-  void execute(const CORBA::Any &) {
-    exit(0);
-  }
+  void execute(const CORBA::Any &) { exit(0);}
 };
 
 Application::Application(Server_ptr server)
@@ -60,15 +57,16 @@ Application::Application(Server_ptr server)
     ck(resolve_kit<CommandKit>(context, CommandKit_IntfRepoID)),
     ik(resolve_kit<ImageKit>(context, ImageKit_IntfRepoID)),
     vbox(lk->vbox()),
-    exclusive(ck->exclusive()),
-    mapper(new Mapper(examples))
+    choice(wk->toggleChoice()),
+    mapper(new Mapper(demos, choice))
 {
   char *berlin_root = getenv("BERLIN_ROOT");
   // This should be changed to throwing a InitException or something - Jonas
-  if (!berlin_root) {
-    cerr << "Please set environment variabled BERLIN_ROOT first" << endl;
-    exit(-1);
-  }
+  if (!berlin_root)
+    {
+      cerr << "Please set environment variabled BERLIN_ROOT first" << endl;
+      exit(-1);
+    }
 
   background.red = background.green = background.blue = 0.6; background.alpha = 1.;
   Raster_var raster = ik->create((string(berlin_root) + string("/etc/PNG/berlin-48.png")).c_str());
@@ -79,13 +77,11 @@ Application::Application(Server_ptr server)
   vbox->append(hbox);
 
   Graphic_var glyph1 = tk->chunk(Unicode::toCORBA(Unicode::String("close")));
-  done = lk->margin(glyph1, 20.);
+  done = lk->margin(Graphic_var(ttk->rgb(glyph1, 0., 0., 0.)), 20.);
 }
 
 void Application::append(Controller_ptr demo, const Unicode::String &name)
 {
-  Controller_var toggle = wk->toggle(Graphic_var(lk->fixedSize(Graphic_var(Graphic::_nil()), 50., 50.)));
-  exclusive->add(toggle);
   Graphic_var hbox = lk->hbox();
   Trigger_var button = wk->button(done, Command_var(Command::_nil()));
   hbox->append(Graphic_var(lk->hfil()));
@@ -94,25 +90,26 @@ void Application::append(Controller_ptr demo, const Unicode::String &name)
   Graphic_var vb = lk->vbox();
   vb->append(demo);
   vb->append(hbox);
-  Controller_var group = ttk->group(vb);
+  ToolKit::FrameSpec spec;
+  spec.bbrightness(0.5);
+  Controller_var group = ttk->group(Graphic_var(ttk->frame(vb, 20., spec, true)));
   group->appendController(demo);
   group->appendController(button);
   Window_var window = dk->transient(group);
   Command_var unmap = window->map(false);
   button->action(unmap);
-  examples.push_back(item(toggle, Command_var(window->map(true))));
-  hbox = lk->hbox();
-  Graphic_var space = lk->hspace(200.);
+
+  demos.push_back(window->map(true));
   Graphic_var label = tk->chunk(Unicode::toCORBA(name));
-  hbox->append(Graphic_var(lk->align(toggle, 0., 0.)));
-  hbox->append(space);
-  hbox->append(Graphic_var(ttk->rgb(label, 0., 0., 0.)));
-  vbox->append(hbox);
+  choice->append(Graphic_var(ttk->rgb(label, 0., 0., 0.)));
 }
 
 void Application::run()
 {
   vbox->append(Graphic_var(lk->vspace(200.)));
+  ToolKit::FrameSpec spec;
+  spec.dbrightness(0.5);
+  vbox->append(Graphic_var(ttk->frame(choice, 20., spec, false)));
   Graphic_var hbox = lk->hbox();
   hbox->append(Graphic_var(lk->hglue(200., 0., 10000.)));
   Graphic_var glyph1 = tk->chunk(Unicode::toCORBA(Unicode::String("run")));
@@ -130,11 +127,9 @@ void Application::run()
   vbox->append(hbox);
   Graphic_var margin = lk->margin(vbox, 200.);
   
-  ToolKit::FrameSpec spec;
   spec.bbrightness(1.0);
   Controller_var group = ttk->group(Graphic_var(ttk->frame(margin, 10., spec, true)));
-  for (list_t::iterator i = examples.begin(); i != examples.end(); i++)
-    group->appendController((*i).toggle);
+  group->appendController(choice);
   group->appendController(run);
   group->appendController(quit);
   Window_var window = dk->shell(group);

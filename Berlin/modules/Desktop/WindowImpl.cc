@@ -239,8 +239,9 @@ void WindowImpl::unmap()
   if (unmapped) return;
   unmapped = new UnmappedStageHandle(handle);
   unmapped->_obj_is_ready(_boa());
-  Stage_var stage = handle->parent();
-  stage->begin();
-  stage->remove(handle); 
-  stage->end();
+  handle->remove();
+//  Stage_var stage = handle->parent();
+//  stage->begin();
+//  stage->remove(handle); 
+//  stage->end();
 }

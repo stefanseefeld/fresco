@@ -751,6 +751,13 @@ StageHandleImpl::StageHandleImpl(StageImpl *pa, Graphic_ptr g, Tag t, const Vert
   cacheBBox();
 }
 
+void StageHandleImpl::remove()
+{
+  stage->begin();
+  stage->remove(StageHandle_var(_this()));
+  stage->end();
+}
+
 void StageHandleImpl::position(const Vertex &pp)
 {
   stage->begin();

@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
  * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
  * http://www.berlin-consortium.org
  *
@@ -32,18 +32,19 @@
 class TelltaleImpl : implements(Telltale), public SubjectImpl
 {
  public:
-  TelltaleImpl(TelltaleConstraint_ptr, unsigned long f = 0);
+  TelltaleImpl(TelltaleConstraint_ptr, unsigned long m = 0);
   virtual ~TelltaleImpl();
-  virtual void set(Telltale::Flag);
-  virtual void clear(Telltale::Flag);
-  virtual CORBA::Boolean test(Telltale::Flag);
-  virtual void modify(Telltale::Flag, CORBA::Boolean);
-  unsigned long state() { return flags;}
+  virtual void set(Telltale::Mask);
+  virtual void clear(Telltale::Mask);
+  virtual CORBA::Boolean test(Telltale::Mask);
+  virtual void modify(Telltale::Mask, CORBA::Boolean);
+  unsigned long state() { return mask;}
+
   virtual void constraint(TelltaleConstraint_ptr c);
   virtual TelltaleConstraint_ptr constraint();
 
  protected:
-  unsigned long flags;
+  unsigned long mask;
   TelltaleConstraint_var myConstraint;
   Prague::Mutex mutex;
 };
@@ -56,7 +57,7 @@ class TelltaleConstraintImpl : implements(TelltaleConstraint)
   virtual ~TelltaleConstraintImpl() {}
   void add(Telltale_ptr);
   void remove(Telltale_ptr);
-  virtual void trymodify(Telltale_ptr, Telltale::Flag, CORBA::Boolean) = 0;
+  virtual void trymodify(Telltale_ptr, Telltale::Mask, CORBA::Boolean) = 0;
  protected:
   tlist_t telltales;
   Prague::Mutex mutex;
@@ -65,17 +66,17 @@ class TelltaleConstraintImpl : implements(TelltaleConstraint)
 class ExclusiveChoice : virtual public TelltaleConstraintImpl
 {
 public:
-  ExclusiveChoice(Telltale::Flag = Telltale::chosen);
-  virtual void trymodify(Telltale_ptr, Telltale::Flag, CORBA::Boolean);  
+  ExclusiveChoice(Telltale::Mask);
+  virtual void trymodify(Telltale_ptr, Telltale::Mask, CORBA::Boolean);  
 private:
-  Telltale::Flag flag;
+  Telltale::Mask mask;
 };
 
 class SelectionRequired : virtual public TelltaleConstraintImpl
 {
 public:
   SelectionRequired();
-  virtual void trymodify(Telltale_ptr, Telltale::Flag, CORBA::Boolean);  
+  virtual void trymodify(Telltale_ptr, Telltale::Mask, CORBA::Boolean);  
 };
 
 #endif /* _TelltaleImpl_hh */

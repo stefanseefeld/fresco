@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -28,19 +28,19 @@ interface TelltaleConstraint;
 
 interface Telltale : Subject
 {
-  enum Flag {enabled, visible, active, chosen, running, stepping, choosable, toggle};
+  typedef unsigned long Mask;
   attribute TelltaleConstraint constraint;
-  void set(in Telltale::Flag f);
-  void clear(in Telltale::Flag f);
-  boolean test(in Telltale::Flag f);
-  void modify(in Telltale::Flag f, in boolean b);
+  void set(in Mask m);
+  void clear(in Mask m);
+  boolean test(in Mask m);
+  void modify(in Mask m, in boolean b);
 };
 
 interface TelltaleConstraint
 {
   void add(in Telltale t);
   void remove(in Telltale t);
-  void trymodify(in Telltale t, in Telltale::Flag f, in boolean b);
+  void trymodify(in Telltale t, in Telltale::Mask m, in boolean b);
 };
 
 #endif /* _Telltale_idl */

@@ -206,6 +206,7 @@ void Box::traverseWithAllocation(Traversal_ptr t, Region_ptr r)
     }
   for (CORBA::Long i = begin; i != end; i += incr)
     {
+      if (CORBA::is_nil(children[i].first)) continue;
       Vertex origin;
       result[i]->normalize(origin);
       tx->loadIdentity();
@@ -227,12 +228,14 @@ void Box::traverseWithoutAllocation(Traversal_ptr t)
   if (t->direction() == Traversal::up)
     for (clist_t::iterator i = children.begin(); i != children.end(); i++)
       {
+	if (CORBA::is_nil((*i).first)) continue;
 	t->traverseChild((*i).first, (*i).second, Region_var(Region::_nil()), Transform_var(Transform::_nil()));
 	if (!t->ok()) break;
       }
   else
     for (clist_t::reverse_iterator i = children.rbegin(); i != children.rend(); i++)
       {
+	if (CORBA::is_nil((*i).first)) continue;
 	t->traverseChild((*i).first, (*i).second, Region_var(Region::_nil()), Transform_var(Transform::_nil()));
 	if (!t->ok()) break;
       }

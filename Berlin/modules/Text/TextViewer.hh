@@ -27,6 +27,7 @@
 #include "Warsaw/View.hh"
 #include "Warsaw/TextKit.hh"
 #include "Berlin/GapBuffer.hh"
+#include "Berlin/MonoGraphic.hh"
 #include "Layout/Box.hh"
 #include <map>
 
@@ -44,9 +45,9 @@ declare_corba_ptr_type(DrawTraversal)
   // DK passed into it, and just uses a LayoutKit LayoutManager
   // by inheritence.
 
-class TextViewer : implements(View), public virtual HBox {
-
-    public:
+class TextViewer : implements(View), public HBox//MonoGraphic
+{
+  public:
 
     TextViewer(TextBuffer_ptr txt, TextKit_ptr tk, DrawingKit_ptr dk, Compositor *);
     void update(const CORBA::Any &);

@@ -24,43 +24,43 @@
 
 using namespace Prague;
 
-TelltaleImpl::TelltaleImpl(TelltaleConstraint_ptr c, unsigned long f)
-  : flags(f), myConstraint(c)
+TelltaleImpl::TelltaleImpl(TelltaleConstraint_ptr c, unsigned long m)
+  : mask(m), myConstraint(c)
 {}
 
 TelltaleImpl::~TelltaleImpl()
 {}
 
-void TelltaleImpl::set(Telltale::Flag f)
+void TelltaleImpl::set(Telltale::Mask m)
 {
   SectionLog section("TelltaleImpl::set");
-  if (!CORBA::is_nil(myConstraint)) myConstraint->trymodify(Telltale_var(_this()), f, true);
-  else modify(f, true);
+  if (!CORBA::is_nil(myConstraint)) myConstraint->trymodify(Telltale_var(_this()), m, true);
+  else modify(m, true);
 }
 
-void TelltaleImpl::clear(Telltale::Flag f)
+void TelltaleImpl::clear(Telltale::Mask m)
 {
   SectionLog section("TelltaleImpl::clear");
-  if (!CORBA::is_nil(myConstraint)) myConstraint->trymodify(Telltale_var(_this()), f, false);
-  else modify(f, false);
+  if (!CORBA::is_nil(myConstraint)) myConstraint->trymodify(Telltale_var(_this()), m, false);
+  else modify(m, false);
 }
 
-CORBA::Boolean TelltaleImpl::test(Telltale::Flag f)
+CORBA::Boolean TelltaleImpl::test(Telltale::Mask m)
 {
   MutexGuard guard(mutex);
-  return flags & (1 << f);
+  return (mask & m) == m;
 }
 
-void TelltaleImpl::modify(Telltale::Flag f, CORBA::Boolean on)
+void TelltaleImpl::modify(Telltale::Mask m, CORBA::Boolean on)
 {
-  unsigned long fs = 1 << f;
-  unsigned long nf = on ? flags | fs : flags & ~fs;
+  unsigned long nf = on ? mask | m : mask & ~m;
   {
     MutexGuard guard(mutex);
-    if (nf == flags) return;
-    else flags = nf;
+    if (nf == mask) return;
+    else mask = nf;
   }
   CORBA::Any any;
+  any <<= nf;
   notify(any);
 }
 
@@ -95,21 +95,21 @@ void TelltaleConstraintImpl::remove(Telltale_ptr t)
       }
 }
 
-ExclusiveChoice::ExclusiveChoice(Telltale::Flag f)
-  : flag(f)
+ExclusiveChoice::ExclusiveChoice(Telltale::Mask m)
+  : mask(m)
 {}
 
-void ExclusiveChoice::trymodify(Telltale_ptr t, Telltale::Flag f, CORBA::Boolean b)
+void ExclusiveChoice::trymodify(Telltale_ptr t, Telltale::Mask m, CORBA::Boolean b)
 {
   MutexGuard guard(mutex);
   for (tlist_t::iterator i = telltales.begin(); i != telltales.end(); i++)
-    if ((*i)->test(f)) (*i)->modify(f, false);
-  t->modify(f, true);
+    if ((*i)->test(m)) (*i)->modify(m, false);
+  t->modify(m, true);
 }
 
 SelectionRequired::SelectionRequired()
 {}
 
-void SelectionRequired::trymodify(Telltale_ptr t, Telltale::Flag f, CORBA::Boolean b)
+void SelectionRequired::trymodify(Telltale_ptr t, Telltale::Mask m, CORBA::Boolean b)
 {
 }

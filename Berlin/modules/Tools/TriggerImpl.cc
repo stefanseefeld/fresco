@@ -31,7 +31,7 @@ void TriggerImpl::release(PickTraversal_ptr traversal, const Input::Event &event
    * once we have real focus management the command should be executed
    * if we have focus and the Telltale::toggle is to be released... -stefan
    */
-  if (inside(traversal) && test(Telltale::toggle))
+  if (inside(traversal) && test(Controller::pressed))
     {
       CORBA::Any dummy;
       execute(dummy);
@@ -44,12 +44,12 @@ void TriggerImpl::keyPress(const Input::Event &event)
   const Input::Toggle &toggle = event[0].attr.kselection();
   if (toggle.number == 32) // space
     {
-      set(Telltale::toggle);
-      if (test(Telltale::toggle))
+      set(Controller::pressed);
+      if (test(Controller::pressed))
 	{
 	  CORBA::Any dummy;
 	  execute(dummy);
-	  clear(Telltale::toggle);
+	  clear(Controller::pressed);
 	}
     }
   else ControllerImpl::keyPress(event);

@@ -26,6 +26,7 @@
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/TransformImpl.hh"
 #include "Widget/Motif/Slider.hh"
+#include "Berlin/Logger.hh"
 
 using namespace Motif;
 
@@ -54,11 +55,9 @@ Slider::Slider(BoundedValue_ptr v, Axis a, const Requisition &r)
     redirect(new SObserver(this)),
     _drag(new SDrag(v, a)),
     range(BoundedValue::_duplicate(v)),
+    offset(v->value()),
     axis(a)
 {
-  BoundedValue::Settings settings = v->getSettings();
-  offset.lower = settings.lvalue/(settings.upper - settings.lower);
-  offset.upper = settings.uvalue/(settings.upper - settings.lower);
   v->attach(Observer_var(redirect->_this()));
 }
 
@@ -71,7 +70,7 @@ void Slider::init(Controller_ptr t)
 
 void Slider::update(const CORBA::Any &any)
 {
-  any >>= value;
+  any >>= offset;
   needRedraw();
 }
 
@@ -100,15 +99,15 @@ void Slider::allocate(Tag, const Allocation::Info &info)
     {
       Coord lower = allocation->lower.x;
       Coord scale = allocation->upper.x - allocation->lower.x;
-      allocation->lower.x = lower + scale*offset.lower;
-      allocation->upper.x = lower + scale*offset.upper;
+      allocation->lower.x = lower + scale*offset;
+      allocation->upper.x = lower + scale*offset + 1000.;
     }
   else
     {
       Coord lower = allocation->lower.y;
       Coord scale = allocation->upper.y - allocation->lower.y;
-      allocation->lower.y = lower + scale*offset.lower;
-      allocation->upper.y = lower + scale*offset.upper;
+      allocation->lower.y = lower + scale*offset;
+      allocation->upper.y = lower + scale*offset + 1000.;
     }
   allocation->lower.z = allocation->upper.z = 0.;
   allocation->normalize(info.transformation);
@@ -124,16 +123,16 @@ void Slider::traverseThumb(Traversal_ptr traversal)
     {
       Coord lower = allocation->lower.x;
       Coord scale = allocation->upper.x - allocation->lower.x;
-      allocation->lower.x = lower + scale*offset.lower;
-      allocation->upper.x = lower + scale*offset.upper;
+      allocation->lower.x = lower + scale*offset;
+      allocation->upper.x = lower + scale*offset + 1000.;
       allocation->lower.z = allocation->upper.z = 0.;
     }
   else if (axis == yaxis)
     {
       Coord lower = allocation->lower.y;
       Coord scale = allocation->upper.y - allocation->lower.y;
-      allocation->lower.y = lower + scale*offset.lower;
-      allocation->upper.y = lower + scale*offset.upper;
+      allocation->lower.y = lower + scale*offset;
+      allocation->upper.y = lower + scale*offset + 1000.;
     }
   allocation->lower.z = allocation->upper.z = 0.;
   allocation->normalize(Transform_var(transformation->_this()));

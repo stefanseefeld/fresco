@@ -29,17 +29,16 @@
 #include "Warsaw/Command.hh"
 #include "Widget/Motif/WidgetKit.hh"
 #include "Widget/Motif/Gauge.hh"
-// #include "Widget/Motif/Slider.hh"
+#include "Widget/Motif/Slider.hh"
 #include "Widget/Motif/Panner.hh"
 #include "Widget/Motif/Scrollbar.hh"
-
-using namespace Motif;
-
-Motif::WidgetKit::WidgetKit(KitFactory *f, const PropertySeq &p) : KitImpl(f, p) {}
-Motif::WidgetKit::~WidgetKit() {}
+#include "Widget/Motif/Choice.hh"
 
 namespace Motif
 {
+
+WidgetKit::WidgetKit(KitFactory *f, const PropertySeq &p) : KitImpl(f, p) {}
+WidgetKit::~WidgetKit() {}
 
 template <class Observer>
 class Adapter0 : public WidgetKit::CommandImpl
@@ -65,9 +64,7 @@ private:
 //   Method method;
 // };
 
-};
-
-void Motif::WidgetKit::bind(ServerContext_ptr context)
+void WidgetKit::bind(ServerContext_ptr context)
 {
   KitImpl::bind(context);
   PropertySeq props;
@@ -77,29 +74,29 @@ void Motif::WidgetKit::bind(ServerContext_ptr context)
   tool = resolve_kit<ToolKit>(context, interface(ToolKit), props);
 }
 
-Trigger_ptr Motif::WidgetKit::button(Graphic_ptr g, Command_ptr c)
+Trigger_ptr WidgetKit::button(Graphic_ptr g, Command_ptr c)
 {
   Trigger_var trigger = tool->button(g, c);
   ToolKit::FrameSpec s1, s2;
   s1.abrightness(0.5);
   s2.bbrightness(0.5);
-  Graphic_var frame = tool->dynamic(g, 20., Telltale::toggle, s1, s2, true, trigger);
+  Graphic_var frame = tool->dynamic(g, 20., Controller::pressed, s1, s2, true, trigger);
   trigger->body(frame);
   return trigger._retn();
 }
 
-Controller_ptr Motif::WidgetKit::toggle(Graphic_ptr g)
+Controller_ptr WidgetKit::toggle(Graphic_ptr g)
 {
   Controller_var toggle = tool->toggle(Graphic_var(Graphic::_nil()));
   ToolKit::FrameSpec s1, s2;
   s1.abrightness(0.5);
   s2.bbrightness(0.5);
-  Graphic_var frame = tool->dynamic(g, 20., Telltale::chosen, s1, s2, true, toggle);
+  Graphic_var frame = tool->dynamic(g, 20., Controller::toggled, s1, s2, true, toggle);
   toggle->body(frame);
   return toggle._retn();
 }
 
-Graphic_ptr Motif::WidgetKit::gauge(BoundedValue_ptr value)
+Graphic_ptr WidgetKit::gauge(BoundedValue_ptr value)
 {
   Color gray = {0.5, 0.5, 0.5, 1.0};
   Gauge *g = new Gauge(value, gray);
@@ -114,38 +111,53 @@ Graphic_ptr Motif::WidgetKit::gauge(BoundedValue_ptr value)
   return frame._retn();
 }
 
-Controller_ptr Motif::WidgetKit::slider(BoundedValue_ptr value)
+Controller_ptr WidgetKit::slider(BoundedValue_ptr value, Axis axis)
 {
-//   Graphic::Requisition req;
-//   req.x.defined = true;
-//   req.x.minimum = 100.;
-//   req.x.natural = 100.;
-//   req.x.maximum = 100.;
-//   req.x.align = 0.;
-//   req.y.defined = true;
-//   req.y.minimum = 100.;
-//   req.y.natural = 100.;
-//   req.y.maximum = 100.;
-//   req.y.align = 0;
-//   Controller_var thumb;// = dragger(Graphic_var(outset(lk->glueRequisition(req), color, true)));
-//   Slider1D *s = new Slider1D(xaxis);
-//   s->_obj_is_ready(_boa());
-//   s->init(thumb, value);
-//   req.x.minimum = 100.;
-//   req.x.natural = 100.;
-//   req.x.maximum = 100.;
-//   req.x.align = 0.;
-//   req.y.minimum = 12.;
-//   req.y.natural = 12.;
-//   req.y.maximum = 12.;
-//   req.y.align = 0;
-// //   s->body(Graphic_var(tool->inset(Graphic_var(layout->glueRequisition(req)), color, true)));
-//   graphics.push_back(s);
-//   return s->_this();
-  return Controller::_nil();
+  ToolKit::FrameSpec spec;
+  /*
+   * the bar
+   */
+  Graphic::Requirement fixed;
+  Graphic::Requirement flexible;
+  flexible.defined = true;
+  flexible.minimum = 2000.;
+  flexible.natural = 2000.;
+  flexible.maximum = 2000.;
+  flexible.align = 0.;
+  fixed.defined = true;
+  fixed.minimum = 120.;
+  fixed.natural = 120.;
+  fixed.maximum = 120.;
+  fixed.align = 0;
+  Graphic::Requisition req;
+  if (axis == xaxis) req.x = flexible, req.y = fixed;
+  else               req.x = fixed, req.y = flexible;
+  Slider *slider = new Slider(value, axis, req);
+  slider->_obj_is_ready(_boa());
+  /*
+   * the thumb
+   */
+  Graphic_var box = axis == xaxis ? layout->hbox() : layout->vbox();
+  spec.bbrightness(0.5);
+  Graphic_var quad = layout->fixedSize(Graphic_var(Graphic::_nil()), 80., 80.);
+  box->append(Graphic_var(tool->frame(quad, 20., spec, true)));
+  box->append(Graphic_var(tool->frame(quad, 20., spec, true)));
+  Controller_var thumb = tool->dragger(box, Command_var(slider->drag()));
+  slider->init(thumb);
+  /*
+   * now put it into an inset
+   */
+  spec.abrightness(0.5);
+  Graphic_var inset = tool->frame(box, 20., spec, false);
+  Controller_var root = tool->group(inset);
+  /*
+   * now wire up the control structure
+   */
+  root->appendController(Controller_var(slider->_this()));
+  return root._retn();
 }
 
-Controller_ptr Motif::WidgetKit::panner(BoundedRange_ptr x, BoundedRange_ptr y)
+Controller_ptr WidgetKit::panner(BoundedRange_ptr x, BoundedRange_ptr y)
 {
   Panner *panner = new Panner(x, y);
   panner->_obj_is_ready(_boa());
@@ -161,7 +173,7 @@ Controller_ptr Motif::WidgetKit::panner(BoundedRange_ptr x, BoundedRange_ptr y)
   return panner->_this();
 }
 
-Controller_ptr Motif::WidgetKit::scrollbar(BoundedRange_ptr x, Axis a)
+Controller_ptr WidgetKit::scrollbar(BoundedRange_ptr x, Axis a)
 {
   ToolKit::FrameSpec spec;
   /*
@@ -202,7 +214,7 @@ Controller_ptr Motif::WidgetKit::scrollbar(BoundedRange_ptr x, Axis a)
   commands.push_back(backward);
   Controller_var lower = tool->stepper(Graphic_var(Graphic::_nil()), Command_var(backward->_this()));
   outset = layout->fixedSize(Graphic_var(tool->dynamicTriangle(Graphic_var(Graphic::_nil()), 20.,
-							       Telltale::toggle, in, out, true,
+							       Controller::pressed, in, out, true,
 							       a == xaxis ? ToolKit::left : ToolKit::up, lower)), 120., 120.);
   lower->body(outset);
 
@@ -211,7 +223,7 @@ Controller_ptr Motif::WidgetKit::scrollbar(BoundedRange_ptr x, Axis a)
   commands.push_back(forward);
   Controller_var upper = tool->stepper(Graphic_var(Graphic::_nil()), Command_var(forward->_this()));
   outset = layout->fixedSize(Graphic_var(tool->dynamicTriangle(Graphic_var(Graphic::_nil()), 20.,
-							       Telltale::toggle, in, out, true,
+							       Controller::pressed, in, out, true,
 							       a == xaxis ? ToolKit::right : ToolKit::down, upper)), 120., 120.);
   upper->body(outset);
 
@@ -233,6 +245,26 @@ Controller_ptr Motif::WidgetKit::scrollbar(BoundedRange_ptr x, Axis a)
   root->appendController(upper);
   return root._retn();
 }
+
+Choice_ptr WidgetKit::toggleChoice()
+{
+  Choice *choice = new ToggleChoice(Choice::exclusive, command, layout, tool, WidgetKit_var(_this()));
+  choice->_obj_is_ready(_boa());
+  choice->body(Graphic_var(layout->vbox()));
+  graphics.push_back(choice);
+  return choice->_this();
+}
+
+Choice_ptr WidgetKit::checkboxChoice()
+{
+  Choice *choice = new CheckboxChoice(Choice::exclusive, command, layout, tool, WidgetKit_var(_this()));
+  choice->_obj_is_ready(_boa());
+  choice->body(Graphic_var(layout->vbox()));
+  graphics.push_back(choice);
+  return choice->_this();
+}
+
+};
 
 extern "C" KitFactory *load()
 {

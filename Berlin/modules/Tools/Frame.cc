@@ -127,7 +127,7 @@ void Frame::allocateSpan(const Requirement &r, Region::Allotment &a, Coord margi
   a.end -= margin;
 }
 
-DynamicFrame::DynamicFrame(Coord t, Telltale::Flag m, Frame::Renderer *r1, Frame::Renderer *r2)
+DynamicFrame::DynamicFrame(Coord t, Telltale::Mask m, Frame::Renderer *r1, Frame::Renderer *r2)
   : Frame(t, r2), renderer1(r1), renderer2(r2), on(true), mask(m)
 {
 }

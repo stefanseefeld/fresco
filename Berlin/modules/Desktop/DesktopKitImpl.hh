@@ -43,6 +43,7 @@ class DesktopKitImpl : implements(DesktopKit), public KitImpl
   virtual Desktop_ptr desk();
   virtual Window_ptr shell(Controller_ptr);
   virtual Window_ptr transient(Controller_ptr);
+  virtual Window_ptr pulldown(Controller_ptr);
  private:
   Desktop_var   desktop;
   LayoutKit_var layout;

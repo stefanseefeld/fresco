@@ -47,9 +47,11 @@ class WidgetKit : implements(WidgetKit), public KitImpl
   Trigger_ptr      button(Graphic_ptr, Command_ptr);
   Controller_ptr   toggle(Graphic_ptr);
   Graphic_ptr      gauge(BoundedValue_ptr);
-  Controller_ptr   slider(BoundedValue_ptr);
+  Controller_ptr   slider(BoundedValue_ptr, Axis);
   Controller_ptr   panner(BoundedRange_ptr, BoundedRange_ptr);
   Controller_ptr   scrollbar(BoundedRange_ptr, Axis);
+  Choice_ptr       toggleChoice();
+  Choice_ptr       checkboxChoice();
  private:
   LayoutKit_var layout;
   CommandKit_var   command;

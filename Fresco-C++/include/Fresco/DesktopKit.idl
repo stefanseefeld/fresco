@@ -48,7 +48,7 @@ interface DesktopKit : Kit
   Desktop desk();
   Window  shell(in Controller g);
   Window  transient(in Controller g);
-//   Controller menu(in Controller g);
+  Window  pulldown(in Controller g);
 };
 
 #endif /* _DesktopKit_idl */

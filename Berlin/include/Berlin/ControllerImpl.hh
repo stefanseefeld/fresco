@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -34,7 +34,6 @@
 
 class ControllerImpl : implements(Controller), public MonoGraphic, public SubjectImpl
 {
-//   typedef vector<Controller_var> clist_t;
  public:
   ControllerImpl(bool);
   virtual void traverse(Traversal_ptr traversal) { traversal->visit(Graphic_var(_this()));}
@@ -64,10 +63,10 @@ class ControllerImpl : implements(Controller), public MonoGraphic, public Subjec
   virtual CORBA::Boolean handlePositional(PickTraversal_ptr, const Input::Event &);
   virtual CORBA::Boolean handleNonPositional(const Input::Event &);
 
-  virtual void set(Telltale::Flag);
-  virtual void clear(Telltale::Flag);
-  virtual CORBA::Boolean test(Telltale::Flag);
-  virtual void modify(Telltale::Flag, CORBA::Boolean);
+  virtual void set(Telltale::Mask);
+  virtual void clear(Telltale::Mask);
+  virtual CORBA::Boolean test(Telltale::Mask);
+  virtual void modify(Telltale::Mask, CORBA::Boolean);
   virtual void constraint(TelltaleConstraint_ptr c);
   virtual TelltaleConstraint_ptr constraint();
  protected:
@@ -92,7 +91,6 @@ class ControllerImpl : implements(Controller), public MonoGraphic, public Subjec
   Controller_var prev;
   Controller_var first;
   Controller_var last;
-//   clist_t controllers;
   unsigned long telltale;
   unsigned long focus;
   unsigned long grabs;

@@ -1,7 +1,7 @@
 # $Id$
 #
 # This source file is a part of the Berlin Project.
-# Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+# Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
 # http://www.berlin-consortium.org
 #
 # This library is free software; you can redistribute it and/or
@@ -32,7 +32,7 @@ CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw $(ORBCPPFLAGS)
 LDFLAGS	= -shared -rdynamic -L$(lpath) -L$(mpath)
 LIBS	= -lPrague -lBerlin
 
-SRC	= WindowImpl.cc DesktopKitImpl.cc
+SRC	= WindowImpl.cc Pulldown.cc DesktopKitImpl.cc
 
 TARGET	= $(mpath)/libDesktop.so
 

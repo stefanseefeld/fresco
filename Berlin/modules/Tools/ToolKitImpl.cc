@@ -125,7 +125,7 @@ Graphic_ptr ToolKitImpl::frame(Graphic_ptr g, Coord thickness, const FrameSpec &
   return f->_this();
 }
 
-Graphic_ptr ToolKitImpl::dynamic(Graphic_ptr g, Coord thickness, Telltale::Flag mask, const FrameSpec &s1, const FrameSpec &s2, CORBA::Boolean fill, Telltale_ptr telltale)
+Graphic_ptr ToolKitImpl::dynamic(Graphic_ptr g, Coord thickness, Telltale::Mask mask, const FrameSpec &s1, const FrameSpec &s2, CORBA::Boolean fill, Telltale_ptr telltale)
 {
   Frame::Renderer *renderer1 = 0;
   switch (s1._d())
@@ -174,7 +174,7 @@ Graphic_ptr ToolKitImpl::framedTriangle(Graphic_ptr g, Coord thickness, const Fr
   return f->_this();
 }
 
-Graphic_ptr ToolKitImpl::dynamicTriangle(Graphic_ptr g, Coord thickness, Telltale::Flag mask, const FrameSpec &s1, const FrameSpec &s2, CORBA::Boolean fill, Direction d, Telltale_ptr telltale)
+Graphic_ptr ToolKitImpl::dynamicTriangle(Graphic_ptr g, Coord thickness, Telltale::Mask mask, const FrameSpec &s1, const FrameSpec &s2, CORBA::Boolean fill, Direction d, Telltale_ptr telltale)
 {
   Frame::Renderer *renderer1 = 0;
   switch (s1._d())
@@ -223,7 +223,7 @@ Graphic_ptr ToolKitImpl::framedDiamond(Graphic_ptr g, Coord thickness, const Fra
   return f->_this();
 }
 
-Graphic_ptr ToolKitImpl::dynamicDiamond(Graphic_ptr g, Coord thickness, Telltale::Flag mask, const FrameSpec &s1, const FrameSpec &s2, CORBA::Boolean fill, Telltale_ptr telltale)
+Graphic_ptr ToolKitImpl::dynamicDiamond(Graphic_ptr g, Coord thickness, Telltale::Mask mask, const FrameSpec &s1, const FrameSpec &s2, CORBA::Boolean fill, Telltale_ptr telltale)
 {
   Frame::Renderer *renderer1 = 0;
   switch (s1._d())

@@ -28,7 +28,6 @@
 #include "Command.idl"
 #include "Telltale.idl"
 
-interface TelltaleConstraint;
 interface BoundedValue;
 interface BoundedRange;
 interface TextBuffer;
@@ -44,7 +43,7 @@ interface CommandKit : Kit
 {
   Command log(in string t);
   MacroCommand composite();
-  TelltaleConstraint exclusive();
+  TelltaleConstraint exclusive(in Telltale::Mask m);
   TelltaleConstraint selectionRequired();
   Telltale     normalTelltale();
   Telltale     constrainedTelltale(in TelltaleConstraint c);

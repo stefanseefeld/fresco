@@ -32,8 +32,7 @@ CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw $(ORBCPPFLAGS)
 LDFLAGS	= -shared -rdynamic -L$(lpath)
 LIBS	= -lPrague -lBerlin
 
-#Slider.cc 
-SRC	= Gauge.cc Panner.cc Scrollbar.cc WidgetKit.cc
+SRC	= Gauge.cc Panner.cc Scrollbar.cc Slider.cc Choice.cc WidgetKit.cc
 
 TARGET	= $(mpath)/libMotif.so
 

@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -90,6 +90,7 @@ class StageHandleImpl : implements(StageHandle)
   StageHandleImpl(StageImpl *, Graphic_ptr, Tag, const Vertex &, const Vertex &, Stage::Index);
   virtual Stage_ptr parent() { return stage->_this();}
   virtual Graphic_ptr child() { return Graphic::_duplicate(c);}
+  virtual void remove();
   virtual Vertex position() { Prague::MutexGuard guard(mutex); return p;}
   virtual void position(const Vertex &);
   virtual Vertex size() { Prague::MutexGuard guard(mutex); return s;}

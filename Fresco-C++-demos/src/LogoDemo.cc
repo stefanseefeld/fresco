@@ -107,9 +107,9 @@ LogoDemo::LogoDemo(Application *a)
   
   Graphic_var box = layout->vbox();
   box->append(Graphic_var(layout->align(group, 0., 0.)));
-  box->append(Graphic_var(makeController(bv1, green)));
-  box->append(Graphic_var(makeController(bv2, blue)));
-  box->append(Graphic_var(makeController(bv3, red)));
+  box->append(Graphic_var(widget->slider(bv1, xaxis)));
+  box->append(Graphic_var(widget->slider(bv2, xaxis)));
+  box->append(Graphic_var(widget->slider(bv3, xaxis)));
   ToolKit::FrameSpec spec;
   spec.bbrightness(0.5);
   Graphic_var foo = tool->frame(box, 10., spec, true);

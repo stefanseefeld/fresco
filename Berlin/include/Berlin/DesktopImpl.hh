@@ -47,8 +47,6 @@ class DesktopImpl : implements(Desktop), public ControllerImpl
     {
       return stage->insert(g, p, s, l);
     }
-  void remove(StageHandle_ptr h) { stage->remove(h);}
-
   void init(Stage_ptr);
  private:
   Stage_var stage;

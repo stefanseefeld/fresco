@@ -43,7 +43,8 @@ STATINT	= ClientContext.idl Server.idl Kit.idl Naming.idl \
 	  Command.idl CommandKit.idl \
 	  Subject.idl Controller.idl View.idl \
 	  Telltale.idl BoundedValue.idl BoundedRange.idl TextBuffer.idl StreamBuffer.idl \
-	  Trigger.idl ToolKit.idl WidgetKit.idl \
+	  Trigger.idl ToolKit.idl \
+	  Choice.idl  WidgetKit.idl \
 	  Metrics.idl TextKit.idl \
 	  Raster.idl ImageKit.idl \
 	  Desktop.idl Window.idl DesktopKit.idl

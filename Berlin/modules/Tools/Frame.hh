@@ -57,7 +57,7 @@ protected:
 class DynamicFrame : implements(View), public Frame
 {
  public:
-  DynamicFrame(Coord t, Telltale::Flag, Frame::Renderer *, Frame::Renderer *);
+  DynamicFrame(Coord t, Telltale::Mask, Frame::Renderer *, Frame::Renderer *);
   virtual ~DynamicFrame();
   virtual void attach(Telltale_ptr);
   virtual void update(const CORBA::Any &);
@@ -65,7 +65,7 @@ class DynamicFrame : implements(View), public Frame
   Telltale_var telltale;
   Frame::Renderer *renderer1, *renderer2;
   bool on;
-  Telltale::Flag mask;
+  Telltale::Mask mask;
 };
 
 class InvisibleFrame : public Frame::Renderer

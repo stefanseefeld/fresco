@@ -38,7 +38,7 @@ class CommandKitImpl : implements(CommandKit), public KitImpl
   virtual ~CommandKitImpl();
   Command_ptr log(const char *);
   MacroCommand_ptr composite();
-  TelltaleConstraint_ptr exclusive();
+  TelltaleConstraint_ptr exclusive(Telltale::Mask);
   TelltaleConstraint_ptr selectionRequired();
   Telltale_ptr     constrainedTelltale(TelltaleConstraint_ptr);
   Telltale_ptr     normalTelltale();

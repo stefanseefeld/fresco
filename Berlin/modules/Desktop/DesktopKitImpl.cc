@@ -25,6 +25,7 @@
 #include <Warsaw/resolve.hh>
 #include "Desktop/DesktopKitImpl.hh"
 #include "Desktop/WindowImpl.hh"
+#include "Desktop/Pulldown.hh"
 #include "Berlin/Logger.hh"
 
 DesktopKitImpl::DesktopKitImpl(KitFactory *f, const PropertySeq &p) : KitImpl(f, p) {}
@@ -201,6 +202,23 @@ Window_ptr DesktopKitImpl::transient(Controller_ptr g)
   windows.push_back(window);
   desktop->appendController(Controller_var(window->_this()));
   return window->_this();
+}
+
+Window_ptr DesktopKitImpl::pulldown(Controller_ptr g)
+{
+  SectionLog section("DesktopKitImpl::pulldown");
+  Pulldown *menu = new Pulldown;
+  menu->_obj_is_ready(_boa());
+  ToolKit::FrameSpec out;
+  out.bbrightness(0.5);
+
+  Graphic_var outset = tool->frame(g, 20., out, true);
+  menu->body(outset);
+  menu->appendController(g);
+  menu->insert(desktop, false);
+  windows.push_back(menu);
+  desktop->appendController(Controller_var(menu->_this()));
+  return menu->_this();
 }
 
 extern "C" KitFactory *load()

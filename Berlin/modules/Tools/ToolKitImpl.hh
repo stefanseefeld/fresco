@@ -40,11 +40,11 @@ class ToolKitImpl : implements(ToolKit), public KitImpl
   Graphic_ptr      alpha(Graphic_ptr, Coord);
 
   Graphic_ptr      frame(Graphic_ptr, Coord, const FrameSpec &, CORBA::Boolean);
-  Graphic_ptr      dynamic(Graphic_ptr, Coord, Telltale::Flag, const FrameSpec &, const FrameSpec &, CORBA::Boolean, Telltale_ptr);
+  Graphic_ptr      dynamic(Graphic_ptr, Coord, Telltale::Mask, const FrameSpec &, const FrameSpec &, CORBA::Boolean, Telltale_ptr);
   Graphic_ptr      framedTriangle(Graphic_ptr, Coord, const FrameSpec &, CORBA::Boolean, Direction d);
-  Graphic_ptr      dynamicTriangle(Graphic_ptr, Coord, Telltale::Flag, const FrameSpec &, const FrameSpec &, CORBA::Boolean, Direction d, Telltale_ptr);
+  Graphic_ptr      dynamicTriangle(Graphic_ptr, Coord, Telltale::Mask, const FrameSpec &, const FrameSpec &, CORBA::Boolean, Direction d, Telltale_ptr);
   Graphic_ptr      framedDiamond(Graphic_ptr, Coord, const FrameSpec &, CORBA::Boolean);
-  Graphic_ptr      dynamicDiamond(Graphic_ptr, Coord, Telltale::Flag, const FrameSpec &, const FrameSpec &, CORBA::Boolean, Telltale_ptr);
+  Graphic_ptr      dynamicDiamond(Graphic_ptr, Coord, Telltale::Mask, const FrameSpec &, const FrameSpec &, CORBA::Boolean, Telltale_ptr);
 //   Graphic_ptr      filler(Graphic_ptr, const Color &);
 //   Graphic_ptr      indicator(Graphic_ptr, const Color &, Telltale_ptr);
   Trigger_ptr      button(Graphic_ptr, Command_ptr);

@@ -35,13 +35,14 @@ CXXFLAGS+= $(SOFLAGS)# $(ORBOPTFLAGS)
 LDFLAGS	= -shared -rdynamic
 LIBS	+= $(ORBLIBS)
 
-DYNINT	= Types.idl TextBuffer.idl BoundedValue.idl BoundedRange.idl 
+DYNINT	= Types.idl TextBuffer.idl BoundedValue.idl BoundedRange.idl Choice.idl
 STATINT	= ClientContext.idl Server.idl Kit.idl Naming.idl \
 	  Transform.idl Region.idl Allocation.idl Traversal.idl PickTraversal.idl DrawTraversal.idl Graphic.idl Screen.idl \
 	  Input.idl Focus.idl Subject.idl Controller.idl View.idl \
 	  DrawingKit.idl \
 	  Grid.idl Viewport.idl Stage.idl LayoutKit.idl \
-	  Telltale.idl StreamBuffer.idl Trigger.idl ToolKit.idl WidgetKit.idl \
+	  Telltale.idl StreamBuffer.idl Trigger.idl ToolKit.idl \
+          WidgetKit.idl \
 	  Raster.idl ImageKit.idl \
 	  Figure.idl Image.idl FigureKit.idl \
 	  Command.idl CommandKit.idl \

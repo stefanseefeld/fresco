@@ -37,27 +37,22 @@
 #include <Warsaw/ClientContextImpl.hh>
 #include <Prague/Sys/Signal.hh>
 #include <Warsaw/Unicode.hh>
+#include <Warsaw/Choice.hh>
 #include <unistd.h>
 #include <iostream>
 #include <vector>
 
 class Application
 {
-  struct item
-  {
-    item(Controller_ptr c, Command_ptr m)
-      : toggle(Controller::_duplicate(c)), map(Command::_duplicate(m)) {}
-    Controller_var toggle;
-    Command_var    map;
-  };
-  typedef vector<item> list_t;
+  typedef vector<Command_var> demolist_t;
   class Mapper : implements(Command)
   {
   public:
-    Mapper(Application::list_t &e) : examples(e) {}
+    Mapper(Application::demolist_t &d, Choice_ptr c) : demos(d), choice(Choice::_duplicate(c)) {}
     virtual void execute(const CORBA::Any &);
   private:
-    Application::list_t &examples;
+    Application::demolist_t &demos;
+    Choice_var choice;
   };
   friend class Mapper;
 public:
@@ -85,11 +80,10 @@ private:
   CommandKit_var ck;
   ImageKit_var ik;
   Graphic_var vbox;
-  TelltaleConstraint_var exclusive;
-  list_t examples;
+  Choice_var  choice;
+  demolist_t demos;
   Impl_var<Mapper> mapper;
   Color background;
-  Color foreground;
   Graphic_var done;
 };
 

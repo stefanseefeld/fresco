@@ -31,8 +31,8 @@ void Toggle::press(PickTraversal_ptr traversal, const Input::Event &event)
 {
   SectionLog section("Toggle::press");
   ControllerImpl::press(traversal, event);
-  if (test(Telltale::chosen)) clear(Telltale::chosen);
-  else set(Telltale::chosen);
+  if (test(Controller::toggled)) clear(Controller::toggled);
+  else set(Controller::toggled);
 }
 
 void Toggle::release(PickTraversal_ptr traversal, const Input::Event &event)
@@ -47,8 +47,8 @@ void Toggle::keyPress(const Input::Event &event)
   const Input::Toggle &toggle = event[0].attr.kselection();
   if (toggle.number == 32) // space
     {
-      if (test(Telltale::chosen)) clear(Telltale::chosen);
-      else set(Telltale::chosen);
+      if (test(Controller::toggled)) clear(Controller::toggled);
+      else set(Controller::toggled);
     }
   else ControllerImpl::keyPress(event);
 }
