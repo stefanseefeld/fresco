@@ -42,22 +42,19 @@ GlyphImpl::~GlyphImpl() {}
 
 Fresco::Raster_ptr GlyphImpl::bitmap(short unsigned int xdpi, short unsigned int ydpi)
 {
-  RasterImpl *raster = new RasterImpl();
-  activate(raster);
-
   if (FT_Set_Char_Size(my_face, 0, my_size*64, xdpi, ydpi) != 0)
-    std::cerr << "set char size failed." << std::endl;
+    std::cerr << "FontKit bitmap: set char size failed." << std::endl;
   FT_Set_Transform(my_face, &my_tr, 0);
 
   if (FT_Load_Glyph(my_face, FT_Get_Char_Index(my_face, my_uc),
 		    FT_LOAD_DEFAULT) != 0)
-      std::cerr << "load glyph failed." << std::endl;
+      std::cerr << "FontKit bitmap: load glyph failed." << std::endl;
 
   FT_Glyph glyph;
   if (FT_Get_Glyph(my_face->glyph, &glyph) != 0)
-    std::cerr << "get glyph failed." << std::endl;
+    std::cerr << "FontKit bitmap: get glyph failed." << std::endl;
   if (FT_Glyph_To_Bitmap(&glyph, ft_render_mode_normal, 0, 1) != 0)
-    std::cerr << "glyph to bitmap failed." << std::endl;
+    std::cerr << "FontKit bitmap: glyph to bitmap failed." << std::endl;
   FT_BitmapGlyph glyph_bitmap = (FT_BitmapGlyph)glyph;
 
   unsigned char *buffer = glyph_bitmap->bitmap.buffer;
@@ -111,6 +108,15 @@ Fresco::Raster_ptr GlyphImpl::bitmap(short unsigned int xdpi, short unsigned int
   FT_Done_Glyph(glyph);
   FT_Set_Transform(my_face, 0, 0);
 
+  // XXX we should be using the RasterKit.
+  Fresco::Raster::Info rinfo;
+  rinfo.colortype = 6; // PNG_COLOR_TYPE_RGB_ALPHA (sigh).
+  rinfo.depth = 8;
+  rinfo.width = width;
+  rinfo.height = height;
+  RasterImpl *raster = new RasterImpl(rinfo);
+  activate(raster);
+
   Fresco::Raster::Index lower; lower.x = 0; lower.y = 0;
   Fresco::Raster::Index upper; upper.x = width; upper.y = height;
   raster->load_pixels(lower, upper, pixels);
@@ -123,8 +129,8 @@ Fresco::FontShape *GlyphImpl::decompose()
   FT_Set_Char_Size(my_face, 0, my_size*64, 0, 0);
   FT_Set_Transform(my_face, &my_tr, 0);
   if (FT_Load_Glyph(my_face, FT_Get_Char_Index(my_face, my_uc),
-		    FT_LOAD_DEFAULT & FT_LOAD_IGNORE_TRANSFORM) != 0)
-      std::cerr << "load glyph failed." << std::endl;
+		    FT_LOAD_DEFAULT) != 0)
+      std::cerr << "FontKit decompose: load glyph failed." << std::endl;
   Fresco::FontShape *f = new Fresco::FontShape(); f->length(0);
   // use FT_Outline_Decompose
   FT_Set_Transform(my_face, 0, 0);

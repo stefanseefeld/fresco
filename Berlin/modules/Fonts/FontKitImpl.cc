@@ -84,8 +84,19 @@ private:
 FontKitImpl::FontIterator::FontIterator(FontKitImpl *fk)
   : my_fk(fk)
 {
-  Prague::Path path = RCManager::get_path("fontpath");
+  Prague::Path path = RCManager::get_path("unifontpath");
+  std::string file = path.lookup_file("unifont.bdf");
+  FT_Face my_face;
+  if (FT_New_Face(*(my_fk->get_ftlibrary()), file.c_str(), 0, &my_face) == 0)
+    faces.push_back(file);
+  if (!faces.size())
+    Logger::log(Logger::text) << "unifont.bdf not found. This may result in poor unicode rendering!" << std::endl;
+
+  path = RCManager::get_path("fontpath");
   scan(path);
+  Logger::log(Logger::text) << faces.size() << " fonts found" << std::endl;
+  if (!faces.size())
+    throw std::runtime_error("no fonts found. Please check your font path !");
 }
 
 FontKitImpl::FontIterator::~FontIterator() {}
@@ -112,7 +123,7 @@ void FontKitImpl::FontIterator::scan(Prague::Path path)
 	  std::string file = (*j)->long_name();
 	  if (FT_New_Face(*(my_fk->get_ftlibrary()), file.c_str(), 0, &my_face))
 	    {
-	      Logger::log(Logger::text) << "FontKit: file " << file << " is not a font." << std::endl;
+	      Logger::log(Logger::text) << "file " << file << " is not a font." << std::endl;
 	      continue;
 	    }
 	  faces.push_back(file);
@@ -155,6 +166,8 @@ Font_ptr FontKitImpl::provide(const Fresco::Unistring &family,
 {
   return _cxx_default(); // XXX
 }
+
+// pantone 1 and 2 font matching functions belong here.
 
 Fresco::Graphic_ptr FontKitImpl::set_font(Fresco::Graphic_ptr g, Font_ptr f)
 {
