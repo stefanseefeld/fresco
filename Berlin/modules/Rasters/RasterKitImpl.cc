@@ -29,7 +29,7 @@
 using namespace Prague;
 using namespace Fresco;
 
-using namespace Berlin::ImageKit;
+using namespace Berlin::RasterKit;
 
 RasterKitImpl::RasterKitImpl(const std::string &id,
                              const Fresco::Kit::PropertySeq &p,

@@ -34,7 +34,7 @@ class RasterImpl;
 
 namespace Berlin 
 {
-namespace ImageKit 
+namespace RasterKit 
 {
 
 class RasterKitImpl : public virtual POA_Fresco::RasterKit,
