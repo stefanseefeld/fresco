@@ -19,34 +19,6 @@ dnl License along with this library; if not, write to the
 dnl Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 dnl MA 02139, USA.
 
-dnl
-dnl BERLIN_CHECK_LIB(variable, library, func_call, include_files)
-dnl
-dnl Checks if library is found by doing func_call. Include include_files
-dnl to avoid compilation errors, and add library to variable if successful.
-dnl variable is also used to specify additional libraries or paths.
-dnl
-dnl This functions is meant to address some of the severe limitations of
-dnl autoconf when it comes to handling C++.
-AC_DEFUN([BERLIN_CHECK_LIB],[
-
-	save_LIBS="$LIBS"
-	LIBS="$LIBS $$1 -l$2"
-	changequote(`, ')
-	includes="patsubst(`$4', `\(\w\|\.\|/\)+', `#include <\&>
-')"
-	changequote([, ])
-	AC_CACHE_CHECK("for -l$2",
-		berlin_cv_lib_$2,
-		AC_TRY_LINK($includes,
-			$3, berlin_cv_lib_$2="yes", berlin_cv_lib_$2="no"))
-
-	LIBS="$save_LIBS"
-	if test ".$berlin_cv_lib_$2" = ".yes" ; then
-		$1="$$1 -l$2"
-	fi
-])
-
 dnl dnl BERLIN_LIB_OMNIORB dnl dnl Checks if omniORB is found. If it
 dnl is, $berlin_cv_lib_omniORB is set to "yes". Also, the
 dnl variables IDLCXX, IDLCXXFLAGS, IDLDYNFLAGS, IDLTIEFLAGS, ORB_LIBS
@@ -68,6 +40,13 @@ dnl 	AC_noREQUIRE(BERLIN_LIB_NSL)
 	AC_ARG_WITH(omniorb-version,
 		[  --with-omniorb-version  omniORB version (3 and 4 supported)],[
 		omniorb_version="$withval"])
+	if test ".$omniorb_version" = ".4" ; then
+		AC_ARG_WITH(colocation-optimization,
+			[  --with-colocation-optimization  switch on ORB specific optimizations],[
+			omniorb_shortcut="$withval"])
+		SHORTCUT="$omniorb_shortcut"
+		AC_SUBST(SHORTCUT)
+	fi
 
 	dnl Check for omniidl.
 	if test ".$omniorb_prefix" != "." ; then

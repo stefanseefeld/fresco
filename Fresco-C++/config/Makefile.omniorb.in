@@ -33,6 +33,7 @@ bdir		:= $(builddir)/bin
 include $(cdir)/local.mk
 
 IDLCXX		:= @IDLCXX@
+SHORTCUT	:= @SHORTCUT@
 
 # nice trick to include all the OS dependent flags nonintrusively
 # into the omni generated sources...
@@ -43,6 +44,9 @@ LIBS		+= @LIBS@
 
 # Extra compilation and linking flags.
 IDLCXXFLAGS	:= -bcxx -nf -Wbkeep_inc_path -C$(builddir)/src/Warsaw -I.
+ifeq ($(SHORTCUT), yes)
+IDLCXXFLAGS	+= -Wbshortcut
+endif
 IDLDYNFLAGS	:= -Wba
 IDLTIEFLAGS	:= -Wbtp
 
