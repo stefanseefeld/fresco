@@ -131,8 +131,7 @@ Graphic_ptr TextKitImpl::strut()
     r.y.defined = true;
     r.y.align = metrics.height == 0 ? 0.0 :
       static_cast<double>(metrics.ascender) / metrics.height; 
-    my_strut = new Strut(r);
-    activate(my_strut);
+    my_strut = new Strut(r); // activated via Impl_var
   }
   return my_strut->_this();
 }
