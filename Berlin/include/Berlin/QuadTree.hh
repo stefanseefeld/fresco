@@ -118,7 +118,7 @@ template <class T, class I>
 class QuadTree
 {
 public:
-  QuadTree() { quad = NULL; }
+  QuadTree() : quad(0) {}
   ~QuadTree() {}
 
   Geometry::Rectangle<T> bbox() { return node() ? node()->bbox() : Geometry::Rectangle<T>();}
