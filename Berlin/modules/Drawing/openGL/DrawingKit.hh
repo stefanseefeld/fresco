@@ -30,6 +30,7 @@
 #include "Berlin/CloneableImpl.hh"
 #include "Drawing/openGL/GLDrawable.hh"
 #include "Drawing/openGL/GLPencil.hh"
+#include "Drawing/openGL/GLFont.hh"
 
 #include <string>
 #include <vector>
@@ -43,10 +44,16 @@ public:
   GLDrawingKit();
   ~GLDrawingKit();
   Drawable_ptr getDrawable();
+
+  void setFont(const Text::FontDescriptor &fd, const Style::Spec &sty) 
+    throw (Text::NoSuchFontException);
+  Text::Font_ptr currentFont();
+
   ggi_visual_t getVisual() { return drawable->Visual();}
   Pencil_ptr getPencil(const Style::Spec &sty);
  protected:
   omni_mutex myMutex;
+  GLFont *myFont;
   GLDrawable *drawable;
   vector<GLPencil *> pencils;
 };
