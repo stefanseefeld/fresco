@@ -206,7 +206,7 @@ dnl ##
 dnl ##  Support for Version numbers
 dnl ##
 dnl ##  configure.in:
-dnl ##    AC_VERSION(<major, <minor>, <patch>, <interface>, <binary>)
+dnl ##    AC_VERSION(<major, <minor>, <patch>, <tag>, <interface>, <binary>)
 dnl ##
 dnl ## Making releases:
 dnl ##
@@ -222,13 +222,18 @@ AC_DIVERT_PUSH(AC_DIVERSION_NOTICE)dnl
 MAJOR_VERSION=$1
 MINOR_VERSION=$2
 PATCH_LEVEL=$3
-INTERFACE_AGE=$4
-BINARY_AGE=$5
+VERSION_TAG=$4
+INTERFACE_AGE=$5
+BINARY_AGE=$6
 VERSION=$MAJOR_VERSION.$MINOR_VERSION.$PATCH_LEVEL
+if test "x.$VERSION_TAG" != x; then
+	VERSION=$MAJOR_VERSION.$MINOR_VERSION.$PATCH_LEVEL-$VERSION_TAG
+fi
 
 AC_SUBST(MAJOR_VERSION)
 AC_SUBST(MINOR_VERSION)
 AC_SUBST(PATCH_LEVEL)
+AC_SUBST(VERSION_TAG)
 AC_SUBST(INTERFACE_AGE)
 AC_SUBST(BINARY_AGE)
 AC_SUBST(VERSION)

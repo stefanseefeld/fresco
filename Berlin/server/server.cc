@@ -80,9 +80,12 @@ struct Dump : Signal::Notifier
           {
             std::string output = "server.log";
             std::ofstream ofs(output.c_str());
+	    ofs << "I used to be version " << version
+		<< " of the Fresco Display Server.\n\n";
 	    Logger::dump(ofs);
 	    Tracer::dump(ofs);
-	    std::cerr << "Something went wrong. '" << output << "' contains a debugging log.\n"
+	    std::cerr << "Something went wrong. '" << output
+		      << "' contains a debugging log.\n"
 		      << "Please mail this output to bugs@berlin-consortium.org\n\n";
             exit(-1);
           }

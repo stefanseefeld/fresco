@@ -29,7 +29,7 @@ AC_PREREQ(2.12)
 AC_REVISION($Revision$)
 
 AC_INIT(subdirs.mk.in)
-AC_VERSION(0, 2, 2, 0, 0)
+AC_VERSION(0, 3, 0, CVS, 0, 0)
 AC_SET_PATHS(../..)
 AC_CONFIG_HEADER($builddir/include/Warsaw/config.hh:config/Warsaw/config.hh.in)
 
