@@ -32,8 +32,8 @@ module Primitive
 
   interface PrimitiveBase : Warsaw::Graphic
   {
-    attribute Warsaw::Rasters textures;
-    attribute Warsaw::MaterialAttr material;
+//     attribute Warsaw::Rasters textures;
+//     attribute Warsaw::MaterialAttr material;
     //attribute TextureMode texmode;
     
     void resize();

@@ -89,19 +89,6 @@ module Warsaw
     double alpha;
   };
   
-  interface Raster;
-  //. Sequence of rasters (for multitexturing)
-  typedef sequence<Raster> Rasters;
-
-  struct MaterialAttr
-  {
-    Color ambient;
-    Color diffuse;
-    Color specular;
-    Color emissive;
-    float shininess;
-  };
-
   typedef Vertices Path;
   
   struct Triangle

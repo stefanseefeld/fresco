@@ -29,6 +29,19 @@
 
 module Warsaw
 {
+  interface Raster;
+  //. Sequence of rasters (for multitexturing)
+  typedef sequence<Raster> Rasters;
+
+  struct MaterialAttr
+  {
+    Color ambient;
+    Color diffuse;
+    Color specular;
+    Color emissive;
+    float shininess;
+  };
+
   interface DrawingKit3D : DrawingKit
   {
     enum TextureMode { TextureOff, Texture1D, Texture2D, Texture3D};
