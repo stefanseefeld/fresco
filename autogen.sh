@@ -18,7 +18,7 @@ conf_with_header()
      echo "Generating $1/configure..."
      aclocal --output=config/aclocal.m4 -I ../config
      autoconf --include=config
-     autoheader -l config)
+     autoheader --include=config)
   fi
 }
 

@@ -159,7 +159,8 @@ AC_DEFUN([FRESCO_OMNIORB],
 
   dnl Check for omniORB libraries
   if test ".$no_omniorb" = "." ; then
-    LIBS="$LIBS -lpthread"
+    LIBS="$LIBS"
+    echo "LIBS is $LIBS"
     FRESCO_CHECK_LIB(ORB_LIBS, omnithread, [omni_mutex my_mutex], omnithread.h)
     dnl Hard to check the GateKeeper lib because of circular
     dnl dependency between it and libomniORB3

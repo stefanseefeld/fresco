@@ -33,10 +33,7 @@ AC_CONFIG_SRCDIR(LICENSE)
 AC_CONFIG_HEADER(include/Berlin/acconfig.hh:config/acconfig.hh.in)
 AC_CONFIG_AUX_DIR(config)
 
-dnl AC_HEADLINE(dnl
-dnl Berlin Server, The Berlin Server, dnl
-dnl [Copyright (c) 2000 The Berlin Project <berlin-design@lists.sourceforge.net>],
-dnl VERSION)
+AC_CANONICAL_SYSTEM
 
 AC_PROG_MAKE_SET
 AC_PROG_INSTALL
