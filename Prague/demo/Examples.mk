@@ -1,4 +1,4 @@
-world:	DataType Unicode
+world:	DataType Unicode Unistring Regex Loader
 
 Lock:		Lock.o
 		$(CXX) $(LDFLAGS) -o $@ $< $(LIBS)
@@ -13,6 +13,9 @@ Logger:		Logger.o
 		$(CXX) $(LDFLAGS) -o $@ $< $(LIBS)
 
 Unicode:	Unicode.o
+		$(CXX) $(LDFLAGS) -o $@ $< $(LIBS)
+
+Unistring:	Unistring.o
 		$(CXX) $(LDFLAGS) -o $@ $< $(LIBS)
 
 Plugin.so:	Plugin.o
