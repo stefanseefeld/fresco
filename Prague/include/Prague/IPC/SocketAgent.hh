@@ -28,6 +28,12 @@
 namespace Prague
 {
 
+//. a SocketAgent is a socket based Agent. It is conceptually lightweight,
+//. such that it can be used to generate a pipeline, i.e. similar to the
+//. State pattern, SocketAgents can implement a specific strategy in the
+//. process method, and then create new SocketAgents for the given socket
+//. to get a 'state transition' effect. Since Agents are reference counted,
+//. the Dispatcher will take care of deleting them.
 class SocketAgent : public Agent
 {
 public:

@@ -22,8 +22,8 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _sockstream_hh
-#define _sockstream_hh
+#ifndef _Prague_sockstream_hh
+#define _Prague_sockstream_hh
 
 #include <Prague/IPC/sockbuf.hh>
 #include <iostream>
@@ -31,8 +31,8 @@
 namespace Prague
 {
 
+//. an istream for sockets
 class isockstream : public istream
-  //. an istream for sockets
 {
 public:
   isockstream(sockbuf *sb) : ios (sb) {}
@@ -43,8 +43,8 @@ protected:
   isockstream () : ios (0) {}
 };
 
+//. an ostream for sockets
 class osockstream : public ostream
-  //. an ostream for sockets
 {
 public:
   osockstream(sockbuf *sb) : ios (sb) {}
@@ -55,8 +55,8 @@ protected:
   osockstream () : ios (0) {}
 };
 
-class iosockstream : public iostream
 //. an iostream for sockets
+class iosockstream : public iostream
 {
 public:
   iosockstream(sockbuf* sb): ios (sb) {}
@@ -82,8 +82,8 @@ protected:
 //   return o;
 // }
 
-class isockunix : public isockstream
 //. an istream for unix sockets
+class isockunix : public isockstream
 {
 public:
   isockunix (int s) : ios (new sockunixbuf (s)) {}
@@ -93,8 +93,8 @@ public:
   sockunixbuf *operator -> () { return static_cast<sockunixbuf *> (rdbuf ()); }
 };
 
-class osockunix : public osockstream
 //. an ostream for unix sockets
+class osockunix : public osockstream
 {
 public:
   osockunix (int s) : ios (new sockunixbuf (s)) {}
@@ -104,8 +104,8 @@ public:
   sockunixbuf *operator -> () { return static_cast<sockunixbuf *> (rdbuf()); }
 };
 
-class iosockunix : public iosockstream
 //. an iostream for unix sockets
+class iosockunix : public iosockstream
 {
 public:
   iosockunix (int s) : ios (new sockunixbuf (s)) {}
@@ -115,8 +115,8 @@ public:
   sockunixbuf *operator -> () { return static_cast<sockunixbuf *> (rdbuf()); }
 };
 
-class isockinet : public isockstream
 //. an istream for internet sockets
+class isockinet : public isockstream
 {
 public:
   isockinet (int s) : ios (new sockinetbuf (s)) {}
@@ -127,8 +127,8 @@ public:
   sockinetbuf *operator -> () { return rdbuf();}
 };
 
-class osockinet : public osockstream
 //. an ostream for internet sockets
+class osockinet : public osockstream
 {
 public:
   osockinet (int s) : ios (new sockinetbuf (s)) {}
@@ -139,8 +139,8 @@ public:
   sockinetbuf *operator -> () { return rdbuf();}
 };
 
-class iosockinet : public iosockstream
 //. an iostream for internet sockets
+class iosockinet : public iosockstream
 {
 public:
   iosockinet (int s) : ios (new sockinetbuf (s)) {}
@@ -153,4 +153,4 @@ public:
 
 };
 
-#endif /* _sockstream_hh */
+#endif

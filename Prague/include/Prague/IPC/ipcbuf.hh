@@ -61,39 +61,44 @@ private:
     char_type *pend; // end of output buffer
   };
 public:
+  //. create a new ipcbuf for the given file descriptor
   ipcbuf(int);
   ipcbuf(const ipcbuf &);
   virtual ~ipcbuf();
   ipcbuf &operator = (const ipcbuf &);
-  bool readready() const;
   //. return true if read wouldn't block
-  bool writeready() const;
+  bool readready() const;
   //. return true if write wouldn't block
+  bool writeready() const;
   bool exceptionpending() const;
-  virtual streamsize sys_read(char *, streamsize);
-  virtual streamsize sys_write(const char *, streamsize);
+  //. try to read n bytes into buf, return the number of bytes actually read
+  virtual streamsize sys_read(char *buf, streamsize n);
+  //. try to write n bytes from buf, return the number of bytes actually written
+  virtual streamsize sys_write(const char *buf, streamsize n);
 //   virtual int write (const void *, int);
 //   virtual int read (void *, int);
+  //. return the file descriptor for that buffer
   int  fd() const { return data->fd;}
+  //. set the file descriptor
   void fd(int f) const { data->fd = f;}
   bool oob() const { return data->oobbit;}
   bool oob(bool f) { data->oobbit = f;}
-  void async(bool);
-  //. set the buffer to nonblocking mode if <i>flag</i> is true, to blocking mode otherwise
-  bool async() const;
+  //. set the buffer to nonblocking mode if flag is true, to blocking mode otherwise
+  void async(bool flag);
   //. return true if the buffer is in nonblocking mode, false otherwise
+  bool async() const;
+  //. did we encounter EOF ?
   bool eof() const { return data->eofbit;}
 // protected:
-  virtual int        sync();
   //. flush the buffer
-  virtual int        showmanyc() const;
+  virtual int        sync();
   //. return the number of chars in the input sequence
-  virtual int_type   overflow(int c = EOF);
+  virtual int        showmanyc() const;
   //. if pbase () == 0, no write is allowed and thus return EOF.
   //. if c == EOF, we sync the output and return 0.
   //. if pptr () == epptr (), buffer is full and thus sync the output, insert c into buffer, and return c.
+  virtual int_type   overflow(int c = EOF);
   virtual int_type   underflow();
-  //. ipcbuf::int_type ipcbuf::underflow ()
   virtual int_type   uflow();
   virtual int_type   pbackfail(int c = EOF);
   virtual streamsize xsputn(const char *, streamsize);

@@ -37,21 +37,27 @@ namespace Prague
 #  define MSG_MAXIOVLEN	 16
 #endif // __linux__ or __FreeBSD__
 
-// socket exception classes
+//. socket exception classes
 class sockerr
 {
 public:
   sockerr(int e) : err(e) {}
-  const char* what() const { return "sockerr"; }
+  const char* what() const { return "sockerr";}
   int number() const { return err; }
   const char *errstr() const;
   bool error(int eno) const { return eno == err; }
-  bool io() const;     // non-blocking and interrupt io recoverable error.
-  bool arg() const;    // incorrect argument supplied. recoverable error.
-  bool op() const;     // operational error. recovery difficult.
-  bool conn() const;   // connection error
-  bool addr() const;   // address error
-  bool benign() const; // recoverable read/write error like EINTR etc.
+  //. non-blocking and interrupt io recoverable error.
+  bool io() const;
+  //. incorrect argument supplied. recoverable error.
+  bool arg() const;
+  //. operational error. recovery difficult.
+  bool op() const;
+  //. connection error
+  bool conn() const;
+  //. address error
+  bool addr() const;
+  //. recoverable read/write error like EINTR etc.
+  bool benign() const;
 private:
   int  err;
 };
@@ -59,18 +65,14 @@ private:
 class sockoob
 {
 public:
-  const char* what () const { return "sockoob"; }
+  const char *what() const { return "sockoob";}
 };
 
-/* @Class{sockaddr}
- *
- * @Description{abstract base for socket addresses}
- */
+//. abstract base for socket addresses}
 class sockaddr
 {
 public:
   virtual	   ~sockaddr() {}
-//   virtual operator void *() const =0;
   operator const ::sockaddr *() const { return addr();}
   operator ::sockaddr       *() { return addr();}
   virtual int	             size() const = 0;
@@ -79,10 +81,7 @@ public:
   virtual ::sockaddr        *addr() = 0;
 };
 
-/* @Class{sockunixaddr : public sockaddr, public sockaddr_un}
- *
- * @Description{socket unix address representation}
- */
+//. socket unix address representation
 class sockunixaddr : public sockaddr_un, public sockaddr
 {
 public:
@@ -90,8 +89,6 @@ public:
   sockunixaddr(const string &);
   sockunixaddr(const sockunixaddr &);
   ~sockunixaddr() {}
-//   operator void *() const { return static_cast<sockaddr_un *>(this);}
-//   sockaddr_un   *addr_un() const { return (sockaddr_un *)(this);}
   int               size() const { return sizeof (sockaddr_un);}
   int               family() const { return sun_family;}
   const ::sockaddr *addr() const { return reinterpret_cast<const ::sockaddr *>(this);}
@@ -99,10 +96,7 @@ public:
   const char       *path() { return sun_path;}
 };
 
-/* @Class{sockinetaddr : public sockaddr, public sockaddr_in}
- *
- * @Description{socket internet address representation}
- */
+//. socket internet address representation
 class sockinetaddr : public sockaddr_in, public sockaddr
 {
 public:
@@ -113,8 +107,6 @@ public:
   sockinetaddr(const string &, const string &, const string &pn = "tcp");
   sockinetaddr(const sockinetaddr &);
   ~sockinetaddr() {}
-//   operator void *() const { return addr_in ();}
-//   sockaddr_in   *addr_in() const { return (sockaddr_in*) this;}
   int               size() const { return sizeof (sockaddr_in);}
   int               family() const { return sin_family;}
   const ::sockaddr *addr() const { return reinterpret_cast<const ::sockaddr *>(this);}
@@ -128,10 +120,7 @@ private:
 
 struct msghdr;
 
-/* @Class{sockbuf : public ipcbuf}
- *
- * @Description{an ipcbuf based on a socket}
- */
+//. an ipcbuf based on a socket
 class sockbuf : public ipcbuf
 {
 public:
@@ -200,7 +189,9 @@ public:
   sockbuf(int, type, int);
   sockbuf(const sockbuf &sb) : ipcbuf(sb) {}
   virtual           ~sockbuf() {}
+  //. listen for connection requests. Allow up to num requests to be accumulated in the queue
   void               listen(int num = somaxconn);
+  //. accept a connection request. Return a new sockbuf for the newly established connection.
   virtual sockbuf   *accept() = 0;
   int                read(void *, int);
   int		     recv(void *, int, int msgf = 0);
@@ -248,10 +239,7 @@ public:
 protected:
 };
 
-/* @Class{sockunixbuf : public sockbuf}
- *
- * @Description{a sockbuf for the unix domain}
- */
+//. a sockbuf for the unix domain
 class sockunixbuf : public sockbuf
 {
 public:
@@ -268,10 +256,7 @@ public:
   void connect(const sockunixaddr &);
 };
 
-/* @Class{sockinetbuf : public sockbuf}
- *
- * @Description{a sockbuf for the internet domain}
- */
+//. a sockbuf for the internet domain
 class sockinetbuf : public sockbuf
 {
 public:
