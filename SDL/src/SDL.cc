@@ -26,6 +26,7 @@
 
 #include "Console/Renderer.hh"
 #include "Console/GLContext.hh"
+#include "Console/DirectBuffer.hh"
 #include "Console/SDL/SDL.hh"
 #include "Console/SDL/pointer.hh"
 
@@ -238,7 +239,26 @@ private:
 // class SDLDirectBuffer
 // ---------------------------------------------------------------
 
-
+class SDLDirectBuffer : public SDLExtension,
+			virtual public DirectBuffer
+{
+public:
+  SDLDirectBuffer(SDLDrawable *drawable) : SDLExtension(drawable) {
+    if (drawable->surface()->flags && SDL_OPENGL) { throw;}
+  }
+  virtual Guard read_buffer()
+  {
+    Guard guard(drawable, static_cast<Console::Drawable::data_type *>(drawable->surface()->pixels));
+    return guard;
+  }
+  virtual Guard write_buffer()
+  {
+    Guard guard(drawable, static_cast<Console::Drawable::data_type *>(drawable->surface()->pixels));
+    return guard;
+  }
+private:
+  SDLDrawable *drawable;
+};
 
 
 
@@ -249,6 +269,7 @@ private:
 class SDLGLContext : public GLContext,
 		     public SDLExtension
 {
+  typedef void (*GL_Flush_Func)();
   typedef void (*GL_CopyPixels_Func)(int x, int y,
                                      int width, int height,
                                      unsigned int type);
@@ -288,7 +309,7 @@ public:
       default:
 	 drawable->_depth = 0;
       }
-
+    glFlush_ptr = (GL_Flush_Func)SDL_GL_GetProcAddress("glFlush");
     glCopyPixels_ptr = (GL_CopyPixels_Func)SDL_GL_GetProcAddress("glCopyPixels");
     glDrawBuffer_ptr = (GL_DrawBuffer_Func)SDL_GL_GetProcAddress("glDrawBuffer");
     glReadBuffer_ptr = (GL_ReadBuffer_Func)SDL_GL_GetProcAddress("glReadBuffer");
@@ -305,7 +326,7 @@ public:
   }
 
   void flush() {
-    glFlush();
+    glFlush_ptr();
     SDL_GL_SwapBuffers();
     glReadBuffer_ptr(0x405); // GL_BACK
     glDrawBuffer_ptr(0x404); // GL_FRONT
@@ -315,6 +336,7 @@ public:
   }
 
 private:
+  GL_Flush_Func      glFlush_ptr;
   GL_CopyPixels_Func glCopyPixels_ptr;
   GL_DrawBuffer_Func glDrawBuffer_ptr;
   GL_ReadBuffer_Func glReadBuffer_ptr;
@@ -493,6 +515,7 @@ Console::Extension * SDLConsole::create_extension(const std::string & id,
 {
   if (id == "Renderer") return new SDLRenderer(static_cast<SDLDrawable *>(drawable));
   if (id == "GLContext") return new SDLGLContext(static_cast<SDLDrawable *>(drawable));
+  if (id == "DirectBuffer") return new SDLDirectBuffer(static_cast<SDLDrawable *>(drawable));
   return 0;
 }
 
