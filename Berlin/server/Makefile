@@ -38,7 +38,7 @@ include $(cpath)/local.mk
 CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw $(ORBCPPFLAGS)
 CXXFLAGS= -pthread -Wall -Dprofile $(OPTFLAGS)
 LDFLAGS	= -L$(lpath)
-LIBS	= -lWarsaw -lBerlin -lPrague
+LIBS	= -lWarsaw -lBerlin -lPrague -lpthread
 
 world:		server
 

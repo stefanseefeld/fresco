@@ -21,6 +21,7 @@
  */
 #include "Prague/IPC/ptybuf.hh"
 #include "Prague/IPC/TTYAgent.hh"
+#include "Prague/Sys/Tracer.hh"
 #include <unistd.h>
 #include <cstdio>
 
@@ -38,7 +39,8 @@ TTYAgent::~TTYAgent()
 
 void TTYAgent::start()
 {
-  if (id >= 0)
+  Trace trace("TTYAgent::start");
+  if (pid() >= 0)
     {
       terminate();
       ptybuf *pty  = new ptybuf;

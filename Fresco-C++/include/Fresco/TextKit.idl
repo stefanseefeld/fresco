@@ -2,6 +2,7 @@
  *
  * This source file is a part of the Berlin Project.
  * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
+ * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -26,8 +27,8 @@
 #include "Graphic.idl"
 #include "Types.idl"
 
-
 interface TextBuffer;
+interface StreamBuffer;
 
 interface TextKit : Kit
 //. TextKit produces text chunks (flyweights) as well as decorators which set the
@@ -37,6 +38,7 @@ interface TextKit : Kit
   Graphic strut();
   //. placeholder for an empty line
   Graphic simpleViewer(in TextBuffer buf);
+  Graphic terminal(in StreamBuffer buf);
 
   Graphic size(in Graphic body, in unsigned long ems);
   Graphic weight(in Graphic body, in unsigned long wt);

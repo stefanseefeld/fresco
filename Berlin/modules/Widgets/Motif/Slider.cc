@@ -33,19 +33,21 @@ using namespace Motif;
 class Slider::Dragger : implements(Command)
 {
 public:
-  Dragger(BoundedValue_ptr v, Axis a) : value(BoundedValue::_duplicate(v)), axis(a) {}
+  Dragger(BoundedValue_ptr v, Axis a) : value(BoundedValue::_duplicate(v)), scale(1.), axis(a) {}
+  void setScale(Coord s) { scale = s;}
   virtual void execute(const CORBA::Any &any)
   {
     Vertex *delta;
     if (any >>= delta)
       {
-	if (axis == xaxis && delta->x != 0.) value->adjust(delta->x);
-	else if (axis == yaxis && delta->y != 0.) value->adjust(delta->y);
+	if (axis == xaxis && delta->x != 0.) value->adjust(scale*delta->x);
+	else if (axis == yaxis && delta->y != 0.) value->adjust(scale*delta->y);
       }
     else  cerr << "Drag::execute : wrong message type !" << endl;
   }
 private:
   BoundedValue_var value;
+  Coord scale;
   Axis axis;
 };
 
@@ -95,20 +97,22 @@ void Slider::pick(PickTraversal_ptr traversal)
 void Slider::allocate(Tag, const Allocation::Info &info)
 {
   Impl_var<RegionImpl> allocation(new RegionImpl(info.allocation));
+  Coord length;
   if (axis == xaxis)
     {
-      Coord length = allocation->upper.x - allocation->lower.x - 200.;
+      length = allocation->upper.x - allocation->lower.x - 200.;
       allocation->lower.x = offset * length;
       allocation->upper.x = offset * length + 200.;
     }
   else
     {
-      Coord length = allocation->upper.y - allocation->lower.y - 200.;
+      length = allocation->upper.y - allocation->lower.y - 200.;
       allocation->lower.y = offset * length;
       allocation->upper.y = offset * length + 200.;
     }
   allocation->lower.z = allocation->upper.z = 0.;
   allocation->normalize(info.transformation);
+  _drag->setScale((value->upper() - value->lower())/length);
 }
 
 Command_ptr Slider::drag() { return _drag->_this();}

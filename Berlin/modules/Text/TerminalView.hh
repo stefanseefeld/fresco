@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
+ * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -19,20 +19,30 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _StreamBuffer_idl
-#define _StreamBuffer_idl
+#ifndef _TerminalView_hh
+#define _TerminalView_hh
 
-#include <Subject.idl>
-#include <Types.idl>
+#include <Warsaw/config.hh>
+#include <Warsaw/View.hh>
+#include <Warsaw/TextKit.hh>
+#include "Text/Composition.hh"
+#include <map>
+#include <vector>
 
-interface StreamBuffer : Subject
+class TerminalView : implements(View), public Composition
 {
-  typedef sequence<octet> Data;
-  readonly attribute long size;
-  readonly attribute long available;
-  Data read();
-  void write(in Data d);
-  void flush();
+  typedef vector<Composition *> lines_t;
+ public:
+  TerminalView(StreamBuffer_ptr, TextKit_ptr, DrawingKit_ptr, Compositor *, Compositor *);
+  virtual ~TerminalView();
+  virtual void request(Requisition &);
+  virtual void update(const CORBA::Any &);
+ protected:
+  StreamBuffer_ptr stream;
+  TextKit_var kit;
+  DrawingKit_var canonicalDK;
+  Compositor *compositor;
+  lines_t lines;
 };
 
-#endif /* _StreamBuffer_idl */
+#endif /* _TerminalView_hh */

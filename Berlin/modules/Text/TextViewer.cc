@@ -20,156 +20,23 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#include "Text/TextViewer.hh"
-#include "Text/Compositor.hh"
-#include <Warsaw/DrawingKit.hh>
+#include <Warsaw/config.hh>
 #include <Warsaw/TextBuffer.hh>
-#include <Warsaw/Traversal.hh>
-#include <Berlin/TransformImpl.hh>
-#include <Berlin/RegionImpl.hh>
-#include <Berlin/ImplVar.hh>
-#include <Prague/Sys/Thread.hh>
+#include "Text/TextViewer.hh"
 #include <Prague/Sys/Tracer.hh>
 #include <algorithm>
 
 using namespace Prague;
 
 TextViewer::TextViewer(TextBuffer_ptr txt, TextKit_ptr tk, DrawingKit_ptr dk, Compositor *c)
-  : buffer(TextBuffer::_duplicate(txt)),
+  : Composition(dk, c),
     kit(TextKit::_duplicate(tk)),
-    canonicalDK(DrawingKit::_duplicate(dk)),
-    compositor(c),
-    requested(false)
+    buffer(TextBuffer::_duplicate(txt))
 {
   Trace trace("TextViewer::TextViewer");
 }
 
 TextViewer::~TextViewer() {}
-
-void TextViewer::request(Requisition &r)
-{
-  Trace trace("TextViewer::request");
-  if (!requested)
-    {
-      GraphicImpl::defaultRequisition(requisition);
-      GraphicImpl::initRequisition(requisition);
-      long n = numChildren();
-      if (n > 0)
-	{
-	  Graphic::Requisition *r = childrenRequests();
-	  compositor->request(n, r, canonicalDK, requisition);
-	  deallocateRequisitions(r);
-	}
-      requested = true;
-    }
-  r = requisition;
-}
-
-void TextViewer::extension(const Allocation::Info &info, Region_ptr region)
-{
-  Trace trace("TextViewer::extension");  
-  long n = numChildren();
-  if (n > 0)
-    {
-      Allocation::Info child;
-      Vertex origin, previous, delta;
-      previous.x = previous.y = previous.z = 0;
-      
-      Impl_var<TransformImpl> child_tx(new TransformImpl);
-      Impl_var<TransformImpl> tmp_tx(new TransformImpl);
-      
-      child.transformation = child_tx->_this();
-      child.transformation->copy(info.transformation);
-      RegionImpl **result = childrenAllocations(info.allocation);
-
-      for (long i = 0; i < n; i++)
-	{
-	  result[i]->normalize(origin);
-	  delta = origin - previous;
-	  // 	  tmp_tx->loadIdentity();
-	  tmp_tx->translate(delta);
-	  child.allocation = result[i]->_this();
-	  child.transformation->premultiply(Transform_var(tmp_tx->_this()));
-	  childExtension(i, child, region);
-	  previous = origin;
-	}
-      for (long i = 0; i < n; i++) result[i]->_dispose();
-      delete [] result;
-    }
-}
-
-void TextViewer::traverse(Traversal_ptr traversal)
-{
-  Trace trace("TextViewer::traverse");
-  if (numChildren())
-    {
-      Region_var given = traversal->allocation();
-      /*
-       * this cull test is not accurate, it assumes that the children
-       * don't draw outside the box' allocation.
-       * the alternative - using extension - is expensive...
-       *              -stefan
-       */
-      if (!traversal->intersectsAllocation()) return;
-      RegionImpl **result = childrenAllocations(given);
-      CORBA::Long size = numChildren();
-      CORBA::Long begin, end, incr;
-      Impl_var<TransformImpl> tx(new TransformImpl);
-      if (traversal->direction() == Traversal::up)
-	{
-	  begin = 0;
-	  end = size;
-	  incr = 1;
-	}
-      else
-	{
-	  begin = size - 1;
-	  end = -1;
-	  incr = -1;
-	}
-      for (CORBA::Long i = begin; i != end; i += incr)
-	{
-	  if (CORBA::is_nil(children[i].first)) continue;
-	  Vertex origin;
-	  result[i]->normalize(origin);
-	  tx->loadIdentity();
-	  /*
-	   * ok, so we stipulate that Boxes lay out their children 
-	   * only translating them -stefan
-	   */
-	  tx->translate(origin);
-	  traversal->traverseChild(children[i].first, children[i].second, Region_var(result[i]->_this()), Transform_var(tx->_this()));
-	  if (!traversal->ok()) break;
-	}
-      for (long i = 0; i < size; i++) result[i]->_dispose();
-      delete [] result;
-    }
-}
-
-void TextViewer::needResize()
-{
-  requested = false;
-  PolyGraphic::needResize();
-}
-
-void TextViewer::needResize(Tag)
-{
-  needResize();
-}
-
-void TextViewer::allocate(Tag tag, const Allocation::Info &info)
-{
-  Trace trace("TextViewer::allocate");
-  RegionImpl **result = childrenAllocations(info.allocation);
-  Impl_var<TransformImpl> tx(new TransformImpl);
-  CORBA::Long idx = index(tag);
-  result[idx]->normalize(Transform_var(tx->_this()));
-  info.transformation->premultiply(Transform_var(tx->_this()));
-  info.allocation->copy(Region_var(result[idx]->_this()));
-  CORBA::Long children = numChildren();
-  for (CORBA::Long i = 0; i < children; i++) result[i]->_dispose();
-  delete [] result;
-}
 
 void TextViewer::update(const CORBA::Any &a) 
 {
@@ -213,31 +80,4 @@ void TextViewer::update(const CORBA::Any &a)
 	}
     }
   needRedraw();
-}
-
-RegionImpl **TextViewer::childrenAllocations(Region_ptr allocation)
-{
-  Trace trace("TextViewer::childrenAllocations");
-  CORBA::Long children = numChildren();
-  Graphic::Requisition *childrenRequisitions = childrenRequests(); // first defined  in PolyGraphic.cc
-    
-  // cache integrated form of children requisitions
-  if (!requested)
-    {
-      GraphicImpl::initRequisition(requisition);
-      compositor->request(children, childrenRequisitions, canonicalDK, requisition);
-      requested = true;
-    }
-  // build region array for children
-  RegionImpl **childrenRegions = new RegionImpl *[children];
-  for (CORBA::Long i = 0; i < children; i++)
-    {
-      childrenRegions[i] = new RegionImpl;
-      childrenRegions[i]->_obj_is_ready(_boa());
-      childrenRegions[i]->valid = true;
-    }
-  // fill in children regions which are reasonable matches for the given requesitions
-  compositor->allocate(children, childrenRequisitions, canonicalDK, allocation, childrenRegions);
-  deallocateRequisitions(childrenRequisitions);
-  return childrenRegions;
 }

@@ -231,7 +231,7 @@ void GLDrawingKit::drawImage(Raster_ptr raster)
   GLfloat color_cache[4];
   glGetFloatv(GL_CURRENT_COLOR, color_cache);
   glBindTexture(GL_TEXTURE_2D, glimage->texture);
-  glColor4f(1., 1., 1., 1.);
+  glColor4f(1., 1., 1., color_cache[3]);
   glBegin(GL_POLYGON);
   Path path;
   path.length(4);

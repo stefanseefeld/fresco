@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -20,9 +20,11 @@
  * MA 02139, USA.
  */
 
-#include "Warsaw/config.hh"
-#include "Warsaw/Region.hh"
-#include "Warsaw/Traversal.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/Region.hh>
+#include <Warsaw/Traversal.hh>
+#include <Berlin/TransformImpl.hh>
+#include <Berlin/RegionImpl.hh>
 #include "Figure/Transformer.hh"
 
 Transformer::Transformer()
@@ -51,10 +53,48 @@ void Transformer::traverse(Traversal_ptr traversal)
 {
   Graphic_var child = body();
   if (CORBA::is_nil(child)) return;
-  traversal->traverseChild(child, 0, Region_var(Region::_nil()), Transform_var(transform->_this()));
+  if (!transform->Identity())
+    {
+      Region_var allocation = traversal->allocation();
+      Impl_var<RegionImpl> rr(new RegionImpl(allocation));
+	  
+      Requisition r;
+      GraphicImpl::initRequisition(r);
+	  
+      Allocator::request(r);
+      Impl_var<TransformImpl> tx(new TransformImpl);
+      tx->copy(Transform_var(transform->_this()));
+      Vertex delta = GraphicImpl::transformAllocate(*rr, r, Transform_var(tx->_this()));
+      tx->translate(delta);
+      traversal->traverseChild(child, 0, Region_var(rr->_this()), Transform_var(tx->_this()));
+    }
+  else Allocator::traverse(traversal);
 }
 
 void Transformer::allocate(Tag, const Allocation::Info &info)
 {
+  if (!transform->Identity())
+    {
+      if (!CORBA::is_nil(info.allocation))
+	{
+	  Impl_var<RegionImpl> rr(new RegionImpl);
+	  rr->copy(info.allocation);
+	  Requisition r;
+	  GraphicImpl::initRequisition(r);
+	  Allocator::request(r);
+	  Impl_var<TransformImpl> tx(new TransformImpl);
+	  tx->copy(Transform_var(transform->_this()));
+	  Vertex delta = GraphicImpl::transformAllocate(*rr, r, Transform_var(tx->_this()));
+	  tx->translate(delta);
+	  info.transformation->premultiply(tx);
+	  info.allocation->copy(rr);
+        }
+      else
+	{
+	  info.transformation->premultiply(Transform_var(transform->_this()));
+	  Allocator::allocate(0, info);
+        }
+    }
+  else Allocator::allocate(0, info);
   info.transformation->premultiply(Transform_var(transform->_this()));
 }

@@ -20,6 +20,7 @@
  * MA 02139, USA.
  */
 #include <Prague/IPC/TTYAgent.hh>
+#include <Prague/Sys/Tracer.hh>
 #include <string>
 
 using namespace Prague;
@@ -38,6 +39,8 @@ public:
       {
 	getline(is, line);
 	cout << line;
+	if (is) cout << endl;
+	else cout << flush;
       }
     return true;
   }
@@ -53,21 +56,30 @@ public:
   }
 };
 
-int main (int argc, char **argv)
+void *start(void *)
 {
-  Output *out = new Output;
-  ConnectionClosed *eof = new ConnectionClosed;
-  agent = new TTYAgent("sh", out, eof);
-  agent->start();
   while (cin && agent->ibuf())
     {
       ostream os(agent->ibuf());
       string line;
-      cout << "input :";
       getline(cin, line);
       os << line << endl;
       Thread::delay(500);
     }
+  return 0;
+}
+
+
+int main (int argc, char **argv)
+{
+  Tracer::logging(true);
+  Output *out = new Output;
+  ConnectionClosed *eof = new ConnectionClosed;
+  agent = new TTYAgent("sh", out, eof);
+  Thread thread(start, 0);
+  agent->start();
+  thread.start();
+  thread.join(0);
   if (!agent->ibuf())
     {
       if (agent->state() == Coprocess::exited)

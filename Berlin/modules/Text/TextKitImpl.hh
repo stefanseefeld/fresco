@@ -2,6 +2,7 @@
  *
  * This source file is a part of the Berlin Project.
  * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
+ * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -47,6 +48,7 @@ class TextKitImpl : implements(TextKit),  public KitImpl
   Graphic_ptr chunk(const Unistring & u);
   Graphic_ptr strut();
   Graphic_ptr simpleViewer(TextBuffer_ptr);  
+  Graphic_ptr terminal(StreamBuffer_ptr);
   Graphic_ptr size(Graphic_ptr body, CORBA::ULong ems);
   Graphic_ptr weight(Graphic_ptr body, CORBA::ULong wt);
   Graphic_ptr family(Graphic_ptr body, const Unistring & fam);
@@ -60,7 +62,8 @@ class TextKitImpl : implements(TextKit),  public KitImpl
   static DrawingKit_var canonicalDK;
 
   Prague::Mutex localMutex;
-  Compositor *compositor;
+  Compositor *lineCompositor;
+  Compositor *pageCompositor;
   vector<GraphicImpl *> allocations;
 };
 

@@ -21,9 +21,9 @@
 
 SHELL	= /bin/sh
 
-top	= ../../..
+top	= ../..
 cpath	= $(top)/config
-hpath	= $(top)/include/Widget/Motif
+hpath	= $(top)/include/Gadget
 
 include $(cpath)/local.mk
 
@@ -32,12 +32,12 @@ CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw $(ORBCPPFLAGS)
 LDFLAGS	= -shared -rdynamic -L$(lpath)
 LIBS	= -lPrague -lBerlin
 
-SRC	= Gauge.cc Panner.cc Scrollbar.cc Slider.cc Choice.cc Terminal.cc WidgetKit.cc
+SRC	= GadgetKitImpl.cc
 
-TARGET	= $(mpath)/libMotif.so
+TARGET	= $(mpath)/libGadget.so
 
 vpath %.d $(dpath)
-vpath %.hh  $(ipath)/Warsaw $(ipath)/Berlin $(ipath)/Widget/Motif
+vpath %.hh  $(ipath)/Warsaw $(ipath)/Berlin $(ipath)/Gadget
 
 include $(cpath)/module.mk
 

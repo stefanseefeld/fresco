@@ -2,6 +2,7 @@
  *
  * This source file is a part of the Berlin Project.
  * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
+ * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -24,9 +25,11 @@
 #include <Warsaw/DrawingKit.hh>        // for the DK to work on
 #include <Warsaw/Unicode.hh>           // for toCORBA and friends
 #include <Warsaw/TextBuffer.hh>        // for TextBuffer type
+#include <Warsaw/StreamBuffer.hh>
 #include <Text/TextKitImpl.hh>         // for our own definition
 #include <Text/TextChunk.hh>           // the chunk graphic type
 #include <Text/TextViewer.hh>          // the viewer polygraphic type
+#include <Text/TerminalView.hh>
 #include <Text/Compositor.hh>          // the compositor strategy
 #include <Text/Strut.hh>               // the compositor strategy
 #include <Drawing/DrawDecorator.hh>    // the decorator monographic template
@@ -38,8 +41,9 @@ Mutex TextKitImpl::staticMutex;
 map<Unicode::String,Impl_var<TextChunk> > TextKitImpl::chunkCache;
 DrawingKit_var TextKitImpl::canonicalDK;
 
-TextKitImpl::TextKitImpl(KitFactory *f, const PropertySeq &p) : KitImpl(f, p), compositor(new LRCompositor()) {}
-TextKitImpl::~TextKitImpl() { delete compositor;}
+TextKitImpl::TextKitImpl(KitFactory *f, const PropertySeq &p)
+  : KitImpl(f, p), lineCompositor(new LRCompositor()), pageCompositor(new TBCompositor()) {}
+TextKitImpl::~TextKitImpl() { delete lineCompositor; delete pageCompositor;}
 
 void TextKitImpl::bind(ServerContext_ptr sc)
 {
@@ -76,7 +80,16 @@ Graphic_ptr TextKitImpl::strut()
 Graphic_ptr TextKitImpl::simpleViewer(TextBuffer_ptr buf)
 {
   Trace trace("TextKitImpl::simpleViewer");
-  Impl_var<TextViewer> tv(new TextViewer(buf,this->_this(),canonicalDK, compositor));
+  Impl_var<TextViewer> tv(new TextViewer(buf, TextKit_var(_this()), canonicalDK, lineCompositor));
+  allocations.push_back(tv.get());
+  buf->attach(tv.get());
+  return tv.release()->_this();
+}
+
+Graphic_ptr TextKitImpl::terminal(StreamBuffer_ptr buf)
+{
+  Trace trace("TextKitImpl::simpleViewer");
+  Impl_var<TerminalView> tv(new TerminalView(buf, TextKit_var(_this()), canonicalDK, lineCompositor, pageCompositor));
   allocations.push_back(tv.get());
   buf->attach(tv.get());
   return tv.release()->_this();

@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
+ * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -19,20 +19,25 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _StreamBuffer_idl
-#define _StreamBuffer_idl
 
-#include <Subject.idl>
-#include <Types.idl>
+#include <Warsaw/config.hh>
+#include <Warsaw/Input.hh>
+#include <Prague/Unicode/Unicode.hh>
+#include <Warsaw/Unicode.hh>
+#include <Prague/Sys/Tracer.hh>
+#include "Tool/Terminal.hh"
 
-interface StreamBuffer : Subject
+using namespace Prague;
+
+void Terminal::keyPress(const Input::Event &event)
 {
-  typedef sequence<octet> Data;
-  readonly attribute long size;
-  readonly attribute long available;
-  Data read();
-  void write(in Data d);
-  void flush();
-};
-
-#endif /* _StreamBuffer_idl */
+  Trace trace("Terminal::keyPress");
+  StreamBuffer::Data data;
+  data.length(1);
+  const Input::Toggle &toggle = event[0].attr.kselection();
+  Unicode::Char uc(static_cast<Unicode::_Char>(toggle.number));
+  char ascii = uc.myUnicode();
+  if (isprint(ascii) || ascii == '\r' || ascii == '\n') data[0] = ascii;
+  else if(toggle.number == Unicode::UC_HORIZONTAL_TABULATION) data[0] = '\t';
+  buffer->write(data);
+}

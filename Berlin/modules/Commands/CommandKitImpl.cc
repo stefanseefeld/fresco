@@ -108,9 +108,9 @@ TextBuffer_ptr CommandKitImpl::text()
   return buffer->_this();  
 }
 
-StreamBuffer_ptr CommandKitImpl::stream()
+StreamBuffer_ptr CommandKitImpl::stream(long b)
 {
-  StreamBufferImpl *buffer = new StreamBufferImpl(80);
+  StreamBufferImpl *buffer = new StreamBufferImpl(b);
   buffer->_obj_is_ready(_boa());
   subjects.push_back(buffer);
   return buffer->_this();  

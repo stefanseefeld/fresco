@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
+ * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -19,20 +19,15 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _StreamBuffer_idl
-#define _StreamBuffer_idl
+#ifndef _TermDemo_hh
+#define _TermDemo_hh
 
-#include <Subject.idl>
-#include <Types.idl>
+#include "Demo.hh"
 
-interface StreamBuffer : Subject
+class TermDemo : public Demo
 {
-  typedef sequence<octet> Data;
-  readonly attribute long size;
-  readonly attribute long available;
-  Data read();
-  void write(in Data d);
-  void flush();
+public:
+  TermDemo(Application *);
 };
 
-#endif /* _StreamBuffer_idl */
+#endif

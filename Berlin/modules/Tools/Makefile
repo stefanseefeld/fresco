@@ -35,7 +35,7 @@ LIBS	= -lPrague -lBerlin
 # Filler.cc Indicator.cc
 SRC	= Beveler.cc Frame.cc Triangle.cc Diamond.cc \
 	  TriggerImpl.cc Dragger.cc Stepper.cc Toggle.cc \
-	  TextInput.cc ToolKitImpl.cc
+	  TextInput.cc Terminal.cc ToolKitImpl.cc
 
 TARGET	= $(mpath)/libTool.so
 

@@ -34,6 +34,7 @@
 #include "Tool/Dragger.hh"
 #include "Tool/Stepper.hh"
 #include "Tool/TextInput.hh"
+#include "Tool/Terminal.hh"
 #include "Berlin/DebugGraphic.hh"
 
 class RGBDecorator : public MonoGraphic
@@ -322,6 +323,15 @@ Controller_ptr ToolKitImpl::stepper(Graphic_ptr g, Command_ptr command)
 Controller_ptr ToolKitImpl::textInput(Graphic_ptr g, TextBuffer_ptr buffer)
 {
   TextInput *input = new TextInput(buffer);
+  input->_obj_is_ready(_boa());
+  input->body(g);
+  graphics.push_back(input);
+  return input->_this();
+}
+
+Controller_ptr ToolKitImpl::terminal(Graphic_ptr g, StreamBuffer_ptr buffer)
+{
+  Terminal *input = new Terminal(buffer);
   input->_obj_is_ready(_boa());
   input->body(g);
   graphics.push_back(input);

@@ -26,39 +26,20 @@
 #include <Warsaw/config.hh>
 #include <Warsaw/View.hh>
 #include <Warsaw/TextKit.hh>
-#include <Berlin/GapBuffer.hh>
-#include <Berlin/PolyGraphic.hh>
+#include "Text/Composition.hh"
 #include <map>
 
-class TextChunk;
-class FontChange;
-class Compositor;
-
-declare_corba_ptr_type(DrawingKit)
 declare_corba_ptr_type(TextBuffer)
-declare_corba_ptr_type(DrawTraversal)
 
-class TextViewer : implements(View), public PolyGraphic
+class TextViewer : implements(View), public Composition
 {
  public:
   TextViewer(TextBuffer_ptr txt, TextKit_ptr tk, DrawingKit_ptr dk, Compositor *);
   virtual ~TextViewer();
-  virtual void request(Requisition &);
-  virtual void extension(const Allocation::Info &, Region_ptr);
-  virtual void traverse(Traversal_ptr);
-  virtual void needResize();
-  virtual void needResize(Tag);
-  virtual void allocate(Tag, const Allocation::Info &);
-
   virtual void update(const CORBA::Any &);
  protected:
-  RegionImpl **childrenAllocations(Region_ptr);
-  TextBuffer_var buffer;
   TextKit_var kit;
-  DrawingKit_var canonicalDK;
-  Compositor  *compositor;
-  bool requested;
-  Graphic::Requisition requisition;
+  TextBuffer_var buffer;
 };
 
 #endif

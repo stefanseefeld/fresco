@@ -66,16 +66,16 @@ Dispatcher::Dispatcher()
     server(&Dispatcher::run, this)
 {
   Signal::mask(Signal::pipe);
-  Signal::set(Signal::hangup, notifier);
-  Signal::set(Signal::interrupt, notifier);
-  Signal::set(Signal::quit, notifier);
-  Signal::set(Signal::illegal, notifier);
-  Signal::set(Signal::abort, notifier);
-  Signal::set(Signal::fpe, notifier);
-  Signal::set(Signal::bus, notifier);
-  //  Signal::set(Signal::segv, notifier);
-  Signal::set(Signal::iotrap, notifier);
-  Signal::set(Signal::terminate, notifier);
+//   Signal::set(Signal::hangup, notifier);
+//   Signal::set(Signal::interrupt, notifier);
+//   Signal::set(Signal::quit, notifier);
+//   Signal::set(Signal::illegal, notifier);
+//   Signal::set(Signal::abort, notifier);
+//   Signal::set(Signal::fpe, notifier);
+//   Signal::set(Signal::bus, notifier);
+//   //  Signal::set(Signal::segv, notifier);
+//   Signal::set(Signal::iotrap, notifier);
+//   Signal::set(Signal::terminate, notifier);
 }
 
 Dispatcher::~Dispatcher()
@@ -136,6 +136,7 @@ void Dispatcher::bind(Agent *agent, int fd, Agent::iomask_t mask)
 	  if (xchannel.find(fd) == xchannel.end()) xchannel[fd] = new task(fd, agent, Agent::errexc);
 	}
     }
+  sleep(1);
 }
 
 void Dispatcher::release(Agent *agent, int fd)
@@ -204,6 +205,7 @@ void Dispatcher::dispatch(task *t)
 
 void Dispatcher::process(const task &t)
 {
+  Trace trace("Dispatcher::process");
   bool done = !t.agent->process(t.fd, t.mask);
   t.mutex.unlock();
   if (done) t.agent->done(t.fd, t.mask);

@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
+ * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -19,20 +19,22 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _StreamBuffer_idl
-#define _StreamBuffer_idl
+#ifndef _Terminal_hh
+#define _Terminal_hh
 
-#include <Subject.idl>
-#include <Types.idl>
+#include "Warsaw/config.hh"
+#include "Warsaw/StreamBuffer.hh"
+#include "Berlin/ControllerImpl.hh"
 
-interface StreamBuffer : Subject
+class Terminal : public ControllerImpl
 {
-  typedef sequence<octet> Data;
-  readonly attribute long size;
-  readonly attribute long available;
-  Data read();
-  void write(in Data d);
-  void flush();
+ public:
+  Terminal(StreamBuffer_ptr b) : ControllerImpl(false), buffer(StreamBuffer::_duplicate(b)) {}
+  ~Terminal() {}
+// protected:
+  virtual void keyPress(const Input::Event &);
+ private:
+  StreamBuffer_var buffer;
 };
 
-#endif /* _StreamBuffer_idl */
+#endif /* _Terminal_hh */

@@ -125,11 +125,13 @@ static void flexibleTransformRequest(Graphic::Requisition &req, Transform_ptr t)
     {
       Transform::Matrix mat;
       t->storeMatrix(mat);
-      Coord tx = mat[2][0];
-      Coord ty = mat[2][1];
+      Coord tx = mat[0][3];
+      Coord ty = mat[1][3];
+      Coord tz = mat[2][3];
 
       req.x.align = -(-req.x.align * req.x.natural + tx) / req.x.natural;
       req.y.align = -(-req.y.align * req.y.natural + ty) / req.y.natural;
+      req.z.align = -(-req.z.align * req.z.natural + tz) / req.z.natural;
       return;
     }
   
@@ -195,11 +197,13 @@ static void fixedTransformRequest(Graphic::Requisition &req, Transform_ptr t)
     {
       Transform::Matrix mat;
       t->storeMatrix(mat);
-      Coord tx = mat[2][0];
-      Coord ty = mat[2][1];
+      Coord tx = mat[0][3];
+      Coord ty = mat[1][3];
+      Coord tz = mat[2][3];
 
       req.x.align = (req.x.align * req.x.natural - tx) / req.x.natural;
       req.y.align = (req.y.align * req.y.natural - ty) / req.y.natural;
+      req.z.align = (req.z.align * req.z.natural - tz) / req.z.natural;
       return;
     }
 
@@ -485,13 +489,13 @@ Vertex GraphicImpl::transformAllocate(RegionImpl &region, const Graphic::Requisi
 {
   Trace trace("GraphicImpl::transformAllocation");
   Vertex delta;
-  delta.x = Coord(0); delta.y = Coord(0); delta.z = Coord(0);
+  delta.x = delta.y = delta.z = 0.;
   if (!rotated(t))
     {
-      TransformImpl tx;
-      tx.copy(t);
-      tx.invert();
-      region.applyTransform(&tx);
+      Impl_var<TransformImpl> tx(new TransformImpl);
+      tx->copy(t);
+      tx->invert();
+      region.applyTransform(tx);
       region.xalign = req.x.align;
       region.yalign = req.y.align;
       region.zalign = req.z.align;

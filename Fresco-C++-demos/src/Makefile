@@ -38,9 +38,9 @@ include $(cpath)/local.mk
 CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw $(ORBCPPFLAGS)
 CXXFLAGS= -pthread -Wall $(OPTFLAGS)
 LDFLAGS	= -L$(lpath)
-LIBS	= -lWarsaw -lBerlin -lPrague
+LIBS	= -lWarsaw -lBerlin -lPrague -lpthread
 DEMO =	  Application.cc LayoutDemo.cc TextDemo.cc EditTextDemo.cc RasterDemo.cc TransformDemo.cc LogoDemo.cc \
-	  FocusDemo.cc ViewportDemo.cc DocDemo.cc demo.cc
+	  FocusDemo.cc ViewportDemo.cc DocDemo.cc TermDemo.cc demo.cc
 DEP	= $(patsubst %.cc, $(dpath)/%.d, $(DEMO))
 OBJ	= $(patsubst %.cc, $(opath)/%.o, $(DEMO))
 

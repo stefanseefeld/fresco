@@ -76,7 +76,6 @@ streamsize ptybuf::sys_read(char *buf, streamsize len)
   streamsize rval = -1;
   do rval = ::read(fd(), buf, len);
   while (rval == -1 && errno == EINTR);
-  if (rval == -1) cerr << "read error" << endl;
   if (rval == -1 && errno == EIO) return 0;
   if (rval == -1 && errno != EAGAIN) perror("ptybuf::read");
   return rval;

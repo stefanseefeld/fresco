@@ -42,7 +42,7 @@ STATINT	= ClientContext.idl Server.idl Kit.idl Naming.idl \
 	  DrawingKit.idl \
 	  Grid.idl Viewport.idl Stage.idl LayoutKit.idl \
 	  Telltale.idl StreamBuffer.idl Trigger.idl ToolKit.idl \
-	  Choice.idl WidgetKit.idl \
+	  Choice.idl WidgetKit.idl GadgetKit.idl \
 	  Raster.idl ImageKit.idl \
 	  Figure.idl Image.idl FigureKit.idl \
 	  Command.idl CommandKit.idl \

@@ -45,7 +45,7 @@ class CommandKitImpl : implements(CommandKit), public KitImpl
   BoundedValue_ptr bvalue(Coord, Coord, Coord, Coord, Coord);
   BoundedRange_ptr brange(Coord, Coord, Coord, Coord, Coord, Coord);
   TextBuffer_ptr   text();
-  StreamBuffer_ptr stream();
+  StreamBuffer_ptr stream(long);
  private:
   vector<CommandImpl *> commands;
   vector<SubjectImpl *> subjects;

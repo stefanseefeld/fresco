@@ -51,6 +51,7 @@ class ToolKitImpl : implements(ToolKit), public KitImpl
   Controller_ptr   dragger(Graphic_ptr, Command_ptr);
   Controller_ptr   stepper(Graphic_ptr, Command_ptr);
   Controller_ptr   textInput(Graphic_ptr, TextBuffer_ptr);
+  Controller_ptr   terminal(Graphic_ptr, StreamBuffer_ptr);
   Controller_ptr   group(Graphic_ptr);
   Controller_ptr   toggle(Graphic_ptr);
  private:

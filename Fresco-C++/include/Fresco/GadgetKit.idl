@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
+ * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -19,20 +19,25 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _StreamBuffer_idl
-#define _StreamBuffer_idl
+#ifndef _GadgetKit_idl
+#define _GadgetKit_idl
 
-#include <Subject.idl>
-#include <Types.idl>
+#include "Kit.idl"
 
-interface StreamBuffer : Subject
+interface BoundedValue;
+interface Graphic;
+
+interface GadgetKit : Kit
+//. this kit provides some gadgets which allow fancy to do fancy things like modifying transparency 
+//. or transforming a sub graph
+//. this is a just-for-fun kit which is provided to demonstrate how to extend the server's capabilities
+//. Nobody would actually make use of this kit in a serious application, eh ? ;)
 {
-  typedef sequence<octet> Data;
-  readonly attribute long size;
-  readonly attribute long available;
-  Data read();
-  void write(in Data d);
-  void flush();
+  Graphic alpha(in Graphic g, in BoundedValue v);
+  //. allows to manipulate the translucency of the sub graph
+  Graphic transformer(in Graphic g, in BoundedValue v);
+  //. allows to manipulate the local transformation of the sub graph
 };
 
-#endif /* _StreamBuffer_idl */
+#endif
+

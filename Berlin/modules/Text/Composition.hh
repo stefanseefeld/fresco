@@ -1,6 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
+ * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
  * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
@@ -19,20 +20,37 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _StreamBuffer_idl
-#define _StreamBuffer_idl
+#ifndef _Composition_hh
+#define _Composition_hh
 
-#include <Subject.idl>
-#include <Types.idl>
+#include <Warsaw/config.hh>
+#include <Warsaw/View.hh>
+#include <Warsaw/TextKit.hh>
+#include <Berlin/PolyGraphic.hh>
+#include <map>
 
-interface StreamBuffer : Subject
+class Compositor;
+
+declare_corba_ptr_type(DrawingKit)
+declare_corba_ptr_type(DrawTraversal)
+
+class Composition : public PolyGraphic
 {
-  typedef sequence<octet> Data;
-  readonly attribute long size;
-  readonly attribute long available;
-  Data read();
-  void write(in Data d);
-  void flush();
+ public:
+  Composition(DrawingKit_ptr dk, Compositor *);
+  virtual ~Composition();
+  virtual void request(Requisition &);
+  virtual void extension(const Allocation::Info &, Region_ptr);
+  virtual void traverse(Traversal_ptr);
+  virtual void needResize();
+  virtual void needResize(Tag);
+  virtual void allocate(Tag, const Allocation::Info &);
+ protected:
+  RegionImpl **childrenAllocations(Region_ptr);
+  DrawingKit_var canonicalDK;
+  Compositor  *compositor;
+  bool requested;
+  Graphic::Requisition requisition;
 };
 
-#endif /* _StreamBuffer_idl */
+#endif

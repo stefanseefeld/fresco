@@ -33,6 +33,7 @@ interface Controller;
 interface Trigger;
 interface Command;
 interface TextBuffer;
+interface StreamBuffer;
 
 interface ToolKit : Kit
 //. this kit provides common objects for very basic interaction tasks
@@ -79,6 +80,7 @@ interface ToolKit : Kit
   Controller   dragger(in Graphic g, in Command c);
   Controller   stepper(in Graphic g, in Command c);
   Controller   textInput(in Graphic g, in TextBuffer b);
+  Controller   terminal(in Graphic g, in StreamBuffer b);
   Controller   group(in Graphic g);
 };
 

@@ -35,6 +35,7 @@
 #include "Widget/Motif/Panner.hh"
 #include "Widget/Motif/Scrollbar.hh"
 #include "Widget/Motif/Choice.hh"
+#include "Widget/Motif/Terminal.hh"
 
 namespace Motif
 {
@@ -74,6 +75,7 @@ void WidgetKit::bind(ServerContext_ptr context)
   command = resolve_kit<CommandKit>(context, interface(CommandKit), props);
   layout = resolve_kit<LayoutKit>(context, interface(LayoutKit), props);
   tool = resolve_kit<ToolKit>(context, interface(ToolKit), props);
+  text = resolve_kit<TextKit>(context, interface(TextKit), props);
 }
 
 Trigger_ptr WidgetKit::button(Graphic_ptr g, Command_ptr c)
@@ -270,6 +272,18 @@ Choice_ptr WidgetKit::checkboxChoice()
   choice->body(Graphic_var(layout->vbox()));
   graphics.push_back(choice);
   return choice->_this();
+}
+
+Controller_ptr WidgetKit::terminal()
+{
+  Terminal *terminal = new Terminal(command);
+  terminal->_obj_is_ready(_boa());
+  Graphic_var view = text->terminal(StreamBuffer_var(terminal->output()));
+  terminal->body(view);
+  graphics.push_back(terminal);
+  Controller_var input = tool->terminal(Graphic_var(terminal->_this()), StreamBuffer_var(terminal->input()));
+//   input->appendController(Controller_var(terminal->_this()));
+  return input._retn();
 }
 
 Controller_ptr WidgetKit::scrollable(Graphic_ptr g)

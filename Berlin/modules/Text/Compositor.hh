@@ -41,6 +41,8 @@ public:
   virtual void request(long n, Graphic::Requisition *requests, DrawingKit_ptr dk, Graphic::Requisition &result) = 0;
   virtual void allocate(long n, Graphic::Requisition *requests, DrawingKit_ptr dk, Region_ptr given, Allocations result) = 0;
   static void setSpan(RegionImpl *r, Axis a, Coord origin, Coord length, Alignment align);
+  static Coord computeLength(const Graphic::Requirement &, const Region::Allotment &);
+  static Coord computeSqueeze(const Graphic::Requirement &, Coord);
 };
 
 class LRCompositor : public Compositor
@@ -51,8 +53,18 @@ class LRCompositor : public Compositor
 public:
   virtual void request(long, Graphic::Requisition *, DrawingKit_ptr, Graphic::Requisition &);
   virtual void allocate(long, Graphic::Requisition *, DrawingKit_ptr, Region_ptr, Allocations);    
-  static Coord computeLength(const Graphic::Requirement &, const Region::Allotment &);
-  static Coord computeSqueeze(const Graphic::Requirement &, Coord);
+private:
+  Graphic::Requisition requisition;
+};
+
+class TBCompositor : public Compositor
+//. top to button compositor -- aligns horicontally, tiles top to bottom
+//. for now it ignores the DrawingKit parameter and does no compensation
+//. no line breaking
+{
+public:
+  virtual void request(long, Graphic::Requisition *, DrawingKit_ptr, Graphic::Requisition &);
+  virtual void allocate(long, Graphic::Requisition *, DrawingKit_ptr, Region_ptr, Allocations);    
 private:
   Graphic::Requisition requisition;
 };

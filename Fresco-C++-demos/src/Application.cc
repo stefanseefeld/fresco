@@ -57,8 +57,10 @@ Application::Application(Server_ptr server)
     fk(resolve_kit<FigureKit>(context, FigureKit_IntfRepoID)),
     ck(resolve_kit<CommandKit>(context, CommandKit_IntfRepoID)),
     ik(resolve_kit<ImageKit>(context, ImageKit_IntfRepoID)),
+    gk(resolve_kit<GadgetKit>(context, GadgetKit_IntfRepoID)),
     vbox(lk->vbox()),
     choice(wk->toggleChoice()),
+    alpha(ck->bvalue(0., 1., 1., 0.1, 0.1)),
     mapper(new Mapper(demos, Selection_var(choice->state())))
 {
   char *berlin_root = getenv("BERLIN_ROOT");
@@ -93,7 +95,7 @@ void Application::append(Controller_ptr demo, const Unicode::String &name)
   vb->append(hbox);
   ToolKit::FrameSpec spec;
   spec.bbrightness(0.5);
-  Controller_var group = ttk->group(Graphic_var(ttk->frame(vb, 20., spec, true)));
+  Controller_var group = ttk->group(Graphic_var(gk->alpha(Graphic_var(ttk->frame(vb, 20., spec, true)), alpha)));
   group->appendController(demo);
   group->appendController(button);
   Window_var window = dk->transient(group);
@@ -111,6 +113,7 @@ void Application::run()
   ToolKit::FrameSpec spec;
   spec.dbrightness(0.5);
   vbox->append(Graphic_var(ttk->frame(choice, 20., spec, false)));
+  vbox->append(Graphic_var(lk->vspace(200.)));
   Graphic_var glyph1 = tk->chunk(Unicode::toCORBA(Unicode::String("run")));
   Graphic_var label1 = lk->margin(glyph1, 20.);
   Trigger_var run = wk->button(Graphic_var(ttk->rgb(label1, 0., 0., 0.)), Command_var(mapper->_this()));
@@ -121,6 +124,14 @@ void Application::run()
   Trigger_var quit = wk->button(Graphic_var(ttk->rgb(label2, 0., 0., 0.)), Command_var(cmd->_this()));
 
   Graphic_var hbox = lk->hbox();
+  hbox->append(Graphic_var(lk->hglue(200., 0., 10000.)));
+  hbox->append(Graphic_var(wk->slider(alpha, xaxis)));
+  hbox->append(Graphic_var(lk->hglue(200., 0., 10000.)));
+  vbox->append(Graphic_var(lk->hspace(200.)));
+  vbox->append(hbox);
+  vbox->append(Graphic_var(lk->vspace(200.)));
+
+  hbox = lk->hbox();
   hbox->append(Graphic_var(lk->hglue(200., 0., 10000.)));
   hbox->append(run);
   hbox->append(Graphic_var(lk->hspace(200.)));

@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -35,14 +35,14 @@ static const double tolerance = 1e-4;
  *        [ r20 r21 r22 tz]
  *        [ 0   0   0   1 ]
  */
-
-bool LUfactor(Coord matrix[3][3], short pivot[3])
+template <size_t N>
+bool LUfactor(Coord matrix[N][N], size_t pivot[N])
 {
-  for (short j= 0; j < 3; j++)
+  for (size_t j = 0; j < N; j++)
     {
-      short jp = j;
+      size_t jp = j;
       Coord t = Math::abs(matrix[j][j]);
-      for (short i = j + 1; i < 3; i++)
+      for (size_t i = j + 1; i < N; i++)
 	if (Math::abs(matrix[i][j]) > t)
 	  {
 	    jp = i;
@@ -50,41 +50,40 @@ bool LUfactor(Coord matrix[3][3], short pivot[3])
 	  }
       pivot[j] = jp;
       if (Math::equal(matrix[jp][j], 0., 1e-10)) return false;
-      if (jp != j)
-	for (short k = 0; k < 3; k++)
-	  swap(matrix[j][k], matrix[jp][k]);
-      if (j < 2)
+      if (jp != j) for (size_t k = 0; k < N; k++) swap(matrix[j][k], matrix[jp][k]);
+      if (j < N - 1)
         {
-	  Coord recp =  1. / matrix[j][j];
-	  for (short k = j + 1; k < 3; k++)
-	    matrix[k][j] *= recp;
-	  for (short ii = j + 1; ii < 3; ii++)
-	    for (short jj = j + 1; jj < 3; jj++)
+	  Coord scale =  1. / matrix[j][j];
+	  for (size_t k = j + 1; k < N; k++)
+	    matrix[k][j] *= scale;
+	  for (size_t ii = j + 1; ii < N; ii++)
+	    for (size_t jj = j + 1; jj < N; jj++)
 	      matrix[ii][jj] -= matrix[ii][j] * matrix[j][jj];
         }
     }
   return true;
 }
 
-void LUsolve(const Coord matrix[3][3], const short pivot[3], Coord v[3])
+template <size_t N>
+void LUsolve(const Coord matrix[N][N], const size_t pivot[N], Coord v[N])
 {
-  short ii = 0;
+  short ii = -1;
   Coord sum = 0.0;
 
-  for (short i = 0; i < 3; i++) 
+  for (size_t i = 0; i < N; i++) 
     {
       sum = v[pivot[i]];
       v[pivot[i]] = v[i];
-      if (ii)
-	for (short j = ii; j <= i-1; j++) 
+      if (ii != -1)
+	for (size_t j = ii; j <= i - 1; j++) 
 	  sum -= matrix[i][j] * v[j];
       else if (sum) ii = i;
       v[i] = sum;
     }
-  for (short i = 2; i >= 0; i--) 
+  for (short i = static_cast<short>(N) - 1; i >= 0; i--) 
     {
       sum = v[i];
-      for (short j = i + 1; j < 3; j++) 
+      for (size_t j = i + 1; j < N; j++) 
 	sum -= matrix[i][j] * v[j];
       v[i] = sum / matrix[i][i];
     }
@@ -362,18 +361,19 @@ void TransformImpl::transformVertex(Vertex &v)
 void TransformImpl::inverseTransformVertex(Vertex &v)
 {
   Prague::Profiler prf("TransformImpl::inverseTransformVertex");
-  short pivot[3];
-  Coord vertex[3];
-  vertex[0] = (v.x - mat[0][3]);
-  vertex[1] = (v.y - mat[1][3]);
-  vertex[2] = (v.z - mat[2][3]);
-  Coord lu[3][3];
-  for (short i = 0; i != 3; i++)
-    for (short j = 0; j != 3; j++)
+  size_t pivot[4];
+  Coord vertex[4];
+  vertex[0] = v.x;//(v.x - mat[0][3]);
+  vertex[1] = v.y;//(v.y - mat[1][3]);
+  vertex[2] = v.z;//(v.z - mat[2][3]);
+  vertex[3] = 0.;
+  Coord lu[4][4];
+  for (short i = 0; i != 4; i++)
+    for (short j = 0; j != 4; j++)
       lu[i][j] = mat[i][j];
-  if (LUfactor(lu, pivot))
+  if (LUfactor<4>(lu, pivot))
     {
-      LUsolve(lu, pivot, vertex);
+      LUsolve<4>(lu, pivot, vertex);
       v.x = vertex[0];
       v.y = vertex[1];
       v.z = vertex[2];

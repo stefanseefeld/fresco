@@ -37,9 +37,9 @@ class PNG::ibuf : public streambuf
 public:
   ibuf(const Raster::Data &data)
     {
-      char *begin = (char *)data.NP_data(); // soon to be replaced with get_buffer()  -stefan
+      char *begin = (char *)data.get_buffer();
       char *end   = begin + data.length();
-      setg (begin, begin, end);
+      setg(begin, begin, end);
     }
 };
 

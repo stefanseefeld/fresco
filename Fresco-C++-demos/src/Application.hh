@@ -31,7 +31,9 @@
 #include <Warsaw/CommandKit.hh>
 #include <Warsaw/DesktopKit.hh>
 #include <Warsaw/ImageKit.hh>
+#include <Warsaw/GadgetKit.hh>
 #include <Warsaw/Trigger.hh>
+#include <Warsaw/BoundedValue.hh>
 #include <Warsaw/Server.hh>
 #include <Warsaw/ImplVar.hh>
 #include <Warsaw/ClientContextImpl.hh>
@@ -72,6 +74,7 @@ public:
   FigureKit_ptr figure() { return FigureKit::_duplicate(fk);}
   CommandKit_ptr command() { return CommandKit::_duplicate(ck);}
   ImageKit_ptr image() { return ImageKit::_duplicate(ik);}
+  GadgetKit_ptr gadget() { return GadgetKit::_duplicate(gk);}
   void append(Controller_ptr, const Unicode::String &);
   void run();
 protected:
@@ -86,8 +89,10 @@ private:
   FigureKit_var fk;
   CommandKit_var ck;
   ImageKit_var ik;
+  GadgetKit_var gk;
   Graphic_var vbox;
   Choice_var  choice;
+  BoundedValue_var alpha;
   list_t demos;
   Impl_var<Mapper> mapper;
   Color background;

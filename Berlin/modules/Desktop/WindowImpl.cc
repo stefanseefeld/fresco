@@ -220,6 +220,7 @@ Command_ptr WindowImpl::map(CORBA::Boolean f)
 
 void WindowImpl::map()
 {
+  Trace trace("WindowImpl::map");
   MutexGuard guard(mutex);
   if (!unmapped) return;
   Stage_var stage = handle->parent();
@@ -235,6 +236,7 @@ void WindowImpl::map()
 
 void WindowImpl::unmap()
 {
+  Trace trace("WindowImpl::unmap");
   MutexGuard guard(mutex);
   if (unmapped) return;
   unmapped = new UnmappedStageHandle(handle);

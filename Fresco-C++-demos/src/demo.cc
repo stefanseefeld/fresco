@@ -33,6 +33,7 @@
 #include "FocusDemo.hh"
 #include "ViewportDemo.hh"
 #include "DocDemo.hh"
+#include "TermDemo.hh"
 
 using namespace Prague;
 
@@ -56,7 +57,9 @@ int main(int argc, char **argv)
   FocusDemo *focus = new FocusDemo(application);
   ViewportDemo *viewport = new ViewportDemo(application);
   DocDemo *document = new DocDemo(application);
+  TermDemo *terminal = new TermDemo(application);
   application->run();
+  delete terminal;
   delete document;
   delete viewport;
   delete focus;

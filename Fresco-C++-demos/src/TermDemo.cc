@@ -19,20 +19,25 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _StreamBuffer_idl
-#define _StreamBuffer_idl
 
-#include <Subject.idl>
-#include <Types.idl>
+#include "TermDemo.hh"
+#include <fstream>
 
-interface StreamBuffer : Subject
+using namespace Prague;
+
+TermDemo::TermDemo(Application *a)
+  : Demo(a)
 {
-  typedef sequence<octet> Data;
-  readonly attribute long size;
-  readonly attribute long available;
-  Data read();
-  void write(in Data d);
-  void flush();
-};
+  TextKit_var text = application->text();
+  LayoutKit_var layout = application->layout();
+  CommandKit_var command = application->command();
+  ToolKit_var tool = application->tool();
+  WidgetKit_var widget = application->widget();
 
-#endif /* _StreamBuffer_idl */
+  Controller_var terminal = widget->terminal();
+  Controller_var scrollable = widget->scrollable(Graphic_var(tool->rgb(terminal, 0., 0., 0.)));
+  scrollable->appendController(terminal);
+  Controller_var group = tool->group(Graphic_var(layout->fixedSize(scrollable, 4000., 3000.)));
+  group->appendController(scrollable);
+  application->append(group, Unicode::String("terminal demo"));
+};

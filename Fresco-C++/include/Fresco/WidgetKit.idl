@@ -54,6 +54,7 @@ interface WidgetKit : Kit
   Controller   scrollbar(in BoundedRange x, in Axis a);
   Choice       toggleChoice();
   Choice       checkboxChoice();
+  Controller   terminal();
 
   Controller   scrollable(in Graphic g);
 };
