@@ -40,30 +40,30 @@
 class DrawingKitBase : public virtual POA_Warsaw::DrawingKit
 {
   enum gstate
-  {
-    st_trafo, 
-    st_clip,
-    st_fg_color,
-    st_lt_color, 
-    st_point_size, 
-    st_line_width,
-    st_line_end_style, 
-    st_surface_fill_style,
-    st_texture, 
-    st_font_size, 
-    st_font_weight,
-    st_font_family, 
-    st_font_subfamily,
-    st_font_fullname,
-    st_font_style, 
-    st_font_attr,
-    st_last
-  };
-
+    {
+      st_trafo, 
+      st_clip,
+      st_fg_color,
+      st_lt_color, 
+      st_point_size, 
+      st_line_width,
+      st_line_end_style, 
+      st_surface_fill_style,
+      st_texture, 
+      st_font_size, 
+      st_font_weight,
+      st_font_family, 
+      st_font_subfamily,
+      st_font_fullname,
+      st_font_style, 
+      st_font_attr,
+      st_last
+    };
+  
   struct DrawState
   {
     DrawState() : flags(0) {}
-//     bitset<st_last> flags;
+    // bitset<st_last> flags;
     unsigned long flags;
     Warsaw::Transform_var saved_trafo;
     Warsaw::Region_var saved_clip;
@@ -83,13 +83,15 @@ class DrawingKitBase : public virtual POA_Warsaw::DrawingKit
     // something here...
     // for holding NVPair saved_font_attr;
   };
- public:
+
+public:
   virtual void save()
   {
     Prague::Trace trace("DrawingKitBase::save");
     _states.push(DrawState());
   }
   virtual void restore();
+
   //######################################################
   //############### subclass signatures ##################
   //######################################################

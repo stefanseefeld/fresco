@@ -46,6 +46,10 @@ void DrawTraversalImpl::init()
 {
   Trace trace("DrawTraversalImpl::init");
   __this = _this();
+
+  // Save state
+  _drawing->save();
+
   /*
    * initialize the different drawing kit attributes
    */
@@ -56,7 +60,6 @@ void DrawTraversalImpl::init()
   _drawing->lighting(white);
   _drawing->transformation(Transform_var(_id->_this()));
   _drawing->surface_fillstyle(DrawingKit::solid);
-  _drawing->save();
   Vertex l, u;
   _clipping->bounds(l, u);
   /*

@@ -35,6 +35,7 @@ ServerImpl *ServerImpl::_server = 0;;
 
 ServerImpl *ServerImpl::create(const CORBA::PolicyList &policies)
 {
+  assert(_server == 0);
   _server = new ServerImpl(policies);
   return _server;
 }
