@@ -158,6 +158,10 @@ install:	all
 	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(libdir)/Babylon
 	$(SHTOOL) install -C -m 755 $(TARGET) $(DESTDIR)$(libdir)/Babylon
 
+build-tests:
+
+run-tests:
+
 install-doc: #nothing to do
 
 uninstall:

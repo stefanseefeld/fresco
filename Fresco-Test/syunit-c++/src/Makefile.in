@@ -89,6 +89,10 @@ install-doc: # not yet
 
 uninstall: #not yet
 
+build-tests:  # nothing to do here
+
+run-tests: # nothing to do here
+
 clean:	
 	rm -f $(TARGET)
 	rm -f $(OBJ) $(DEP) $(SYN) $(XREF)

@@ -49,6 +49,12 @@ $(subdirs):
 depend:
 	$(MAKE) action="depend"
 
+build-tests:
+	$(MAKE) action="build-tests"
+
+run-tests:
+	$(MAKE) action="run-tests"
+
 doc:
 	$(MAKE) action="doc"
 

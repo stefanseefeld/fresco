@@ -63,6 +63,10 @@ $(TARGET):	$(OBJ)
 
 depend: $(DEP)
 
+build-tests:
+
+run-tests:
+
 xref:	$(docdir)/sxr/Babylon.xref $(docdir)/sxr/Babylon.syn
 
 doc:	$(MANUAL)

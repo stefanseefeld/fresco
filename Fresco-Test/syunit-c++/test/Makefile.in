@@ -53,7 +53,12 @@ vpath %.cc  $(srcdir)
 
 .PHONY: all doc install install-doc clean distclean maintainer-clean dist
 
-all:	$(TARGETS)
+all:
+
+build-tests: $(TARGETS)
+
+run-tests:
+	@echo RUNNING ALL TESTS.
 
 $(TARGETS): $(OBJ)
 	@echo linking $(@F)

@@ -45,6 +45,12 @@ $(subdirs):
 	@echo making $(action) in $@
 	$(MAKE) -C $@ $(action)
 
+build-tests:
+	$(MAKE) action="build-tests"
+
+run-tests:
+	$(MAKE) action="run-tests"
+
 depend:
 	$(MAKE) action="depend"
 
