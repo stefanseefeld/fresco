@@ -71,9 +71,9 @@ BoundedValue_ptr WidgetKitImpl::bvalue(Coord l, Coord u, Coord v, Coord s, Coord
   return bounded->_this();  
 }
 
-BoundedValue_ptr WidgetKitImpl::brange(Coord l, Coord u, Coord lv, Coord uv, Coord s, Coord p)
+BoundedRange_ptr WidgetKitImpl::brange(Coord l, Coord u, Coord lv, Coord uv, Coord s, Coord p)
 {
-   BoundedRangeImpl *bounded = new BoundedRangeImpl(l, u, lv, uv, s, p);
+  BoundedRangeImpl *bounded = new BoundedRangeImpl(l, u, lv, uv, s, p);
   bounded->_obj_is_ready(applyscope(skeletonize(WidgetKit),_boa()));
 
   return bounded->_this();  
