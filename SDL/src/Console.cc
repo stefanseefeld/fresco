@@ -266,6 +266,13 @@ Input::Event *SDL::Console::synthesize(const SDL_Event &e)
 	event[1].attr.location(position);
 	break;
       }
+    case SDL_QUIT:
+      {
+	// this is a CTRL+C sent to the controlling terminal. Berlin may be
+	// already crashed, so terminate forcibly.
+	exit(0);
+	break;
+      }
     }
 
   return event._retn();
