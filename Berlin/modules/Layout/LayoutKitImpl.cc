@@ -38,10 +38,14 @@ using namespace Warsaw;
 using namespace Layout;
 
 LayoutKitImpl::LayoutKitImpl(const std::string &id, const Warsaw::Kit::PropertySeq &p)
-  : KitImpl(id, p), _fill(GraphicImpl::infinity) {}
-LayoutKitImpl::~LayoutKitImpl() { Trace trace("LayoutKitImpl::~LayoutKitImpl");}
+  : KitImpl(id, p), _fill(GraphicImpl::infinity) { }
+
+LayoutKitImpl::~LayoutKitImpl() { cerr << "LayoutKit destructed" << endl; }
+
 void LayoutKitImpl::fill(Coord c) { _fill = c;}
+
 Coord LayoutKitImpl::fill() { return _fill;}
+
 Graphic_ptr LayoutKitImpl::clipper(Graphic_ptr g)
 {
   return Graphic::_nil();

@@ -30,6 +30,7 @@ KitImpl::KitImpl(const std::string &id, const Warsaw::Kit::PropertySeq &p)
   : _repo_id(id), _props(new Warsaw::Kit::PropertySeq(p)), _refcount(1)
 {
   Trace trace("KitImpl::KitImpl");
+  cerr << "KitImpl created" << endl;
 }
 
 KitImpl::~KitImpl()
@@ -37,6 +38,7 @@ KitImpl::~KitImpl()
   Trace trace("KitImpl::~KitImpl");  
   _poa->destroy(true, true);
   delete _props;
+  cerr << "KitImpl destucted." << endl;
 }
 
 CORBA::Boolean KitImpl::supports(const Warsaw::Kit::PropertySeq &p)

@@ -20,6 +20,7 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
+
 #include "Berlin/ImplVar.hh"
 #include "Berlin/ServerImpl.hh"
 #include "Berlin/ServerContextImpl.hh"
@@ -33,8 +34,7 @@ using namespace Warsaw;
 ServerImpl *ServerImpl::_server = 0;
 static Mutex mutex;
 
-ServerImpl *ServerImpl::instance()
-{
+ServerImpl *ServerImpl::instance() {
   Prague::Guard<Mutex> guard(mutex);
   if (!_server) _server = new ServerImpl();
   return _server;
@@ -46,8 +46,8 @@ ServerImpl::ServerImpl() : _thread(&ServerImpl::run, this) {}
 //. once you've found the server. It allocates contexts. It's pretty simple.
 
 //. This is called by the client to get it's server context!
-ServerContext_ptr ServerImpl::create_server_context(ClientContext_ptr c) throw (SecurityException)
-{
+ServerContext_ptr ServerImpl::create_server_context(ClientContext_ptr c)
+    throw (SecurityException) {
   Trace trace("ServerImpl::create_server_context");
   Prague::Guard<Mutex> guard (_mutex);
   Impl_var<ServerContextImpl> sc(new ServerContextImpl(this, c));
@@ -55,37 +55,33 @@ ServerContext_ptr ServerImpl::create_server_context(ClientContext_ptr c) throw (
   return sc._retn()->_this();
 }
 
-void ServerImpl::set_singleton(const char *name, CORBA::Object_ptr singleton) 
-  throw (SecurityException, SingletonFailureException)
-{
+void ServerImpl::set_singleton(const char *name,
+			       CORBA::Object_ptr singleton) 
+  throw (SecurityException, SingletonFailureException) {
   Prague::Guard<Mutex> guard (_mutex);
   _singletons[name] = singleton;
 }
 
 void ServerImpl::remove_singleton(const char *name) 
-  throw (SecurityException, SingletonFailureException)
-{
+  throw (SecurityException, SingletonFailureException) {
   Prague::Guard<Mutex> guard (_mutex);
   smap_t::iterator p = _singletons.find(name);
   if (p != _singletons.end()) _singletons.erase(p);
 }
 
 CORBA::Object_ptr ServerImpl::get_singleton(const char *name) 
-  throw (SecurityException, SingletonFailureException)
-{
+  throw (SecurityException, SingletonFailureException) {
   Prague::Guard<Mutex> guard (_mutex);
   smap_t::iterator p = _singletons.find(name);
   if (p != _singletons.end()) return CORBA::Object::_duplicate(p->second);
   throw SingletonFailureException();
 }
 
-void ServerImpl::start()
-{
+void ServerImpl::start() {
   _thread.start();
 }
 
-void ServerImpl::stop()
-{
+void ServerImpl::stop() {
   Trace trace("ServerImpl::stop");
   Prague::Guard<Mutex> guard (_mutex);
   for (clist_t::iterator i = _contexts.begin(); i != _contexts.end(); i++)
@@ -94,8 +90,7 @@ void ServerImpl::stop()
   exit(0);
 }
 
-void ServerImpl::ping()
-{
+void ServerImpl::ping() {
   Trace trace("ServerImpl::ping");
   Prague::Guard<Mutex> guard (_mutex);
   clist_t tmp;
@@ -107,8 +102,7 @@ void ServerImpl::ping()
   _contexts = tmp;
 };
 
-void ServerImpl::scan(const std::string &name)
-{
+void ServerImpl::scan(const std::string &name) {
   Prague::Guard<Mutex> guard(_mutex);
   /*
    * load all files in <name> according to the regexp '\\.so'
@@ -133,23 +127,22 @@ void ServerImpl::scan(const std::string &name)
 }
 
 //. hope you know what you are doing if you call this...
-void ServerImpl::clear()
-{
+void ServerImpl::clear() {
   Prague::Guard<Mutex> guard(_mutex);
   for (pmap_t::iterator i = _plugins.begin(); i != _plugins.end(); ++i) delete *i;
   _plugins.clear();
 }
 
-ServerImpl::PluginList ServerImpl::list()
-{
+ServerImpl::PluginList ServerImpl::list() {
   PluginList pl;
   for (pmap_t::iterator i = _plugins.begin(); i != _plugins.end(); ++i)
     pl.insert(PluginList::value_type((**i)->repo_id(), (**i)->properties()));
   return pl;
 }
 
-KitImpl *ServerImpl::create(const char *type, const Kit::PropertySeq &properties, PortableServer::POA_ptr poa)
-{
+KitImpl *ServerImpl::create(const char *type,
+			    const Kit::PropertySeq &properties,
+			    PortableServer::POA_ptr poa) {
   Trace trace("ServerImpl::create");
   for (pmap_t::iterator i = _plugins.begin(); i != _plugins.end(); ++i)
     if ((**i)->_is_a(type) && (**i)->supports(properties))
@@ -164,8 +157,7 @@ KitImpl *ServerImpl::create(const char *type, const Kit::PropertySeq &properties
   return 0;
 }
 
-void *ServerImpl::run(void *X)
-{
+void *ServerImpl::run(void *X) {
   ServerImpl *server = reinterpret_cast<ServerImpl *>(X);
   while (true)
     {
@@ -175,8 +167,7 @@ void *ServerImpl::run(void *X)
   return 0;
 }
 
-void ServerImpl::destroy_context(ServerContextImpl *context)
-{
+void ServerImpl::destroy_context(ServerContextImpl *context) {
   Trace trace("ServerImpl::destroy_context");
   PortableServer::POA_var poa = context->_default_POA();
   PortableServer::ObjectId *oid = poa->servant_to_id(context);

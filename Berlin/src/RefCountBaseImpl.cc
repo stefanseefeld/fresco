@@ -34,13 +34,14 @@ void RefCountBaseImpl::increment()
 {
   Trace trace("RefCountBaseImpl::increment");
   Prague::Guard<Mutex> guard(mutex);
-  refcount++;
+  ++refcount;
 }
 
 void RefCountBaseImpl::decrement()
 {
   Trace trace("RefCountBaseImpl::decrement");
   Prague::Guard<Mutex> guard(mutex);
-  if (!--refcount) deactivate();
+  --refcount;
+  if (!refcount) deactivate();
 }
 

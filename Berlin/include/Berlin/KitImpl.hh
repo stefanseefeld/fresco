@@ -45,8 +45,15 @@ public:
   void activate(::ServantBase *);
   void deactivate(::ServantBase *);
 
-  virtual void increment() { _refcount++;}
-  virtual void decrement() { if (!--_refcount) deactivate();}
+    virtual void increment() { _refcount++; cerr << "KitImpl::increment " << _repo_id << ": " << _refcount << endl;}
+  virtual void decrement() {
+      --_refcount;
+      cerr << "KitImpl::decrement " << _repo_id << ": " << _refcount;
+      if (!_refcount) {
+	  cerr << " DEACTIVATED" << endl;
+	  deactivate();}
+      else cerr << endl;
+  }
 private:
   void activate(PortableServer::POA_ptr);
   void deactivate();

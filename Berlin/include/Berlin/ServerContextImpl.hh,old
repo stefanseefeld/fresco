@@ -50,6 +50,8 @@ class ServerContextImpl : public virtual POA_Warsaw::ServerContext,
   CORBA::Object_ptr get_singleton(const char *) 
     throw (Warsaw::SecurityException, Warsaw::SingletonFailureException);
   bool ping();
+
+  PortableServer::POA_ptr _default_poa() { return _my_poa; }
  private:
   static unsigned long      _counter;
   ServerImpl               *_server;
@@ -57,6 +59,7 @@ class ServerContextImpl : public virtual POA_Warsaw::ServerContext,
   klist_t                   _kits;
   CORBA::PolicyList         _policies;
   Prague::Mutex             _mutex;
+  PortableServer::POA_var   _my_poa;
 };
 
 #endif

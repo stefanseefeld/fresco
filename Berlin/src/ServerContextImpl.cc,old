@@ -42,19 +42,17 @@ unsigned long ServerContextImpl::_counter = 0;
 // occasionally pings the client to make sure it's still there.
 
 ServerContextImpl::ServerContextImpl(ServerImpl *s, ClientContext_ptr c)
-    : _server(s), _client(ClientContext::_duplicate(c))
-{
-  Trace trace("ServerContextImpl::ServerContextImpl");
-//   PortableServer::POA_var root = _default_POA();
-//   policies.length(1);
-//   policies[0] = root->create_implicit_activation_policy(PortableServer::NO_IMPLICIT_ACTIVATION);
+    : _server(s), _client(ClientContext::_duplicate(c)) {
+    Trace trace("ServerContextImpl::ServerContextImpl");
+    //   PortableServer::POA_var root = _default_POA();
+    //   policies.length(1);
+    //   policies[0] = root->create_implicit_activation_policy(PortableServer::NO_IMPLICIT_ACTIVATION);
 }
 
-ServerContextImpl::~ServerContextImpl()
-{
+ServerContextImpl::~ServerContextImpl() {
   Trace trace("ServerContextImpl::~ServerContextImpl");
   for (klist_t::iterator i = _kits.begin(); i != _kits.end(); ++i)
-    (*i).second->decrement();
+      (*i).second->decrement();
 }
 
 ClientContext_ptr ServerContextImpl::client() { return ClientContext::_duplicate(_client);}
@@ -62,20 +60,17 @@ ClientContext_ptr ServerContextImpl::client() { return ClientContext::_duplicate
 // will fill the rest of these in as needs arise. They should do something reasonably obvious.
 
 void ServerContextImpl::set_singleton(const char *name, CORBA::Object_ptr singleton)
-  throw (SecurityException, SingletonFailureException)
-{
+  throw (SecurityException, SingletonFailureException) {
   _server->set_singleton(name, singleton);
 }
 
-void ServerContextImpl::remove_singleton(const char *name) 
-  throw (SecurityException, SingletonFailureException)
-{
-  _server->remove_singleton(name);
+void ServerContextImpl::remove_singleton(const char *name)
+  throw (SecurityException, SingletonFailureException) {
+    _server->remove_singleton(name);
 }
 
 CORBA::Object_ptr ServerContextImpl::get_singleton(const char *name) 
-  throw (SecurityException, SingletonFailureException)
-{
+  throw (SecurityException, SingletonFailureException) {
   return _server->get_singleton(name);
 }
 
@@ -83,19 +78,18 @@ CORBA::Object_ptr ServerContextImpl::get_singleton(const char *name)
 // ClientContext to make sure they are allowed to construct objects on
 // this server.
 
-Kit_ptr ServerContextImpl::resolve(const char *type, const Kit::PropertySeq &properties)    
-  throw (SecurityException, CreationFailureException)
-{
+Kit_ptr ServerContextImpl::resolve(const char *type,
+				   const Kit::PropertySeq &properties)    
+  throw (SecurityException, CreationFailureException) {
   /*
    * look for loaded kits first
    */
   klist_t::iterator k1 = _kits.lower_bound(type), k2 = _kits.upper_bound(type);
   for (klist_t::iterator i = k1; i != k2; ++i)
-    if ((*i).second->supports(properties))
-      {
+    if ((*i).second->supports(properties)) {
 	(*i).second->increment();
 	return (*i).second->_this();
-      }
+    }
   /*
    * now try the factories
    */
@@ -110,7 +104,6 @@ Kit_ptr ServerContextImpl::resolve(const char *type, const Kit::PropertySeq &pro
   KitImpl *kit = _server->create(type, properties, poa);
   if (!kit) throw CreationFailureException();
   kit->bind(ServerContext_var(_this()));
-  kit->increment();
   _kits.insert(klist_t::value_type(type, kit));
   return kit->_this();
 }
@@ -118,8 +111,7 @@ Kit_ptr ServerContextImpl::resolve(const char *type, const Kit::PropertySeq &pro
 // this will nuke all allocated objects if the client has died, and then tell the caller 
 // (Server) who will most likely destroy this ServerContext.
 
-bool ServerContextImpl::ping()
-{
+bool ServerContextImpl::ping() {
   Trace trace("ServerContextImpl::ping");
   Prague::Guard<Mutex> guard(_mutex);
   bool alive = true;

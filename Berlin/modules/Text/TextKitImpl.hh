@@ -31,6 +31,7 @@
 #include <Berlin/ImplVar.hh>           // for the impls
 #include <Babylon/String.hh>           // for Babylon::String
 #include <Prague/Sys/Thread.hh>        // for Mutex
+#include <Berlin/RefCountVar.hh>       // for the RefCount_var
 #include <map>                         // for the cache
 #include <vector>                      // for the gc
 
@@ -63,7 +64,7 @@ class TextKitImpl : public virtual POA_Warsaw::TextKit,
   cache_t                _cache;
   Warsaw::DrawingKit_var _canonicalDK;
 
-  Warsaw::LayoutKit_var _layout;
+  RefCount_var<Warsaw::LayoutKit> _layout;
   Impl_var<Strut>       _strut;
   Prague::Mutex         _mutex;
   Compositor           *_lineCompositor;

@@ -106,7 +106,9 @@ private:
 
 ToolKitImpl::ToolKitImpl(const std::string &id, const Warsaw::Kit::PropertySeq &p)
   : KitImpl(id, p) {}
-ToolKitImpl::~ToolKitImpl() { Trace trace("ToolKitImpl::~ToolKitImpl");}
+
+ToolKitImpl::~ToolKitImpl() { cerr << "Destructing ToolKit" << endl; }
+
 Graphic_ptr ToolKitImpl::debugger(Graphic_ptr g, const char *s)
 {
   Trace trace("ToolKitImpl::debugger");
