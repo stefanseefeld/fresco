@@ -23,13 +23,15 @@ SHELL		:= /bin/sh
 VERSION		:= @VERSION@
 
 top_srcdir	:= @topdir@
+builddir	:= ../../..
+cdir		:= $(builddir)/config
 srcdir		:= $(top_srcdir)/doc/Tutorial/Berlin
-cdir		:= ../../config
+ddir		:= $(builddir)/doc/Tutorial/html
 
-xslt		:= 4xslt
-dbxsl		:=
+xslt		:= @XSLT@
+dbxsl		:= @DBXSL@
 
-SRC		:= hello.xml kits.xml hello-list.xml book.xml #chapter1.xml chapter2.xml chapter3.xml
+SRC		:= hello.xml kits.xml hello-list.xml book.xml
 FIG		:= $(wildcard $(srcdir)/figures/*.dia)
 EPS		:= $(patsubst $(srcdir)/figures/%.dia, figures/%.eps, $(FIG))
 JPG		:= $(patsubst $(srcdir)/figures/%.dia, figures/%.jpg, $(FIG))
@@ -37,17 +39,30 @@ JPG		:= $(patsubst $(srcdir)/figures/%.dia, figures/%.jpg, $(FIG))
 .PHONY: all
 .PHONY: depclean clean distclean maintainer-clean dist clean
 
-TARGETS		:= book.html
+html		:= book.html # change that as soon as chunking is more widespreadly available
+ps		:= book.ps
+pdf		:= book.pdf
+
+TARGETS		:= $(html) #$(ps) $(pdf)
 
 vpath %.xml  $(srcdir)
 
-all:	#$(TARGETS)
+all:	$(TARGETS)
 
-book.html:	$(JPG) $(SRC)
-	$(xslt) $(srcdir)/book.xml $(dbxsl) > $@
+$(html):	$(JPG) $(SRC)
+#	(cd ../html/Berlin && $(xslt) $(srcdir)/book.xml $(dbxsl) > book.html)
+	$(xslt) $(srcdir)/book.xml $(dbxsl)/html/docbook.xsl > book.html
+
+$(ps):	$(html)
+#	$(xslt) $(srcdir)/book.xml $(dbxsl)/fo/docbook.xsl > book.fo
+	html2ps -o $@ $<
+
+$(pdf):	$(ps)
+	ps2pdf $<
 
 clean:
-	rm -f book.html figures/*.jpg figures/*.pdf figures/*.eps
+	rm -fr $(TARGETS) figures/*.jpg figures/*.pdf figures/*.eps
+
 distclean maintainer-clean:
 	rm -f Makefile
 

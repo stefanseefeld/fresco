@@ -1,0 +1,8 @@
+The tutorial is written in docbook XML. There are a couple of
+possibilities to generate useful / readable formats from it.
+I recommend Norman Walsh's docbook xsl stylesheets
+(http://www.nwalsh.com/docbook/xsl/). To use them, you need
+an xslt processor, such as 4xslt (from http://www.4suite.org).
+Once you have both installed, you should be able to run 'make'
+in this directory and get 'book.html'.
+
