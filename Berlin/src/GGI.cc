@@ -147,7 +147,7 @@ Input::Event *GGIConsole::next_event()
   if (autoplay) rfdset.set(input);
   int nfds = -1;
   do nfds = ggiEventSelect(visual, &mask, rfdset.max() + 1, rfdset, 0, 0, 0);
-  while (wval == -1 && errno == EINTR);
+  while (nfds == -1 && errno == EINTR);
   if (nfds == 0)
     {
       // no input from the outside world
