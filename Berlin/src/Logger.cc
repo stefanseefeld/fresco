@@ -24,6 +24,8 @@
 
 #include "Berlin/Logger.hh"
 
+using namespace Prague;
+
 bool         Logger::active[numGroups] = {false, false, false, false, false, false, false, false, false, false,
 					  false, false, false, false, false, false, false, false};
 const char * Logger::groupname[numGroups] = {"corba", "loader", "traversal", "thread", "main",
@@ -33,7 +35,7 @@ const char * Logger::groupname[numGroups] = {"corba", "loader", "traversal", "th
 logbuf       Logger::buf(1024 * 64);
 logstream    Logger::los(&buf);
 EventLogger  Logger::events(256);
-Prague::Time Logger::start = Time::currentTime();
+Time         Logger::start = Time::currentTime();
 Mutex        Logger::mutex;
 
 void Logger::dump(ostream &os)

@@ -30,14 +30,14 @@ include $(cpath)/local.mk
 # Compilation and linking flags.
 CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw
 LDFLAGS	= -shared -rdynamic -L$(lpath)
-LIBS	= -lnana -lPrague $(ORBLIBS)
+LIBS	= -lPrague -lBerlin
 
 SRC 	= CommandKitImpl.cc ReactorImpl.cc
 
-TARGET	= $(lpath)/libCommand.so
+TARGET	= $(mpath)/libCommand.so
 
 vpath %.d $(dpath)
 vpath %.hh  $(ipath)/Warsaw $(ipath)/Berlin $(ipath)/Command
 
-include $(cpath)/plugin.mk
+include $(cpath)/module.mk
 

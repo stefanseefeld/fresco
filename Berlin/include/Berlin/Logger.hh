@@ -41,8 +41,6 @@
 // you're writing to is enabled. Then when the system keels over, we dump the
 // in-core log and ask users to mail it to us, as a bug report
 
-using namespace Prague;
-
 class Logger
 {
 public:
@@ -99,9 +97,9 @@ private:
   friend _streamlock operator << (const _streamlock &sl, const T &t) { Logger::write(sl.g, t); return sl;}
   static bool active[numGroups];
   static const char *groupname[numGroups]; 
-  static logbuf buf;
-  static logstream los;
-  static EventLogger events;    
+  static Prague::logbuf buf;
+  static Prague::logstream los;
+  static Prague::EventLogger events;    
   static Prague::Time start;
   static Mutex mutex;
 };

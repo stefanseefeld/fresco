@@ -34,6 +34,8 @@
 #include "Prague/Sys/DLL.hh"
 #include "Prague/Sys/Directory.hh"
 
+using namespace Prague;
+
 class Plugin : private DLL
 {
 public:

@@ -30,6 +30,7 @@
 #include "Widget/ControllerImpl.hh"
 #include "Widget/Filler.hh"
 #include "Widget/Frame.hh"
+#include "Widget/ButtonImpl.hh"
 #include "Berlin/DebugGraphic.hh"
 #include "Berlin/Plugin.hh"
 
@@ -143,19 +144,35 @@ View_ptr WidgetKitImpl::pushButtonFrame(Graphic_ptr g, const Color &c, Telltale_
   return frame->_this();
 }
 
-Controller_ptr WidgetKitImpl::button(Graphic_ptr g, const Color &c)
+// Controller_ptr WidgetKitImpl::button(Graphic_ptr g, const Color &c)
+// {
+//   ControllerImpl *controller = new ControllerImpl;
+//   controller->_obj_is_ready(_boa());
+//   graphics.push_back(controller);
+//   DynamicFrame *frame = new DynamicFrame(2, c, Frame::concav, Frame::convex, Telltale::toggle);
+//   frame->_obj_is_ready(_boa());
+//   graphics.push_back(frame);
+//   frame->body(g);
+//   frame->attach(Controller_var(controller->_this()));
+//   controller->body(Graphic_var(frame->_this()));
+//   return controller->_this();
+// };
+
+Button_ptr WidgetKitImpl::pushButton(Graphic_ptr g, const Color &b, Command_ptr c)
 {
-  ControllerImpl *controller = new ControllerImpl;
-  controller->_obj_is_ready(_boa());
-  graphics.push_back(controller);
-  DynamicFrame *frame = new DynamicFrame(2, c, Frame::concav, Frame::convex, Telltale::toggle);
+  ButtonImpl *button = new ButtonImpl;
+  button->_obj_is_ready(_boa());
+  button->action(c);
+  graphics.push_back(button);
+
+  DynamicFrame *frame = new DynamicFrame(2, b, Frame::concav, Frame::convex, Telltale::toggle);
   frame->_obj_is_ready(_boa());
   graphics.push_back(frame);
   frame->body(g);
-  frame->attach(Controller_var(controller->_this()));
-  controller->body(Graphic_var(frame->_this()));
-  return controller->_this();
-};
+  frame->attach(Controller_var(button->_this()));
+  button->body(Graphic_var(frame->_this()));
+  return button->_this();
+}
 
 Graphic_ptr WidgetKitImpl::debugger(Graphic_ptr g, const char *s)
 {

@@ -40,8 +40,10 @@
 // is a "match" if the payload in a received message is the same as
 // the binding.
 
-class ReactorImpl : implements(Reactor), public virtual CloneableImpl {
-  
+class ReactorImpl : implements(Reactor)//, public virtual CloneableImpl {
+{  
+  typedef vector<Command_var> clist_t;
+  typedef map<CORBA::TypeCode_var, clist_t> dictionary_t; 
 public: 
   virtual void accept(const Message &m);
   virtual CORBA::Boolean active();
@@ -52,11 +54,11 @@ public:
 protected:
   // just copies the reactor map. a little helper function
   void copy_react_map_to(Reactor_ptr r);
-  bool amRunning;
+  bool running;
   
   // the command dispatch table
-  map< CORBA::TypeCode_var, vector<Command_var> > react_map; 
-  Mutex map_mutex;  
+  dictionary_t commands; 
+  Mutex mutex;  
 };
     
 

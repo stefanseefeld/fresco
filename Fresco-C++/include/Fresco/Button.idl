@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
+ * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -19,24 +19,22 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _CommandKitImpl_hh
-#define _CommandKitImpl_hh
+#ifndef _Button_idl
+#define _Button_idl
 
-#include <Warsaw/config.hh>
-#include <Warsaw/CommandKit.hh>
-#include <Berlin/CloneableImpl.hh>
+#include "Controller.idl"
 
-class CommandKitImpl : implements(CommandKit), virtual public CloneableImpl
+interface Command;
+
+interface Button : Controller
+//. A button is a controller that can execute a command when clicked
+//. (pressed and subsequently released with the pointer over
+//. the button's allocated area). Buttons manipulate a telltale
+//. that represents the current state of the button and
+//. determines the button's appearance.
 {
-public:
-  
-  CommandKitImpl();
-  virtual ~CommandKitImpl();
-  Reactor_ptr asyncReactor(const ReactorBindingList &);
-  Reactor_ptr syncReactor(const ReactorBindingList &);
-  Command_ptr sendMessage(const Message &, MessageListener_ptr);
-  Command_ptr forwardMessage(MessageListener_ptr);
-  Command_ptr log(const char *);
+  attribute Command action;
+  //. The button will execute its command (if not nil) when clicked.
 };
 
-#endif
+#endif /* _Button_idl */

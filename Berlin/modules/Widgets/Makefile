@@ -33,7 +33,8 @@ LDFLAGS	= -shared -rdynamic -L$(lpath)
 LIBS	= -lPrague -lBerlin
 
 SRC	= BoundedValueImpl.cc BoundedRangeImpl.cc TelltaleImpl.cc TextBufferImpl.cc StreamBufferImpl.cc\
-	  ControllerImpl.cc Bevel.cc Frame.cc Filler.cc WidgetKitImpl.cc
+	  ControllerImpl.cc Bevel.cc Frame.cc Filler.cc \
+	  ButtonImpl.cc WidgetKitImpl.cc
 
 TARGET	= $(mpath)/libWidget.so
 

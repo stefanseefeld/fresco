@@ -72,15 +72,16 @@ interface CommandKit : Cloneable {
     // thread during Message receipt
     Reactor syncReactor(in ReactorBindingList initialBindings);
 
-    Command adjustBoundedValue(in BoundedValue bv);
+//     Command adjustBoundedValue(in BoundedValue bv);
 
 
     Command sendMessage(in Message msgToSend, in MessageListener recipient);
     Command forwardMessage(in MessageListener recipient);
-    Command forwardByGeometry(in MessageListener recipient, in Graphic geom);
-    Command executeAfterCompleteClick(in Command otherCmd, 
-				      in Graphic regionToWatch, 
-				      in unsigned long buttonNumber);
+//     Command forwardByGeometry(in MessageListener recipient, in Graphic geom);
+//     Command executeAfterCompleteClick(in Command otherCmd, 
+// 				      in Graphic regionToWatch, 
+// 				      in unsigned long buttonNumber);
+    Command log(in string t);
     // more commands to follow in here
 
 };

@@ -41,6 +41,8 @@ interface StreamBuffer;
 interface Graphic;
 interface View;
 interface Controller;
+interface Command;
+interface Button;
 
 interface WidgetKit : Cloneable
 {
@@ -58,7 +60,9 @@ interface WidgetKit : Cloneable
   Graphic filler(in Graphic g, in Color c);
   View    pushButtonFrame(in Graphic g, in Color c, in Telltale t);
 
-  Controller button(in Graphic g, in Color c); // don't worry, just a test...
+//   Controller _button(in Graphic g, in Color c); // don't worry, just a test...
+
+  Button pushButton(in Graphic g, in Color b, in Command c);
 
 //   Graphic button(in Reactor strategy, in Telltale subj);
 //   Graphic slider(in Reactor strategy, in BoundedValue subj);

@@ -24,6 +24,9 @@
 
 #include <vector>
 
+namespace Prague
+{
+
 class EventLogger
 {
 public:
@@ -60,6 +63,8 @@ private:
   unsigned int next;
   bool wrapflag : 1;
   bool wrapped  : 1;
+};
+
 };
 
 #endif /* _EventLogger_hh */

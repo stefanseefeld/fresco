@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
+ * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -19,24 +19,22 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _CommandKitImpl_hh
-#define _CommandKitImpl_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/CommandKit.hh>
-#include <Berlin/CloneableImpl.hh>
+#include "Warsaw/config.hh"
+#include "Warsaw/Event.hh"
+#include "Warsaw/PickTraversal.hh"
+#include "Widget/ButtonImpl.hh"
 
-class CommandKitImpl : implements(CommandKit), virtual public CloneableImpl
+void ButtonImpl::release(PickTraversal_ptr traversal, const Event::Pointer *pointer)
 {
-public:
-  
-  CommandKitImpl();
-  virtual ~CommandKitImpl();
-  Reactor_ptr asyncReactor(const ReactorBindingList &);
-  Reactor_ptr syncReactor(const ReactorBindingList &);
-  Command_ptr sendMessage(const Message &, MessageListener_ptr);
-  Command_ptr forwardMessage(MessageListener_ptr);
-  Command_ptr log(const char *);
-};
-
-#endif
+  /*
+   * once we have real focus management the command should be executed
+   * if we have focus and the Telltale::toggle is to be released... -stefan
+   */
+  if (test(Telltale::toggle))
+    {
+      Message dummy;
+      command->execute(dummy);
+      clear(Telltale::toggle);
+    }
+}
