@@ -47,6 +47,7 @@ using namespace Fresco;
 using namespace libArt;
 
 libArt::DrawingKit::~DrawingKit() {}
+
 libArt::DrawingKit::DrawingKit(const std::string &id, const Fresco::Kit::PropertySeq &p)
   : KitImpl(id, p),
     _drawable(0),
@@ -58,6 +59,8 @@ libArt::DrawingKit::DrawingKit(const std::string &id, const Fresco::Kit::Propert
   // textures(100), 
   // tx(0)
 {
+    _lt.red = 1.0; _lt.green = 1.0; _lt.blue = 1.0; _lt.alpha = 1.0;
+    _fg.red = 1.0; _fg.green = 1.0; _fg.blue = 1.0; _fg.alpha = 1.0;
 }
 
 KitImpl *libArt::DrawingKit::clone(const Fresco::Kit::PropertySeq &p)
