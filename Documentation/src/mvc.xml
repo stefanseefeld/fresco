@@ -44,7 +44,7 @@
       general, referred to as the client/server separation. In many windowing
       systems, the client stores the majority of data structures, and the
       display server stores the minimum data required to represent its drawing
-      state. In berlin, we have much more flexibility over storage locations,
+      state. In fresco, we have much more flexibility over storage locations,
       for two reasons: the client/server communication protocol is generated
       automatically by the CORBA stub compiler, so it is very easy to add
       semantically rich concepts to its "vocabulary"; and the display server
@@ -132,7 +132,7 @@
     <sect2><title>concrete examples</title>
       <para>
 	<!-- talk about concrete examples -->Here we give some examples of
-	Models which berlin has pre-made interfaces for observing and
+	Models which fresco has pre-made interfaces for observing and
 	modifying. They should help convey the idea of Model, if it's not yet
 	clear.
       </para>
@@ -163,7 +163,7 @@
       <sect3><title>strings</title>
         <para>
 	  <!-- talk about strings -->Strings, the most common example that we all
-	  know and love, are slightly more complex in berlin since we use the
+	  know and love, are slightly more complex in fresco since we use the
 	  Unicode text encoding internally. Specifically, every time text is
 	  changed in a modifiable string buffer, we must re-chunk the text into
 	  indivisible units (not the same as characters), and then sequentially

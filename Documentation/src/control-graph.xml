@@ -56,7 +56,7 @@
     </para>
     <para>
       Each logical device now posesses any number of these attributes which are the only
-      means for berlin to describe them. For example mice and keyboards would be described as
+      means for fresco to describe them. For example mice and keyboards would be described as
       <table frame="all" pgwide="1">
         <title>logical devices</title>
         <tgroup cols="4">

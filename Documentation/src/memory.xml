@@ -21,7 +21,7 @@
         one-to-one mapping between objects and servants, which lasts over the whole
         life time of both, in some contexts it might be better to let the server
         incarnate objects by servants on demand, and evict servants whenever it is
-        short of memory. In the context of berlin, we use a one-to-one mapping,
+        short of memory. In the context of fresco, we use a one-to-one mapping,
         where objects are activated with newly created servants, and the servants
         life time is bound by the object.
       </para>

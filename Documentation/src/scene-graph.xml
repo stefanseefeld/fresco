@@ -1,8 +1,8 @@
 <chapter><title>the scene graph</title>
   <para>
     <!-- talk about the scene graph -->A central difference between the
-    berlin server and other display servers you might have encountered is
-    that berlin maintains a detailed, abstract graph of the current scene in
+    fresco server and other display servers you might have encountered is
+    that fresco maintains a detailed, abstract graph of the current scene in
     its own process memory. This means that, rather than asking client
     applications to repaint every window whenever any change occurs, a lot
     of the redrawing machinery is contained within the server. 
@@ -102,7 +102,7 @@
 	many of which may have different cumulative transformations. Thus is can
 	only store "relative" information about its layout requirements, and
 	have its true state computed on the fly. This is known as
-	"externalizing" its state; in berlin we attempt to externalize as much
+	"externalizing" its state; in fresco we attempt to externalize as much
 	state from each graphic as possible. Partly this is done to facilitate
 	the memory savings mentionned previously, but it also simplifies the task of
 	maintaining the proper values for layout and cumulative transformation,
