@@ -47,15 +47,31 @@ using namespace Warsaw;
 LibArtDrawingKit::~LibArtDrawingKit() {}
 LibArtDrawingKit::LibArtDrawingKit(const std::string &id, const Warsaw::Kit::PropertySeq &p)
   : KitImpl(id, p),
-    _drawable(Console::drawable()), 
-    _xres(_drawable->resolution(xaxis)),
-    _yres(_drawable->resolution(yaxis)),
-    _font(new LibArtFTFont(_drawable)),
-    _unifont(new LibArtUnifont(_drawable)),
+    _drawable(0),
+    _xres(1.),
+    _yres(1.),
+    _font(0),
+    _unifont(0),
     _rasters(500)
   // textures(100), 
   // tx(0)
 {
+}
+
+KitImpl *LibArtDrawingKit::clone(const Warsaw::Kit::PropertySeq &p)
+{
+  LibArtDrawingKit *kit = new LibArtDrawingKit(repo_id(), p);
+  kit->init();
+  return kit;
+}
+
+void LibArtDrawingKit::init()
+{
+  _drawable = Console::drawable();
+  _xres = _drawable->resolution(xaxis);
+  _yres = _drawable->resolution(yaxis);
+  _font = new LibArtFTFont(_drawable);
+  _unifont = new LibArtUnifont(_drawable);
   _screen.x0 = 0;
   _screen.y0 = 0;
   _screen.x1 = _drawable->width();

@@ -52,7 +52,7 @@ class GLDrawingKit : public virtual POA_Warsaw::DrawingKit3D,
 public:
   GLDrawingKit(const std::string &, const Warsaw::Kit::PropertySeq &);
   virtual ~GLDrawingKit();
-  virtual KitImpl *clone(const Warsaw::Kit::PropertySeq &p) { return new GLDrawingKit(repo_id(), p);}
+  virtual KitImpl *clone(const Warsaw::Kit::PropertySeq &);
 
   virtual void transformation(Warsaw::Transform_ptr t) { DrawingKitBase::transformation(t);}
   virtual Warsaw::Transform_ptr transformation() { return Warsaw::Transform::_duplicate(_tr);}
@@ -134,6 +134,7 @@ public:
 //   Coord width() { return drawable->width();}
 //   Coord height() { return drawable->height();}
  private:
+  void init();
   Console::Drawable                         *_drawable;
 #if defined(CONSOLE_GGI)
   GGIMesaContext                             _context;

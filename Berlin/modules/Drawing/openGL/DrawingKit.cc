@@ -39,13 +39,25 @@ using namespace Warsaw;
 
 GLDrawingKit::GLDrawingKit(const std::string &id, const Warsaw::Kit::PropertySeq &p)
   : KitImpl(id, p),
-    _drawable(Console::drawable()),
+    _drawable(0),
     _tx(0),
-    _font(new GLUnifont),
+    _font(0),
     _textures(100),
     _images(500)
 {
-    
+}
+
+KitImpl *GLDrawingKit::clone(const Warsaw::Kit::PropertySeq &p)
+{
+  GLDrawingKit *kit = new GLDrawingKit(repo_id(), p);
+  kit->init();
+  return kit;
+}
+
+void GLDrawingKit::init()
+{   
+  _drawable = Console::drawable();
+  _font = new GLUnifont();
 #if defined(CONSOLE_GGI)
   _context = GGIMesaCreateContext();
   if (!_context)

@@ -48,7 +48,7 @@ class LibArtDrawingKit : public DrawingKitBase, public KitImpl
 public:
   LibArtDrawingKit(const std::string &, const Warsaw::Kit::PropertySeq &);
   virtual ~LibArtDrawingKit();
-  virtual KitImpl *clone(const Warsaw::Kit::PropertySeq &p) { return new LibArtDrawingKit(repo_id(), p);}
+  virtual KitImpl *clone(const Warsaw::Kit::PropertySeq &);
 
   virtual void transformation(Warsaw::Transform_ptr t) { DrawingKitBase::transformation(t);}
   virtual Warsaw::Transform_ptr transformation() { return Warsaw::Transform::_duplicate(_tr);}
@@ -113,6 +113,7 @@ public:
   virtual void flush();
 
  private:
+  void init();
   void rasterize_pixbuf(ArtPixBuf *pixbuf);
   void identity_pixbuf(ArtPixBuf *pixbuf);
 
