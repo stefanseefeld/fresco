@@ -134,14 +134,22 @@ Input::Event *SDLConsole::next_event()
 {
   Prague::Trace trace("SDL::Console::next_event");
   SDL_Event event;
-  ggi_event_mask mask = ggi_event_mask (emKeyboard | emPtrMove | emPtrButtonPress | emPtrButtonRelease);
+  ggi_event_mask mask;
   ggi_event_mask move_mask = ggi_event_mask (emPtrMove);
 
   int input = fileno(stdin);
   Prague::FdSet rfdset;
-  rfdset.set(wakeupPipe[0]);
-  if (autoplay) rfdset.set(input);
-  int nfds = ggiEventSelect(visual, &mask, rfdset.max() + 1, rfdset, 0, 0, 0);
+  int nfds;
+
+  do
+    {
+      rfdset.set (wakeupPipe[0]);
+      if (autoplay)
+	rfdset.set (input);
+      mask = ggi_event_mask (emKeyboard | emPtrMove | emPtrButtonPress | emPtrButtonRelease);
+      nfds = ggiEventSelect (visual, &mask, rfdset.max() + 1, rfdset, 0, 0, 0);
+    }
+  while (nfds < 0 && errno == EINTR);
  
   if (nfds == 0)
     {
