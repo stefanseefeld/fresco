@@ -32,7 +32,7 @@ using namespace Babylon;
 
 void Terminal::key_press(const Input::Event &event)
 {
-  Trace trace("Terminal::keyPress");
+  Trace trace("Terminal::key_press");
   StreamBuffer::Data data;
   data.length(1);
   const Input::Toggle &toggle = event[0].attr.selection();
