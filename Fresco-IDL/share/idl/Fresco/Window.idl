@@ -34,14 +34,19 @@ module Warsaw
   //. methods to manipulate its position in the Desktop.
   interface Window : Controller
     {
+	//. FIXME: What are these used for?
       const short left = 1;
       const short right = 2;
       const short top = 4;
       const short bottom = 8;
       
+	//. The position of the window.
       attribute Vertex position;
+	//. The size of the window.
       attribute Vertex size;
+	//. The layer of the window.
       attribute Layout::Stage::Index layer;
+	//. Shows wether the window is mapped (aka visible) or not.
       attribute boolean mapped;
     };
   

@@ -32,12 +32,21 @@ module Layout
   //. layering.
   interface Stage : Warsaw::Graphic
     {
+	//. Position of the graphic in the window-stack. Lower
+	//. Index numbers are closer to the top.
       typedef long Index;
+	//. Returns the boundingbox of the Stage.
       Warsaw::Region bbox();
+	//. The total number of layers.
       long layers();
+	//. Returns a handle for the object forming layer l. Returns
+	//. nil if the layer is not found..
       StageHandle layer(in Index l);
-      
+
+	//. 'Locks' the stage in that only after the last end() condition
+	//. for needRedraw() and needResize() are done.
       void begin();
+	//. 'Unlocks' the stage after a begin().
       void end();
       
       StageHandle insert(in Warsaw::Graphic g, in Warsaw::Vertex position, in Warsaw::Vertex size, in Index layer);
