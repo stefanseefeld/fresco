@@ -179,7 +179,7 @@ Selection_ptr Choice::state()
 }
 
 ToggleChoice::ToggleChoice(Selection::Policy p, CommandKit_ptr c, LayoutKit_ptr l, ToolKit_ptr t, WidgetKit_ptr w)
-  : Choice(p, c, l, t, w)
+  : ::Motif::Choice(p, c, l, t, w)
 {}
 
 Tag ToggleChoice::appendItem(Graphic_ptr g)
@@ -227,7 +227,7 @@ void ToggleChoice::removeItem(Tag t)
 }
 
 CheckboxChoice::CheckboxChoice(Selection::Policy p, CommandKit_ptr c, LayoutKit_ptr l, ToolKit_ptr t, WidgetKit_ptr w)
-  : Choice(p, c, l, t, w)
+  : ::Motif::Choice(p, c, l, t, w)
 {}
 
 Tag CheckboxChoice::appendItem(Graphic_ptr g)
