@@ -24,47 +24,38 @@
 
 using namespace Prague;
 
-Agent::Agent()
-  : iomask(none), running(false)
-{}
-
-
-Agent::~Agent()
-{
-  if (running)
-    Dispatcher::instance()->release(this);
-  running = false;
-}
+Agent::Agent() : _refcount(1), _iomask(none), _running(false) {}
+Agent::~Agent() {}
 
 void Agent::start()
 {
-  running = true;
-  if (iomask & in && ibuf()) Dispatcher::instance()->bind(this, ibuf()->fd(), in);
-  if (iomask & out && obuf()) Dispatcher::instance()->bind(this, obuf()->fd(), out);
-  if (iomask & err && ebuf()) Dispatcher::instance()->bind(this, ebuf()->fd(), err);
+  _running = true;
+  if (_iomask & in && ibuf()) Dispatcher::instance()->bind(this, ibuf()->fd(), in);
+  if (_iomask & out && obuf()) Dispatcher::instance()->bind(this, obuf()->fd(), out);
+  if (_iomask & err && ebuf()) Dispatcher::instance()->bind(this, ebuf()->fd(), err);
 }
 
 void Agent::mask(short m)
 {
-  if (iomask == m) return;
-  if (running)
+  if (_iomask == m) return;
+  if (_running)
     {
-      if ((iomask ^ m) & in)
-	if (iomask & in && ibuf()) Dispatcher::instance()->release(this, ibuf()->fd());
+      if ((_iomask ^ m) & in)
+	if (_iomask & in && ibuf()) Dispatcher::instance()->release(this, ibuf()->fd());
 	else  Dispatcher::instance()->bind(this, ibuf()->fd(), in);
-      if ((iomask ^ m) & out)
-	if (iomask & out && obuf()) Dispatcher::instance()->release(this, obuf()->fd());
+      if ((_iomask ^ m) & out)
+	if (_iomask & out && obuf()) Dispatcher::instance()->release(this, obuf()->fd());
 	else  Dispatcher::instance()->bind(this, obuf()->fd(), out);
-      if ((iomask ^ m) & err)
-	if (iomask & err && ebuf()) Dispatcher::instance()->release(this, ebuf()->fd());
+      if ((_iomask ^ m) & err)
+	if (_iomask & err && ebuf()) Dispatcher::instance()->release(this, ebuf()->fd());
 	else  Dispatcher::instance()->bind(this, ebuf()->fd(), err);
     }
-  iomask = m;
+  _iomask = m;
 }
 
 void Agent::stop()
 {
   mask(none);
   Dispatcher::instance()->release(this);
-  running = false;
+  _running = false;
 }

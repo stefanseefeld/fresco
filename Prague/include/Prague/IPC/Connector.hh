@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
+ * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -19,35 +19,56 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Connector_hh
-#define _Connector_hh
+#ifndef _Prague_Connector_hh
+#define _Prague_Connector_hh
 
-#include <Prague/IPC/Agent.hh>
+#include <Prague/IPC/SocketAgent.hh>
 
 namespace Prague
 {
 
-/* @Class {Connector : public Agent}
- *
- * @Description {creates and handles (client/server) connections}
+/*
+ * a Connector is an Agent that connects to
+ * a specified sockaddr asynchronously
  */
-class Connector : public Agent
+template <typename Connection, typename Socket>
+class Connector : public SocketAgent
 {
 public:
-  Connector(Notifier *) {}
-  Connector(const Connector &C) : Agent(C) {}
-  virtual        ~Connector() {}
-  virtual ipcbuf *ibuf() { return 0;}
-  virtual ipcbuf *obuf() { return 0;}
-  virtual ipcbuf *ebuf() { return 0;}
-  virtual bool  pending() { return false;}
-  virtual void  dispatchpending() {}
-protected:
-  virtual void  outputEOF() = 0;
-  virtual void  errorEOF() = 0;
+  Connector(Socket *socket, const typename Socket::address_type &peer)
+    : SocketAgent(socket), _peer(peer) {}
+  virtual Socket *ibuf() { return static_cast<Socket *>(SocketAgent::ibuf());}
+  virtual Socket *obuf() { return static_cast<Socket *>(SocketAgent::obuf());}
+  virtual void start();
 private:
+  virtual bool process(int, iomask_t);
+  typename Socket::address_type _peer;
 };
+
+template <typename Connection, typename Socket>
+void Connector<Connection, Socket>::start()
+{
+  Trace trace("Connector::start");
+  mask(in);
+  ibuf()->connect(_peer);
+  SocketAgent::start();
+}
+
+template <typename Connection, typename Socket>
+bool Connector<Connection, Socket>::process(int, iomask_t)
+{
+  Trace trace("Connector::process");
+  int error = ibuf()->clearerror();
+  if (!error)
+    {
+      Connection *connection = new Connection(new Socket(*ibuf()));
+      connection->start();
+      connection->remove_ref();
+    }
+  else clog << "connect: " << strerror(error) << endl;
+  return false;
+}
 
 };
 
-#endif /* _Connector_hh */
+#endif

@@ -93,7 +93,10 @@ void Dispatcher::bind(Agent *agent, int fd, Agent::iomask_t mask)
     }
   MutexGuard guard(mutex);
   if (find(agents.begin(), agents.end(), agent) == agents.end())
-    agents.push_back(agent);
+    {
+      agents.push_back(agent);
+      agent->add_ref();
+    }
   if (mask & Agent::in)
     {
       if (mask & Agent::inready)
@@ -184,7 +187,11 @@ void Dispatcher::release(Agent *agent, int fd)
     if ((*i).second->agent == agent) return;
 
   alist_t::iterator i = find(agents.begin(), agents.end(), agent);
-  if (i != agents.end()) agents.erase(i);
+  if (i != agents.end())
+    {
+      agents.erase(i);
+      agent->remove_ref();
+    }
 }
 
 void *Dispatcher::run(void *X)

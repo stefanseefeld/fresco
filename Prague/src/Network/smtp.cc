@@ -29,7 +29,7 @@
 
 using namespace Prague;
 
-void smtp::smtpbuf::get_response ()
+void smtp::smtpbuf::get_response()
      // get all the response that one can get and send all of them to o
 {
   // if o is 0, then we trash data.
@@ -52,108 +52,107 @@ void smtp::smtpbuf::get_response ()
     }
 }
 
-void smtp::smtpbuf::send_cmd (const char* cmd, const char* s, const char* p)
+void smtp::smtpbuf::send_cmd(const string &cmd, const string &s, const string &p)
 {
-  xsputn (cmd, ::strlen (cmd));
-  if (s) xsputn (s, ::strlen (s));
-  if (p) xsputn (p, ::strlen (p));
-  xsputn ("\r\n", 2);
-  sync ();
-  if (o) get_response ();
+  xsputn(cmd.c_str(), cmd.length());
+  if (s.length()) xsputn(s.c_str(), s.length());
+  if (p.length()) xsputn(p.c_str(), p.length());
+  xsputn("\r\n", 2);
+  sync();
+  if (o) get_response();
 }
 
-void smtp::smtpbuf::helo ()
+void smtp::smtpbuf::helo()
 {
-  if (o) get_response ();
-  send_cmd ("HELO ", localhost ());
+  if (o) get_response();
+  send_cmd("HELO ", localaddr().hostname());
 }
 
-void smtp::smtpbuf::mail (const char* reverse_path)
+void smtp::smtpbuf::mail(const string &from)
 {
-  if (reverse_path) send_cmd ("MAIL FROM:<", reverse_path, ">");
-  else send_cmd ("MAIL FROM:<>");
+  if (from.length()) send_cmd("MAIL FROM:<", from, ">");
+  else send_cmd("MAIL FROM:<>");
 }
 
-void smtp::smtpbuf::rcpt (const char* forward_path)
+void smtp::smtpbuf::rcpt(const string &to)
 {
-  if (forward_path) send_cmd ("RCPT TO:<", forward_path, ">");
+  if (to.length()) send_cmd("RCPT TO:<", to, ">");
 }
 
-void smtp::smtpbuf::help (const char* s)
+void smtp::smtpbuf::help(const string &s)
 {
-  send_cmd ("HELP ", s);
+  send_cmd("HELP ", s);
 }
 
-void smtp::smtpbuf::send_buf (const char* buf, int len)
+void smtp::smtpbuf::send_buf(const char *buf, int len)
 {
   if (buf == 0 || len <= 0) return;
   // send line by line
-  const unsigned char* p = (const unsigned char*) buf;
-  if (*p == '.') sputc ((unsigned int) '.');
+  const unsigned char *p = (const unsigned char*) buf;
+  if (*p == '.') sputc((unsigned int) '.');
   for (int i = 0; i < len; i++, p++)
     {
       if (*p == '\n')
 	{
-	  sputc ((unsigned int) '\r');
-	  sputc (*p);
-	  if (*(p+1) == '.') sputc ((unsigned int) '.');
+	  sputc((unsigned int) '\r');
+	  sputc(*p);
+	  if(*(p+1) == '.') sputc((unsigned int) '.');
 	}
-      else sputc (*p);
+      else sputc(*p);
     }
 }
 
-void smtp::smtpbuf::data (const char* buf, int len)
+void smtp::smtpbuf::data(const char *buf, int len)
 {
   data ();
-  send_buf (buf, len);
-  xsputn ("\r\n.\r\n", 5);
-  sync ();
-  if (o) get_response ();
+  send_buf(buf, len);
+  xsputn("\r\n.\r\n", 5);
+  sync();
+  if (o) get_response();
 }
 
-void smtp::smtpbuf::data (const char* filename)
+void smtp::smtpbuf::data(const string &filename)
 {
   data ();
   int  fd = 0;
   char buf [1024];
   int  rcnt;
-  if (filename == 0 || (fd = ::open (filename, O_RDONLY )) == -1) fd = 0;
+  if (filename.empty() || (fd = ::open(filename.c_str(), O_RDONLY )) == -1) fd = 0;
 
-  while ((rcnt = ::read (fd, buf, 1024)) > 0) send_buf (buf, rcnt);
-  xsputn ("\r\n.\r\n", 5);
-  sync ();
-  if (o) get_response ();
+  while ((rcnt = ::read(fd, buf, 1024)) > 0) send_buf(buf, rcnt);
+  xsputn("\r\n.\r\n", 5);
+  sync();
+  if (o) get_response();
 }
 
-int smtp::get_response (char* buf, int len)
+int smtp::get_response(char *buf, int len)
      // same as get line except what it returns
      // return 1 if output continues after this line
      // return 0 if output has terminated
 {
   if (len < 8)
     {
-      this->getline (buf, len);
+      getline(buf, len);
       return 0;
     }
-  buf [3] = 0;
-  this->getline (buf, len);
-  return buf [3] == '-';
+  buf[3] = 0;
+  getline(buf, len);
+  return buf[3] == '-';
 }
   
-ostream& operator << (ostream& o, smtp& s)
+ostream& operator << (ostream& o, smtp &s)
 {
-  char buf [1024];
+  char buf[1024];
   int  cont = 1;
   while (cont)
     {
-      cont = s.get_response (buf, 1024);
+      cont = s.get_response(buf, 1024);
       o << buf << endl;
     }
   return o;
 }
 
-
-void smtp::smtpbuf::serve_clients (int portno)
+void smtp::smtpbuf::serve_clients(int portno)
 {
 }
 

@@ -27,39 +27,42 @@
 
 using namespace Prague;
 
-void echo::echobuf::serve_clients (int portno)
+void echo::echobuf::serve_clients(int portno)
 {
   if (protocol_name())
     {
-      if (portno < 0) sockinetbuf::bind ((unsigned long) INADDR_ANY, "echo", protocol_name ());
+      if (portno < 0) sockinetbuf::bind(sockinetaddr((unsigned long) INADDR_ANY, "echo", protocol_name()));
       else if (portno <= 1024)
 	{
-	  sockinetbuf::bind();
-	  cout << "Host: " << localhost () << '\n' << "Port: " << localport () << endl;
+	  sockinetbuf::bind(sockinetaddr((unsigned long) INADDR_ANY, portno));
+	  sockinetaddr local = localaddr();
+	  cout << "Host: " << local.hostname() << '\n' << "Port: " << local.port() << endl;
 	}
-      else sockinetbuf::bind((unsigned long) INADDR_ANY, portno);
+      else sockinetbuf::bind(sockinetaddr((unsigned long) INADDR_ANY, portno));
       // act as a server now
       listen(sockbuf::somaxconn);
       // commit suicide when we receive SIGTERM
       Fork::suicideOnSignal(Signal::terminate);
       for (;;)
 	{
-	  sockbuf s = accept();
+	  sockinetbuf *socket = accept();
 	  Fork f (1, 1); // kill my children when I get terminated.
 	  if (f.child())
 	    {
 	      char buf [1024];
 	      int  rcnt;
-	      while ((rcnt = s.read (buf, 1024)) > 0)
+	      while ((rcnt = socket->read(buf, 1024)) > 0)
 		while (rcnt != 0)
 		  {
-		    int wcnt = s.write (buf, rcnt);
-		    if (wcnt == -1) throw sockerr (errno);
+		    int wcnt = socket->write(buf, rcnt);
+		    if (wcnt == -1) throw sockerr(errno);
 		    rcnt -= wcnt;
 		  }
-	      sleep (300);
+	      delete socket;
+	      sleep(300);
 	      exit (0);
 	    }
+	  else delete socket;
 	}
     }
 }

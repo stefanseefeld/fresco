@@ -41,29 +41,29 @@ public:
 
   class protocolbuf: public sockinetbuf
   {
+  public:
+    protocolbuf(sockinetbuf &si): sockinetbuf (si), pn (protocol::nil) {}
+    protocolbuf(protocol::p_name pname)
+      : sockinetbuf((sockbuf::type) pname, 0), pn (pname) {}
+
+    void                bind() { serve_clients();}
+    void                connect();
+    void                connect(unsigned long addr);
+    void                connect(const string &);
+    void                connect(const string &, int);
+
+    const char         *protocol_name() const;
+    virtual void        serve_clients(int portno = -1) = 0;
+    virtual const char *rfc_name() const = 0;
+    virtual const char *rfc_doc() const = 0;
   private:
     protocol::p_name pn;
-    void bind (sockaddr& sa) { sockbuf::bind (sa);}
-    void connect (sockaddr& sa) { sockbuf::connect (sa);}
-  public:
-    protocolbuf (sockinetbuf& si): sockinetbuf (si), pn (protocol::nil) {}
-    protocolbuf (protocol::p_name pname)
-      : sockinetbuf ((sockbuf::type) pname, 0), pn (pname) {}
-
-    void                bind () { serve_clients ();}
-    void                connect ();
-    void                connect (unsigned long addr);
-    void                connect (const char *host);
-    void                connect (const char *host, int portno);
-
-    const char         *protocol_name () const;
-    virtual void        serve_clients (int portno = -1) = 0;
-    virtual const char *rfc_name () const = 0;
-    virtual const char *rfc_doc  () const = 0;
+    void bind (sockinetaddr &sa) { sockinetbuf::bind(sa);}
+    void connect (sockinetaddr &sa) { sockinetbuf::connect(sa);}
   };
   protocol (): ios (0) {}
 };
 
 };
 
-#endif /* _protocol_hh */
+#endif

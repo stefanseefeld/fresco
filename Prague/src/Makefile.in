@@ -50,7 +50,7 @@ Sys		:= logbuf.cc Tracer.cc regex.cc User.cc Stopwatch.cc Profiler.cc Time.cc \
 	  	   File.cc Directory.cc Path.cc GetOpt.cc DataTypeManager.cc \
 	  	   DLL.cc MMap.cc SHM.cc Thread.cc Timer.cc Signal.cc Fork.cc
 IPC		:= ipcbuf.cc pipebuf.cc sockbuf.cc ptybuf.cc mmapbuf.cc \
-	  	   Agent.cc Dispatcher.cc Coprocess.cc PipeAgent.cc TTYAgent.cc
+	  	   Agent.cc Dispatcher.cc Coprocess.cc PipeAgent.cc TTYAgent.cc SocketAgent.cc
 Filter		:= gzbuf.cc# xdrbuf.cc #bzbuf.cc 
 Network		:= protocol.cc echo.cc ftp.cc smtp.cc url.cc
 Unicode		:= Unistring.cc Unichar.cc Dictionary.cc # utils.cc

@@ -26,35 +26,35 @@
 
 using namespace Prague;
 
-const char *protocol::protocolbuf::protocol_name () const
+const char *protocol::protocolbuf::protocol_name() const
 {
   if (pn == protocol::tcp) return "tcp";
   if (pn == protocol::udp) return "udp";
   return 0;
 }
 
-void protocol::protocolbuf::connect ()
+void protocol::protocolbuf::connect()
 {
-  if (pn == protocol::nil) throw sockerr (EPROTONOSUPPORT);
-  sockinetbuf::connect (localhost (), rfc_name (), protocol_name ());
+  if (pn == protocol::nil) throw sockerr(EPROTONOSUPPORT);
+  sockinetbuf::connect(sockinetaddr(localaddr().hostname(), rfc_name(), protocol_name()));
 }
 
-void protocol::protocolbuf::connect (unsigned long addr)
+void protocol::protocolbuf::connect(unsigned long addr)
   // addr is in host byte order
 {
-  if (pn == protocol::nil) throw sockerr (EPROTONOSUPPORT);
-  sockinetbuf::connect (addr, rfc_name (), protocol_name ());
+  if (pn == protocol::nil) throw sockerr(EPROTONOSUPPORT);
+  sockinetbuf::connect (sockinetaddr(addr, rfc_name(), protocol_name()));
 }
 
-void protocol::protocolbuf::connect (const char* host)
+void protocol::protocolbuf::connect(const string &host)
 {
-  if (pn == protocol::nil) throw sockerr (EPROTONOSUPPORT);
-  sockinetbuf::connect (host, rfc_name (), protocol_name ());
+  if (pn == protocol::nil) throw sockerr(EPROTONOSUPPORT);
+  sockinetbuf::connect(sockinetaddr(host, rfc_name(), protocol_name()));
 }
 
-void protocol::protocolbuf::connect (const char* host, int portno)
+void protocol::protocolbuf::connect(const string &host, int portno)
 {
-  if (pn == protocol::nil) throw sockerr (EPROTONOSUPPORT);
-  sockinetbuf::connect (host, portno);
+  if (pn == protocol::nil) throw sockerr(EPROTONOSUPPORT);
+  sockinetbuf::connect(sockinetaddr(host, portno));
 }
 

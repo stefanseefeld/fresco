@@ -28,6 +28,7 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <netinet/in.h>
+#include <string>
 
 namespace Prague
 {
@@ -69,54 +70,60 @@ class sockaddr
 {
 public:
   virtual	   ~sockaddr() {}
-  virtual operator void *() const =0;
-  operator ::sockaddr   *() const { return addr ();}
-  virtual int	         size() const =0;
-  virtual int	         family() const =0;
-  virtual ::sockaddr    *addr() const =0;
+//   virtual operator void *() const =0;
+  operator const ::sockaddr *() const { return addr();}
+  operator ::sockaddr       *() { return addr();}
+  virtual int	             size() const = 0;
+  virtual int	             family() const = 0;
+  virtual const ::sockaddr  *addr() const = 0;
+  virtual ::sockaddr        *addr() = 0;
 };
 
 /* @Class{sockunixaddr : public sockaddr, public sockaddr_un}
  *
  * @Description{socket unix address representation}
  */
-class sockunixaddr: public sockaddr, public sockaddr_un
+class sockunixaddr : public sockaddr_un, public sockaddr
 {
 public:
-  ~sockunixaddr () {}
-  sockunixaddr (const char *path);
-  sockunixaddr (const sockunixaddr &suna);
-  operator void *() const { return addr_un();}
-  sockaddr_un   *addr_un() const { return (sockaddr_un *)(this);}
-  int            size () const { return sizeof (sockaddr_un);}
-  int            family () const { return sun_family; }
-  ::sockaddr    *addr() const {return (::sockaddr *)(addr_un ());}
+  sockunixaddr() {}
+  sockunixaddr(const string &);
+  sockunixaddr(const sockunixaddr &);
+  ~sockunixaddr() {}
+//   operator void *() const { return static_cast<sockaddr_un *>(this);}
+//   sockaddr_un   *addr_un() const { return (sockaddr_un *)(this);}
+  int               size() const { return sizeof (sockaddr_un);}
+  int               family() const { return sun_family;}
+  const ::sockaddr *addr() const { return reinterpret_cast<const ::sockaddr *>(this);}
+  ::sockaddr       *addr() { return reinterpret_cast< ::sockaddr *>(this);}
+  const char       *path() { return sun_path;}
 };
 
 /* @Class{sockinetaddr : public sockaddr, public sockaddr_in}
  *
  * @Description{socket internet address representation}
  */
-class sockinetaddr : public sockaddr, public sockaddr_in
+class sockinetaddr : public sockaddr_in, public sockaddr
 {
-protected:
-  void setport (const char *, const char* pn = "tcp");
-  void setaddr (const char *);
 public:
-  ~sockinetaddr () {}
-  sockinetaddr ();
-  sockinetaddr (unsigned long, int port_no=0);
-  sockinetaddr (const char *, int port_no=0);
-  sockinetaddr (unsigned long, const char *, const char *protocol_name = "tcp");
-  sockinetaddr (const char *, const char *, const char *protocol_name = "tcp");
-  sockinetaddr (const sockinetaddr& sina);
-  operator void *() const { return addr_in ();}
-  sockaddr_in   *addr_in() const { return (sockaddr_in*) this; }
-  int            size() const { return sizeof (sockaddr_in); }
-  int            family() const { return sin_family; }
-  ::sockaddr    *addr  () const { return (::sockaddr *)(addr_in()); }
-  int            getport    () const;
-  const char    *gethostname() const;
+  sockinetaddr();
+  sockinetaddr(unsigned long, int port_no=0);
+  sockinetaddr(const string &, int port_no=0);
+  sockinetaddr(unsigned long, const string &, const string &pn = "tcp");
+  sockinetaddr(const string &, const string &, const string &pn = "tcp");
+  sockinetaddr(const sockinetaddr &);
+  ~sockinetaddr() {}
+//   operator void *() const { return addr_in ();}
+//   sockaddr_in   *addr_in() const { return (sockaddr_in*) this;}
+  int               size() const { return sizeof (sockaddr_in);}
+  int               family() const { return sin_family;}
+  const ::sockaddr *addr() const { return reinterpret_cast<const ::sockaddr *>(this);}
+  ::sockaddr       *addr() { return reinterpret_cast< ::sockaddr *>(this);}
+  int               port() const;
+  string            hostname() const;
+private:
+  void              port(const string &, const string &pn = "tcp");
+  void              addr(const string &);
 };
 
 struct msghdr;
@@ -128,6 +135,19 @@ struct msghdr;
 class sockbuf : public ipcbuf
 {
 public:
+  enum domain
+  {
+    af_unix	        = AF_UNIX,
+    af_inet4	        = AF_INET,
+    af_inet6	        = AF_INET6,
+    af_ipx	        = AF_IPX,
+    af_netlink          = AF_NETLINK,
+    af_x25              = AF_X25,
+    af_ax25             = AF_AX25,
+    af_atmpvc           = AF_ATMPVC,
+    af_appletalk        = AF_APPLETALK,
+    af_packet           = AF_PACKET
+  };
   enum type
   {
     sock_stream	        = SOCK_STREAM,
@@ -176,15 +196,12 @@ public:
     socklinger (int a, int b): l_onoff (a), l_linger (b) {}
   };
 
-  sockbuf (int s) : ipcbuf(ios::in|ios::out) { data->fd = s;}
-  sockbuf (int, type, int);
-  sockbuf (const sockbuf &sb) : ipcbuf(sb) {}
-  virtual           ~sockbuf () {}
-  virtual void       bind (const sockaddr &);
-  virtual void       connect(const sockaddr &);
+  sockbuf(int s) : ipcbuf(ios::in|ios::out) { data->fd = s;}
+  sockbuf(int, type, int);
+  sockbuf(const sockbuf &sb) : ipcbuf(sb) {}
+  virtual           ~sockbuf() {}
   void               listen(int num = somaxconn);
-  virtual int        accept();
-  virtual int        accept(const sockaddr &);
+  virtual sockbuf   *accept() = 0;
   int                read(void *, int);
   int		     recv(void *, int, int msgf = 0);
   int		     recvfrom(sockaddr &, void *, int, int msgf = 0);
@@ -220,9 +237,9 @@ public:
   int		     sendbufsz(int)   const;
   int		     recvbufsz() const;
   int		     recvbufsz(int)   const;
-  socklinger       linger() const;
-  socklinger       linger(socklinger) const;
-  socklinger       linger(int onoff, int tm) const { return linger(socklinger(onoff, tm));}
+  socklinger         linger() const;
+  socklinger         linger(socklinger) const;
+  socklinger         linger(int onoff, int tm) const { return linger(socklinger(onoff, tm));}
   bool               atmark() const;  
   int                pgrp() const;
   int                pgrp(int) const;
@@ -241,16 +258,17 @@ protected:
 class sockunixbuf : public sockbuf
 {
 public:
-  enum domain { af_unix = AF_UNIX };
+  typedef sockunixaddr address_type;
   sockunixbuf(int s) : sockbuf(s) {}
   sockunixbuf (const sockunixbuf &su) : sockbuf(su) {}
   sockunixbuf (sockbuf::type ty, int proto = 0) : sockbuf(af_unix, ty, proto) {}
   sockunixbuf &operator = (const sockunixbuf &);
   ~sockunixbuf () {}
-  virtual void bind (const sockaddr &sa) { sockbuf::bind(sa);}
-  void         bind (const char *path) { bind(sockunixaddr(path));}
-  virtual void connect (const sockaddr &sa) { sockbuf::connect(sa);}
-  void         connect (const char *path) { connect(sockunixaddr(path));}
+  sockunixaddr addr() const;
+  void bind(const sockunixaddr &);
+  virtual sockunixbuf *accept();
+  virtual sockunixbuf *accept(sockunixaddr &);
+  void connect(const sockunixaddr &);
 };
 
 /* @Class{sockinetbuf : public sockbuf}
@@ -260,38 +278,23 @@ public:
 class sockinetbuf : public sockbuf
 {
 public:
-  enum domain { af_inet = AF_INET };
+  typedef sockinetaddr address_type;
   sockinetbuf (int s) : sockbuf(s) {}
   sockinetbuf (const sockinetbuf &si): sockbuf (si) {}
-  sockinetbuf (sockbuf::type ty, int proto = 0) : sockbuf(af_inet, ty, proto) {}
+  sockinetbuf (sockbuf::type ty, int proto = 0) : sockbuf(af_inet4, ty, proto) {}
   sockinetbuf &operator = (const sockinetbuf &);
   ~sockinetbuf () {}
   sockinetaddr localaddr() const;
-  int          localport() const;
-  const char  *localhost() const;
   sockinetaddr peeraddr() const;
-  int          peerport() const;
-  const char  *peerhost() const;
   void         bind_until_success (int);
-  virtual void bind(const sockaddr &sa) { sockbuf::bind(sa);}
-  void	       bind(int port = 0) { bind(sockinetaddr((unsigned long) INADDR_ANY, port));}
-  void	       bind(unsigned long addr, int port) { bind(sockinetaddr(addr, port));}
-  void	       bind(const char *host, int port = 0) { bind(sockinetaddr(host, port));}
-  void	       bind(unsigned long, const char *, const char *protocol = "tcp");
-  void	       bind(const char *, const char *, const char *protocol_name = "tcp");
-  virtual void connect (const sockaddr &sa) {sockbuf::connect(sa);}
-  void	       connect (unsigned long addr, int port) { connect(sockinetaddr(addr, port));}
-  void	       connect (const char *host, int port) { connect(sockinetaddr(host, port));}
-  void	       connect (unsigned long, const char *, const char *protocol_name = "tcp");
-  void         connect (const char *, const char *, const char *protocol_name = "tcp");
-  virtual int  accept ();
-  virtual int  accept (const sockaddr &);
-  int          accept (unsigned long, int);
-  int          accept (const char *, int);
-  bool         tcpnodelay () const;
-  bool         tcpnodelay (bool set) const;
+  virtual void bind(const sockinetaddr &);
+  virtual void connect(const sockinetaddr &);
+  virtual sockinetbuf *accept();
+  virtual sockinetbuf *accept(sockinetaddr &);
+  bool         tcpnodelay() const;
+  bool         tcpnodelay(bool set) const;
 };
 
 };
 
-#endif /* _sockbuf_hh */
+#endif

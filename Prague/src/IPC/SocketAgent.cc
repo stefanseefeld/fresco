@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
+ * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -19,24 +19,21 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-
-#include <Prague/Sys/File.hh>
-#include <Prague/Sys/Process.hh>
-#include <Prague/Sys/User.hh>
-#include <Prague/IPC/mmapbuf.hh>
-#include <unistd.h>
+#include "Prague/Sys/Tracer.hh"
+#include "Prague/IPC/SocketAgent.hh"
+#include <iostream>
 
 using namespace Prague;
 
-int main (int argc, char **argv)
+SocketAgent::SocketAgent(sockbuf *socket)
+  : _socket(socket)
 {
-  File file = File::tmp();
-  string name = file.long_name();
-  streambuf *mbuf = new mmapbuf(name, 1024*1024, ios::out);
-  ostream os(mbuf);
-  os << "hi there ! from process " << Process::id() << '\n';
-  cout << "tmp file : " << name << endl;
-  sleep(10);
-  delete mbuf;
-  file.rm();
+  Trace trace("SocketAgent::SocketAgent");
+  _socket->setnonblocking();
+}
+
+SocketAgent::~SocketAgent()
+{
+  Trace trace("SocketAgent::~SocketAgent");
+  delete _socket;
 }

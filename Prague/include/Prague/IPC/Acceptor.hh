@@ -1,7 +1,7 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999, 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
+ * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -19,44 +19,46 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _Prague_Agent_hh
-#define _Prague_Agent_hh
+#ifndef _Prague_Acceptor_hh
+#define _Prague_Acceptor_hh
 
-#include <Prague/IPC/ipcbuf.hh>
+#include <Prague/IPC/SocketAgent.hh>
 
 namespace Prague
 {
 
-class Agent
+/*
+ * an Acceptor is an Agent who's responsability is solely
+ * to accept connection requests asynchronously.
+ */
+template <typename Connection>
+class Acceptor : public SocketAgent
 {
-  friend class Dispatcher;
 public:
-  enum iomask_t {none = 0x00, outready = 0x01, inready = 0x02, errready = 0x04,
-		 outexc = 0x10, inexc = 0x20, errexc = 0x40,
-		 out = 0x11, in = 0x22, err = 0x44,
-		 asyncio = 0xff};
-  Agent();
-  virtual ~Agent();
-
+  Acceptor(sockbuf *socket) : SocketAgent(socket) {}
   virtual void start();
-  virtual void stop();
-  void mask(short);
-  short mask() const { return _iomask;}
-  virtual ipcbuf *ibuf() = 0;
-  virtual ipcbuf *obuf() = 0;
-  virtual ipcbuf *ebuf() = 0;
-
-  void add_ref() { ++_refcount;}
-  void remove_ref() { if (!--_refcount) delete this;}
 private:
-  Agent(const Agent &);
-  Agent &operator = (const Agent &);
-  virtual bool process(int, iomask_t) = 0;
-  virtual void done(int, iomask_t) = 0;
-  short _refcount;
-  short _iomask;
-  bool  _running : 1;
+  virtual bool process(int, iomask_t);
 };
+
+template <typename Connection>
+void Acceptor<Connection>::start()
+{
+  Trace trace("Acceptor::start");
+  mask(out);
+  obuf()->listen(1);
+  SocketAgent::start();
+}
+
+template <typename Connection>
+bool Acceptor<Connection>::process(int, iomask_t)
+{
+  Trace trace("Acceptor::process");
+  Connection *connection = new Connection(ibuf()->accept());
+  connection->start();
+  connection->remove_ref();
+  return false;
+}
 
 };
 
