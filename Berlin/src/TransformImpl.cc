@@ -92,9 +92,10 @@ void LUsolve(const Coord matrix[N][N], const size_t pivot[N], Coord v[N])
     }
 }
 
-TransformImpl::TransformImpl() { init();}
+TransformImpl::TransformImpl() : _this_valid (false) { init();}
 
 TransformImpl::TransformImpl(Warsaw::Transform::Matrix m)
+  : _this_valid (false)
 {
   Trace trace("TransformImpl::TransformImpl(Warsaw::Transform::Matrix)");
   load_matrix(m);
