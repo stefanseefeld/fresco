@@ -28,7 +28,7 @@
 #include <list>
 #include "Berlin/RefCountBaseImpl.hh"
 
-class SubjectImpl : public virtual POA_Subject, public virtual PortableServer::RefCountServantBase, public RefCountBaseImpl
+class SubjectImpl : public virtual POA_Subject, public virtual PortableServer::RefCountServantBase, public virtual RefCountBaseImpl
 {
 public:
   SubjectImpl();

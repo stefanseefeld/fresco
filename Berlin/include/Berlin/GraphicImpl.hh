@@ -32,7 +32,7 @@
 class RegionImpl;
 class AllocationImpl;
 
-class GraphicImpl :  public virtual POA_Graphic, public virtual PortableServer::RefCountServantBase, public RefCountBaseImpl
+class GraphicImpl :  public virtual POA_Graphic, public virtual PortableServer::RefCountServantBase, public virtual RefCountBaseImpl
 {
  protected:
   typedef Graphic::Edge Edge;
