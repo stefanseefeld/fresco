@@ -4,6 +4,7 @@ CURRENT GOALS:
  - draw_image generates awful output when the transformation matrix isn't
    the identity matrix
  - set_font_size does nothing sensible.
+ - write an unwinder for PS bizarre winding rules, for draw_path
 
 2. More testing:
  - produce a DrawingKit testing system of some sort and ensure that all

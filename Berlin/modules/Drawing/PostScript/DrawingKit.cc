@@ -54,6 +54,7 @@ KitImpl *PostScript::DrawingKit::clone(const Fresco::Kit::PropertySeq &p)
 {
   DrawingKit *kit = new DrawingKit(repo_id(), p);
   kit->init();
+  kit->increment();
   return kit;
 }
 
