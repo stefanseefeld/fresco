@@ -74,7 +74,12 @@ doc:	config
 	$(MAKE) action="doc"
 
 install:
-	$(MAKE) action="install"
+	for subdir in $(subdirs); do \
+	  echo "configuring package $$subdir with $(configure_args)";\
+	  (cd $$subdir && $(srcdir)/$$subdir/configure $(configure_args));\
+	  echo "making install in $$subdir";\
+	  $(MAKE) -C $$subdir install; \
+          done;
 
 install-doc:	config
 	$(MAKE) action="install-doc"
@@ -107,11 +112,7 @@ maintainer-clean:
 	$(MAKE) action="maintainer-clean"
 	rm -f Makefile config.cache config.log config.status configure
 
-ifeq (,$(findstring config, $(MAKECMDGOALS)))
 %/Makefile: $(srcdir)/%/Makefile.in
-else
-%/Makefile: $(srcdir)/%/Makefile.in .FORCE
-endif
 	@echo configuring package $(@D) with $(configure_args)
 	mkdir -p $(@D)
 	-(cd $(@D); $(srcdir)/$(@D)/configure $(configure_args))
@@ -155,3 +156,6 @@ SDL/Makefile: override configure_args		+= $(Prague) $(Fresco) $(Berlin)
 Clients-C++/Makefile: override configure_args	+= $(Prague) $(Babylon) $(Fresco) $(Berlin)
 Clients-Python/Makefile: override configure_args+= $(Fresco)
 
+ifneq (,$(findstring config, $(MAKECMDGOALS)))
+%/Makefile: .FORCE
+endif
