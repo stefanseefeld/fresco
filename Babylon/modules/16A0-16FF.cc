@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 17:48:15 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:02:29 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -38,9 +38,7 @@ namespace Babylon {
       m_first_letter = 0x16A0;
       m_last_letter  = 0x16FF;
       // m_version="3.1" // Not yet supported!
-
     }
-
 
     ~Runic16A0() {
     }
@@ -58,7 +56,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "Runic";
     }
@@ -138,7 +135,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(BIDIR_L);
     }
 
@@ -238,7 +235,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     Runic16A0(const Runic16A0 &) {}
@@ -250,7 +246,6 @@ namespace Babylon {
     static const unsigned char _cat[96];
     static const std::bitset<96> m_Terminal_Punctuation;
     static const std::bitset<96> m_Other_Alphabetic;
-
   }; // class Runic16A0
 
     const std::bitset<96> Runic16A0::m_is_defined(std::string("000000000000000111111111111111111111111111111111111111111111111111111111111111111111111111111111"));

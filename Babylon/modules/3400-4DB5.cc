@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 17:50:11 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:04:21 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -38,9 +38,7 @@ namespace Babylon {
       m_first_letter = 0x3400;
       m_last_letter  = 0x4DB5;
       // m_version="3.1" // Not yet supported!
-
     }
-
 
     ~CJK_Unified_Ideographs_Extension_A3400() {
     }
@@ -58,7 +56,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "CJK Unified Ideographs Extension A";
     }
@@ -117,7 +114,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(BIDIR_L);
     }
 
@@ -217,7 +214,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     CJK_Unified_Ideographs_Extension_A3400(const CJK_Unified_Ideographs_Extension_A3400 &) {}
@@ -225,7 +221,6 @@ namespace Babylon {
     Babylon::UCS4 m_first_letter;
     Babylon::UCS4 m_last_letter;
     // Babylon::UCS4_string m_version;
-
   }; // class CJK_Unified_Ideographs_Extension_A3400
 
 }; // namespace Babylon

@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 17:45:57 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:00:21 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -26,8 +26,8 @@
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
 #include <bitset>
-#include <map>
 
+#include <map>
 namespace Babylon {
 
   class Latin1_Supplement80 : public Babylon::Dictionary::Block {
@@ -96,9 +96,7 @@ namespace Babylon {
       m_composeMap[make_pair(0x000000FC, 0x00000301)] = 0x01D8;
       m_composeMap[make_pair(0x000000FC, 0x00000304)] = 0x01D6;
       m_composeMap[make_pair(0x000000FC, 0x0000030C)] = 0x01DA;
-
     }
-
 
     ~Latin1_Supplement80() {
     }
@@ -116,7 +114,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "Latin-1 Supplement";
     }
@@ -250,7 +247,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(Latin1_Supplement80::m_bidir[uc - m_first_letter]);
     }
 
@@ -374,7 +371,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     Latin1_Supplement80(const Latin1_Supplement80 &) {}
@@ -393,7 +389,6 @@ namespace Babylon {
     static const unsigned char m_lb[128];
     static const unsigned char m_ea[128];
     std::map<pair<UCS4, UCS4>, UCS4> m_composeMap;
-
   }; // class Latin1_Supplement80
 
   const UCS4 Latin1_Supplement80::m_upper[] = {

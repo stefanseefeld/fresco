@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 18:05:11 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:26:00 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -38,9 +38,7 @@ namespace Babylon {
       m_first_letter = 0xFE70;
       m_last_letter  = 0xFEFE;
       // m_version="3.1" // Not yet supported!
-
     }
-
 
     ~Arabic_Presentation_FormsBFE70() {
     }
@@ -58,7 +56,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "Arabic Presentation Forms-B";
     }
@@ -117,7 +114,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(BIDIR_AL);
     }
 
@@ -223,7 +220,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     Arabic_Presentation_FormsBFE70(const Arabic_Presentation_FormsBFE70 &) {}
@@ -234,7 +230,6 @@ namespace Babylon {
     static const std::bitset<143> m_is_defined;
     static const unsigned char _decomp[143];
     static const UCS4 m_decompStr[143][2];
-
   }; // class Arabic_Presentation_FormsBFE70
 
     const std::bitset<143> Arabic_Presentation_FormsBFE70::m_is_defined(std::string("00111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111010111"));

@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 17:49:05 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:03:20 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -38,9 +38,7 @@ namespace Babylon {
       m_first_letter = 0x2460;
       m_last_letter  = 0x24FF;
       // m_version="3.1" // Not yet supported!
-
     }
-
 
     ~Enclosed_Alphanumerics2460() {
     }
@@ -58,7 +56,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "Enclosed Alphanumerics";
     }
@@ -491,7 +488,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(Enclosed_Alphanumerics2460::m_bidir[uc - m_first_letter]);
     }
 
@@ -896,7 +893,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     Enclosed_Alphanumerics2460(const Enclosed_Alphanumerics2460 &) {}
@@ -916,7 +912,6 @@ namespace Babylon {
     static const unsigned char m_ea[160];
     static const std::bitset<160> m_Other_Lowercase;
     static const std::bitset<160> m_Other_Uppercase;
-
   }; // class Enclosed_Alphanumerics2460
 
     const std::bitset<160> Enclosed_Alphanumerics2460::m_is_defined(std::string("0000000000000000000001111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"));

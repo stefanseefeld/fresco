@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 18:05:25 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:26:15 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -38,9 +38,7 @@ namespace Babylon {
       m_first_letter = 0x10400;
       m_last_letter  = 0x1044F;
       // m_version="3.1" // Not yet supported!
-
     }
-
 
     ~Deseret10400() {
     }
@@ -58,7 +56,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "Deseret";
     }
@@ -117,7 +114,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(BIDIR_L);
     }
 
@@ -217,7 +214,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     Deseret10400(const Deseret10400 &) {}
@@ -230,7 +226,6 @@ namespace Babylon {
     static const UCS4 m_lower[80];
     static const UCS4 m_title[80];
     static const unsigned char _cat[80];
-
   }; // class Deseret10400
 
     const std::bitset<80> Deseret10400::m_is_defined(std::string("00111111111111111111111111111111111111110011111111111111111111111111111111111111"));

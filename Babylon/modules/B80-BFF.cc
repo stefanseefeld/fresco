@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 17:47:04 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:01:24 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -26,8 +26,8 @@
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
 #include <bitset>
-#include <map>
 
+#include <map>
 namespace Babylon {
 
   class TamilB80 : public Babylon::Dictionary::Block {
@@ -43,9 +43,7 @@ namespace Babylon {
       m_composeMap[make_pair(0x00000BC6, 0x00000BBE)] = 0x0BCA;
       m_composeMap[make_pair(0x00000BC6, 0x00000BD7)] = 0x0BCC;
       m_composeMap[make_pair(0x00000BC7, 0x00000BBE)] = 0x0BCB;
-
     }
-
 
     ~TamilB80() {
     }
@@ -63,7 +61,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "Tamil";
     }
@@ -269,7 +266,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(TamilB80::m_bidir[uc - m_first_letter]);
     }
 
@@ -375,7 +372,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     TamilB80(const TamilB80 &) {}
@@ -391,7 +387,6 @@ namespace Babylon {
     static const unsigned char m_lb[128];
     std::map<pair<UCS4, UCS4>, UCS4> m_composeMap;
     static const std::bitset<128> m_Other_Alphabetic;
-
   }; // class TamilB80
 
     const std::bitset<128> TamilB80::m_is_defined(std::string("00000000000001111111111110000000000000001000000000111101110001111100001110111111110001110001100011010110001111011100011111101100"));

@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 17:46:17 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:00:42 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -26,8 +26,8 @@
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
 #include <bitset>
-#include <map>
 
+#include <map>
 namespace Babylon {
 
   class Greek370 : public Babylon::Dictionary::Block {
@@ -135,9 +135,7 @@ namespace Babylon {
       m_composeMap[make_pair(0x000003CE, 0x00000345)] = 0x1FF4;
       m_composeMap[make_pair(0x000003D2, 0x00000301)] = 0x03D3;
       m_composeMap[make_pair(0x000003D2, 0x00000308)] = 0x03D4;
-
     }
-
 
     ~Greek370() {
     }
@@ -155,7 +153,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "Greek";
     }
@@ -214,7 +211,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(Greek370::m_bidir[uc - m_first_letter]);
     }
 
@@ -320,7 +317,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     Greek370(const Greek370 &) {}
@@ -340,7 +336,6 @@ namespace Babylon {
     static const unsigned char m_ea[144];
     std::map<pair<UCS4, UCS4>, UCS4> m_composeMap;
     static const std::bitset<144> m_Diacritic;
-
   }; // class Greek370
 
     const std::bitset<144> Greek370::m_is_defined(std::string("000000000011111111111111111111111111110011111111011111111111111111111111111111111111111111111011111111111111111111010111111100000100010000110000"));

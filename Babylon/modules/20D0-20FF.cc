@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 17:48:43 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:02:57 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -38,9 +38,7 @@ namespace Babylon {
       m_first_letter = 0x20D0;
       m_last_letter  = 0x20FF;
       // m_version="3.1" // Not yet supported!
-
     }
-
 
     ~Combining_Marks_for_Symbols20D0() {
     }
@@ -58,7 +56,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "Combining Marks for Symbols";
     }
@@ -117,7 +114,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(BIDIR_NSM);
     }
 
@@ -217,7 +214,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     Combining_Marks_for_Symbols20D0(const Combining_Marks_for_Symbols20D0 &) {}
@@ -229,7 +225,6 @@ namespace Babylon {
     static const unsigned char _cat[48];
     static const unsigned char _comb_cl[48];
     static const std::bitset<48> m_Other_Math;
-
   }; // class Combining_Marks_for_Symbols20D0
 
     const std::bitset<48> Combining_Marks_for_Symbols20D0::m_is_defined(std::string("000000000000000000000000000011111111111111111111"));

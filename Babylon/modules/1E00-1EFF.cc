@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 17:48:25 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:02:39 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -26,8 +26,8 @@
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
 #include <bitset>
-#include <map>
 
+#include <map>
 namespace Babylon {
 
   class Latin_Extended_Additional1E00 : public Babylon::Dictionary::Block {
@@ -53,9 +53,7 @@ namespace Babylon {
       m_composeMap[make_pair(0x00001EB9, 0x00000302)] = 0x1EC7;
       m_composeMap[make_pair(0x00001ECC, 0x00000302)] = 0x1ED8;
       m_composeMap[make_pair(0x00001ECD, 0x00000302)] = 0x1ED9;
-
     }
-
 
     ~Latin_Extended_Additional1E00() {
     }
@@ -73,7 +71,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "Latin Extended Additional";
     }
@@ -132,7 +129,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(BIDIR_L);
     }
 
@@ -238,7 +235,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     Latin_Extended_Additional1E00(const Latin_Extended_Additional1E00 &) {}
@@ -254,7 +250,6 @@ namespace Babylon {
     static const unsigned char _decomp[256];
     static const UCS2 m_decompStr[256][2];
     std::map<pair<UCS4, UCS4>, UCS4> m_composeMap;
-
   }; // class Latin_Extended_Additional1E00
 
     const std::bitset<256> Latin_Extended_Additional1E00::m_is_defined(std::string("0000001111111111111111111111111111111111111111111111111111111111111111111111111111111111111111110000111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"));

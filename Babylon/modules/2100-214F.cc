@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 17:48:45 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:02:58 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -38,9 +38,7 @@ namespace Babylon {
       m_first_letter = 0x2100;
       m_last_letter  = 0x214F;
       // m_version="3.1" // Not yet supported!
-
     }
-
 
     ~Letterlike_Symbols2100() {
     }
@@ -58,7 +56,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "Letterlike Symbols";
     }
@@ -117,7 +114,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(Letterlike_Symbols2100::m_bidir[uc - m_first_letter]);
     }
 
@@ -251,7 +248,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     Letterlike_Symbols2100(const Letterlike_Symbols2100 &) {}
@@ -268,7 +264,6 @@ namespace Babylon {
     static const unsigned char m_lb[80];
     static const unsigned char m_ea[80];
     static const std::bitset<80> m_Other_Math;
-
   }; // class Letterlike_Symbols2100
 
     const std::bitset<80> Letterlike_Symbols2100::m_is_defined(std::string("00000000000000000000011111111111111111111111111111111111111111111111111111111111"));

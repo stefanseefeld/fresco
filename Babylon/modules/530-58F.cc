@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 17:46:28 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:00:52 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -38,9 +38,7 @@ namespace Babylon {
       m_first_letter = 0x530;
       m_last_letter  = 0x58F;
       // m_version="3.1" // Not yet supported!
-
     }
-
 
     ~Armenian530() {
     }
@@ -58,7 +56,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "Armenian";
     }
@@ -117,7 +114,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(Armenian530::m_bidir[uc - m_first_letter]);
     }
 
@@ -223,7 +220,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     Armenian530(const Armenian530 &) {}
@@ -240,7 +236,6 @@ namespace Babylon {
     static const unsigned char _decomp[96];
     static const UCS2 m_decompStr[96][2];
     static const unsigned char m_lb[96];
-
   }; // class Armenian530
 
     const std::bitset<96> Armenian530::m_is_defined(std::string("000001101111111111111111111111111111111111111110111111100111111111111111111111111111111111111110"));

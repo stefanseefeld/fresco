@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 17:48:49 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:03:02 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -26,8 +26,8 @@
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
 #include <bitset>
-#include <map>
 
+#include <map>
 namespace Babylon {
 
   class Arrows2190 : public Babylon::Dictionary::Block {
@@ -45,9 +45,7 @@ namespace Babylon {
       m_composeMap[make_pair(0x000021D0, 0x00000338)] = 0x21CD;
       m_composeMap[make_pair(0x000021D2, 0x00000338)] = 0x21CF;
       m_composeMap[make_pair(0x000021D4, 0x00000338)] = 0x21CE;
-
     }
-
 
     ~Arrows2190() {
     }
@@ -65,7 +63,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "Arrows";
     }
@@ -124,7 +121,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(BIDIR_ON);
     }
 
@@ -230,7 +227,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     Arrows2190(const Arrows2190 &) {}
@@ -244,7 +240,6 @@ namespace Babylon {
     static const unsigned char m_lb[112];
     static const unsigned char m_ea[112];
     std::map<pair<UCS4, UCS4>, UCS4> m_composeMap;
-
   }; // class Arrows2190
 
     const std::bitset<112> Arrows2190::m_is_defined(std::string("0000000000001111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"));

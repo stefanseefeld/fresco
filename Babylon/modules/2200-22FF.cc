@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 17:48:51 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:03:06 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -26,8 +26,8 @@
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
 #include <bitset>
-#include <map>
 
+#include <map>
 namespace Babylon {
 
   class Mathematical_Operators2200 : public Babylon::Dictionary::Block {
@@ -74,9 +74,7 @@ namespace Babylon {
       m_composeMap[make_pair(0x000022B3, 0x00000338)] = 0x22EB;
       m_composeMap[make_pair(0x000022B4, 0x00000338)] = 0x22EC;
       m_composeMap[make_pair(0x000022B5, 0x00000338)] = 0x22ED;
-
     }
-
 
     ~Mathematical_Operators2200() {
     }
@@ -94,7 +92,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "Mathematical Operators";
     }
@@ -153,7 +150,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(Mathematical_Operators2200::m_bidir[uc - m_first_letter]);
     }
 
@@ -272,7 +269,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     Mathematical_Operators2200(const Mathematical_Operators2200 &) {}
@@ -288,7 +284,6 @@ namespace Babylon {
     static const unsigned char m_lb[256];
     static const unsigned char m_ea[256];
     std::map<pair<UCS4, UCS4>, UCS4> m_composeMap;
-
   }; // class Mathematical_Operators2200
 
     const std::bitset<256> Mathematical_Operators2200::m_is_defined(std::string("0000000000000011111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"));

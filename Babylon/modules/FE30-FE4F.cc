@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 18:05:09 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:25:59 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -38,9 +38,7 @@ namespace Babylon {
       m_first_letter = 0xFE30;
       m_last_letter  = 0xFE4F;
       // m_version="3.1" // Not yet supported!
-
     }
-
 
     ~CJK_Compatibility_FormsFE30() {
     }
@@ -58,7 +56,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "CJK Compatibility Forms";
     }
@@ -117,7 +114,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(BIDIR_ON);
     }
 
@@ -218,7 +215,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     CJK_Compatibility_FormsFE30(const CJK_Compatibility_FormsFE30 &) {}
@@ -232,7 +228,6 @@ namespace Babylon {
     static const UCS4 m_decompStr[32];
     static const unsigned char m_lb[32];
     static const std::bitset<32> m_Dash;
-
   }; // class CJK_Compatibility_FormsFE30
 
     const std::bitset<32> CJK_Compatibility_FormsFE30::m_is_defined(std::string("11111110000111111111111111111111"));

@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 17:48:31 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:02:44 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -26,8 +26,8 @@
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
 #include <bitset>
-#include <map>
 
+#include <map>
 namespace Babylon {
 
   class Greek_Extended1F00 : public Babylon::Dictionary::Block {
@@ -172,9 +172,7 @@ namespace Babylon {
       m_composeMap[make_pair(0x00001FFE, 0x00000300)] = 0x1FDD;
       m_composeMap[make_pair(0x00001FFE, 0x00000301)] = 0x1FDE;
       m_composeMap[make_pair(0x00001FFE, 0x00000342)] = 0x1FDF;
-
     }
-
 
     ~Greek_Extended1F00() {
     }
@@ -192,7 +190,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "Greek Extended";
     }
@@ -251,7 +248,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(Greek_Extended1F00::m_bidir[uc - m_first_letter]);
     }
 
@@ -357,7 +354,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     Greek_Extended1F00(const Greek_Extended1F00 &) {}
@@ -375,7 +371,6 @@ namespace Babylon {
     static const UCS2 m_decompStr[256][2];
     std::map<pair<UCS4, UCS4>, UCS4> m_composeMap;
     static const std::bitset<256> m_Diacritic;
-
   }; // class Greek_Extended1F00
 
     const std::bitset<256> Greek_Extended1F00::m_is_defined(std::string("0111111111011100111111111111111111101111110011111111111111011111111111111101111111111111111111111111111111111111111111111111111100111111111111111111111111111111101010101111111100111111001111111111111111111111111111111111111100111111001111111111111111111111"));

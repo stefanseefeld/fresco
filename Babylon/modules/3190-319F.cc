@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 17:49:56 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:04:10 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -38,9 +38,7 @@ namespace Babylon {
       m_first_letter = 0x3190;
       m_last_letter  = 0x319F;
       // m_version="3.1" // Not yet supported!
-
     }
-
 
     ~Kanbun3190() {
     }
@@ -58,7 +56,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "Kanbun";
     }
@@ -142,7 +139,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(BIDIR_L);
     }
 
@@ -243,7 +240,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     Kanbun3190(const Kanbun3190 &) {}
@@ -254,7 +250,6 @@ namespace Babylon {
     static const unsigned char _cat[16];
     static const unsigned char _decomp[16];
     static const UCS4 m_decompStr[16];
-
   }; // class Kanbun3190
 
   const unsigned char Kanbun3190::_cat[] = {

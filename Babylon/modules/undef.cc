@@ -111,7 +111,7 @@ namespace Babylon {
     }
 
     Bidir_Props bidir_props(const UCS4 uc) const {
-      return BIDIR_MAX;
+      return BIDIR_INVALID;
     }
 
     Char_Decomp decomp_type(const UCS4 uc) const {

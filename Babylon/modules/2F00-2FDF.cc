@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 17:49:39 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:03:54 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -38,9 +38,7 @@ namespace Babylon {
       m_first_letter = 0x2F00;
       m_last_letter  = 0x2FDF;
       // m_version="3.1" // Not yet supported!
-
     }
-
 
     ~Kangxi_Radicals2F00() {
     }
@@ -58,7 +56,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "Kangxi Radicals";
     }
@@ -117,7 +114,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(BIDIR_ON);
     }
 
@@ -218,7 +215,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     Kangxi_Radicals2F00(const Kangxi_Radicals2F00 &) {}
@@ -229,7 +225,6 @@ namespace Babylon {
     static const std::bitset<224> m_is_defined;
     static const unsigned char _decomp[224];
     static const UCS4 m_decompStr[224];
-
   }; // class Kangxi_Radicals2F00
 
     const std::bitset<224> Kangxi_Radicals2F00::m_is_defined(std::string("00000000001111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"));

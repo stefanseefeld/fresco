@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 17:49:21 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:03:34 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -38,9 +38,7 @@ namespace Babylon {
       m_first_letter = 0x2600;
       m_last_letter  = 0x26FF;
       // m_version="3.1" // Not yet supported!
-
     }
-
 
     ~Miscellaneous_Symbols2600() {
     }
@@ -58,7 +56,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "Miscellaneous Symbols";
     }
@@ -117,7 +114,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(BIDIR_ON);
     }
 
@@ -217,7 +214,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     Miscellaneous_Symbols2600(const Miscellaneous_Symbols2600 &) {}
@@ -229,7 +225,6 @@ namespace Babylon {
     static const unsigned char _cat[256];
     static const unsigned char m_lb[256];
     static const unsigned char m_ea[256];
-
   }; // class Miscellaneous_Symbols2600
 
     const std::bitset<256> Miscellaneous_Symbols2600::m_is_defined(std::string("0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000111111111111111111111111111111111111111111111111111111111111111111111111111111111111111110000011111111111111111111"));

@@ -151,7 +151,7 @@ Bidir_Props Dictionary::bidir_props(const UCS4 uc)
     Bidir_Props result;
     Guard<RWLock> guard(m_rw_lock);
     result=find_char(uc)->bidir_props(uc);
-    if (result == BIDIR_MAX) {
+    if (result == BIDIR_INVALID) {
 	m_rw_lock.unlock();
 	throw Undefined_Property(uc, PROP_CHARACTER);
     }

@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 18:04:35 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:25:29 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -38,9 +38,7 @@ namespace Babylon {
       m_first_letter = 0xF900;
       m_last_letter  = 0xFAFF;
       // m_version="3.1" // Not yet supported!
-
     }
-
 
     ~CJK_Compatibility_IdeographsF900() {
     }
@@ -58,7 +56,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "CJK Compatibility Ideographs";
     }
@@ -117,7 +114,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(BIDIR_L);
     }
 
@@ -218,7 +215,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     CJK_Compatibility_IdeographsF900(const CJK_Compatibility_IdeographsF900 &) {}
@@ -229,7 +225,6 @@ namespace Babylon {
     static const std::bitset<512> m_is_defined;
     static const UCS4 m_decompStr[512];
     static const std::bitset<512> m_Ideographic;
-
   }; // class CJK_Compatibility_IdeographsF900
 
     const std::bitset<512> CJK_Compatibility_IdeographsF900::m_is_defined(std::string("00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"));

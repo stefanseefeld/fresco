@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 17:47:08 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:01:27 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -38,9 +38,7 @@ namespace Babylon {
       m_first_letter = 0xC00;
       m_last_letter  = 0xC7F;
       // m_version="3.1" // Not yet supported!
-
     }
-
 
     ~TeluguC00() {
     }
@@ -58,7 +56,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "Telugu";
     }
@@ -264,7 +261,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(TeluguC00::m_bidir[uc - m_first_letter]);
     }
 
@@ -370,7 +367,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     TeluguC00(const TeluguC00 &) {}
@@ -385,7 +381,6 @@ namespace Babylon {
     static const UCS2 m_decompStr[128][2];
     static const unsigned char m_lb[128];
     static const std::bitset<128> m_Other_Alphabetic;
-
   }; // class TeluguC00
 
     const std::bitset<128> TeluguC00::m_is_defined(std::string("00000000000000001111111111000011000000000110000000111101110111111100001111101111111111011111111111111111111111011101111111101110"));

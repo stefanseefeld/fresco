@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 17:49:47 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:04:01 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -26,8 +26,8 @@
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
 #include <bitset>
-#include <map>
 
+#include <map>
 namespace Babylon {
 
   class Hiragana3040 : public Babylon::Dictionary::Block {
@@ -66,9 +66,7 @@ namespace Babylon {
       m_composeMap[make_pair(0x0000307B, 0x00003099)] = 0x307C;
       m_composeMap[make_pair(0x0000307B, 0x0000309A)] = 0x307D;
       m_composeMap[make_pair(0x0000309D, 0x00003099)] = 0x309E;
-
     }
-
 
     ~Hiragana3040() {
     }
@@ -86,7 +84,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "Hiragana";
     }
@@ -145,7 +142,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(Hiragana3040::m_bidir[uc - m_first_letter]);
     }
 
@@ -251,7 +248,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     Hiragana3040(const Hiragana3040 &) {}
@@ -269,7 +265,6 @@ namespace Babylon {
     std::map<pair<UCS4, UCS4>, UCS4> m_composeMap;
     static const std::bitset<96> m_Diacritic;
     static const std::bitset<96> m_Extender;
-
   }; // class Hiragana3040
 
     const std::bitset<96> Hiragana3040::m_is_defined(std::string("011111100001111111111111111111111111111111111111111111111111111111111111111111111111111111111110"));

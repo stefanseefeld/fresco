@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 17:48:57 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:03:12 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -38,9 +38,7 @@ namespace Babylon {
       m_first_letter = 0x2300;
       m_last_letter  = 0x23FF;
       // m_version="3.1" // Not yet supported!
-
     }
-
 
     ~Miscellaneous_Technical2300() {
     }
@@ -58,7 +56,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "Miscellaneous Technical";
     }
@@ -117,7 +114,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(Miscellaneous_Technical2300::m_bidir[uc - m_first_letter]);
     }
 
@@ -218,7 +215,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     Miscellaneous_Technical2300(const Miscellaneous_Technical2300 &) {}
@@ -233,7 +229,6 @@ namespace Babylon {
     static const std::bitset<256> m_mirror;
     static const unsigned char m_lb[256];
     static const unsigned char m_ea[256];
-
   }; // class Miscellaneous_Technical2300
 
     const std::bitset<256> Miscellaneous_Technical2300::m_is_defined(std::string("0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011111111111111111111111111111101111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"));

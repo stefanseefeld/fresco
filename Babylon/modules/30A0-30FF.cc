@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 17:49:49 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:04:03 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -26,8 +26,8 @@
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
 #include <bitset>
-#include <map>
 
+#include <map>
 namespace Babylon {
 
   class Katakana30A0 : public Babylon::Dictionary::Block {
@@ -70,9 +70,7 @@ namespace Babylon {
       m_composeMap[make_pair(0x000030F1, 0x00003099)] = 0x30F9;
       m_composeMap[make_pair(0x000030F2, 0x00003099)] = 0x30FA;
       m_composeMap[make_pair(0x000030FD, 0x00003099)] = 0x30FE;
-
     }
-
 
     ~Katakana30A0() {
     }
@@ -90,7 +88,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "Katakana";
     }
@@ -149,7 +146,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(Katakana30A0::m_bidir[uc - m_first_letter]);
     }
 
@@ -255,7 +252,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     Katakana30A0(const Katakana30A0 &) {}
@@ -270,7 +266,6 @@ namespace Babylon {
     static const unsigned char m_lb[96];
     std::map<pair<UCS4, UCS4>, UCS4> m_composeMap;
     static const std::bitset<96> m_Extender;
-
   }; // class Katakana30A0
 
     const std::bitset<96> Katakana30A0::m_is_defined(std::string("011111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111110"));

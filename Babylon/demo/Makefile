@@ -48,7 +48,7 @@ DVIPS       =
 # Compilation and linking flags.
 CFLAGS	   	= -Wall -I../../../../NORM/include -pthread
 CXXFLAGS   	= -Wall -D__x86__ -I../../../../NORM/include -I../../../include -pthread
-LDFLAGS    	= -L/home/export/berlin/DEBUG/lib -lPrague -lBabylon
+LDFLAGS    	= -L/home/export/berlin/DFB-V2.95/lib -lPrague -lBabylon
 OPTFLAGS	= -O3
 SOFLAGS		= -fpic
 GDBFLAGS	= -ggdb -DGDB

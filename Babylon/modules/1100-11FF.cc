@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 17:47:42 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:01:59 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -38,9 +38,7 @@ namespace Babylon {
       m_first_letter = 0x1100;
       m_last_letter  = 0x11FF;
       // m_version="3.1" // Not yet supported!
-
     }
-
 
     ~Hangul_Jamo1100() {
     }
@@ -58,7 +56,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "Hangul Jamo";
     }
@@ -117,7 +114,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(BIDIR_L);
     }
 
@@ -217,7 +214,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     Hangul_Jamo1100(const Hangul_Jamo1100 &) {}
@@ -228,7 +224,6 @@ namespace Babylon {
     static const std::bitset<256> m_is_defined;
     static const unsigned char m_lb[256];
     static const unsigned char m_ea[256];
-
   }; // class Hangul_Jamo1100
 
     const std::bitset<256> Hangul_Jamo1100::m_is_defined(std::string("0000001111111111111111111111111111111111111111111111111111111111111111111111111111111111000001111111111111111111111111111111111111111111111111111111111111111111100000111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"));

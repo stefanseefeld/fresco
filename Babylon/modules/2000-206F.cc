@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 17:48:38 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:02:52 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -38,9 +38,7 @@ namespace Babylon {
       m_first_letter = 0x2000;
       m_last_letter  = 0x206F;
       // m_version="3.1" // Not yet supported!
-
     }
-
 
     ~General_Punctuation2000() {
     }
@@ -58,7 +56,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "General Punctuation";
     }
@@ -117,7 +114,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(General_Punctuation2000::m_bidir[uc - m_first_letter]);
     }
 
@@ -241,7 +238,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     General_Punctuation2000(const General_Punctuation2000 &) {}
@@ -265,7 +261,6 @@ namespace Babylon {
     static const std::bitset<112> m_Quotation_Mark;
     static const std::bitset<112> m_Terminal_Punctuation;
     static const std::bitset<112> m_Other_Math;
-
   }; // class General_Punctuation2000
 
     const std::bitset<112> General_Punctuation2000::m_is_defined(std::string("1111110000000000000000000000000000111111011111111111111111111111111111111111111111111111111111111111111111111111"));

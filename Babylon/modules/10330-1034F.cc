@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 18:05:24 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:26:14 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -38,9 +38,7 @@ namespace Babylon {
       m_first_letter = 0x10330;
       m_last_letter  = 0x1034F;
       // m_version="3.1" // Not yet supported!
-
     }
-
 
     ~Gothic10330() {
     }
@@ -58,7 +56,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "Gothic";
     }
@@ -117,7 +114,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(BIDIR_L);
     }
 
@@ -217,7 +214,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     Gothic10330(const Gothic10330 &) {}
@@ -227,7 +223,6 @@ namespace Babylon {
     // Babylon::UCS4_string m_version;
     static const std::bitset<32> m_is_defined;
     static const unsigned char _cat[32];
-
   }; // class Gothic10330
 
     const std::bitset<32> Gothic10330::m_is_defined(std::string("00000111111111111111111111111111"));

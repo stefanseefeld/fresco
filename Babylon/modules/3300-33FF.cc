@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 17:50:04 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:04:16 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -38,9 +38,7 @@ namespace Babylon {
       m_first_letter = 0x3300;
       m_last_letter  = 0x33FF;
       // m_version="3.1" // Not yet supported!
-
     }
-
 
     ~CJK_Compatibility3300() {
     }
@@ -58,7 +56,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "CJK Compatibility";
     }
@@ -117,7 +114,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(BIDIR_L);
     }
 
@@ -999,7 +996,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     CJK_Compatibility3300(const CJK_Compatibility3300 &) {}
@@ -1010,7 +1006,6 @@ namespace Babylon {
     static const std::bitset<256> m_is_defined;
     static const unsigned char _decomp[256];
     static const UCS4 m_decompStr[256][2];
-
   }; // class CJK_Compatibility3300
 
     const std::bitset<256> CJK_Compatibility3300::m_is_defined(std::string("0111111111111111111111111111111100111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111000011111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"));

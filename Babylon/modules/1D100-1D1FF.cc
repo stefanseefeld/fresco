@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 18:05:33 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:26:23 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -26,8 +26,8 @@
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
 #include <bitset>
-#include <map>
 
+#include <map>
 namespace Babylon {
 
   class Musical_Symbols1D100 : public Babylon::Dictionary::Block {
@@ -52,9 +52,7 @@ namespace Babylon {
       m_composeMap[make_pair(0x0001D1BB, 0x0001D16F)] = 0x1D1BF;
       m_composeMap[make_pair(0x0001D1BC, 0x0001D16E)] = 0x1D1BE;
       m_composeMap[make_pair(0x0001D1BC, 0x0001D16F)] = 0x1D1C0;
-
     }
-
 
     ~Musical_Symbols1D100() {
     }
@@ -72,7 +70,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "Musical Symbols";
     }
@@ -131,7 +128,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(Musical_Symbols1D100::m_bidir[uc - m_first_letter]);
     }
 
@@ -237,7 +234,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     Musical_Symbols1D100(const Musical_Symbols1D100 &) {}
@@ -253,7 +249,6 @@ namespace Babylon {
     static const unsigned char m_lb[256];
     std::map<pair<UCS4, UCS4>, UCS4> m_composeMap;
     static const std::bitset<256> m_Diacritic;
-
   }; // class Musical_Symbols1D100
 
     const std::bitset<256> Musical_Symbols1D100::m_is_defined(std::string("0000000000000000000000000000000000111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111000111111111111111111111111111111111111111"));

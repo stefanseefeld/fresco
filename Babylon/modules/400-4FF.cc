@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 17:46:22 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:00:45 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -26,8 +26,8 @@
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
 #include <bitset>
-#include <map>
 
+#include <map>
 namespace Babylon {
 
   class Cyrillic400 : public Babylon::Dictionary::Block {
@@ -91,9 +91,7 @@ namespace Babylon {
       m_composeMap[make_pair(0x000004D9, 0x00000308)] = 0x04DB;
       m_composeMap[make_pair(0x000004E8, 0x00000308)] = 0x04EA;
       m_composeMap[make_pair(0x000004E9, 0x00000308)] = 0x04EB;
-
     }
-
 
     ~Cyrillic400() {
     }
@@ -111,7 +109,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "Cyrillic";
     }
@@ -170,7 +167,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(Cyrillic400::m_bidir[uc - m_first_letter]);
     }
 
@@ -276,7 +273,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     Cyrillic400(const Cyrillic400 &) {}
@@ -296,7 +292,6 @@ namespace Babylon {
     static const unsigned char m_ea[256];
     std::map<pair<UCS4, UCS4>, UCS4> m_composeMap;
     static const std::bitset<256> m_Diacritic;
-
   }; // class Cyrillic400
 
     const std::bitset<256> Cyrillic400::m_is_defined(std::string("0000001100111111111111111111111111111111111111110001100110011111111111111111111111111111111111111111111111111111111100110111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"));

@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 18:05:15 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:26:02 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -38,9 +38,7 @@ namespace Babylon {
       m_first_letter = 0xFF00;
       m_last_letter  = 0xFFEF;
       // m_version="3.1" // Not yet supported!
-
     }
-
 
     ~Halfwidth_and_Fullwidth_FormsFF00() {
     }
@@ -58,7 +56,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "Halfwidth and Fullwidth Forms";
     }
@@ -264,7 +261,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(Halfwidth_and_Fullwidth_FormsFF00::m_bidir[uc - m_first_letter]);
     }
 
@@ -365,7 +362,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     Halfwidth_and_Fullwidth_FormsFF00(const Halfwidth_and_Fullwidth_FormsFF00 &) {}
@@ -386,7 +382,6 @@ namespace Babylon {
     static const std::bitset<240> m_Terminal_Punctuation;
     static const std::bitset<240> m_Hex_Digit;
     static const std::bitset<240> m_Diacritic;
-
   }; // class Halfwidth_and_Fullwidth_FormsFF00
 
     const std::bitset<240> Halfwidth_and_Fullwidth_FormsFF00::m_is_defined(std::string("011111110111111100011100111111001111110011111100011111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111110011111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111110"));

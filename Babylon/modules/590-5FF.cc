@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 17:46:31 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:00:55 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -26,8 +26,8 @@
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
 #include <bitset>
-#include <map>
 
+#include <map>
 namespace Babylon {
 
   class Hebrew590 : public Babylon::Dictionary::Block {
@@ -71,9 +71,7 @@ namespace Babylon {
       m_composeMap[make_pair(0x000005E9, 0x000005C2)] = 0xFB2B;
       m_composeMap[make_pair(0x000005EA, 0x000005BC)] = 0xFB4A;
       m_composeMap[make_pair(0x000005F2, 0x000005B7)] = 0xFB1F;
-
     }
-
 
     ~Hebrew590() {
     }
@@ -91,7 +89,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "Hebrew";
     }
@@ -150,7 +147,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(Hebrew590::m_bidir[uc - m_first_letter]);
     }
 
@@ -250,7 +247,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     Hebrew590(const Hebrew590 &) {}
@@ -266,7 +262,6 @@ namespace Babylon {
     std::map<pair<UCS4, UCS4>, UCS4> m_composeMap;
     static const std::bitset<112> m_Other_Alphabetic;
     static const std::bitset<112> m_Diacritic;
-
   }; // class Hebrew590
 
     const std::bitset<112> Hebrew590::m_is_defined(std::string("0000000000011111000001111111111111111111111111110000000000011111111110111111111111111111111110111111111111111110"));

@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 17:46:40 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:01:03 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -38,9 +38,7 @@ namespace Babylon {
       m_first_letter = 0x700;
       m_last_letter  = 0x74F;
       // m_version="3.1" // Not yet supported!
-
     }
-
 
     ~Syriac700() {
     }
@@ -58,7 +56,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "Syriac";
     }
@@ -117,7 +114,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(Syriac700::m_bidir[uc - m_first_letter]);
     }
 
@@ -217,7 +214,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     Syriac700(const Syriac700 &) {}
@@ -233,7 +229,6 @@ namespace Babylon {
     static const std::bitset<80> m_Terminal_Punctuation;
     static const std::bitset<80> m_Other_Alphabetic;
     static const std::bitset<80> m_Diacritic;
-
   }; // class Syriac700
 
     const std::bitset<80> Syriac700::m_is_defined(std::string("00000111111111111111111111111111000111111111111111111111111111111011111111111111"));

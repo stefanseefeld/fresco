@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 18:02:05 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:23:22 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -38,9 +38,7 @@ namespace Babylon {
       m_first_letter = 0xD800;
       m_last_letter  = 0xDB7F;
       // m_version="3.1" // Not yet supported!
-
     }
-
 
     ~High_SurrogatesD800() {
     }
@@ -58,7 +56,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "High Surrogates";
     }
@@ -117,7 +114,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(BIDIR_L);
     }
 
@@ -217,7 +214,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     High_SurrogatesD800(const High_SurrogatesD800 &) {}
@@ -225,7 +221,6 @@ namespace Babylon {
     Babylon::UCS4 m_first_letter;
     Babylon::UCS4 m_last_letter;
     // Babylon::UCS4_string m_version;
-
   }; // class High_SurrogatesD800
 
 }; // namespace Babylon

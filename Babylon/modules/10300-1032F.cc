@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 18:05:22 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:26:13 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -38,9 +38,7 @@ namespace Babylon {
       m_first_letter = 0x10300;
       m_last_letter  = 0x1032F;
       // m_version="3.1" // Not yet supported!
-
     }
-
 
     ~Old_Italic10300() {
     }
@@ -58,7 +56,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "Old Italic";
     }
@@ -142,7 +139,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(BIDIR_L);
     }
 
@@ -242,7 +239,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     Old_Italic10300(const Old_Italic10300 &) {}
@@ -252,7 +248,6 @@ namespace Babylon {
     // Babylon::UCS4_string m_version;
     static const std::bitset<48> m_is_defined;
     static const unsigned char _cat[48];
-
   }; // class Old_Italic10300
 
     const std::bitset<48> Old_Italic10300::m_is_defined(std::string("000000000000111101111111111111111111111111111111"));

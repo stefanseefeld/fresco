@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 18:04:49 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:25:39 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -38,9 +38,7 @@ namespace Babylon {
       m_first_letter = 0xFB50;
       m_last_letter  = 0xFDFF;
       // m_version="3.1" // Not yet supported!
-
     }
-
 
     ~Arabic_Presentation_FormsAFB50() {
     }
@@ -58,7 +56,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "Arabic Presentation Forms-A";
     }
@@ -117,7 +114,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(Arabic_Presentation_FormsAFB50::m_bidir[uc - m_first_letter]);
     }
 
@@ -948,7 +945,6 @@ namespace Babylon {
       return m_Noncharacter_Code_Point.test(uc - m_first_letter);
     }
 
-
   private:
     // functions
     Arabic_Presentation_FormsAFB50(const Arabic_Presentation_FormsAFB50 &) {}
@@ -963,7 +959,6 @@ namespace Babylon {
     static const UCS4 m_decompStr[688][2];
     static const unsigned char m_lb[688];
     static const std::bitset<688> m_Noncharacter_Code_Point;
-
   }; // class Arabic_Presentation_FormsAFB50
 
     const std::bitset<688> Arabic_Presentation_FormsAFB50::m_is_defined(std::string("0000111111111111000000000000000000000000000000000000000011111111111111111111111111111111111111111111111111111100111111111111111111111111111111111111111111111111111111111111111100000000000000001111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111100000000000000000000000000000000011111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"));

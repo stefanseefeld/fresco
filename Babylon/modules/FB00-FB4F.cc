@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 18:04:47 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:25:37 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -26,8 +26,8 @@
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
 #include <bitset>
-#include <map>
 
+#include <map>
 namespace Babylon {
 
   class Alphabetic_Presentation_FormsFB00 : public Babylon::Dictionary::Block {
@@ -41,9 +41,7 @@ namespace Babylon {
       // m_version="3.1" // Not yet supported!
       m_composeMap[make_pair(0x0000FB49, 0x000005C1)] = 0xFB2C;
       m_composeMap[make_pair(0x0000FB49, 0x000005C2)] = 0xFB2D;
-
     }
-
 
     ~Alphabetic_Presentation_FormsFB00() {
     }
@@ -61,7 +59,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "Alphabetic Presentation Forms";
     }
@@ -120,7 +117,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(Alphabetic_Presentation_FormsFB00::m_bidir[uc - m_first_letter]);
     }
 
@@ -239,7 +236,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     Alphabetic_Presentation_FormsFB00(const Alphabetic_Presentation_FormsFB00 &) {}
@@ -255,7 +251,6 @@ namespace Babylon {
     static const UCS4 m_decompStr[80][2];
     static const unsigned char m_lb[80];
     std::map<pair<UCS4, UCS4>, UCS4> m_composeMap;
-
   }; // class Alphabetic_Presentation_FormsFB00
 
     const std::bitset<80> Alphabetic_Presentation_FormsFB00::m_is_defined(std::string("11111111110110110101111101111111111111111111111111100000111110000000000001111111"));

@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 18:05:22 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:26:11 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -38,9 +38,7 @@ namespace Babylon {
       m_first_letter = 0xFFF0;
       m_last_letter  = 0xFFFD;
       // m_version="3.1" // Not yet supported!
-
     }
-
 
     ~SpecialsFFF0() {
     }
@@ -58,7 +56,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "Specials";
     }
@@ -117,7 +114,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(SpecialsFFF0::m_bidir[uc - m_first_letter]);
     }
 
@@ -217,7 +214,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     SpecialsFFF0(const SpecialsFFF0 &) {}
@@ -230,7 +226,6 @@ namespace Babylon {
     static const unsigned char m_bidir[14];
     static const unsigned char m_lb[14];
     static const unsigned char m_ea[14];
-
   }; // class SpecialsFFF0
 
     const std::bitset<14> SpecialsFFF0::m_is_defined(std::string("11111000000000"));

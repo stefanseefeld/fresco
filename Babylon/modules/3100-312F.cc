@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 17:49:52 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:04:06 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -38,9 +38,7 @@ namespace Babylon {
       m_first_letter = 0x3100;
       m_last_letter  = 0x312F;
       // m_version="3.1" // Not yet supported!
-
     }
-
 
     ~Bopomofo3100() {
     }
@@ -58,7 +56,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "Bopomofo";
     }
@@ -117,7 +114,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(BIDIR_L);
     }
 
@@ -217,7 +214,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     Bopomofo3100(const Bopomofo3100 &) {}
@@ -226,7 +222,6 @@ namespace Babylon {
     Babylon::UCS4 m_last_letter;
     // Babylon::UCS4_string m_version;
     static const std::bitset<48> m_is_defined;
-
   }; // class Bopomofo3100
 
     const std::bitset<48> Bopomofo3100::m_is_defined(std::string("000111111111111111111111111111111111111111100000"));

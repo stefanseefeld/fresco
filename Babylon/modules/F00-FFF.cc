@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 17:47:28 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:01:46 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -26,8 +26,8 @@
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
 #include <bitset>
-#include <map>
 
+#include <map>
 namespace Babylon {
 
   class TibetanF00 : public Babylon::Dictionary::Block {
@@ -56,9 +56,7 @@ namespace Babylon {
       m_composeMap[make_pair(0x00000FAB, 0x00000FB7)] = 0x0FAC;
       m_composeMap[make_pair(0x00000FB2, 0x00000F80)] = 0x0F76;
       m_composeMap[make_pair(0x00000FB3, 0x00000F80)] = 0x0F78;
-
     }
-
 
     ~TibetanF00() {
     }
@@ -76,7 +74,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "Tibetan";
     }
@@ -322,7 +319,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(TibetanF00::m_bidir[uc - m_first_letter]);
     }
 
@@ -428,7 +425,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     TibetanF00(const TibetanF00 &) {}
@@ -446,7 +442,6 @@ namespace Babylon {
     std::map<pair<UCS4, UCS4>, UCS4> m_composeMap;
     static const std::bitset<256> m_Other_Alphabetic;
     static const std::bitset<256> m_Diacritic;
-
   }; // class TibetanF00
 
     const std::bitset<256> TibetanF00::m_is_defined(std::string("0000000000000000000000000000000000000000000000001001111111111111110111111111111111111111111111111111111011111111000011111111111111111111111111100000011111111111111111111111111111111110111111111111111111111111111111111111111111111111111111111111111111111111"));

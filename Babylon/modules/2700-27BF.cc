@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 17:49:26 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:03:40 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -38,9 +38,7 @@ namespace Babylon {
       m_first_letter = 0x2700;
       m_last_letter  = 0x27BF;
       // m_version="3.1" // Not yet supported!
-
     }
-
 
     ~Dingbats2700() {
     }
@@ -58,7 +56,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "Dingbats";
     }
@@ -363,7 +360,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(BIDIR_ON);
     }
 
@@ -463,7 +460,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     Dingbats2700(const Dingbats2700 &) {}
@@ -473,7 +469,6 @@ namespace Babylon {
     // Babylon::UCS4_string m_version;
     static const std::bitset<192> m_is_defined;
     static const unsigned char _cat[192];
-
   }; // class Dingbats2700
 
     const std::bitset<192> Dingbats2700::m_is_defined(std::string("011111111111111011111111111111111111111100011111111111111111111111111111110000000000000011111110011111110100011110101111111111111111111111111111111111101111111111111111111111111111001111011110"));

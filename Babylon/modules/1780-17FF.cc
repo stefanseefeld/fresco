@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 17:48:17 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:02:32 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -38,9 +38,7 @@ namespace Babylon {
       m_first_letter = 0x1780;
       m_last_letter  = 0x17FF;
       // m_version="3.1" // Not yet supported!
-
     }
-
 
     ~Khmer1780() {
     }
@@ -58,7 +56,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "Khmer";
     }
@@ -264,7 +261,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(Khmer1780::m_bidir[uc - m_first_letter]);
     }
 
@@ -364,7 +361,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     Khmer1780(const Khmer1780 &) {}
@@ -380,7 +376,6 @@ namespace Babylon {
     static const std::bitset<128> m_Terminal_Punctuation;
     static const std::bitset<128> m_Other_Alphabetic;
     static const std::bitset<128> m_Diacritic;
-
   }; // class Khmer1780
 
     const std::bitset<128> Khmer1780::m_is_defined(std::string("00000000000000000000001111111111000111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"));

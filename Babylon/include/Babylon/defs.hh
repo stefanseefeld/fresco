@@ -32,6 +32,7 @@
 #endif
 
 #include <string>
+#include <vector>
 #include <exception>
 #include <strstream>
 #include <iomanip>
@@ -59,9 +60,10 @@ namespace Babylon {
     // These classes are defined in Char.hh and String.hh
     class Char;
     class String; 
-    
-    // max. number of char_decomps a single unicode character can have
 
+    const unsigned char MAX_BIDIR_LEVEL = 61;
+    const unsigned char LEVEL_REMOVED   = 0xFF;
+    
     enum gen_cat_enum {
 	//
 	// NORMATIVE:
@@ -145,30 +147,94 @@ namespace Babylon {
 	CC_MAX
     }; // enum can_comb_class_enum
     typedef enum can_comb_class_enum Can_Comb_Class;
+
+    // These definitions are copied from libfribidi:
+    enum bidir_masks_enum {
+	BIDIR_MASK_RTL         = 0x00000001, // Right to Left
+	BIDIR_MASK_ARABIC      = 0x00000002, // Arabic
+
+	// Each char can be only one of the three following.
+	BIDIR_MASK_STRONG      = 0x00000010, // Is strong
+	BIDIR_MASK_WEAK        = 0x00000020, // Is weak 
+	BIDIR_MASK_NEUTRAL     = 0x00000040, // Is neutral
+	
+	// Each char can be only one of the five following.
+	BIDIR_MASK_LETTER      = 0x00000100, // Is letter: L, R, AL
+	BIDIR_MASK_NUMBER      = 0x00000200, // Is number: EN, AN
+	BIDIR_MASK_NUMSEPTER   = 0x00000400, // Is number separator or
+	                                     // terminator: ES, ET, CS
+	BIDIR_MASK_SPACE       = 0x00000800, // Is space: BN, BS, SS, WS
+	BIDIR_MASK_EXPLICIT    = 0x00001000, // Is expilict mark:
+	                                     // LRE, RLE, LRO, RLO, PDF
+ 
+	// Can be on only if BIDIR_MASK_SPACE is also on.
+	BIDIR_MASK_SEPARATOR   = 0x00002000, // Is test separator: BS, SS
+ 
+	// Can be on only if BIDIR_MASK_EXPLICIT is also on.
+	BIDIR_MASK_OVERRIDE    = 0x00004000, // Is explicit override: LRO, RLO
+
+	// The following must be to make types pairwise different, some
+	// of them can be removed but are here because of efficiency
+	// (make queries faster).
+	BIDIR_MASK_ES          = 0x00010000,
+	BIDIR_MASK_ET          = 0x00020000,
+	BIDIR_MASK_CS          = 0x00040000,
+	
+	BIDIR_MASK_NSM         = 0x00080000,
+	BIDIR_MASK_BN          = 0x00100000,
+	
+	BIDIR_MASK_BS          = 0x00200000,
+	BIDIR_MASK_SS          = 0x00400000,
+	BIDIR_MASK_WS          = 0x00800000
+    };
+    typedef enum bidir_masks_enum Bidir_Masks;
     
     // NORMATIVE:
     enum bidir_props_enum {
-	BIDIR_L,   // Left-to-Right
-	BIDIR_LRE, // Left-to-Right Embedding
-	BIDIR_LRO, // Left-to-Right Override
-	BIDIR_R,   // Right-to-Left
-	BIDIR_AL,  // Right-to-Left Arabic 
-	BIDIR_RLE, // Right-to-Left Embedding
-	BIDIR_RLO, // Right-to-Left Override
-	BIDIR_PDF, // Pop Directional Format
-	BIDIR_EN,  // European Number
-	BIDIR_ES,  // European Number Seperator
-	BIDIR_ET,  // European Number Terminator
-	BIDIR_AN,  // Arabic Number
-	BIDIR_CS,  // Common Number Seperator
-	BIDIR_NSM, // Non-Spacing Mark
-	BIDIR_BN,  // Boundary Neutral
-	BIDIR_B,   // Paragraph Separator
-	BIDIR_S,   // Segment Separator
-	BIDIR_WS,  // Whitespace
-	BIDIR_ON,  // Other Neutral
+	BIDIR_L = // Left-to-Right
+	BIDIR_MASK_STRONG + BIDIR_MASK_LETTER,
+	BIDIR_LRE = // Left-to-Right Embedding
+	BIDIR_MASK_STRONG + BIDIR_MASK_EXPLICIT,
+	BIDIR_LRO = // Left-to-Right Override
+	BIDIR_MASK_STRONG + BIDIR_MASK_EXPLICIT + BIDIR_MASK_OVERRIDE,
+	BIDIR_R = // Right-to-Left
+	BIDIR_MASK_STRONG + BIDIR_MASK_LETTER + BIDIR_MASK_RTL,
+	BIDIR_AL = // Right-to-Left Arabic
+	BIDIR_MASK_STRONG + BIDIR_MASK_LETTER +
+	BIDIR_MASK_RTL + BIDIR_MASK_ARABIC,
+	BIDIR_RLE = // Right-to-Left Embedding
+	BIDIR_MASK_STRONG + BIDIR_MASK_EXPLICIT + BIDIR_MASK_RTL,
+	BIDIR_RLO = // Right-to-Left Override
+	BIDIR_MASK_STRONG + BIDIR_MASK_EXPLICIT +
+	BIDIR_MASK_RTL + BIDIR_MASK_OVERRIDE,
+	BIDIR_PDF = // Pop Directional Format
+	BIDIR_MASK_WEAK + BIDIR_MASK_EXPLICIT,
+	BIDIR_EN = // European Number
+	BIDIR_MASK_WEAK + BIDIR_MASK_NUMBER,
+	BIDIR_ES = // European Number Seperator
+	BIDIR_MASK_WEAK + BIDIR_MASK_NUMSEPTER + BIDIR_MASK_ES,
+	BIDIR_ET = // European Number Terminator
+	BIDIR_MASK_WEAK + BIDIR_MASK_NUMSEPTER + BIDIR_MASK_ET,
+	BIDIR_AN = // Arabic Number
+	BIDIR_MASK_WEAK + BIDIR_MASK_NUMBER + BIDIR_MASK_ARABIC,
+	BIDIR_CS = // Common Number Seperator
+	BIDIR_MASK_WEAK + BIDIR_MASK_NUMSEPTER + BIDIR_MASK_CS,
+	BIDIR_NSM = // Non-Spacing Mark
+	BIDIR_MASK_WEAK + BIDIR_MASK_NSM,
+	BIDIR_BN = // Boundary Neutral
+	BIDIR_MASK_WEAK + BIDIR_MASK_SPACE + BIDIR_MASK_BN,
+	BIDIR_B = // Paragraph Separator
+	BIDIR_MASK_NEUTRAL + BIDIR_MASK_SPACE +
+	BIDIR_MASK_SEPARATOR + BIDIR_MASK_BS,
+	BIDIR_S = // Segment Separator
+	BIDIR_MASK_NEUTRAL + BIDIR_MASK_SPACE +
+	BIDIR_MASK_SEPARATOR + BIDIR_MASK_SS,
+	BIDIR_WS = // Whitespace
+	BIDIR_MASK_NEUTRAL + BIDIR_MASK_SPACE + BIDIR_MASK_WS,
+	BIDIR_ON = // Other Neutral
+	BIDIR_MASK_NEUTRAL,
 	// IMPLEMENTATION DEPENDANT:
-	BIDIR_MAX
+	BIDIR_INVALID = 0x80000000
     }; // enum bidir_prop_enum
     typedef enum bidir_props_enum Bidir_Props;
     
@@ -364,6 +430,30 @@ namespace Babylon {
 	TRANS_CAN_NOT_ENCODE
     };
     typedef enum trans_error_enum Trans_Error;
+
+    // For the analysis:
+    struct Type {
+	Bidir_Props   bidir_type;
+	size_t        start;
+	size_t        length;
+	char          embed_level;
+    };
+
+    struct Embedding_Levels {
+	std::vector<Babylon::Type> types;
+	unsigned char              max_level;
+	Embedding_Levels() : types(0), max_level(0) { }
+    };
+
+    // Base Direction to use:
+    enum base_dir_enum {
+	BASE_DIR_L  = BIDIR_L,
+	BASE_DIR_R  = BIDIR_R,
+	BASE_DIR_N  = BIDIR_ON,
+	BASE_DIR_WL = BIDIR_MASK_WEAK,
+	BASE_DIR_WR = BIDIR_MASK_WEAK + BIDIR_MASK_RTL
+    };
+    typedef enum base_dir_enum Base_Dir;
 
     // Classes to throw around as exceptions:
     

@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 17:47:18 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:01:37 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -26,8 +26,8 @@
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
 #include <bitset>
-#include <map>
 
+#include <map>
 namespace Babylon {
 
   class SinhalaD80 : public Babylon::Dictionary::Block {
@@ -43,9 +43,7 @@ namespace Babylon {
       m_composeMap[make_pair(0x00000DD9, 0x00000DCF)] = 0x0DDC;
       m_composeMap[make_pair(0x00000DD9, 0x00000DDF)] = 0x0DDE;
       m_composeMap[make_pair(0x00000DDC, 0x00000DCA)] = 0x0DDD;
-
     }
-
 
     ~SinhalaD80() {
     }
@@ -63,7 +61,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "Sinhala";
     }
@@ -122,7 +119,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(SinhalaD80::m_bidir[uc - m_first_letter]);
     }
 
@@ -228,7 +225,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     SinhalaD80(const SinhalaD80 &) {}
@@ -244,7 +240,6 @@ namespace Babylon {
     static const unsigned char m_lb[128];
     std::map<pair<UCS4, UCS4>, UCS4> m_composeMap;
     static const std::bitset<128> m_Other_Alphabetic;
-
   }; // class SinhalaD80
 
     const std::bitset<128> SinhalaD80::m_is_defined(std::string("00000000000111000000000000000000111111110101111110000100011111110010111111111011111111111111111111111100011111111111111111101100"));

@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 17:46:01 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:00:24 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -26,8 +26,8 @@
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
 #include <bitset>
-#include <map>
 
+#include <map>
 namespace Babylon {
 
   class Latin_ExtendedA100 : public Babylon::Dictionary::Block {
@@ -64,9 +64,7 @@ namespace Babylon {
       m_composeMap[make_pair(0x0000016A, 0x00000308)] = 0x1E7A;
       m_composeMap[make_pair(0x0000016B, 0x00000308)] = 0x1E7B;
       m_composeMap[make_pair(0x0000017F, 0x00000307)] = 0x1E9B;
-
     }
-
 
     ~Latin_ExtendedA100() {
     }
@@ -84,7 +82,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "Latin Extended-A";
     }
@@ -143,7 +140,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(BIDIR_L);
     }
 
@@ -249,7 +246,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     Latin_ExtendedA100(const Latin_ExtendedA100 &) {}
@@ -266,7 +262,6 @@ namespace Babylon {
     static const unsigned char m_lb[128];
     static const unsigned char m_ea[128];
     std::map<pair<UCS4, UCS4>, UCS4> m_composeMap;
-
   }; // class Latin_ExtendedA100
 
   const UCS4 Latin_ExtendedA100::m_upper[] = {

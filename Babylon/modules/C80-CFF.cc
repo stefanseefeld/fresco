@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 17:47:11 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:01:30 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -26,8 +26,8 @@
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
 #include <bitset>
-#include <map>
 
+#include <map>
 namespace Babylon {
 
   class KannadaC80 : public Babylon::Dictionary::Block {
@@ -44,9 +44,7 @@ namespace Babylon {
       m_composeMap[make_pair(0x00000CC6, 0x00000CD5)] = 0x0CC7;
       m_composeMap[make_pair(0x00000CC6, 0x00000CD6)] = 0x0CC8;
       m_composeMap[make_pair(0x00000CCA, 0x00000CD5)] = 0x0CCB;
-
     }
-
 
     ~KannadaC80() {
     }
@@ -64,7 +62,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "Kannada";
     }
@@ -270,7 +267,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(KannadaC80::m_bidir[uc - m_first_letter]);
     }
 
@@ -376,7 +373,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     KannadaC80(const KannadaC80 &) {}
@@ -392,7 +388,6 @@ namespace Babylon {
     static const unsigned char m_lb[128];
     std::map<pair<UCS4, UCS4>, UCS4> m_composeMap;
     static const std::bitset<128> m_Other_Alphabetic;
-
   }; // class KannadaC80
 
     const std::bitset<128> KannadaC80::m_is_defined(std::string("00000000000000001111111111000011010000000110000000111101110111111100001111101111111111011111111111111111111111011101111111101100"));

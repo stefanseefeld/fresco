@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 17:46:14 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:00:37 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -38,9 +38,7 @@ namespace Babylon {
       m_first_letter = 0x300;
       m_last_letter  = 0x36F;
       // m_version="3.1" // Not yet supported!
-
     }
-
 
     ~Combining_Diacritical_Marks300() {
     }
@@ -58,7 +56,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "Combining Diacritical Marks";
     }
@@ -117,7 +114,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(BIDIR_NSM);
     }
 
@@ -223,7 +220,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     Combining_Diacritical_Marks300(const Combining_Diacritical_Marks300 &) {}
@@ -237,7 +233,6 @@ namespace Babylon {
     static const unsigned char _comb_cl[112];
     static const UCS2 m_decompStr[112][2];
     static const std::bitset<112> m_Diacritic;
-
   }; // class Combining_Diacritical_Marks300
 
     const std::bitset<112> Combining_Diacritical_Marks300::m_is_defined(std::string("0000000000000111000000000000000001111111111111111111111111111111111111111111111111111111111111111111111111111111"));

@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 17:46:34 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:00:57 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -26,8 +26,8 @@
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
 #include <bitset>
-#include <map>
 
+#include <map>
 namespace Babylon {
 
   class Arabic600 : public Babylon::Dictionary::Block {
@@ -47,9 +47,7 @@ namespace Babylon {
       m_composeMap[make_pair(0x000006C1, 0x00000654)] = 0x06C2;
       m_composeMap[make_pair(0x000006D2, 0x00000654)] = 0x06D3;
       m_composeMap[make_pair(0x000006D5, 0x00000654)] = 0x06C0;
-
     }
-
 
     ~Arabic600() {
     }
@@ -67,7 +65,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "Arabic";
     }
@@ -393,7 +390,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(Arabic600::m_bidir[uc - m_first_letter]);
     }
 
@@ -499,7 +496,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     Arabic600(const Arabic600 &) {}
@@ -517,7 +513,6 @@ namespace Babylon {
     std::map<pair<UCS4, UCS4>, UCS4> m_composeMap;
     static const std::bitset<256> m_Other_Alphabetic;
     static const std::bitset<256> m_Diacritic;
-
   }; // class Arabic600
 
     const std::bitset<256> Arabic600::m_is_defined(std::string("0111111111111111001111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111110011111111111111000000000011111111111111111111110000011111111111111111111111111010001000000000000001000000000000"));

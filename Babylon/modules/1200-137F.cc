@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 17:47:48 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:02:03 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -38,9 +38,7 @@ namespace Babylon {
       m_first_letter = 0x1200;
       m_last_letter  = 0x137F;
       // m_version="3.1" // Not yet supported!
-
     }
-
 
     ~Ethiopic1200() {
     }
@@ -58,7 +56,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "Ethiopic";
     }
@@ -296,7 +293,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(BIDIR_L);
     }
 
@@ -396,7 +393,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     Ethiopic1200(const Ethiopic1200 &) {}
@@ -408,7 +404,6 @@ namespace Babylon {
     static const unsigned char _cat[384];
     static const unsigned char m_lb[384];
     static const std::bitset<384> m_Terminal_Punctuation;
-
   }; // class Ethiopic1200
 
     const std::bitset<384> Ethiopic1200::m_is_defined(std::string("000111111111111111111111111111100000011111111111111111110111111111111111111111111111111111111111011111110011110101111111111111111111111111111111011111111111111111111111011111110111111100111101011111110011110101111111111111111111111111111111001111010111111111111111111111111111111111111111001111010111111100111101011111111111111111111111111111111111111111111111111111111111111101111111"));

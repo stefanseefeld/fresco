@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 17:47:35 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:01:51 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -38,9 +38,7 @@ namespace Babylon {
       m_first_letter = 0x1000;
       m_last_letter  = 0x109F;
       // m_version="3.1" // Not yet supported!
-
     }
-
 
     ~Myanmar1000() {
     }
@@ -58,7 +56,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "Myanmar";
     }
@@ -264,7 +261,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(Myanmar1000::m_bidir[uc - m_first_letter]);
     }
 
@@ -370,7 +367,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     Myanmar1000(const Myanmar1000 &) {}
@@ -386,7 +382,6 @@ namespace Babylon {
     static const unsigned char m_lb[160];
     static const std::bitset<160> m_Terminal_Punctuation;
     static const std::bitset<160> m_Other_Alphabetic;
-
   }; // class Myanmar1000
 
     const std::bitset<160> Myanmar1000::m_is_defined(std::string("0000000000000000000000000000000000000000000000000000000000000000000000111111111111111111111111110000001111000111111101101111101111111111111111111111111111111111"));

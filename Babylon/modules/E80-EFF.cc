@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 17:47:24 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:01:44 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -38,9 +38,7 @@ namespace Babylon {
       m_first_letter = 0xE80;
       m_last_letter  = 0xEFF;
       // m_version="3.1" // Not yet supported!
-
     }
-
 
     ~LaoE80() {
     }
@@ -58,7 +56,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "Lao";
     }
@@ -264,7 +261,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(LaoE80::m_bidir[uc - m_first_letter]);
     }
 
@@ -370,7 +367,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     LaoE80(const LaoE80 &) {}
@@ -387,7 +383,6 @@ namespace Babylon {
     static const unsigned char m_lb[128];
     static const std::bitset<128> m_Other_Alphabetic;
     static const std::bitset<128> m_Diacritic;
-
   }; // class LaoE80
 
     const std::bitset<128> LaoE80::m_is_defined(std::string("00000000000000000000000000000000001100111111111100111111010111110011101111111111111011001010111011111110111100000010010110010110"));

@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 17:46:09 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:00:32 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -38,9 +38,7 @@ namespace Babylon {
       m_first_letter = 0x250;
       m_last_letter  = 0x2AF;
       // m_version="3.1" // Not yet supported!
-
     }
-
 
     ~IPA_Extensions250() {
     }
@@ -58,7 +56,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "IPA Extensions";
     }
@@ -117,7 +114,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(BIDIR_L);
     }
 
@@ -217,7 +214,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     IPA_Extensions250(const IPA_Extensions250 &) {}
@@ -230,7 +226,6 @@ namespace Babylon {
     static const UCS4 m_title[96];
     static const unsigned char m_lb[96];
     static const unsigned char m_ea[96];
-
   }; // class IPA_Extensions250
 
     const std::bitset<96> IPA_Extensions250::m_is_defined(std::string("001111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"));

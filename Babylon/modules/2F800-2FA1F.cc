@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 18:21:26 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:41:14 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -38,9 +38,7 @@ namespace Babylon {
       m_first_letter = 0x2F800;
       m_last_letter  = 0x2FA1F;
       // m_version="3.1" // Not yet supported!
-
     }
-
 
     ~CJK_Compatibility_Ideographs_Supplement2F800() {
     }
@@ -58,7 +56,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "CJK Compatibility Ideographs Supplement";
     }
@@ -117,7 +114,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(BIDIR_L);
     }
 
@@ -218,7 +215,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     CJK_Compatibility_Ideographs_Supplement2F800(const CJK_Compatibility_Ideographs_Supplement2F800 &) {}
@@ -229,7 +225,6 @@ namespace Babylon {
     static const std::bitset<544> m_is_defined;
     static const UCS4 m_decompStr[544];
     static const std::bitset<544> m_Ideographic;
-
   }; // class CJK_Compatibility_Ideographs_Supplement2F800
 
     const std::bitset<544> CJK_Compatibility_Ideographs_Supplement2F800::m_is_defined(std::string("0011111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"));

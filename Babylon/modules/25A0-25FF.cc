@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 17:49:19 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:03:31 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -38,9 +38,7 @@ namespace Babylon {
       m_first_letter = 0x25A0;
       m_last_letter  = 0x25FF;
       // m_version="3.1" // Not yet supported!
-
     }
-
 
     ~Geometric_Shapes25A0() {
     }
@@ -58,7 +56,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "Geometric Shapes";
     }
@@ -117,7 +114,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(BIDIR_ON);
     }
 
@@ -217,7 +214,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     Geometric_Shapes25A0(const Geometric_Shapes25A0 &) {}
@@ -229,7 +225,6 @@ namespace Babylon {
     static const unsigned char _cat[96];
     static const unsigned char m_lb[96];
     static const unsigned char m_ea[96];
-
   }; // class Geometric_Shapes25A0
 
     const std::bitset<96> Geometric_Shapes25A0::m_is_defined(std::string("000000001111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"));

@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 17:47:15 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:01:34 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -26,8 +26,8 @@
 #include <Babylon/defs.hh>
 #include <Babylon/Dictionary.hh>
 #include <bitset>
-#include <map>
 
+#include <map>
 namespace Babylon {
 
   class MalayalamD00 : public Babylon::Dictionary::Block {
@@ -42,9 +42,7 @@ namespace Babylon {
       m_composeMap[make_pair(0x00000D46, 0x00000D3E)] = 0x0D4A;
       m_composeMap[make_pair(0x00000D46, 0x00000D57)] = 0x0D4C;
       m_composeMap[make_pair(0x00000D47, 0x00000D3E)] = 0x0D4B;
-
     }
-
 
     ~MalayalamD00() {
     }
@@ -62,7 +60,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "Malayalam";
     }
@@ -268,7 +265,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(MalayalamD00::m_bidir[uc - m_first_letter]);
     }
 
@@ -374,7 +371,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     MalayalamD00(const MalayalamD00 &) {}
@@ -390,7 +386,6 @@ namespace Babylon {
     static const unsigned char m_lb[128];
     std::map<pair<UCS4, UCS4>, UCS4> m_composeMap;
     static const std::bitset<128> m_Other_Alphabetic;
-
   }; // class MalayalamD00
 
     const std::bitset<128> MalayalamD00::m_is_defined(std::string("00000000000000001111111111000011000000001000000000111101110011111100001111111111111111011111111111111111111111011101111111101100"));

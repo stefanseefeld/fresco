@@ -36,6 +36,11 @@ namespace Babylon {
 
 bool is_graphem_boundary(Babylon::Char, Babylon::Char);
 
+
+//. This takes a single paragraph for input!
+//. Returns a vector of embedding levels and the max. embedding level used
+Embedding_Levels analyse(const String &, const Babylon::Base_Dir &);
+    
 } // namespace Babylon
 
 // OPERATORS:

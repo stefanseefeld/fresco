@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 17:48:47 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:03:00 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -38,9 +38,7 @@ namespace Babylon {
       m_first_letter = 0x2150;
       m_last_letter  = 0x218F;
       // m_version="3.1" // Not yet supported!
-
     }
-
 
     ~Number_Forms2150() {
     }
@@ -58,7 +56,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "Number Forms";
     }
@@ -318,7 +315,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(Number_Forms2150::m_bidir[uc - m_first_letter]);
     }
 
@@ -529,7 +526,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     Number_Forms2150(const Number_Forms2150 &) {}
@@ -550,7 +546,6 @@ namespace Babylon {
     static const std::bitset<64> m_Other_Alphabetic;
     static const std::bitset<64> m_Other_Lowercase;
     static const std::bitset<64> m_Other_Uppercase;
-
   }; // class Number_Forms2150
 
     const std::bitset<64> Number_Forms2150::m_is_defined(std::string("0000000000001111111111111111111111111111111111111111111111111000"));

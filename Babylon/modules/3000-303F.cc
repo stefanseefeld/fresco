@@ -5,7 +5,7 @@
  * http://www.berlin-consortium.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Fri, 30 Mar 2001 17:49:45 +0200.
+ * ftp.unicode.org on Sat,  5 May 2001 13:03:59 +0200.
  *
  * This plugin to libPrague is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
@@ -38,9 +38,7 @@ namespace Babylon {
       m_first_letter = 0x3000;
       m_last_letter  = 0x303F;
       // m_version="3.1" // Not yet supported!
-
     }
-
 
     ~CJK_Symbols_and_Punctuation3000() {
     }
@@ -58,7 +56,6 @@ namespace Babylon {
     }
 
     // query functions:
-
     std::string blockname(const UCS4 uc) const {
       return "CJK Symbols and Punctuation";
     }
@@ -178,7 +175,7 @@ namespace Babylon {
 
     Bidir_Props bidir_props(const UCS4 uc) const {
       if (!is_defined(uc))
-        return BIDIR_MAX;
+        return BIDIR_INVALID;
       return Babylon::Bidir_Props(CJK_Symbols_and_Punctuation3000::m_bidir[uc - m_first_letter]);
     }
 
@@ -279,7 +276,6 @@ namespace Babylon {
       return 0;
     }
 
-
   private:
     // functions
     CJK_Symbols_and_Punctuation3000(const CJK_Symbols_and_Punctuation3000 &) {}
@@ -301,7 +297,6 @@ namespace Babylon {
     static const std::bitset<64> m_Ideographic;
     static const std::bitset<64> m_Diacritic;
     static const std::bitset<64> m_Extender;
-
   }; // class CJK_Symbols_and_Punctuation3000
 
     const std::bitset<64> CJK_Symbols_and_Punctuation3000::m_is_defined(std::string("1100011111111111111111111111111111111111111111111111111111111111"));
