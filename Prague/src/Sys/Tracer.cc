@@ -35,12 +35,12 @@ bool                         Tracer::_log = false;
 
 std::ostream &Prague::operator << (std::ostream &os, const Prague::Tracer::Event &e)
 {
-  os.setf(ios::fixed);
+  os.setf(std::ios::fixed);
   os.precision(6);
   os << e.time << '|' << e.thread << '\t' << e.type << ' ' << e.section;
   if (e.object) os << " - " << e.object;
   if (e.start != -1) os << " took " << (e.time-e.start);
-  os.unsetf(ios::fixed);
+  os.unsetf(std::ios::fixed);
   return os;
 }
 

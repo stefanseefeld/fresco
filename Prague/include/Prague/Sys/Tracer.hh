@@ -44,8 +44,8 @@ class Tracer
     const char *type;
     const char *object;
     const char *section;
-    friend std::ostream &operator << (std::ostream &os, const Event &e);
   };
+  friend std::ostream &Prague::operator << (std::ostream &os, const Event &e);
   friend class Trace;
 public:
   static void resize(size_t s) { Prague::Guard<Mutex> guard(_mutex); _events.resize(s); if (_next >= s) _next = 0;}
