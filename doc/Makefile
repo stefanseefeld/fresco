@@ -28,3 +28,6 @@ print/%.ps: print/%.dvi
 
 print/%.pdf: print/%.ps
 	cd print; ps2pdf berlin-man.ps; cd ..;
+
+clean:	
+	rm -f html/*.html
