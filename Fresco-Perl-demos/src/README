@@ -11,10 +11,10 @@ Requirements:
     2a) COPE
         This is the CORBA library that we use; see
           http://www.lunatech.com/research/corba/cope/
-        for more details (be warned, there seem to actually be two cope
-        home pages on that server, one of which is months out of date).
-        I use the CVS version, though 0.6 might work as well.  0.5 will take
-        major tweaking.
+        for more details.  You'll need to get the Experimental::Exception
+        module as well, which is distributed from the same FTP directory.
+        For COPE itself, I use the CVS version, though 0.6 might work as
+        well.  0.5 will take major tweaking.
         COPE itself requires an interface repository to work; the standard
         one is included in ORBacus and called irserv, or there's a contrib
         program in the COPE tree (COPE/compat/MICO/*) to let you use MICO's
