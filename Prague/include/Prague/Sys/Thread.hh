@@ -102,6 +102,7 @@ class Thread
 {
   typedef vector<pair<pthread_t, Thread *> > table;
 public:
+  template <class T> class Data;
   typedef void *(*proc)(void *);
   Thread(proc pp, void *a) : p(pp), arg(a), running(false) {}
   virtual ~Thread() { cancel(); join();}
