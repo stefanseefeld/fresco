@@ -30,6 +30,7 @@
 #include <Berlin/config.hh>
 #include <stdexcept>
 #include <iosfwd>
+#include <vector>
 
 //. This is an abstraction of the underlying graphics libraries Berlin uses.
 //. The DrawingKits call the methods of this object.
@@ -42,11 +43,23 @@ public:
   class Extension
   {
   public:
+    class Loader
+    {
+    public:
+      virtual ~Loader() {}
+      virtual Extension *load(Drawable *) = 0;
+    };
+    template <typename T>
+    class LoaderT : public Loader
+    {
+    public:
+      virtual Extension *load(Drawable *drawable) { return new T(drawable);}
+    };
     virtual ~Extension(){}
   };
 private:
   typedef std::vector<Extension *> elist_t;
-  //. Deletes this Console in its Destrcutor.
+  //. Deletes this Console in its Destrcuctor.
   struct Reaper
   {
     ~Reaper();
@@ -61,9 +74,15 @@ public:
   {
   public:
     virtual ~Loader() {}
-    // This is what is called by the plugin-loader.
     virtual Console *load(int &, char **) = 0;
   };
+  template <typename T>
+  class LoaderT : public Loader
+  {
+  public:
+    virtual T *load(int &argc, char **argv) { return new T(argc, argv);}
+  };
+
 
   //. Sets up the graphics library. It gets passed the commandline arguments
   //. of the server (argc and argv), checks them for any console-related options and
@@ -221,13 +240,6 @@ public:
   //. FIXME: Missing documentation!
   virtual bool intersects(Warsaw::Coord, Warsaw::Coord,
 			  Warsaw::Coord, Warsaw::Coord) = 0;
-};
-
-template <typename T>
-class ConsoleLoader : public Console::Loader
-{
-public:
-  virtual T *load(int &argc, char **argv) { return new T(argc, argv);}
 };
 
 #endif

@@ -11,7 +11,7 @@ packages="Prague Babylon Warsaw Server Clients-C++ Clients-Python Clients-Java C
 # Regenerate configuration files
 echo "Generating configure...";
 aclocal -I config/macros
-autoconf
+/usr/bin/autoconf
 
 for package in $packages;
     do
@@ -20,8 +20,8 @@ for package in $packages;
 	 echo Generating config/${package}/configure...;
 	 aclocal -I ../macros;
 	 if test -f acconfig.h; then
-	    autoheader configure.in > config.hh.in
+	    /usr/bin/autoheader configure.in > config.hh.in
 	 fi;
-	 autoconf)
+	 /usr/bin/autoconf)
     fi
     done

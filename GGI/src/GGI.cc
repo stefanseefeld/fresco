@@ -21,7 +21,9 @@
  */
 #include <Prague/Sys/Memory.hh>
 #include <Prague/Sys/FdSet.hh>
+#include <Prague/Sys/Path.hh>
 #include <Prague/Sys/Tracer.hh>
+#include <Berlin/RCManager.hh>
 #include "Console/GGI/GGI.hh"
 #include "Console/Renderer.hh"
 #include "Console/DirectBuffer.hh"
@@ -141,25 +143,6 @@ public:
     Guard guard(drawable(), static_cast<Console::Drawable::data_type *>(ggiDBGetBuffer(drawable()->visual(), 0)->write));
     return guard;
   }
-};
-
-class GGIGLContext : public GGIExtension,
-		     virtual public GLContext
-{
-public:
-  GGIGLContext(GGIDrawable *d)
-    : GGIExtension(d), _context(GGIMesaCreateContext())
-  {
-    if (GGIMesaSetVisual(_context, drawable()->visual(), GL_TRUE, GL_FALSE))
-      throw std::runtime_error("GGIMesaSetVisual() failed");
-    GGIMesaMakeCurrent(_context);
-  }
-  ~GGIGLContext()
-  {
-    GGIMesaDestroyContext(_context);
-  }
-private:
-  GGIMesaContext _context;  
 };
 
 GGIConsole::GGIConsole(int &argc, char **argv)
@@ -432,7 +415,20 @@ Console::Extension *GGIConsole::create_extension(const std::string &id, Drawable
 {
   if (id == "DirectBuffer") return new GGIDirectBuffer(static_cast<GGIDrawable *>(drawable));
   if (id == "Renderer") return new GGIRenderer(static_cast<GGIDrawable *>(drawable));
-  if (id == "GLContext") return new GGIGLContext(static_cast<GGIDrawable *>(drawable));
+  if (id == "GLContext")
+    {
+      Prague::Path path = RCManager::get_path("modulepath");
+      std::string name = path.lookup_file("Console/GGIGL.so");
+      Plugin<Extension::Loader> *plugin = 0;
+      if (name.empty())
+        {
+          std::string msg = "GLContext extension for GGI console not found in modulepath.";
+          throw std::runtime_error(msg);
+        }
+      else plugin = new Plugin<Extension::Loader>(name);
+      _modules.push_back(plugin);
+      return (*plugin)->load(drawable);
+    }
   return 0;
 }
 
@@ -655,4 +651,4 @@ Warsaw::Drawable::BufferFormat GGIDrawable::buffer_format()
   return format;
 }
 
-extern "C" ConsoleLoader<GGIConsole> *load() { return new ConsoleLoader<GGIConsole>();}
+extern "C" Console::LoaderT<GGIConsole> *load() { return new Console::LoaderT<GGIConsole>();}

@@ -22,104 +22,69 @@ dnl ------------------------------------------------------------------
 
 dnl BERLIN_CONSOLE_CHECK(mandatory-flag)
 dnl
-dnl Try to find a usable console. If mandatory-flag is "mandatory", abort if
-dnl none is found.
+dnl Try to find a usable console.
 AC_DEFUN([BERLIN_CONSOLE_CHECK],[
 
-	AC_BEGIN_DECISION([Console])
-	AC_ARG_WITH(console,[  --with-console=NAME         Specify which Console to use],[dnl
-		CON_IMPL="$withval"],[dnl
-		if test ".$CON_IMPL" = . ; then
-			CON_IMPL="auto"
-		fi])
-
-	case $CON_IMPL in
-		GGI|auto)
-			BERLIN_GGI_CHECK
-			if test ".$ac_cv_lib_ggi" != .yes; then
-				if test ".$1" = .mandatory; then
-					AC_MSG_ERROR(No supported Console environment found!)
-				else
-					CON_IMPL="none"
-				fi
+	AC_ARG_ENABLE(consoles,
+		[  --enable-consoles=LIST         Specify which Consoles to build],
+		[if test ".$enableval" = .yes ; then
+			enable_consoles=all
+		 else
+			enable_consoles="$enableval"
+		 fi],[
+		 if test ".$enable_consoles" = . ; then
+			enable_consoles=all
+		 fi])
+	if test ".$enable_consoles" = .all ; then
+		enable_consoles="GGI SDL DFB"
+	elif test ".$enable_consoles" = .no ; then
+		enable_consoles=
+	else
+		dnl Handle comma-separated lists, too
+		enable_consoles=["`echo $enable_consoles | sed 's/[, ]\+/ /g'`"]
+	fi
+	for con in $enable_consoles ; do
+		if test -d $srcdir/src/Console/$con ; then
+			eval enable_$con=yes
+		else
+			eval enable_$con=no
+		fi
+	done
+	tested_consoles=
+	if test ".$enable_GGI" = .yes ; then
+		BERLIN_GGI_CHECK
+		if test ".$ac_cv_lib_ggi" = .yes ; then
+			tested_consoles="$tested_consoles Console/GGI"
+			BERLIN_LIB_GGIMESA
+			HAS_GGIMESA=
+			if test ".$ac_cv_lib_GGIMesa" = .yes ; then
+				HAS_GGIMESA=1
 			else
-				AC_DECIDE(GGICONSOLE, [use GGI])
-				CON_IMPL=GGI
-				AC_DEFINE(CONSOLE_GGI)
-				CON_CPPFLAGS="$GGI_CPPFLAGS"
-				CON_LIBS="$GGI_LIBS"
-			fi				
-			;;
-                SDL)
-                        AM_PATH_SDL_BERLIN(1.1.8, [
-				AC_DECIDE(SDLCONSOLE, [use SDL])
-				AC_DEFINE(CONSOLE_SDL)
-				CON_CPPFLAGS="$SDL_CPPFLAGS"
-				CON_LIBS="$SDL_LIBS"
-], [
-                                if test ".$1" = .mandatory; then
-                                        AC_MSG_ERROR(No supported Console environment found!)
-                                else
-                                        CON_IMPL="none"
-                                fi
-])
-                        ;;
-                CAVELib)
-                        BERLIN_CAVELIB_CHECK
-                        if test ".$ac_cv_lib_cave" != .yes; then
-                                if test ".$1" = .mandatory; then
-                                        AC_MSG_ERROR(No supported Console environment found!)
-                                else
-                                        CON_IMPL="none"
-                                fi
-                        else
-				AC_DECIDE(CAVECONSOLE, [use CAVELib])
-				AC_DEFINE(CONSOLE_CAVELIB)
-                        fi
-                        ;;
-                GLUT)
-                        BERLIN_GLUT_CHECK
-                        if test ".$ac_cv_lib_glut" != .yes; then
-                                if test ".$1" = .mandatory; then
-                                        AC_MSG_ERROR(No supported Console environment found!)
-                                else
-                                        CON_IMPL="none"
-                                fi
-                        else
-				AC_DECIDE(GLUTCONSOLE, [use GLUT])
-				AC_DEFINE(CONSOLE_GLUT)
-                        fi
-                        ;;
-		DirectFB|DFB)
-			BERLIN_DIRECTFB_CHECK
-			if test ".$ac_cv_lib_directfb" != .yes; then
-				if test ".$1" = .mandatory; then
-					AC_MSG_ERROR(No supported Console environment found!)
-				else
-					CON_IMPL="none"
-				fi
-			else
-				AC_DECIDE(DIRECTFBCONSOLE, [use DirectFB])
-				CON_IMPL=DFB
-				AC_DEFINE(CONSOLE_DIRECTFB)
-				CON_CPPFLAGS="$DFB_CPPFLAGS"
-				CON_LIBS="$DFB_LIBS"
+				HAS_GGIMESA=0
 			fi
-			;;
-		*)
-			if test ".$1" = .mandatory; then
-				AC_MSG_ERROR($CON_IMPL is not supported!)
-			else
-				AC_MSG_WARN($CON_IMPL is not supported!)
-			fi
-			;;
-	esac
-	
-	AC_END_DECISION
-	if test ".$CON_IMPL" != .none ; then
-		AC_DEFINE_UNQUOTED(CONSOLE_IMPL, $CON_IMPL)
-		AC_SUBST(CON_IMPL)
-		AC_SUBST(CON_CPPFLAGS)
-		AC_SUBST(CON_LIBS)
+			GGI_CPPFLAGS="$GGI_CPPFLAGS"
+			GGI_LIBS="$GGI_LIBS"
+			AC_SUBST(GGI_CPPFLAGS)
+			AC_SUBST(GGI_LIBS)
+			AC_SUBST(HAS_GGIMESA)
+		fi
+	fi
+	if test ".$enable_SDL" = .yes ; then
+		AM_PATH_SDL_BERLIN(1.1.8, [
+			SDL_CPPFLAGS="$SDL_CPPFLAGS"
+			SDL_LIBS="$SDL_LIBS"
+			AC_SUBST(SDL_CPPFLAGS)
+			AC_SUBST(SDL_LIBS)
+			tested_consoles="$tested_consoles Console/SDL"])
+	fi
+	if test ".$enable_DFB" = .yes ; then
+		BERLIN_DIRECTFB_CHECK
+		DFB_CPPFLAGS="$DFB_CPPFLAGS"
+		DFB_LIBS="$DFB_LIBS"
+		AC_SUBST(DFB_CPPFLAGS)
+		AC_SUBST(DFB_LIBS)
+		if test ".$ac_cv_lib_DFB" = .yes ; then
+			tested_consoles="$tested_consoles Console/DFB"
+		fi
 	fi
 ])

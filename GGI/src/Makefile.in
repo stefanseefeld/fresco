@@ -31,13 +31,35 @@ srcdir		:= $(top_srcdir)/src/Console/GGI
 hdir		:= $(top_srcdir)/include/Console/GGI
 
 # Compilation and linking flags.
-CPPFLAGS	+= $(filter-out -I/usr/include, -I$(hdir) @CON_CPPFLAGS@)
-LIBS		+= -lBerlin @CON_LIBS@
+HAS_GGIMESA	:= @HAS_GGIMESA@
+CPPFLAGS	+= $(filter-out -I/usr/include, -I$(hdir) @GGI_CPPFLAGS@)
+LIBS		+= -lBerlin @GGI_LIBS@
 
+ifeq (,$(findstring $(action), GGI GGIGL))
+all:
+	$(MAKE) action='GGI'
+ifeq ($(HAS_GGIMESA), 1)
+	$(MAKE) action='GGIGL'
+endif
+endif
+
+ifeq ($(action), GGI)
 SRC		:= GGI.cc
 
 MODULE		:= Console/GGI
+endif
+
+ifeq ($(action), GGIGL)
+CPPFLAGS	+= $(filter-out -I/usr/include, @GGIMESA_CPPFLAGS@)
+LIBS		+= @GGIMESA_LIBS@
+
+SRC		:= GGIGL.cc
+
+MODULE		:= Console/GGIGL
+endif
 
 vpath %.hh  $(top_srcdir)/include/Berlin $(top_srcdir)/include/Berlin/Console $(top_srcdir)/include/Console/GGI
 
+ifneq (,$(findstring $(action), GGI GGIGL))
 include $(cdir)/Server/module.mk
+endif

@@ -53,11 +53,7 @@ AC_PACKAGE(Prague, $VERSION)
 CPPFLAGS="$CPPFLAGS $Prague_CPPFLAGS"
 LIBS="$LIBS $Prague_LIBS"
 
-dnl ------------------------------------------------------------------
-dnl check for console 
-dnl (needed for console specific clients such as ggiwrapper)
-dnl ------------------------------------------------------------------
-BERLIN_CONSOLE_CHECK()
+BERLIN_GGI_CHECK
 
 dnl ------------------------------------------------------------------
 dnl Output substitution

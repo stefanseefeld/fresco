@@ -4,11 +4,4 @@
 /* Define if you want reference count logging support */
 #undef LCLOG
 
-/* choose a suitable console implementation */
-#undef CONSOLE_GGI
-#undef CONSOLE_SDL
-#undef CONSOLE_CAVELIB
-#undef CONSOLE_GLUT
-#undef CONSOLE_DIRECTFB
-
 #endif /* _Berlin_config_hh */

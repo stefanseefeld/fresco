@@ -31,10 +31,10 @@ AC_DEFUN([BERLIN_LIB_GGIMESA],[
 
 	dnl Check for GGIMesa includes
 	if test x$ggimesa_prefix != x ; then
-		GL_CPPFLAGS=-I$ggimesa_prefix/include
+		GGIMESA_CPPFLAGS=-I$ggimesa_prefix/include
 	fi
 	save_CPPFLAGS="$CPPFLAGS"
-	CPPFLAGS="$GL_CPPFLAGS $CPPFLAGS"
+	CPPFLAGS="$GGIMESA_CPPFLAGS $CPPFLAGS"
 	AC_CHECK_HEADER(GL/ggimesa.h,,no_gl=yes)
 	CPPFLAGS="$save_CPPFLAGS"
 
@@ -42,10 +42,10 @@ AC_DEFUN([BERLIN_LIB_GGIMESA],[
 	if test x$no_gl = x ; then
 
 		if test x$ggimesa_prefix != x ; then
-			GL_LIBS=-L$ggimesa_prefix/lib -lgii
+			GGIMESA_LIBS=-L$ggimesa_prefix/lib -lgii
 		fi
 		save_LDFLAGS="$LDFLAGS"
-		LDFLAGS="$GL_LIBS $LDFLAGS"
+		LDFLAGS="$GGIMESA_LIBS $LDFLAGS"
 		AC_CHECK_LIB(GL, GGIMesaCreateContext, :, no_gl=yes)
 		LDFLAGS="$save_LDFLAGS"
 	fi
@@ -53,18 +53,13 @@ AC_DEFUN([BERLIN_LIB_GGIMESA],[
 	if test x$no_gl != x ; then
 
 		ac_cv_lib_GGIMesa=no		
-		dnl Abort or warn?
-		if test ".$1" = .mandatory ; then
-			AC_MSG_ERROR(GGI OpenGL library was not found!)
-		else
-			AC_MSG_WARN(GGI OpenGL library was not found!)
-		fi
+		AC_MSG_WARN(GGI OpenGL library was not found!)
 	else
 		ac_cv_lib_GGIMesa=yes
-		GL_LIBS="$GL_LIBS -lGL -lGLU"
+		GGIMESA_LIBS="$GGIMESA_LIBS -lGL -lGLU"
 	fi
 
-	AC_SUBST(GL_CPPFLAGS)
-	AC_SUBST(GL_LIBS)
+	AC_SUBST(GGIMESA_CPPFLAGS)
+	AC_SUBST(GGIMESA_LIBS)
 
 ])

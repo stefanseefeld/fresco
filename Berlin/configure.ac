@@ -93,7 +93,7 @@ dnl Graphics environment
 dnl ------------------------------------------------------------------
 AC_MSG_PART(Graphics Environment)
 
-BERLIN_CONSOLE_CHECK(mandatory)
+BERLIN_CONSOLE_CHECK
 
 if test ".$enable_drawing_kits" = .all ; then
 	enable_drawing_kits="libArt openGL PostScript"
@@ -112,15 +112,6 @@ for kit in $enable_drawing_kits ; do
 	fi
 done
 
-# Must use the GLDrawingKit if we're on the GLUT or CAVELib console
-# (need a better way to do this later!)
-if test ".$CON_IMPL" = .GLUT; then
-	enable_libArt=no
-fi
-if test ".$CON_IMPL" = .CAVELIB; then
-	enable_libArt=no
-fi
-
 tested_drawing_kits=
 if test ".$enable_libArt" = .yes ; then
 	BERLIN_LIB_LIBART
@@ -128,19 +119,11 @@ if test ".$enable_libArt" = .yes ; then
 		tested_drawing_kits="$tested_drawing_kits Drawing/libArt"
 	fi
 fi
+
 if test ".$enable_openGL" = .yes ; then
-	if test ".$CON_IMPL" = .GGI ; then
-		BERLIN_LIB_GGIMESA
-		if test ".$ac_cv_lib_GGIMesa" = .yes ; then
-			tested_drawing_kits="$tested_drawing_kits Drawing/openGL"
-		fi
-	elif test ".$CON_IMPL" = .GLUT || test ".$CON_IMPL" = .SDL ; then
-		BERLIN_LIB_MESA(mandatory)
-		if test ".$ac_cv_lib_Mesa" = .yes ; then
-			tested_drawing_kits="$tested_drawing_kits Drawing/openGL"
-		fi
-	fi
+	BERLIN_LIB_MESA
 fi
+
 if test ".$enable_PostScript" = .yes ; then
 	tested_drawing_kits="$tested_drawing_kits Drawing/PostScript"
 fi
@@ -159,7 +142,7 @@ if test ".$enable_kits" = .all ; then
 		fi
 	done
 	enable_kits=["`echo $enable_kits | sed 's/^ //'`"]
-	if test ".$CON_IMPL" = .GGI; then
+	if test ".$enable_GGI" = .yes; then
 		enable_kits="$enable_kits GGI"
 	fi
 elif test ".$enable_kits" = .no ; then
@@ -197,12 +180,20 @@ if test ".$enable_berlin" = .yes ; then
 	BERLIN="src/Berlin"
 fi
 AC_SUBST(BERLIN)
+
+CONSOLES=
+for con in $tested_consoles
+do
+	CONSOLES="$CONSOLES src/$con"
+done
+
+AC_SUBST(CONSOLES)
+
+KITS=
 for kit in $tested_drawing_kits $enable_kits
 do
 	KITS="$KITS src/$kit"
 done
-
-console=$CON_IMPL
 
 AC_SUBST(KITS)
 
@@ -230,7 +221,7 @@ dnl Print a summary of what's going to be built
 dnl ------------------------------------------------------------------
 AC_MSG_PART(Summary)
 AC_MSG_RESULT([Build libBerlin:           $enable_berlin])
-AC_MSG_RESULT([Build Console:             $console])
+AC_MSG_RESULT([Build Consoles:           $tested_consoles])
 AC_MSG_RESULT([Build Kits:               $tested_drawing_kits $enable_kits])
 AC_MSG_RESULT([Add profiling support:     $jprof])
 AC_MSG_RESULT([Add lifecycle log support: $lclog])
@@ -247,7 +238,11 @@ mkdir -p $builddir/config/Server
 mkdir -p $builddir/include/Berlin
 mkdir -p $builddir/src/Berlin
 mkdir -p $builddir/src/Console/$console
-console_output="$builddir/src/Console/$console/Makefile:src/Console/$console/Makefile.in"
+console_output=
+for con in $CONSOLES ; do
+	mkdir -p $builddir/$con
+	console_output="$console_output $builddir/$con/Makefile:$con/Makefile.in"
+done
 kit_output=
 for kit in $KITS ; do
 	mkdir -p $builddir/$kit

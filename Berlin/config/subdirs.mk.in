@@ -19,4 +19,4 @@
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 # MA 02139, USA.
 
-subdirs	+= @BERLIN@ src/Console/@CON_IMPL@ @KITS@ @SERVER@
+subdirs	+= @BERLIN@ @CONSOLES@ @KITS@ @SERVER@
