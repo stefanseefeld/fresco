@@ -1,0 +1,12 @@
+<?xml version='1.0'?>
+<!DOCTYPE class-directory PUBLIC "-//Software Carpentry//QMTest Class Directory V0.1//EN" "http://www.software-carpentry.com/qm/xml/class-directory.dtd">
+
+<!--
+  the magic undocumented file that QMTest requires to find
+  extension classes.  Look at <qm-home>/qm/test/classes/classes.qmc
+  for an example of the format.
+-->
+
+<class-directory>
+  <class kind="test">testcmd_runner.TestcmdRunner</class>
+</class-directory>
