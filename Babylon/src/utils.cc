@@ -188,16 +188,16 @@ compact_neutrals(const std::vector<Babylon::Type>::iterator & start,
     return(++last_used);
 }
 
-vector<Babylon::Type> override_lists(const vector<Babylon::Type> & base,
-			       const vector<Babylon::Type> & over) {
+std::vector<Babylon::Type> override_lists(const std::vector<Babylon::Type> & base,
+			       const std::vector<Babylon::Type> & over) {
     if (base.empty()) return (over);
 
     if (over.empty()) return (base);
 
-    vector<Babylon::Type>::const_iterator over_it = over.begin();
-    vector<Babylon::Type>::const_iterator base_it = base.begin();
+    std::vector<Babylon::Type>::const_iterator over_it = over.begin();
+    std::vector<Babylon::Type>::const_iterator base_it = base.begin();
 
-    vector<Babylon::Type> result;
+    std::vector<Babylon::Type> result;
 
     Babylon::Type current = *base_it;
     while(!(over_it == over.end() && base_it == base.end())) {
@@ -577,7 +577,7 @@ Babylon::analyse(const Babylon::String::const_iterator start,
     // Reinsert the explicit codes & bn's that were removed, from the
     // explicits to type_rl_list.
     type_rl = override_lists(type_rl, explicits);
-    vector<Babylon::Type>::iterator i = type_rl.begin();
+    std::vector<Babylon::Type>::iterator i = type_rl.begin();
     if (i->embed_level < 0)
 	i->embed_level = base_level;
     for ( ; i != type_rl.end();	++i)
@@ -586,7 +586,7 @@ Babylon::analyse(const Babylon::String::const_iterator start,
     
     // L1. Reset the embedding levels.
     {
-	vector<Babylon::Type> list;
+	std::vector<Babylon::Type> list;
 	bool state = 1;
 	size_t pos = str_length - 1;
 	for(int i = str_length - 1; i >= 0; --i) {
@@ -623,7 +623,7 @@ Babylon::analyse(const Babylon::String::const_iterator start,
 std::basic_string<unsigned char>
 get_embedding_levels(const Babylon::Embedding_Levels & emb) {
     std::basic_string<unsigned char> result;
-    for(vector<Babylon::Type>::const_iterator i = emb.types.begin();
+    for(std::vector<Babylon::Type>::const_iterator i = emb.types.begin();
 	i != emb.types.end();
 	++i)
 	for(size_t j = 0; j < i->length; ++j)

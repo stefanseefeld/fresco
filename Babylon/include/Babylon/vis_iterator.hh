@@ -35,7 +35,7 @@
 
 namespace Babylon {
 
-class vis_iterator : public iterator_traits<Babylon::String::iterator> {
+class vis_iterator : public std::iterator_traits<Babylon::String::iterator> {
     typedef Babylon::Char reference_type;
     typedef int Dist;
 public:
@@ -44,42 +44,42 @@ public:
     
     friend bool operator == (const Babylon::vis_iterator & a,
 			     const Babylon::vis_iterator & b) {
-	return (a.m_current == b.m_current);
+	return a.m_current == b.m_current;
     }
 
     friend bool operator == (const Babylon::vis_iterator & a,
 			     const Babylon::String::iterator & b) {
-	return (a.m_current == b);
+	return a.m_current == b;
     }
 
     friend bool operator == (const Babylon::String::iterator & b,
 			     const Babylon::vis_iterator & a) {
-	return (a.m_current == b);
+	return a.m_current == b;
     }
 
     friend bool operator != (const vis_iterator & a,
 			     const vis_iterator & b) {
-	return (a.m_current != b.m_current);
+	return a.m_current != b.m_current;
     }
 
     friend bool operator != (const vis_iterator & a,
 			     const Babylon::String::iterator & b) {
-	return (a.m_current != b);
+	return a.m_current != b;
     }
 
     friend bool operator != (const Babylon::String::iterator & b,
 			     const vis_iterator & a) {
-	return (a.m_current != b);
+	return a.m_current != b;
     }
 
     inline Babylon::vis_iterator::reference_type
     Babylon::vis_iterator::operator * () const {
-	return (*m_current);
+	return *m_current;
     }
     
     inline Babylon::vis_iterator::reference_type *
     Babylon::vis_iterator::operator -> () const {
-	return (m_current);
+	return &*m_current;
     }
 
     inline Babylon::vis_iterator::reference_type
