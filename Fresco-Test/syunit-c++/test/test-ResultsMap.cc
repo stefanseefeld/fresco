@@ -7,40 +7,40 @@
 namespace SyUnit
 {
   
-/**
- * This is a class-level comment.
- */
-class ResultsMapTest : public SyUnit::TestCase
-{
-public:
-
   /**
-   * This is a comment on set_and_get().
+   * This is a class-level comment.
    */
-  void
-  set_and_get()
+  class ResultsMapTest : public SyUnit::TestCase
   {
-    ResultsMap rm;
-    rm["key1"] = "value1";
-    assert_equals(rm["key1"], "value1", "Set/get don't work.");
-  }
-
-  /**
-   * This is a comment on appending().
-   *
-   * @depends test_map_properties
-   */
-  void
-  appending()
-  {
-    ResultsMap rm;
-    rm["key1"] = "value1";
-    rm["key1"] += "value2";
-    assert_equals(rm["key1"], "value1value2", "Appending doesn't work");
-  }
-
-  /**
-   * This is a comment on basic_printing().
+    public:
+      
+      /**
+       * This is a comment on set_and_get().
+       */
+      void
+      set_and_get()
+          {
+              ResultsMap rm;
+              rm["key1"] = "value1";
+              assert_equals(rm["key1"], "value1", "Set/get don't work.");
+          }
+      
+      /**
+       * This is a comment on appending().
+       *
+       * @depends test_map_properties
+       */
+      void
+      appending()
+          {
+              ResultsMap rm;
+              rm["key1"] = "value1";
+              rm["key1"] += "value2";
+              assert_equals(rm["key1"], "value1value2", "Appending doesn't work");
+          }
+      
+      /**
+       * This is a comment on basic_printing().
    * @depends set_and_get
    */
   void

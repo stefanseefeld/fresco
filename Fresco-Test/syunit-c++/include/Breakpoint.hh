@@ -3,9 +3,14 @@
 
 extern "C"
 {
-  void SyUnit_fail_breakpoint();
-  void SyUnit_error_breakpoint();
-  void SyUnit_problem_breakpoint(); // called by the other two
+    void
+    SyUnit_fail_breakpoint();
+
+    void
+    SyUnit_error_breakpoint();
+
+    void
+    SyUnit_problem_breakpoint(); // called by the other two
 }
 
 #endif         /* header guard */
