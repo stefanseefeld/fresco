@@ -1,13 +1,13 @@
-/*$Id: UnicodePluginGenerator.pl,v 1.7 2003/08/01 16:47:16 tobias Exp 2000-206F.cc
+/*$Id: UnicodePluginGenerator.pl,v 1.11 2004/01/28 12:39:04 tobias Exp 2000-206F.cc
  *
- * This source file is a part of the Berlin Project
+ * This source file is a part of the Fresco Project
  * Copyright (C) 1999-2003 Tobias Hunger <tobias@fresco.org>
  * http://www.fresco.org
  *
  * It was automatically created from the files available at
- * ftp.unicode.org on Tue, 05 Aug 2003 17:09:45 +0200.
+ * ftp.unicode.org on Wed, 28 Jan 2004 20:49:09 +0100.
  *
- * This plugin to libPrague is free software; you can redistribute it
+ * This plugin to libBabylon is free software; you can redistribute it
  * and/or  modify it under the terms of the GNU Library General Public
  * License as published by the Free Software Foundation; either
  * version 2 of the License, or (at your option) any later version
