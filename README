@@ -6,15 +6,18 @@ it. It's a *developers* release. If you want to help develop berlin,
 you can work off this release with some modicum of confidence and
 convenience. 
 
-If you're unpacked the entire source tree, you should be able to
-make from the root with little difficulty. When (if) the build
-finishes, the berlin display server "berlin" will be in the /bin
-directory, and a program demonstrating a widget "testButton" will
-be under /bin/demo. You'll have to have omniNames running for 
-either of them to work. You'll have to either add the path to /lib to
-your ld.so.config file or append it in a LD_LIBRARY_PATH variable to
-the command line before running the programs, as berlin uses shared
-libraries extensively.
+If you're unpacked the entire source tree, you should be able to run
+
+config/configure
+make
+
+with little difficulty. When (if) the build finishes, the berlin
+display server "berlin" will be in the /bin directory, and a program
+demonstrating a widget "testButton" will be under /bin/demo. You'll
+have to have omniNames running for either of them to work. You'll have
+to either add the path to /lib to your ld.so.config file or append it
+in a LD_LIBRARY_PATH variable to the command line before running the
+programs, as berlin uses shared libraries extensively.
 
 Testing has been confined to an extremely narrow environment. The
 facilities we build & test with are:
