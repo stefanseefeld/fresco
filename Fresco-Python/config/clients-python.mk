@@ -23,4 +23,4 @@
 # specify how the entry point(s) to this package's make
 #
 
-subdirs += clients/python
+subdirs += 

@@ -60,12 +60,20 @@ dnl ------------------------------------------------------------------
 dnl Decisions
 dnl ------------------------------------------------------------------
 
+dnl Decide whether we are ready to build
+PYTHON=
+echo blabla $berlin_cv_lib_omniORBpy
+echo blabla $BUILD_PYTHON
+if test ".$berlin_cv_lib_omniORBpy" = .yes ; then
+	PYTHON="clients/python"
+fi
+AC_SUBST(PYTHON)
+
 dnl ------------------------------------------------------------------
 dnl Print a summary of what's going to be built
 dnl ------------------------------------------------------------------
 AC_MSG_PART(Summary)
-dnl AC_MSG_RESULT([Build libBerlin:          $enable_berlin])
-dnl AC_MSG_RESULT([Kits to build:            $tested_drawing_kits $enable_kits])
+AC_MSG_RESULT([Build Python runtime:          $ac_cv_lib_omniORBpy])
 
 dnl ------------------------------------------------------------------
 dnl Output substitution
@@ -75,4 +83,4 @@ AC_MSG_PART(Output Substitution)
 AC_MSG_RESULT(Storing configuration in $cpath/Clients-Python/config.param...)
 AC_CONFIG_STORE($cpath/Clients-Python/config.param)
 
-AC_OUTPUT($cpath/Clients-Python/local.mk:$cpath/Clients-Python/local.mk.in)
+AC_OUTPUT($cpath/Clients-Python/local.mk:$cpath/Clients-Python/local.mk.in $cpath/Clients-Python/clients-python.mk:$cpath/Clients-Python/clients-python.mk.in)

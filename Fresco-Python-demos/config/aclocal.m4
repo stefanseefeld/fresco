@@ -1627,7 +1627,7 @@ dnl MA 02139, USA.
 dnl
 dnl BERLIN_OMNIORBPY_CHECK
 dnl
-dnl Checks if omniORBpy is found. If it is, $ac_cv_lib_omniORBpy is
+dnl Checks if omniORBpy is found. If it is, $berlin_cv_lib_omniORBpy is
 dnl set to "yes".
 
 AC_DEFUN([BERLIN_OMNIORBPY_CHECK],[
@@ -1667,5 +1667,6 @@ dnl  	  cat conftest.$ac_ext >&AC_FD_CC
 	fi
 	rm -fr conftest*
 	rm -fr _GlobalIDL POA__GlobalIDL])
+AC_DEFINE(BUILD_PYTHON, $berlin_cv_sys_omniidl_py)
 ])
 
