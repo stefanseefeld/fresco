@@ -26,7 +26,7 @@ cpath	= $(top)/config
 
 define makeconf
 echo Running configure $$CONFIGURE_OPTS...
-configure $$CONFIGURE_OPTS
+./configure $$CONFIGURE_OPTS
 endef
 
 .PHONY: config clean distclean dist
