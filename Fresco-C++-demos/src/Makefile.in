@@ -73,6 +73,8 @@ install:	all
 	@for target in $(TARGETS); do \
 	  $(INSTALL) -m 755 ../bin/$$target $(DESTDIR)$(bindir)/$$target; \
 	done
+	$(INSTALL) -d -m 755 $(DESTDIR)$(sysconfdir)
+	$(INSTALL) -m 644 ../etc/pinyin.db $(DESTDIR)$(sysconfdir)
 
 uninstall:
 	for target in $(TARGETS) ; do

@@ -26,7 +26,10 @@
 #include <string>
 
 // everything needed for clients
-#include "client.hh"
+#include <Fresco/config.hh>
+#include <Fresco/resolve.hh>
+#include <Fresco/ClientContextImpl.hh>
+#include <Fresco/Server.hh>
 
 // need to include the Kits I'll use
 #include <Fresco/LayoutKit.hh>
@@ -67,7 +70,7 @@ public:
 	Fresco::TextBuffer::Change * change;
 
 	if (any >>= change) {
-	    // 'any' contained a TextBuffer::Change. This is what I exspected.
+	    // 'any' contained a TextBuffer::Change. This is what I expected.
 	    
 	    // bs will contain a Babylon::String which is equivalent
 	    // to the contents of 'input'.
@@ -90,13 +93,14 @@ public:
 		    // able to handle.
 		    output->insert_string(Unicode::to_CORBA(Babylon::String(select_from[last.value() - 'A'])));
 		    
-		    input->clear(); // this clears select too:
+//XXX		    input->clear(); // this clears select too:
 		                    // it results in a call to this function
 		                    // with an empty 'input'
 		} else
 		    // delete the uppercase char since it did not
 		    // denote a character in 'select':
-		    input->remove_backward(CORBA::ULong(1));
+//XXX		    input->remove_backward(CORBA::ULong(1));
+		  {}
 	    } else {
 		// sharpen 'select':
 		select->clear();
@@ -143,22 +147,36 @@ int main(int argc, char ** argv) {
     }
 
     // do the real work:
+    CORBA::ORB_var orb;
+    CosNaming::NamingContext_var context;
+    PortableServer::POA_var poa;
+    PortableServer::POAManager_var pman;
+    ClientContextImpl *client;
+    Fresco::ServerContext_var server;
+
     try {
-	// Do CORBA-magic and connect to server:
-	Berlin_Server server(argc, argv, "Pinyin demo");
+      orb = CORBA::ORB_init(argc, argv);
+      context = resolve_init<CosNaming::NamingContext>(orb, "NameService");
+      poa = resolve_init<PortableServer::POA>(orb, "RootPOA");
+      pman = poa->the_POAManager();
+      pman->activate();
+
+      client = new ClientContextImpl("Pinyin Demo");
+
+      Fresco::Server_var s = resolve_name<Fresco::Server>(context, "IDL:fresco.org/Fresco/Server:1.0");
+      server = s->create_server_context(Fresco::ClientContext_var(client->_this()));
+    } catch (CORBA::COMM_FAILURE c) {
+      std::cerr << "Could not connect to the berlin server (CORBA::COMM_FAILURE)." << std::endl;
+    }
 
 	// Get Kits:
 
-	// This is what really happens:
-	Fresco::LayoutKit_var lk =
-	    server.get_kit<Fresco::LayoutKit>("IDL:fresco.org/Fresco/LayoutKit:1.0");
-
-	// Here is some Macro-Magic for the same:
-	REGISTER_KIT(server, tk, TextKit, 1.0);
-	REGISTER_KIT(server, tlk, ToolKit, 1.0);
-	REGISTER_KIT(server, dk, DesktopKit, 1.0);
-	REGISTER_KIT(server, ck, CommandKit, 1.0);
-	REGISTER_KIT(server, wk, WidgetKit, 1.0);
+    Fresco::LayoutKit_var lk = resolve_kit<Fresco::LayoutKit>(server, "IDL:fresco.org/Fresco/LayoutKit:1.0");
+    Fresco::TextKit_var tk = resolve_kit<Fresco::TextKit>(server, "IDL:fresco.org/Fresco/TextKit:1.0");
+    Fresco::ToolKit_var tlk = resolve_kit<Fresco::ToolKit>(server, "IDL:fresco.org/Fresco/ToolKit:1.0");
+    Fresco::DesktopKit_var dk = resolve_kit<Fresco::DesktopKit>(server, "IDL:fresco.org/Fresco/DesktopKit:1.0");
+    Fresco::CommandKit_var ck = resolve_kit<Fresco::CommandKit>(server, "IDL:fresco.org/Fresco/CommandKit:1.0");
+    Fresco::WidgetKit_var wk = resolve_kit<Fresco::WidgetKit>(server, "IDL:fresco.org/Fresco/WidgetKit:1.0");
 
 	// Create the GUI:
 
@@ -259,8 +277,9 @@ int main(int argc, char ** argv) {
 	// Now we only need to get something into those buffers:
 
 	// Construct my observer and make it observe 'input_buf'
-	InputObserver observer(input_buf, chinese_buf, output_buf);
-	input_buf->attach(Fresco::Observer_var(observer._this()));
+	InputObserver *observer = new InputObserver(input_buf, chinese_buf, output_buf);
+        poa->activate_object(observer);
+	input_buf->attach(Fresco::Observer_var(observer->_this()));
 	// The 'observer' will now watch 'input_buf' for changes
 	// and alter the other buffers as necessary.
 
@@ -274,16 +293,19 @@ int main(int argc, char ** argv) {
 	Fresco::Graphic_var body = tlk->frame(vbox, 20., spec, true);
 	Fresco::Window_var window =
 	    dk->shell(tlk->text_input(body, input_buf), 
-		      Fresco::ClientContext_var(server.get_client_context()->_this()));
+		      Fresco::ClientContext_var(client->_this()));
 
 	// Don't quit but idle around a bit so the server has the chance
 	// to do its work:-)
-	while(true) Prague::Thread::delay(Prague::Time(1000));
+	//while(true) Prague::Thread::delay(Prague::Time(1000));
+        orb->run();
 
 	// Did you notice that everything besides 'observer' was
 	// actually created in the server? We asked it for the Kits
 	// (which get loaded into the server) and those in turn created
 	// the graphics we used.
+
+#if 0
     }
 
     // All that's left to do is error handling:
@@ -295,6 +317,7 @@ int main(int argc, char ** argv) {
 	cerr << "Uncaught exception: " << e.what() << endl; 
 	return 2;
     }
+#endif
 
     return 0;
 } // main
