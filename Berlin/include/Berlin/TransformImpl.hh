@@ -32,7 +32,7 @@ class TransformImpl : public virtual POA_Warsaw::Transform,
 {
 public:
   TransformImpl();
-  TransformImpl(Warsaw::Transform_ptr t) { copy(t);}
+  TransformImpl(Warsaw::Transform_ptr t) : _this_valid (false) { copy(t);}
   TransformImpl(Warsaw::Transform::Matrix m);
   virtual ~TransformImpl();
 
@@ -54,6 +54,18 @@ public:
   virtual void inverse_transform_vertex(Warsaw::Vertex &);
 
   Warsaw::Transform::Matrix &matrix() { return mat;}
+
+  Warsaw::Transform_ptr _this ()
+  {
+    if (!_this_valid)
+      {
+	__this = POA_Warsaw::Transform::_this ();
+	_this_valid = true;
+      }
+
+    return Warsaw::Transform::_duplicate (__this);
+  }
+
 private:
   Warsaw::Transform::Matrix mat;
   bool valid;
@@ -65,6 +77,9 @@ private:
   void modified() { valid = false;}
   void recompute();
   Warsaw::Coord det();
+
+  bool _this_valid;
+  Warsaw::Transform_var __this;
 };
 
 #endif
