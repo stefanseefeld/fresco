@@ -31,8 +31,8 @@ using namespace Prague;
 using namespace Warsaw;
 // using namespace Unidraw;
 
-UnidrawKitImpl::UnidrawKitImpl(KitFactory *f, const Warsaw::Kit::PropertySeq &p)
-  : KitImpl(f, p) {}
+UnidrawKitImpl::UnidrawKitImpl(const std::string &id, const Warsaw::Kit::PropertySeq &p)
+  : KitImpl(id, p) {}
 UnidrawKitImpl::~UnidrawKitImpl() {}
 void UnidrawKitImpl::bind(ServerContext_ptr context)
 {
@@ -72,8 +72,8 @@ Warsaw::FigureKit_ptr UnidrawKitImpl::figures() { return RefCount_var<Warsaw::Fi
 Warsaw::ToolKit_ptr UnidrawKitImpl::tools() { return RefCount_var<Warsaw::ToolKit>::increment(_tools);}
 Warsaw::WidgetKit_ptr UnidrawKitImpl::widgets() { return RefCount_var<Warsaw::WidgetKit>::increment(_widgets);}
 
-extern "C" KitFactory *load()
+extern "C" KitImpl *load()
 {
   static std::string properties[] = {"implementation", "UnidrawKitImpl"};
-  return new KitFactoryImpl<UnidrawKitImpl>("IDL:Unidraw/UnidrawKit:1.0", properties, 1);
+  return create_kit<UnidrawKitImpl>("IDL:Unidraw/UnidrawKit:1.0", properties, 2);
 } 

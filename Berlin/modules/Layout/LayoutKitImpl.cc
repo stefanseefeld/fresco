@@ -37,8 +37,8 @@ using namespace Prague;
 using namespace Warsaw;
 using namespace Layout;
 
-LayoutKitImpl::LayoutKitImpl(KitFactory *f, const Warsaw::Kit::PropertySeq &p)
-  : KitImpl(f, p), _fill(GraphicImpl::infinity) {}
+LayoutKitImpl::LayoutKitImpl(const std::string &id, const Warsaw::Kit::PropertySeq &p)
+  : KitImpl(id, p), _fill(GraphicImpl::infinity) {}
 LayoutKitImpl::~LayoutKitImpl() { Trace trace("LayoutKitImpl::~LayoutKitImpl");}
 void LayoutKitImpl::fill(Coord c) { _fill = c;}
 Coord LayoutKitImpl::fill() { return _fill;}
@@ -474,8 +474,8 @@ Graphic_ptr LayoutKitImpl::tmargin_flexible(Graphic_ptr g, Coord natural, Coord 
   return margin_lrbt_flexible(g, 0., 0., 0., 0., 0., 0., natural, stretch, shrink, 0., 0., 0.);
 }
 
-extern "C" KitFactory *load()
+extern "C" KitImpl *load()
 {
   static std::string properties[] = {"implementation", "LayoutKitImpl"};
-  return new KitFactoryImpl<LayoutKitImpl> ("IDL:Warsaw/LayoutKit:1.0", properties, 1);
+  return create_kit<LayoutKitImpl> ("IDL:Warsaw/LayoutKit:1.0", properties, 2);
 }

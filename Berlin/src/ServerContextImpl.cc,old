@@ -54,7 +54,7 @@ ServerContextImpl::~ServerContextImpl()
 {
   Trace trace("ServerContextImpl::~ServerContextImpl");
   for (klist_t::iterator i = _kits.begin(); i != _kits.end(); ++i)
-    (*i).second->deactivate();
+    (*i).second->decrement();
 }
 
 ClientContext_ptr ServerContextImpl::client() { return ClientContext::_duplicate(_client);}

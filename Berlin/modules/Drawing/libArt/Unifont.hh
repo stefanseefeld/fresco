@@ -52,16 +52,16 @@ public:
   virtual Warsaw::Unistring *style();
   virtual Warsaw::DrawingKit::FontMetrics metrics();
   virtual Warsaw::DrawingKit::GlyphMetrics metrics(Warsaw::Unichar &);
-  virtual void allocateChar(const Warsaw::Unichar, Warsaw::Graphic::Requisition &);
-  virtual void getPixBuf(const Warsaw::Unichar, ArtPixBuf *&);
-protected:
-  void glyph2pixels(const Warsaw::Unichar, unsigned char *);
-  double xres, yres;  
-
-  unsigned char slab[16*16];
-  ArtPixBuf *myPixBuf;
+  virtual void allocate_char(const Warsaw::Unichar, Warsaw::Graphic::Requisition &);
+  virtual void buffer(Warsaw::Unichar, ArtPixBuf *&);
+private:
+  void glyph_to_pixels(Warsaw::Unichar, unsigned char *);
+  double        _xres;
+  double        _yres;  
+  unsigned char _slab[16*16];
+  ArtPixBuf    *_buffer;
 //   map<Unichar,ArtPixBuf *> cache;
-  Prague::MMap *glyphmap;
+  Prague::MMap *_glyphmap;
 };
 
 #endif

@@ -54,9 +54,9 @@ public:
   virtual Warsaw::Unistring *style();
   virtual Warsaw::DrawingKit::FontMetrics metrics();
   virtual Warsaw::DrawingKit::GlyphMetrics metrics(Warsaw::Unichar &);
-  virtual void getPixBuf(const Warsaw::Unichar, ArtPixBuf *&);
+  virtual void buffer(Warsaw::Unichar, ArtPixBuf *&);
   virtual bool transform(double trafo[4]);
-  virtual void allocateChar(Warsaw::Unichar, Warsaw::Graphic::Requisition &);
+  virtual void allocate_char(Warsaw::Unichar, Warsaw::Graphic::Requisition &);
 
   void setup_face(FT_Face &f);
   void setup_size(FT_Face &f);

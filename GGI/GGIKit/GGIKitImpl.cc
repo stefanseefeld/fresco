@@ -24,8 +24,8 @@
 
 using namespace Warsaw;
 
-GGIKitImpl::GGIKitImpl(KitFactory *f, const Warsaw::Kit::PropertySeq &p)
-  : KitImpl(f, p) {}
+GGIKitImpl::GGIKitImpl(const std::string &id, const Warsaw::Kit::PropertySeq &p)
+  : KitImpl(id, p) {}
 GGIKitImpl::~GGIKitImpl() {}
 
 GGI::Visual_ptr GGIKitImpl::create_visual(Warsaw::PixelCoord w, Warsaw::PixelCoord h)
@@ -35,8 +35,8 @@ GGI::Visual_ptr GGIKitImpl::create_visual(Warsaw::PixelCoord w, Warsaw::PixelCoo
   return visual->_this();
 }
 
-extern "C" KitFactory *load()
+extern "C" KitImpl *load()
 {
   static std::string properties[] = {"implementation", "GGIKitImpl"};
-  return new KitFactoryImpl<GGIKitImpl>("IDL:GGI/GGIKit:1.0", properties, 1);
+  return create_kit<GGIKitImpl>("IDL:GGI/GGIKit:1.0", properties, 2);
 } 

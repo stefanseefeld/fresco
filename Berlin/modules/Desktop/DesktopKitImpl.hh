@@ -38,8 +38,9 @@ class DesktopKitImpl : public virtual POA_Warsaw::DesktopKit,
 		       public KitImpl
 {
  public:
-  DesktopKitImpl(KitFactory *, const Warsaw::Kit::PropertySeq &);
+  DesktopKitImpl(const std::string &, const Warsaw::Kit::PropertySeq &);
   virtual ~DesktopKitImpl();
+  virtual KitImpl *clone(const Warsaw::Kit::PropertySeq &p) { return new DesktopKitImpl(repo_id(), p);}
   virtual void bind(Warsaw::ServerContext_ptr);
   virtual Warsaw::Desktop_ptr desk();
   virtual Warsaw::Window_ptr shell(Warsaw::Controller_ptr);

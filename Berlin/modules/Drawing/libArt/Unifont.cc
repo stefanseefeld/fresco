@@ -51,16 +51,16 @@ using namespace Prague;
 using namespace Warsaw;
 
 LibArtUnifont::LibArtUnifont(Console::Drawable *drawable) :
-  xres(drawable->resolution(xaxis)),
-  yres(drawable->resolution(yaxis))
+  _xres(drawable->resolution(xaxis)),
+  _yres(drawable->resolution(yaxis))
 {
   Prague::Path path = RCManager::get_path("unifontpath");
   std::string glyphDB = path.lookup_file("glyph.dat");
-  glyphmap = new MMap(glyphDB, -1, MMap::read, MMap::shared, 0, 0);
-  myPixBuf = art_pixbuf_new_rgb (slab, 16, 16, 16);  
+  _glyphmap = new MMap(glyphDB, -1, MMap::read, MMap::shared, 0, 0);
+  _buffer = art_pixbuf_new_rgb (_slab, 16, 16, 16);  
 }
 
-LibArtUnifont::~LibArtUnifont() { delete glyphmap ; art_pixbuf_free(myPixBuf);}
+LibArtUnifont::~LibArtUnifont() { delete _glyphmap; art_pixbuf_free(_buffer);}
 unsigned long LibArtUnifont::size() { return 16;}
 unsigned long LibArtUnifont::weight() { return 100;}
 Unistring *LibArtUnifont::family() { return new Unistring(Unicode::to_CORBA(Babylon::String("GNU Unifont")));}
@@ -80,7 +80,7 @@ DrawingKit::FontMetrics LibArtUnifont::metrics()
 
 DrawingKit::GlyphMetrics LibArtUnifont::metrics(Unichar &uc)
 {
-  unsigned char *glyphs = (unsigned char *)glyphmap->addr();  
+  unsigned char *glyphs = (unsigned char *)_glyphmap->addr();  
 
   DrawingKit::GlyphMetrics gm;
   gm.width = (glyphs[uc * 33] == (unsigned char)0xFF) ? 8  << 6: 16 << 6;
@@ -94,17 +94,19 @@ DrawingKit::GlyphMetrics LibArtUnifont::metrics(Unichar &uc)
   return gm;
 }
 
-void LibArtUnifont::getPixBuf(const Unichar ch, ArtPixBuf *&pb) {
-  unsigned char *glyphs = (unsigned char *)glyphmap->addr();  
+void LibArtUnifont::buffer(Unichar ch, ArtPixBuf *&pb)
+{
+  unsigned char *glyphs = (unsigned char *)_glyphmap->addr();  
   int width = (glyphs[ch * 33] == (unsigned char)0xFF) ? 8 : 16;  
-  memset(slab,0,16*16);
-  glyph2pixels(ch,slab);
-  myPixBuf->width = myPixBuf->rowstride = width;
-  pb = myPixBuf;
+  memset(_slab, 0, 16*16);
+  glyph_to_pixels(ch, _slab);
+  _buffer->width = _buffer->rowstride = width;
+  pb = _buffer;
 }
 
-void LibArtUnifont::glyph2pixels(const Unichar ch, unsigned char pix[]) {
-  unsigned char *glyphs = (unsigned char *)glyphmap->addr();
+void LibArtUnifont::glyph_to_pixels(Unichar ch, unsigned char pix[])
+{
+  unsigned char *glyphs = (unsigned char *)_glyphmap->addr();
   const unsigned int stride = 33;
   unsigned long base = stride * ch;
   bool is_halfwidth = (glyphs[base] == (unsigned char)0xFF) ? 1 : 0;
@@ -128,15 +130,15 @@ void LibArtUnifont::glyph2pixels(const Unichar ch, unsigned char pix[]) {
   }
 }
 
-void LibArtUnifont::allocateChar(Unichar u, Graphic::Requisition &r)
+void LibArtUnifont::allocate_char(Unichar u, Graphic::Requisition &r)
 {    
-  unsigned char *glyphs = (unsigned char *)glyphmap->addr();  
+  unsigned char *glyphs = (unsigned char *)_glyphmap->addr();  
   int height = 16;
   int width = (glyphs[u * 33] == (unsigned char)0xFF) ? 8 : 16;  
-  r.x.natural = r.x.minimum = r.x.maximum = width / xres;
+  r.x.natural = r.x.minimum = r.x.maximum = width / _xres;
   r.x.defined = true;
   r.x.align = 0.;
-  r.y.natural = r.y.minimum = r.y.maximum = height / yres;
+  r.y.natural = r.y.minimum = r.y.maximum = height / _yres;
   r.y.defined = true;
   r.y.align = 1.;
 }

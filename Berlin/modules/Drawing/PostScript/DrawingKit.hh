@@ -33,8 +33,9 @@
 class PSDrawingKit : public DrawingKitBase, public KitImpl
 {
 public:
-  PSDrawingKit(KitFactory *, const Warsaw::Kit::PropertySeq &);
+  PSDrawingKit(const std::string &, const Warsaw::Kit::PropertySeq &);
   virtual ~PSDrawingKit();
+  virtual KitImpl *clone(const Warsaw::Kit::PropertySeq &p) { return new PSDrawingKit(repo_id(), p);}
 
   virtual void transformation(Warsaw::Transform_ptr t) { DrawingKitBase::transformation(t);}
   virtual Warsaw::Transform_ptr transformation() { return Warsaw::Transform::_duplicate(tr);}

@@ -183,7 +183,7 @@ DrawingKit::GlyphMetrics LibArtFTFont::metrics(Unichar &uc)
   return gm;
 }
 
-void LibArtFTFont::getPixBuf(const Unichar ch, ArtPixBuf *&pb)
+void LibArtFTFont::buffer(Unichar ch, ArtPixBuf *&pb)
 {
   TGlyphSpec key(_matrix, GlyphSpec(ch, FaceSpec(((PtSize)(_size * _scale)), FamStyle(_family, _style))));
   _glyphCache.get(key, pb);
@@ -258,7 +258,7 @@ LibArtFTFont::atom LibArtFTFont::Atomizer::atomize(Babylon::String &u)
   else return i->second;
 }
 
-void LibArtFTFont::allocateChar(Unichar ch, Graphic::Requisition &r)
+void LibArtFTFont::allocate_char(Unichar ch, Graphic::Requisition &r)
 {
   DrawingKit::GlyphMetrics gm = metrics(ch);
   r.x.natural = r.x.minimum = r.x.maximum = gm.horiAdvance / (_xres * 64.0);

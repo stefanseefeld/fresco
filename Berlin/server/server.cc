@@ -156,6 +156,10 @@ int main(int argc, char **argv)
 
   Logger::log(Logger::corba) << "root POA is activated" << std::endl;
 
+  Console::open(argc, argv, poa);
+
+  Logger::log(Logger::main) << "console is initialized" << std::endl;
+
   /*
    * ...and finally construct the server.
    */
@@ -166,8 +170,6 @@ int main(int argc, char **argv)
     server->scan(*i);
 
   Logger::log(Logger::loader) << "modules are loaded" << std::endl;
-
-  Console::open(argc, argv, poa);
 
   Kit::PropertySeq props;
   props.length(1);

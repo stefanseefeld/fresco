@@ -35,8 +35,9 @@ class GadgetKitImpl : public virtual POA_Warsaw::GadgetKit,
 		      public KitImpl
 {
  public:
-  GadgetKitImpl(KitFactory *, const Warsaw::Kit::PropertySeq &);
+  GadgetKitImpl(const std::string &, const Warsaw::Kit::PropertySeq &);
   virtual ~GadgetKitImpl();
+  virtual KitImpl *clone(const Warsaw::Kit::PropertySeq &p) { return new GadgetKitImpl(repo_id(), p);}
   virtual void bind(Warsaw::ServerContext_ptr);
   virtual Warsaw::Graphic_ptr rgb(Warsaw::Graphic_ptr, Warsaw::BoundedValue_ptr, Warsaw::BoundedValue_ptr, Warsaw::BoundedValue_ptr);
   virtual Warsaw::Graphic_ptr alpha(Warsaw::Graphic_ptr, Warsaw::BoundedValue_ptr);
@@ -44,8 +45,8 @@ class GadgetKitImpl : public virtual POA_Warsaw::GadgetKit,
   virtual Warsaw::Graphic_ptr rotator(Warsaw::Graphic_ptr, Warsaw::BoundedValue_ptr, Warsaw::Axis);
   virtual Warsaw::Graphic_ptr zoomer(Warsaw::Graphic_ptr, Warsaw::BoundedValue_ptr);
  private:
-  Warsaw::CommandKit_var command;
-  Warsaw::FigureKit_var figure;
+  Warsaw::CommandKit_var _command;
+  Warsaw::FigureKit_var  _figure;
 };
 
 #endif

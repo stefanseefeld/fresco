@@ -42,8 +42,9 @@ class TextKitImpl : public virtual POA_Warsaw::TextKit,
 {
   typedef std::map<Warsaw::Unichar, Warsaw::Graphic_var> cache_t;
  public:
-  TextKitImpl(KitFactory *, const Warsaw::Kit::PropertySeq &);
+  TextKitImpl(const std::string &, const Warsaw::Kit::PropertySeq &);
   virtual ~TextKitImpl();
+  virtual KitImpl *clone(const Warsaw::Kit::PropertySeq &p) { return new TextKitImpl(repo_id(), p);}
   virtual void bind(Warsaw::ServerContext_ptr);
 
   Warsaw::Graphic_ptr chunk(const Warsaw::Unistring &u);

@@ -79,8 +79,8 @@ int main(int argc, char **argv)
   for (Prague::Path::iterator i = path.begin(); i != path.end(); ++i)
     server->scan(*i);
 
-  ServerImpl::FactoryList listing = server->list();
-  for (ServerImpl::FactoryList::iterator i = listing.begin(); i != listing.end(); ++i)
+  ServerImpl::PluginList listing = server->list();
+  for (ServerImpl::PluginList::iterator i = listing.begin(); i != listing.end(); ++i)
     {
       std::cout << (*i).first << " supports :\n";
       Warsaw::Kit::Property *begin = (*i).second->get_buffer();

@@ -117,7 +117,7 @@ void ServerImpl::scan(const std::string &name)
   Logger::log(Logger::loader) << "ServerImpl: scanning plugin dir " << name << std::endl;
   for (Directory::iterator i = directory.begin(); i != directory.end(); i++)
     {
-      Plugin<KitFactory> *plugin = new Plugin<KitFactory>((*i)->long_name());
+      Plugin<KitImpl> *plugin = new Plugin<KitImpl>((*i)->long_name());
       /*
        * if this is not a plugin, skip over it
        */
@@ -127,34 +127,40 @@ void ServerImpl::scan(const std::string &name)
 	  delete plugin;
 	  continue;
 	}
-      _factories.insert(fmap_t::value_type((*plugin)->type(), plugin));
-      Logger::log(Logger::loader) << "ServerImpl: loaded factory for " << (*plugin)->type() << " from " << (*i)->name() << std::endl;
+      _plugins.push_back(plugin);
+      Logger::log(Logger::loader) << "ServerImpl: loaded plugin for " << (*plugin)->repo_id() << " from " << (*i)->name() << std::endl;
     }
 }
 
-void ServerImpl::clear()
 //. hope you know what you are doing if you call this...
+void ServerImpl::clear()
 {
   Prague::Guard<Mutex> guard(_mutex);
-  for (fmap_t::iterator i = _factories.begin(); i != _factories.end(); i++) delete (*i).second;
-  _factories.clear();
+  for (pmap_t::iterator i = _plugins.begin(); i != _plugins.end(); ++i) delete *i;
+  _plugins.clear();
 }
 
-ServerImpl::FactoryList ServerImpl::list()
+ServerImpl::PluginList ServerImpl::list()
 {
-  FactoryList fl;
-  for (fmap_t::iterator i = _factories.begin(); i != _factories.end(); ++i)
-    fl.insert(FactoryList::value_type((*i).first, (*(*i).second)->properties()));
-  return fl;
+  PluginList pl;
+  for (pmap_t::iterator i = _plugins.begin(); i != _plugins.end(); ++i)
+    pl.insert(PluginList::value_type((**i)->repo_id(), (**i)->properties()));
+  return pl;
 }
 
 KitImpl *ServerImpl::create(const char *type, const Kit::PropertySeq &properties, PortableServer::POA_ptr poa)
 {
   Trace trace("ServerImpl::create");
-  fmap_t::iterator f1 = _factories.lower_bound(type), f2 = _factories.upper_bound(type);
-  for (fmap_t::iterator i = f1; i != f2; i++)
-    if ((*(*i).second)->supports(properties))
-      return (*(*i).second)->create(properties, poa);
+  for (pmap_t::iterator i = _plugins.begin(); i != _plugins.end(); ++i)
+    if ((**i)->_is_a(type) && (**i)->supports(properties))
+      {
+	KitImpl *kit = (**i)->clone(properties);
+	kit->_poa = PortableServer::POA::_duplicate(poa);
+	PortableServer::ObjectId *oid = poa->activate_object(kit);
+	kit->_remove_ref();
+	delete oid;
+	return kit;
+      }
   return 0;
 }
 

@@ -27,13 +27,11 @@
 #include <Warsaw/Server.hh>
 #include <Warsaw/Graphic.hh>
 #include <Berlin/KitImpl.hh>
-#include <Berlin/KitFactory.hh>
 #include <Prague/Sys/Thread.hh>
 #include <Prague/Sys/Plugin.hh>
 #include <vector>
 #include <string>
 #include <map>
-#include <multimap.h>
 
 class ServerContextImpl;
 
@@ -45,13 +43,13 @@ class ServerImpl : public virtual POA_Warsaw::Server,
 {
     friend class ServerContextImpl;
     typedef std::vector<ServerContextImpl *> clist_t;
-    typedef std::multimap<std::string, Prague::Plugin<KitFactory> *> fmap_t;
-    typedef std::multimap<std::string, KitImpl *> kmap_t;
+    typedef std::vector<Prague::Plugin<KitImpl> *> pmap_t;
+    typedef std::vector<KitImpl *> kmap_t;
     typedef std::map<std::string, CORBA::Object_var> smap_t;
 public:
     // Singelton pattern: This makes sure that only one ServerImpl is around.
     static ServerImpl *instance();
-    typedef multimap<std::string, Warsaw::Kit::PropertySeq_var> FactoryList;
+    typedef multimap<std::string, Warsaw::Kit::PropertySeq_var> PluginList;
     virtual Warsaw::ServerContext_ptr create_server_context(Warsaw::ClientContext_ptr c) throw (Warsaw::SecurityException);
     virtual void set_singleton(const char *, CORBA::Object_ptr)
 	throw (Warsaw::SecurityException, Warsaw::SingletonFailureException);
@@ -73,7 +71,7 @@ public:
     void scan(const std::string &);
     //. Deletes all known Kits.
     void clear();
-    FactoryList list();
+    PluginList list();
 protected:
     //. Finds the requested kit and loads it. This is a helper function only.
     //. Use resolve,
@@ -88,7 +86,7 @@ private:
     static void destroy_context(ServerContextImpl *);
     smap_t  _singletons;
     clist_t _contexts;
-    fmap_t  _factories;
+    pmap_t  _plugins;
     kmap_t  _kits;
     Prague::Thread _thread;
     Prague::Mutex _mutex;
@@ -115,7 +113,7 @@ typename K::_ptr_type ServerImpl::resolve(const char *type, const Warsaw::Kit::P
 	std::cerr << "Reference has incorrect type" << std::endl;
 	return K::_nil();
       }
-    _kits.insert(kmap_t::value_type(type, kit));
+    _kits.push_back(kit);
     return reference._retn();
 }
 

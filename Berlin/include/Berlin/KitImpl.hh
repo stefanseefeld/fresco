@@ -25,37 +25,49 @@
 #include <Prague/Sys/Tracer.hh>
 #include <Warsaw/config.hh>
 #include <Warsaw/Kit.hh>
-#include <Berlin/KitFactory.hh>
 
-class ServerContextImpl;
+class ServerImpl;
 class ServantBase;
-class KitFactory;
 
 class KitImpl : public virtual POA_Warsaw::Kit,
 		public virtual PortableServer::RefCountServantBase
 {
-  friend class ServerContextImpl;
-  friend class ::ServantBase;
-  friend class KitFactory;
+  friend class ServerImpl;
 public:
-  KitImpl(KitFactory *, const Warsaw::Kit::PropertySeq &);
+  KitImpl(const std::string &, const Warsaw::Kit::PropertySeq &);
   ~KitImpl();
-  virtual Warsaw::Kit::PropertySeq *properties();
+  virtual KitImpl *clone(const Warsaw::Kit::PropertySeq &) = 0;
+  const std::string &repo_id() const { return _repo_id;}
+  virtual Warsaw::Kit::PropertySeq *properties() { return new Warsaw::Kit::PropertySeq(*_props);}
   virtual void bind(Warsaw::ServerContext_ptr) {};
   virtual CORBA::Boolean supports(const Warsaw::Kit::PropertySeq &);
 
   void activate(::ServantBase *);
   void deactivate(::ServantBase *);
 
-  virtual void increment() { refcount++;}
-  virtual void decrement() { if (!--refcount) deactivate();}
+  virtual void increment() { _refcount++;}
+  virtual void decrement() { if (!--_refcount) deactivate();}
 private:
   void activate(PortableServer::POA_ptr);
   void deactivate();
-  KitFactory                     *factory;
-  PortableServer::POA_var         poa;
-  const Warsaw::Kit::PropertySeq &props;
-  int                             refcount;
+  PortableServer::POA_var         _poa;
+  const std::string               _repo_id;
+  const Warsaw::Kit::PropertySeq *_props;
+  int                             _refcount;
 };
+
+template <typename T>
+inline T *create_kit(const std::string &repo, std::string props[], size_t n)
+{
+  Warsaw::Kit::PropertySeq properties;
+  properties.length(n);
+  for (size_t i = 0; i != n/2; ++i)
+    {
+      properties[i].name = CORBA::string_dup((props++)->c_str());
+      properties[i].value = CORBA::string_dup((props++)->c_str());
+    }
+  return new T(repo, properties);
+}
+
 
 #endif

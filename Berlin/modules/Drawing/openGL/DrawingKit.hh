@@ -50,8 +50,9 @@ class GLDrawingKit : public virtual POA_Warsaw::DrawingKit3D,
 		     public DrawingKitBase, public KitImpl
 {
 public:
-  GLDrawingKit(KitFactory *, const Warsaw::Kit::PropertySeq &);
+  GLDrawingKit(const std::string &, const Warsaw::Kit::PropertySeq &);
   virtual ~GLDrawingKit();
+  virtual KitImpl *clone(const Warsaw::Kit::PropertySeq &p) { return new GLDrawingKit(repo_id(), p);}
 
   virtual void transformation(Warsaw::Transform_ptr t) { DrawingKitBase::transformation(t);}
   virtual Warsaw::Transform_ptr transformation() { return Warsaw::Transform::_duplicate(_tr);}

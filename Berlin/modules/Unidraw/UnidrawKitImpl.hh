@@ -35,8 +35,9 @@ class UnidrawKitImpl : public virtual POA_Unidraw::UnidrawKit,
 		       public KitImpl
 {
 public:
-  UnidrawKitImpl(KitFactory *, const Warsaw::Kit::PropertySeq &);
+  UnidrawKitImpl(const std::string &, const Warsaw::Kit::PropertySeq &);
   virtual ~UnidrawKitImpl();
+  virtual KitImpl *clone(const Warsaw::Kit::PropertySeq &p) { return new UnidrawKitImpl(repo_id(), p);}
   virtual void bind(Warsaw::ServerContext_ptr);
   virtual Unidraw::Tool_ptr select_tool();
   virtual Unidraw::Editor_ptr create_editor();

@@ -42,8 +42,9 @@ class WidgetKit : public virtual POA_Warsaw::WidgetKit,
 		  public KitImpl
 {
  public:
-  WidgetKit(KitFactory *, const Warsaw::Kit::PropertySeq &);
+  WidgetKit(const std::string &, const Warsaw::Kit::PropertySeq &);
   virtual ~WidgetKit();
+  virtual KitImpl *clone(const Warsaw::Kit::PropertySeq &p) { return new WidgetKit(repo_id(), p);}
   virtual void bind(Warsaw::ServerContext_ptr);
   
   Warsaw::Trigger_ptr      button(Warsaw::Graphic_ptr, Warsaw::Command_ptr);

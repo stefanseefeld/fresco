@@ -30,8 +30,8 @@
 using namespace Prague;
 using namespace Warsaw;
 
-PSDrawingKit::PSDrawingKit(KitFactory *f, const Warsaw::Kit::PropertySeq &p)
-  : KitImpl(f, p)
+PSDrawingKit::PSDrawingKit(const std::string &id, const Warsaw::Kit::PropertySeq &p)
+  : KitImpl(id, p)
 {
 }
 
@@ -108,8 +108,8 @@ void PSDrawingKit::allocate_char(Unichar c, Graphic::Requisition &req) {}
 void PSDrawingKit::draw_char(Unichar c) {}
 void PSDrawingKit::copy_drawable(Drawable_ptr d, PixelCoord x, PixelCoord y, PixelCoord w, PixelCoord h) {}
 
-extern "C" KitFactory *load()
+extern "C" KitImpl *load()
 {
   static std::string properties[] = {"implementation", "PSDrawingKit"};
-  return new KitFactoryImpl<PSDrawingKit> ("IDL:Warsaw/DrawingKit:1.0", properties, 1);
+  return create_kit<PSDrawingKit> ("IDL:Warsaw/DrawingKit:1.0", properties, 2);
 }

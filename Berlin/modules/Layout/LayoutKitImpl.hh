@@ -33,8 +33,10 @@ class LayoutKitImpl : public virtual POA_Warsaw::LayoutKit,
 		      public KitImpl
 {
 public:
-  LayoutKitImpl(KitFactory *, const Warsaw::Kit::PropertySeq &);
+  LayoutKitImpl(const std::string &, const Warsaw::Kit::PropertySeq &);
   ~LayoutKitImpl();
+  virtual KitImpl *clone(const Warsaw::Kit::PropertySeq &p) { return new LayoutKitImpl(repo_id(), p);}
+
   virtual Warsaw::Coord fill();
   virtual void fill(Warsaw::Coord);
   virtual Warsaw::Graphic_ptr clipper(Warsaw::Graphic_ptr);

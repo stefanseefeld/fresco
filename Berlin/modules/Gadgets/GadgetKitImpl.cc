@@ -197,16 +197,16 @@ class ZoomAdjuster : public virtual ViewImpl,
     }
 };
 
-GadgetKitImpl::GadgetKitImpl(KitFactory *f, const Warsaw::Kit::PropertySeq &p)
-  : KitImpl(f, p) {}
+GadgetKitImpl::GadgetKitImpl(const std::string &id, const Warsaw::Kit::PropertySeq &p)
+  : KitImpl(id, p) {}
 GadgetKitImpl::~GadgetKitImpl() {}
 void GadgetKitImpl::bind(ServerContext_ptr context)
 {
   KitImpl::bind(context);
   Warsaw::Kit::PropertySeq props;
   props.length(0);
-  command = resolve_kit<CommandKit>(context, "IDL:Warsaw/CommandKit:1.0", props);
-  figure = resolve_kit<FigureKit>(context, "IDL:Warsaw/FigureKit:1.0", props);
+  _command = resolve_kit<CommandKit>(context, "IDL:Warsaw/CommandKit:1.0", props);
+  _figure = resolve_kit<FigureKit>(context, "IDL:Warsaw/FigureKit:1.0", props);
 }
 
 Graphic_ptr GadgetKitImpl::rgb(Graphic_ptr body, BoundedValue_ptr r, BoundedValue_ptr g, BoundedValue_ptr b)
@@ -245,7 +245,7 @@ Graphic_ptr GadgetKitImpl::rotator(Graphic_ptr g, BoundedValue_ptr value, Axis a
   RotationAdjuster *adjuster = new RotationAdjuster(axis);
   activate(adjuster);
   value->attach(Observer_var(adjuster->_this()));
-  Graphic_var transformer = figure->transformer(g);
+  Graphic_var transformer = _figure->transformer(g);
   adjuster->body(transformer);
   return adjuster->_this();
 }
@@ -255,13 +255,13 @@ Graphic_ptr GadgetKitImpl::zoomer(Graphic_ptr g, BoundedValue_ptr value)
   ZoomAdjuster *adjuster = new ZoomAdjuster();
   activate(adjuster);
   value->attach(Observer_var(adjuster->_this()));
-  Graphic_var transformer = figure->transformer(g);
+  Graphic_var transformer = _figure->transformer(g);
   adjuster->body(transformer);
   return adjuster->_this();
 }
 
-extern "C" KitFactory *load()
+extern "C" KitImpl *load()
 {
   static std::string properties[] = {"implementation", "GadgetKitImpl"};
-  return new KitFactoryImpl<GadgetKitImpl>("IDL:Warsaw/GadgetKit:1.0", properties, 1);
+  return create_kit<GadgetKitImpl>("IDL:Warsaw/GadgetKit:1.0", properties, 2);
 } 

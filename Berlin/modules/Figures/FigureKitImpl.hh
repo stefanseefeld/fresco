@@ -34,8 +34,9 @@ class FigureKitImpl : public virtual POA_Warsaw::FigureKit,
 		      public KitImpl
 {
  public:
-  FigureKitImpl(KitFactory *, const Warsaw::Kit::PropertySeq &);
+  FigureKitImpl(const std::string &, const Warsaw::Kit::PropertySeq &);
   virtual ~FigureKitImpl();
+  virtual KitImpl *clone(const Warsaw::Kit::PropertySeq &p) { return new FigureKitImpl(repo_id(), p);}
   
   Warsaw::Graphic_ptr root(Warsaw::Graphic_ptr);
   Warsaw::Graphic_ptr fitter(Warsaw::Graphic_ptr);

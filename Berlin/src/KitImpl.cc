@@ -21,42 +21,50 @@
  */
 #include <Prague/Sys/Tracer.hh>
 #include "Berlin/KitImpl.hh"
-#include "Berlin/KitFactory.hh"
 #include "Berlin/ServantBase.hh"
 
 using namespace Prague;
 using namespace Warsaw;
 
-KitImpl::KitImpl(KitFactory *f, const Warsaw::Kit::PropertySeq &p)
-  : factory(f), props(p), refcount(1)
+KitImpl::KitImpl(const std::string &id, const Warsaw::Kit::PropertySeq &p)
+  : _repo_id(id), _props(new Warsaw::Kit::PropertySeq(p)), _refcount(1)
 {
   Trace trace("KitImpl::KitImpl");
-  factory->increment();
 }
 
 KitImpl::~KitImpl()
 {
   Trace trace("KitImpl::~KitImpl");  
-  poa->destroy(true, true);
-  factory->decrement();
-}
-
-Warsaw::Kit::PropertySeq *KitImpl::properties()
-{
-  return new Warsaw::Kit::PropertySeq(props);
+  _poa->destroy(true, true);
+  delete _props;
 }
 
 CORBA::Boolean KitImpl::supports(const Warsaw::Kit::PropertySeq &p)
 {
   Trace trace("KitImpl::supports");
-  return KitFactory::supports(props, p);
+  const Warsaw::Kit::Property *begin2 = p.get_buffer();
+  const Warsaw::Kit::Property *end2 = begin2 + p.length();
+  for (const Warsaw::Kit::Property *property2 = begin2; property2 != end2; property2++)
+    {
+      const Warsaw::Kit::Property *begin1 = _props->get_buffer();
+      const Warsaw::Kit::Property *end1 = begin1 + _props->length();
+      const Warsaw::Kit::Property *property1;
+      for (property1 = begin1; property1 != end1; property1++)
+	if (strcmp(property1->name, property2->name) == 0)
+	  {
+	    if (strcmp(property1->value, property2->value) == 0) break;
+	    else return false; // value not supported
+	  }
+      if (property1 == end1) return false; // property not supported
+    }
+  return true;
 }
 
 void KitImpl::activate(::ServantBase *servant)
 {
   Trace trace("KitImpl::activate(PortableServer::Servant)");
-  PortableServer::ObjectId *oid = poa->activate_object(servant);
-  servant->poa = PortableServer::POA::_duplicate(poa);
+  PortableServer::ObjectId *oid = _poa->activate_object(servant);
+  servant->poa = PortableServer::POA::_duplicate(_poa);
   servant->_remove_ref();
   delete oid;
   servant->activate_composite();
@@ -65,16 +73,16 @@ void KitImpl::activate(::ServantBase *servant)
 void KitImpl::deactivate(::ServantBase *servant)
 {
   Trace trace("KitImpl::deactivate(PortableServer::Servant)");
-  PortableServer::ObjectId *oid = poa->servant_to_id(servant);
-  poa->deactivate_object(*oid);
+  PortableServer::ObjectId *oid = _poa->servant_to_id(servant);
+  _poa->deactivate_object(*oid);
   delete oid;
 }
 
 void KitImpl::deactivate()
 {
   Trace trace("KitImpl::deactivate()");
-  PortableServer::ObjectId *oid = poa->servant_to_id(this);
-  poa->deactivate_object(*oid);
+  PortableServer::ObjectId *oid = _poa->servant_to_id(this);
+  _poa->deactivate_object(*oid);
   delete oid;
 }
 

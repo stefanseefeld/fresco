@@ -104,8 +104,8 @@ private:
   Coord alpha;
 };
 
-ToolKitImpl::ToolKitImpl(KitFactory *f, const Warsaw::Kit::PropertySeq &p)
-  : KitImpl(f, p) {}
+ToolKitImpl::ToolKitImpl(const std::string &id, const Warsaw::Kit::PropertySeq &p)
+  : KitImpl(id, p) {}
 ToolKitImpl::~ToolKitImpl() { Trace trace("ToolKitImpl::~ToolKitImpl");}
 Graphic_ptr ToolKitImpl::debugger(Graphic_ptr g, const char *s)
 {
@@ -394,8 +394,8 @@ Canvas_ptr ToolKitImpl::create_canvas(PixelCoord width, PixelCoord height)
   return canvas->_this();
 }
 
-extern "C" KitFactory *load()
+extern "C" KitImpl *load()
 {
   static std::string properties[] = {"implementation", "ToolKitImpl"};
-  return new KitFactoryImpl<ToolKitImpl> ("IDL:Warsaw/ToolKit:1.0", properties, 1);
+  return create_kit<ToolKitImpl> ("IDL:Warsaw/ToolKit:1.0", properties, 2);
 }

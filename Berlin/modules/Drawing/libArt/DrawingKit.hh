@@ -46,37 +46,38 @@
 class LibArtDrawingKit : public DrawingKitBase, public KitImpl
 {
 public:
-  LibArtDrawingKit(KitFactory *, const Warsaw::Kit::PropertySeq &);
+  LibArtDrawingKit(const std::string &, const Warsaw::Kit::PropertySeq &);
   virtual ~LibArtDrawingKit();
+  virtual KitImpl *clone(const Warsaw::Kit::PropertySeq &p) { return new LibArtDrawingKit(repo_id(), p);}
 
   virtual void transformation(Warsaw::Transform_ptr t) { DrawingKitBase::transformation(t);}
-  virtual Warsaw::Transform_ptr transformation() { return Warsaw::Transform::_duplicate(tr);}
+  virtual Warsaw::Transform_ptr transformation() { return Warsaw::Transform::_duplicate(_tr);}
   virtual void clipping(Warsaw::Region_ptr r) { DrawingKitBase::clipping(r);}
-  virtual Warsaw::Region_ptr clipping() { return Warsaw::Region::_duplicate(cl);}
+  virtual Warsaw::Region_ptr clipping() { return Warsaw::Region::_duplicate(_cl);}
   virtual void foreground(const Warsaw::Color &c) { DrawingKitBase::foreground(c);}
-  virtual Warsaw::Color foreground() { return fg;}
+  virtual Warsaw::Color foreground() { return _fg;}
   virtual void lighting(const Warsaw::Color &c) { DrawingKitBase::lighting(c);}
-  virtual Warsaw::Color lighting() { return lt;}
+  virtual Warsaw::Color lighting() { return _lt;}
   virtual void point_size(Warsaw::Coord c) { DrawingKitBase::point_size(c);}
-  virtual Warsaw::Coord point_size() { return ps;}
+  virtual Warsaw::Coord point_size() { return _ps;}
   virtual void line_width(Warsaw::Coord c) { DrawingKitBase::line_width(c);}
-  virtual Warsaw::Coord line_width() { return lw;}
+  virtual Warsaw::Coord line_width() { return _lw;}
   virtual void line_endstyle(Warsaw::DrawingKit::Endstyle e) { DrawingKitBase::line_endstyle(e);}
-  virtual Warsaw::DrawingKit::Endstyle line_endstyle() { return es;}
+  virtual Warsaw::DrawingKit::Endstyle line_endstyle() { return _es;}
   virtual void surface_fillstyle(Warsaw::DrawingKit::Fillstyle f) { DrawingKitBase::surface_fillstyle(f);}
-  virtual Warsaw::DrawingKit::Fillstyle surface_fillstyle() { return fs;}
+  virtual Warsaw::DrawingKit::Fillstyle surface_fillstyle() { return _fs;}
   virtual void texture(Warsaw::Raster_ptr r) { DrawingKitBase::texture(r);}
   virtual Warsaw::Raster_ptr texture() { //return tx ? Raster::_duplicate(tx->remote) : 
     return Warsaw::Raster::_nil();}
 
-  virtual CORBA::ULong font_size() { return font->size();}
-  virtual CORBA::ULong font_weight() { return font->weight();}
-  virtual Warsaw::Unistring *font_family() { return font->family();}
-  virtual Warsaw::Unistring *font_subfamily() { return font->subfamily();}
-  virtual Warsaw::Unistring *font_fullname() { return font->fullname();}
-  virtual Warsaw::Unistring *font_style() { return font->style();}
-  virtual Warsaw::DrawingKit::FontMetrics font_metrics() { return font->metrics();}
-  virtual Warsaw::DrawingKit::GlyphMetrics glyph_metrics(Warsaw::Unichar uc) { return font->metrics(uc);}
+  virtual CORBA::ULong font_size() { return _font->size();}
+  virtual CORBA::ULong font_weight() { return _font->weight();}
+  virtual Warsaw::Unistring *font_family() { return _font->family();}
+  virtual Warsaw::Unistring *font_subfamily() { return _font->subfamily();}
+  virtual Warsaw::Unistring *font_fullname() { return _font->fullname();}
+  virtual Warsaw::Unistring *font_style() { return _font->style();}
+  virtual Warsaw::DrawingKit::FontMetrics font_metrics() { return _font->metrics();}
+  virtual Warsaw::DrawingKit::GlyphMetrics glyph_metrics(Warsaw::Unichar uc) { return _font->metrics(uc);}
   virtual CORBA::Any *get_font_attribute(const Warsaw::Unistring & name) { return new CORBA::Any();}
 
   virtual void set_transformation(Warsaw::Transform_ptr);
@@ -97,7 +98,7 @@ public:
   virtual void set_font_style(const Warsaw::Unistring &);
   virtual void set_font_attribute(const Warsaw::NVPair &);
 
-  virtual Warsaw::Coord resolution(Warsaw::Axis a) { return drawable->resolution(a);}
+  virtual Warsaw::Coord resolution(Warsaw::Axis a) { return _drawable->resolution(a);}
   virtual void draw_path(const Warsaw::Path &);
 //   virtual void drawPatch(const Warsaw::Patch &);
   virtual void draw_rectangle(const Warsaw::Vertex &, const Warsaw::Vertex &);
@@ -115,34 +116,34 @@ public:
   void rasterize_pixbuf(ArtPixBuf *pixbuf);
   void identity_pixbuf(ArtPixBuf *pixbuf);
 
-  Console::Drawable *drawable;
-  Console::Drawable *buffer;
-  ArtPixBuf *pb;
-  ArtIRect bbox;
+  Console::Drawable *_drawable;
+  Console::Drawable *_buffer;
+  ArtPixBuf         *_pb;
+  ArtIRect           _bbox;
 //   const ggi_directbuffer * buf;
-  double xres, yres;
-  Prague::Mutex mutex;
+  double             _xres, _yres;
+  Prague::Mutex      _mutex;
 
-  double affine[6];
-  double scaled_affine[6];
+  double             _affine[6];
+  double             _scaled_affine[6];
 
-  Warsaw::Transform_var  tr;
-  Warsaw::Region_var     cl;
-  Warsaw::Color          fg;
-  Warsaw::Color          lt;
-  Warsaw::Coord          ps;
-  Warsaw::Coord          lw;
-  Warsaw::DrawingKit::Endstyle       es;
-  Warsaw::DrawingKit::Fillstyle      fs;
-  LibArtFTFont   *font;
-  LibArtFont   *unifont;
-  art_u8 alphabank[256][256];
-  ArtAlphaGamma *agam;
-  art_u32         art_fg;
-  Console::Drawable::Pixel con_fg;
-  ArtIRect screen,clip;
+  Warsaw::Transform_var  _tr;
+  Warsaw::Region_var     _cl;
+  Warsaw::Color          _fg;
+  Warsaw::Color          _lt;
+  Warsaw::Coord          _ps;
+  Warsaw::Coord          _lw;
+  Warsaw::DrawingKit::Endstyle       _es;
+  Warsaw::DrawingKit::Fillstyle      _fs;
+  LibArtFTFont   *_font;
+  LibArtFont     *_unifont;
+  art_u8 _alphabank[256][256];
+  ArtAlphaGamma *_agam;
+  art_u32         _art_fg;
+  Console::Drawable::Pixel _con_fg;
+  ArtIRect _screen, _clip;
   
-  ObjectCache<Warsaw::Raster_var, LibArtRaster> rasters;
+  ObjectCache<Warsaw::Raster_var, LibArtRaster> _rasters;
 };
 
 #endif 

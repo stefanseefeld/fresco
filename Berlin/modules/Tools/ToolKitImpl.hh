@@ -34,8 +34,9 @@ class ToolKitImpl : public virtual POA_Warsaw::ToolKit,
 		    public KitImpl
 {
  public:
-  ToolKitImpl(KitFactory *, const Warsaw::Kit::PropertySeq &);
+  ToolKitImpl(const std::string &, const Warsaw::Kit::PropertySeq &);
   virtual ~ToolKitImpl();
+  virtual KitImpl *clone(const Warsaw::Kit::PropertySeq &p) { return new ToolKitImpl(repo_id(), p);}
 
   Warsaw::Graphic_ptr      debugger(Warsaw::Graphic_ptr, const char *);
   Warsaw::DrawingState_ptr decorator(Warsaw::Graphic_ptr);

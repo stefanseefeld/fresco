@@ -37,8 +37,8 @@
 using namespace Prague;
 using namespace Warsaw;
 
-DesktopKitImpl::DesktopKitImpl(KitFactory *f, const Warsaw::Kit::PropertySeq &p)
-  : KitImpl(f, p) {}
+DesktopKitImpl::DesktopKitImpl(const std::string &id, const Warsaw::Kit::PropertySeq &p)
+  : KitImpl(id, p) {}
 DesktopKitImpl::~DesktopKitImpl() {}
 void DesktopKitImpl::bind(ServerContext_ptr context)
 {
@@ -270,8 +270,8 @@ Command_ptr DesktopKitImpl::map(Warsaw::Window_ptr window, CORBA::Boolean flag)
   return manipulator->_this();
 }
 
-extern "C" KitFactory *load()
+extern "C" KitImpl *load()
 {
   static std::string properties[] = {"implementation", "DesktopKitImpl"};
-  return new KitFactoryImpl<DesktopKitImpl> ("IDL:Warsaw/DesktopKit:1.0", properties, 1);
+  return create_kit<DesktopKitImpl> ("IDL:Warsaw/DesktopKit:1.0", properties, 2);
 }

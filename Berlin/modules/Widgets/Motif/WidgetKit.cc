@@ -72,8 +72,8 @@ private:
 //   Method method;
 // };
 
-WidgetKit::WidgetKit(KitFactory *f, const Warsaw::Kit::PropertySeq &p)
-  : KitImpl(f, p) {}
+WidgetKit::WidgetKit(const std::string &id, const Warsaw::Kit::PropertySeq &p)
+  : KitImpl(id, p) {}
 WidgetKit::~WidgetKit() {}
 
 void WidgetKit::bind(ServerContext_ptr context)
@@ -323,8 +323,8 @@ Controller_ptr WidgetKit::scrollable(Graphic_ptr g)
 
 };
 
-extern "C" KitFactory *load()
+extern "C" KitImpl *load()
 {
   static std::string properties[] = {"implementation", "Motif::WidgetKit", "style", "Motif"};
-  return new KitFactoryImpl<Motif::WidgetKit> ("IDL:Warsaw/WidgetKit:1.0", properties, 2);
+  return create_kit<Motif::WidgetKit> ("IDL:Warsaw/WidgetKit:1.0", properties, 4);
 }

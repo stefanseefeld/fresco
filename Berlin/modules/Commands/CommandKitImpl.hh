@@ -35,8 +35,10 @@ class CommandKitImpl : public virtual POA_Warsaw::CommandKit,
 		       public KitImpl
 {
  public:
-  CommandKitImpl(KitFactory *, const Warsaw::Kit::PropertySeq &);
+  CommandKitImpl(const std::string &, const Warsaw::Kit::PropertySeq &);
   virtual ~CommandKitImpl();
+  virtual KitImpl *clone(const Warsaw::Kit::PropertySeq &p) { return new CommandKitImpl(repo_id(), p);}
+
   virtual Warsaw::Command_ptr debugger(Warsaw::Command_ptr, const char *);
   virtual Warsaw::Command_ptr log(const char *);
   virtual Warsaw::MacroCommand_ptr composite();

@@ -44,8 +44,8 @@
 using namespace Prague;
 using namespace Warsaw;
 
-TextKitImpl::TextKitImpl(KitFactory *f, const Warsaw::Kit::PropertySeq &p)
-  : KitImpl(f, p),  _strut(0),
+TextKitImpl::TextKitImpl(const std::string &id, const Warsaw::Kit::PropertySeq &p)
+  : KitImpl(id, p),  _strut(0),
     _lineCompositor(new LRCompositor()), 
     _pageCompositor(new TBCompositor())
 {
@@ -218,8 +218,8 @@ Graphic_ptr TextKitImpl::font_attribute(Graphic_ptr g, const NVPair &nvp)
   return Graphic::_nil();
 }
 
-extern "C" KitFactory *load()
+extern "C" KitImpl *load()
 {
   static std::string properties[] = {"implementation", "TextKitImpl", "locale", "latin"};
-  return new KitFactoryImpl<TextKitImpl>("IDL:Warsaw/TextKit:1.0", properties, 2);
+  return create_kit<TextKitImpl>("IDL:Warsaw/TextKit:1.0", properties, 4);
 } 

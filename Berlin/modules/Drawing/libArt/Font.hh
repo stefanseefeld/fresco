@@ -49,8 +49,8 @@ public:
   // this method returns true if the font will handle the trafo internally,
   // false otherwise
   virtual bool transform(double trafo[4]) { return false; };
-  virtual void allocateChar(const Warsaw::Unichar ch, Warsaw::Graphic::Requisition &) = 0;
-  virtual void getPixBuf(const Warsaw::Unichar ch, ArtPixBuf *&) = 0;
+  virtual void allocate_char(Warsaw::Unichar ch, Warsaw::Graphic::Requisition &) = 0;
+  virtual void buffer(Warsaw::Unichar ch, ArtPixBuf *&) = 0;
 };
 
 #endif

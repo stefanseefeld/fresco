@@ -30,8 +30,8 @@
 using namespace Prague;
 using namespace Warsaw;
 
-ImageKitImpl::ImageKitImpl(KitFactory *f, const Warsaw::Kit::PropertySeq &p)
-  : KitImpl(f, p) {}
+ImageKitImpl::ImageKitImpl(const std::string &id, const Warsaw::Kit::PropertySeq &p)
+  : KitImpl(id, p) {}
 ImageKitImpl::~ImageKitImpl() {}
 
 Raster_ptr ImageKitImpl::empty()
@@ -50,8 +50,8 @@ Raster_ptr ImageKitImpl::create(const char *file)
   return raster->_this();
 }
 
-extern "C" KitFactory *load()
+extern "C" KitImpl *load()
 {
   static std::string properties[] = {"implementation", "ImageKitImpl"};
-  return new KitFactoryImpl<ImageKitImpl> ("IDL:Warsaw/ImageKit:1.0", properties, 1);
+  return create_kit<ImageKitImpl> ("IDL:Warsaw/ImageKit:1.0", properties, 2);
 }

@@ -37,8 +37,9 @@ class ImageKitImpl : public virtual POA_Warsaw::ImageKit,
 		     public KitImpl
 {
 public:
-  ImageKitImpl(KitFactory *, const Warsaw::Kit::PropertySeq &);
+  ImageKitImpl(const std::string &, const Warsaw::Kit::PropertySeq &);
   virtual ~ImageKitImpl();
+  virtual KitImpl *clone(const Warsaw::Kit::PropertySeq &p) { return new ImageKitImpl(repo_id(), p);}
 
   Warsaw::Raster_ptr empty();
   Warsaw::Raster_ptr create(const char *file);

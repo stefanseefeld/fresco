@@ -37,8 +37,8 @@
 using namespace Prague;
 using namespace Warsaw;
 
-GLDrawingKit::GLDrawingKit(KitFactory *f, const Warsaw::Kit::PropertySeq &p)
-  : KitImpl(f, p),
+GLDrawingKit::GLDrawingKit(const std::string &id, const Warsaw::Kit::PropertySeq &p)
+  : KitImpl(id, p),
     _drawable(Console::drawable()),
     _tx(0),
     _font(new GLUnifont),
@@ -317,9 +317,9 @@ void GLDrawingKit::draw_points(const Warsaw::Vertices &coords)
 
 void GLDrawingKit::copy_drawable(Drawable_ptr d, PixelCoord x, PixelCoord y, PixelCoord w, PixelCoord h) {}
 
-extern "C" KitFactory *load()
+extern "C" KitImpl *load()
 {
   static std::string properties[] = {"implementation", "GLDrawingKit"};
-  return new KitFactoryImpl<GLDrawingKit> ("IDL:Warsaw/DrawingKit3D:1.0", properties, 1);
+  return create_kit<GLDrawingKit> ("IDL:Warsaw/DrawingKit3D:1.0", properties, 2);
 }
 

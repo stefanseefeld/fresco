@@ -90,8 +90,8 @@ public:
   clist_t _commands;
 };
 
-CommandKitImpl::CommandKitImpl(KitFactory *f, const Warsaw::Kit::PropertySeq &p)
-  : KitImpl(f, p) {}
+CommandKitImpl::CommandKitImpl(const std::string &id, const Warsaw::Kit::PropertySeq &p)
+  : KitImpl(id, p) {}
 CommandKitImpl::~CommandKitImpl() {}
 Command_ptr CommandKitImpl::debugger(Warsaw::Command_ptr c, const char *text)
 {
@@ -198,8 +198,8 @@ StreamBuffer_ptr CommandKitImpl::stream(CORBA::Long b)
   return buffer->_this();  
 }
 
-extern "C" KitFactory *load()
+extern "C" KitImpl *load()
 {
   static std::string properties[] = {"implementation", "CommandKitImpl"};
-  return new KitFactoryImpl<CommandKitImpl>("IDL:Warsaw/CommandKit:1.0", properties, 1);
+  return create_kit<CommandKitImpl>("IDL:Warsaw/CommandKit:1.0", properties, 2);
 }

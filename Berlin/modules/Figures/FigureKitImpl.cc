@@ -32,8 +32,8 @@
 
 using namespace Warsaw;
 
-FigureKitImpl::FigureKitImpl(KitFactory *f, const Warsaw::Kit::PropertySeq &p)
-  : KitImpl(f, p) {}
+FigureKitImpl::FigureKitImpl(const std::string &id, const Warsaw::Kit::PropertySeq &p)
+  : KitImpl(id, p) {}
 FigureKitImpl::~FigureKitImpl() {}
 Graphic_ptr FigureKitImpl::root(Graphic_ptr child)
 {
@@ -148,8 +148,8 @@ Graphic_ptr FigureKitImpl::transformer(Graphic_ptr g)
   return transformer->_this();
 }
 
-extern "C" KitFactory *load()
+extern "C" KitImpl *load()
 {
   static std::string properties[] = {"implementation", "FigureKitImpl"};
-  return new KitFactoryImpl<FigureKitImpl> ("IDL:Warsaw/FigureKit:1.0", properties, 1);
+  return create_kit<FigureKitImpl> ("IDL:Warsaw/FigureKit:1.0", properties, 2);
 }

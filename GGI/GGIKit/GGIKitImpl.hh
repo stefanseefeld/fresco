@@ -31,8 +31,9 @@ class GGIKitImpl : public virtual POA_GGI::GGIKit,
 		   public KitImpl
 {
  public:
-  GGIKitImpl(KitFactory *, const Warsaw::Kit::PropertySeq &);
+  GGIKitImpl(const std::string &, const Warsaw::Kit::PropertySeq &);
   virtual ~GGIKitImpl();
+  virtual KitImpl *clone(const Warsaw::Kit::PropertySeq &p) { return new GGIKitImpl(repo_id(), p);}
   virtual GGI::Visual_ptr create_visual(Warsaw::PixelCoord, Warsaw::PixelCoord);
 };
 

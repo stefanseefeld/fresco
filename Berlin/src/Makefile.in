@@ -43,7 +43,7 @@ SRC		:= Console.cc Pointer.cc Logger.cc ServantBase.cc IdentifiableImpl.cc \
 	  	   DrawTraversalImpl.cc PickTraversalImpl.cc ControllerImpl.cc \
 	  	   DesktopImpl.cc ScreenImpl.cc ScreenManager.cc EventManager.cc \
 	  	   PositionalFocus.cc NonPositionalFocus.cc FilterImpl.cc SubjectImpl.cc \
-	  	   KitImpl.cc KitFactory.cc ServerContextImpl.cc ServerImpl.cc RCManager.cc
+	  	   KitImpl.cc ServerContextImpl.cc ServerImpl.cc RCManager.cc
 
 DEP		:= $(patsubst %.cc, %.d, $(SRC))
 OBJ		:= $(patsubst %.cc, %.o, $(SRC))
