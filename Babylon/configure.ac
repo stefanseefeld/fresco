@@ -30,8 +30,8 @@ dnl ------------------------------------------------------------------
 AC_PREREQ(2.52)
 AC_REVISION($Revision$)
 
-AC_INIT(Babylon, 0.3.0, devel@fresco.org)
-AC_CONFIG_SRCDIR(../LICENSE)
+AC_INIT(Babylon, M3, devel@fresco.org)
+AC_CONFIG_SRCDIR(LICENSE)
 AC_CONFIG_AUX_DIR(config)
 AC_CONFIG_HEADER(include/Babylon/acconfig.hh:config/acconfig.hh.in)
 
@@ -70,6 +70,7 @@ dnl ------------------------------------------------------------------
 AC_MSG_NOTICE([Output Substitution])
 
 AC_CONFIG_FILES([config/local.mk config/synopsis.py])
+AC_CONFIG_FILES([config/Babylon.spec])
 AC_CONFIG_FILES([config/Babylon-config], [chmod +x config/Babylon-config])
 AC_CONFIG_FILES([bin/Babylon-config:config/Babylon-build-config.in], [chmod +x bin/Babylon-config])
 AC_CONFIG_FILES([Makefile src/Makefile modules/Makefile])

@@ -1,0 +1,76 @@
+Summary: the Berlin display server and utilities
+Name: Berlin
+Version: @PACKAGE_VERSION@
+Release: 1
+License: LGPL
+Group: Development/Libraries
+Source: http://www2.fresco.org/releases/%{name}-%{version}.tar.gz
+BuildRoot: /var/tmp/%{name}-buildroot
+URL: http://fresco.org/
+Prefix: %{_prefix}
+Docdir: %{_docdir}
+Requires: Prague = %{version}
+Requires: Babylon = %{version}
+Requires: Fresco = %{version}
+
+%description
+the Berlin display server and utilities
+
+%package devel
+Summary: Libraries, includes, etc. to develop modules and other extensions for
+the berlin display server
+Group: Development/Libraries
+Requires: Berlin = %{version}
+Requires: Prague-devel = %{version}
+Requires: Babylon-devel = %{version}
+Requires: Fresco-devel = %{version}
+
+%description devel
+
+%prep
+%setup -q
+
+%build
+# Needed for snapshot releases.
+if [ ! -f configure ]; then
+  CFLAGS="$RPM_OPT_FLAGS" ./autogen.sh --prefix=%prefix --sysconfdir="/etc" --mandir=%{_mandir}
+else
+  CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%prefix --sysconfdir="/etc" --mandir=%{_mandir}
+fi
+
+if [ "$SMP" != "" ]; then
+  (make "MAKE=make -k -j $SMP"; exit 0)
+  make
+else
+  make
+fi
+
+%install
+rm -rf $RPM_BUILD_ROOT
+
+install -d $RPM_BUILD_ROOT%{_mandir}/man1
+install -d $RPM_BUILD_ROOT%{_mandir}/man4
+make prefix=$RPM_BUILD_ROOT%{prefix} mandir=$RPM_BUILD_ROOT%{_mandir} install
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+%post -p /sbin/ldconfig
+
+%postun -p /sbin/ldconfig
+
+%files
+%defattr(-, root, root)
+
+%{prefix}/lib/lib*.so
+%{prefix}/lib/Fresco/*
+%{prefix}/share/*
+%{prefix}/etc/*
+
+%files devel
+%defattr(-, root, root)
+
+%{prefix}/include/*
+%{prefix}/bin/Berlin-config
+
+%changelog

@@ -28,8 +28,8 @@ dnl ------------------------------------------------------------------
 AC_PREREQ(2.52)
 AC_REVISION($Revision$)
 
-AC_INIT(Fresco, 0.3.0, devel@fresco.org)
-AC_CONFIG_SRCDIR(../LICENSE)
+AC_INIT(Fresco, M3, devel@fresco.org)
+AC_CONFIG_SRCDIR(LICENSE)
 AC_CONFIG_AUX_DIR(config)
 AC_CONFIG_HEADER(include/Fresco/acconfig.hh:config/acconfig.hh.in)
 
@@ -86,6 +86,7 @@ AC_MSG_NOTICE([Output Substitution])
 
 AC_CONFIG_FILES([config/local.mk config/synopsis.py])
 AC_CONFIG_FILES([config/Fresco-config], [chmod +x config/Fresco-config])
+AC_CONFIG_FILES([config/Fresco.spec])
 AC_CONFIG_FILES([bin/Fresco-config:config/Fresco-build-config.in], [chmod +x bin/Fresco-config])
 AC_CONFIG_FILES([Makefile src/Makefile:config/$MAKEFILE])
 AC_CONFIG_LINKS([share/idl:idl])

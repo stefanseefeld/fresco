@@ -28,8 +28,8 @@ dnl ------------------------------------------------------------------
 AC_PREREQ(2.12)
 AC_REVISION($Revision$)
 
-AC_INIT(Berlin, 0.3.0, devel@fresco.org)
-AC_CONFIG_SRCDIR(../LICENSE)
+AC_INIT(Berlin, M3, devel@fresco.org)
+AC_CONFIG_SRCDIR(LICENSE)
 AC_CONFIG_HEADER(include/Berlin/acconfig.hh:config/acconfig.hh.in)
 AC_CONFIG_AUX_DIR(config)
 
@@ -141,6 +141,7 @@ done
 
 AC_CONFIG_FILES([config/local.mk config/module.mk config/synopsis.py])
 AC_CONFIG_FILES([config/Berlin-config], [chmod +x config/Berlin-config])
+AC_CONFIG_FILES([config/Berlin.spec])
 AC_CONFIG_FILES([bin/Berlin-config:config/Berlin-build-config.in], [chmod +x bin/Berlin-config])
 AC_CONFIG_FILES([Makefile src/Makefile modules/Makefile server/Makefile])
 

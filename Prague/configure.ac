@@ -26,8 +26,8 @@ dnl Autoconf initialization
 dnl ------------------------------------------------------------------
 AC_PREREQ(2.52)
 AC_REVISION($Revision$)
-AC_INIT(Prague, 0.3.0, devel@fresco.org)
-AC_CONFIG_SRCDIR(../LICENSE)
+AC_INIT(Prague, M3, devel@fresco.org)
+AC_CONFIG_SRCDIR(LICENSE)
 AC_CONFIG_AUX_DIR(config)
 AC_CONFIG_HEADER(include/Prague/acconfig.hh:config/acconfig.hh.in)
 
@@ -122,6 +122,7 @@ AC_MSG_NOTICE([Output Substitution])
 
 AC_CONFIG_FILES([config/local.mk config/synopsis.py])
 AC_CONFIG_FILES([config/Prague-config], [chmod +x config/Prague-config])
+AC_CONFIG_FILES([config/Prague.spec])
 AC_CONFIG_FILES([bin/Prague-config:config/Prague-build-config.in], [chmod +x bin/Prague-config])
 AC_CONFIG_FILES([Makefile src/Makefile])
 AC_CONFIG_FILES([demo/Makefile demo/Sys/Makefile demo/Thread/Makefile demo/IPC/Makefile
