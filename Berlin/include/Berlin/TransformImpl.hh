@@ -27,6 +27,9 @@
 #include <Berlin/ServantBase.hh>
 #include <Berlin/Provider.hh>
 
+class TransformImpl;
+template <> struct Initializer<TransformImpl>;
+
 class TransformImpl : public virtual POA_Warsaw::Transform,
 		      public virtual ServantBase
 {
@@ -85,6 +88,11 @@ private:
   bool _active      : 1;
 
   Warsaw::Transform_var __this;
+};
+
+template <> struct Initializer<TransformImpl>
+{
+  static void initialize(TransformImpl *) {}
 };
 
 #endif

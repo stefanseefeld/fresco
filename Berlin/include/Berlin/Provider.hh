@@ -28,8 +28,14 @@
 #include <stack>
 #include <cassert>
 
+template <typename T>
+struct Initializer
+{
+  static void initialize(T *) {}
+};
+
 //.a global pool for transient objects
-template <class T>
+template <typename T, typename I = Initializer<T> >
 class Provider
 {
 public:
@@ -43,8 +49,13 @@ private:
   static Prague::Mutex mutex;
 };
 
-template <class T>
-inline void Provider<T>::activate(T *t)
+template <typename T, typename C>
+std::stack<T *> Provider<T, C>::pool;
+template <typename T, typename C>
+Prague::Mutex Provider<T, C>::mutex;
+
+template <typename T, typename I>
+inline void Provider<T, I>::activate(T *t)
 {
   Prague::Trace trace("Provider<T>::activate");
   PortableServer::POA_var poa = t->_default_POA();
@@ -53,8 +64,8 @@ inline void Provider<T>::activate(T *t)
   delete oid;
 }
 
-template <class T>
-inline void Provider<T>::deactivate(T *t)
+template <typename T, typename I>
+inline void Provider<T, I>::deactivate(T *t)
 {
   Prague::Trace trace("Provider<T>::deactivate");
   PortableServer::POA_var poa = t->_default_POA();
@@ -63,8 +74,8 @@ inline void Provider<T>::deactivate(T *t)
   delete oid;
 }
 
-template <class T>
-inline T *Provider<T>::provide()
+template <typename T, typename I>
+inline T *Provider<T, I>::provide()
 {
   Prague::Trace trace("Provider<T>::provide");
   T *t = 0;
@@ -80,11 +91,12 @@ inline T *Provider<T>::provide()
       activate(t);
     }
   t->_active = true;
+  I::initialize(t);
   return t;
 }
 
-template <class T>
-inline void Provider<T>::adopt(T *t)
+template <typename T, typename I>
+inline void Provider<T, I>::adopt(T *t)
 {
   Prague::Trace trace("Provider<T>::adopt");
   assert(t->_active);
@@ -96,14 +108,14 @@ inline void Provider<T>::adopt(T *t)
 //.Lease_var is a smart pointer to be used in conjunction with
 //.Provider. It will give the wrapped object back to the provider
 //.in its destructor
-template <class T>
+template <typename T, typename I = Initializer<T> >
 class Lease_var
 {
 public:
   explicit Lease_var(T *tt) : t(tt) {}
-  Lease_var(Lease_var<T> &i) : t(i._retn()) {}
-  ~Lease_var() { if (t) Provider<T>::adopt(t);}
-  Lease_var<T> &operator = (Lease_var<T> &i) { if (&i != this) { if (t) Provider<T>::adopt(t); t = i._retn();} return *this;}  
+  Lease_var(Lease_var<T, I> &i) : t(i._retn()) {}
+  ~Lease_var() { if (t) Provider<T, I>::adopt(t);}
+  Lease_var<T> &operator = (Lease_var<T, I> &i) { if (&i != this) { if (t) Provider<T, I>::adopt(t); t = i._retn();} return *this;}  
   T &operator *() const { return *t;}
   T *operator->() const { return  t;}
   operator T *() const { return  t;}

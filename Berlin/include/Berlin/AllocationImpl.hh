@@ -31,6 +31,9 @@
 
 class RegionImpl;
 class TransformImpl;
+class AllocationImpl;
+
+template <> struct Initializer<AllocationImpl>;
 
 class AllocationImpl : public virtual POA_Warsaw::Allocation,
                        public virtual ServantBase
@@ -53,6 +56,11 @@ public:
 private:
   bool _active : 1;
   list_t _list;
+};
+
+template <> struct Initializer<AllocationImpl>
+{
+  static void initialize(AllocationImpl *a) { a->clear();}
 };
 
 #endif 

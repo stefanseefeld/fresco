@@ -31,6 +31,9 @@
 #include <Berlin/Provider.hh>
 #include <iostream>
 
+class RegionImpl;
+template <> struct Initializer<RegionImpl>;
+
 class RegionImpl : public virtual POA_Warsaw::Region,
                    public virtual ServantBase
 {
@@ -88,6 +91,11 @@ private:
   bool _active : 1;
   bool _this_valid;
   Warsaw::Region_var __this;
+};
+
+template <> struct Initializer<RegionImpl>
+{
+  static void initialize(RegionImpl *r) { r->clear();}
 };
 
 inline Warsaw::Coord RegionImpl::span_origin(Warsaw::Coord lower, Warsaw::Coord upper, Warsaw::Coord align)
