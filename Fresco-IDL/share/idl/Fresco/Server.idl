@@ -38,6 +38,8 @@ module Warsaw
   //. generic interfaces (kits, plugins, etc).
   interface ServerContext
     {
+      //. the ClientContext that is associated with this
+      readonly attribute ClientContext client;
       //. this is the entry point to generic object creation on a server.
       Kit resolve(in string type, in Kit::PropertySeq attr)
 	raises (SecurityException, CreationFailureException);
