@@ -43,7 +43,7 @@ PNG		:= $(patsubst $(srcdir)/figures/%.svg, figures/%.png, $(SVG)) \
 TARGETS		:= html
 
 vpath %.xml  $(srcdir)
-vpath %.svg  $(srcdir)/figures
+vpath %.svg  $(srcdir)
 
 all:	$(TARGETS)
 
