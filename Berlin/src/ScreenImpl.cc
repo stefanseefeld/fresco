@@ -1,10 +1,8 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- *
  * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
  * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
- *
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -55,9 +53,10 @@ ScreenImpl::~ScreenImpl()
 
 void ScreenImpl::allocate(Graphic_ptr g, Allocation_ptr a)
 {
-  Graphic_var tmp = Graphic::_duplicate(g);
-  if (tmp != body()) return;
-  a->add(region->_this(), damage->_this());
+  Graphic_var child = g;
+  Allocation_var allocation = a;
+  if (child != Graphic_var(body())) return;
+  allocation->add(region->_this(), damage->_this());
 }
 
 ScreenManager *ScreenImpl::Manager() { return manager;}

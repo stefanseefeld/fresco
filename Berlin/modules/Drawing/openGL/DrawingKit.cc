@@ -1,10 +1,8 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- *
  * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
  * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
- *
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -50,40 +48,40 @@ GLDrawingKit::~GLDrawingKit()
 }
 
 void GLDrawingKit::setFont(const Text::FontDescriptor &fd, const Style::Spec &sty) 
-  throw (Text::NoSuchFontException) {
-  myMutex.lock();
-  try { 
-    GLFont *newfont = new GLFont(fd,sty); 
-    newfont->_obj_is_ready(_boa());
-    if (myFont != NULL && (! CORBA::is_nil(myFont->_this()))) {
-      CORBA::release(myFont->_this());
+  throw (Text::NoSuchFontException)
+{
+  MutexGuard guard(myMutex);
+  try
+    { 
+      GLFont *newfont = new GLFont(fd,sty); 
+      newfont->_obj_is_ready(_boa());
+      if (myFont) myFont->_dispose();
+      myFont = newfont;
     }
-    myFont = newfont;
-  } catch (Text::NoSuchFontException &ex) {    
-    myMutex.unlock();
-    throw ex;
-  }
+  catch (Text::NoSuchFontException &ex)
+    {
+      throw ex;
+    }
   myMutex.unlock();    
 }
 
-Text::Font_ptr GLDrawingKit::currentFont() {
-  myMutex.lock();
-  Text::Font_ptr fp = myFont->_this();
-  myMutex.unlock();
-  return fp;
+Text::Font_ptr GLDrawingKit::currentFont()
+{
+  MutexGuard guard(myMutex);
+  return myFont->_this();
 }
 
 Drawable_ptr GLDrawingKit::getDrawable()
 {
+  MutexGuard guard(myMutex);
   return drawable->_this();
 }
 
 Pencil_ptr GLDrawingKit::getPencil(const Style::Spec &sty)
 {
-    myMutex.lock();
-    GLPencil *pencil = new GLPencil(sty, drawable);
-    pencil->_obj_is_ready(applyscope(skeletonize(DrawingKit), _boa()));
-    pencils.push_back(pencil);
-    myMutex.unlock();
-    return pencil->_this();
+  MutexGuard guard(myMutex);
+  GLPencil *pencil = new GLPencil(sty, drawable);
+  pencil->_obj_is_ready(applyscope(skeletonize(DrawingKit), _boa()));
+  pencils.push_back(pencil);
+  return pencil->_this();
 }

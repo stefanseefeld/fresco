@@ -40,17 +40,12 @@ typedef Prague::Condition Condition;
 typedef Prague::Semaphore Semaphore;
 typedef Prague::Thread Thread;
 #endif
-#include <strstream>
 
-class MutexGuard {
-    public:
-    MutexGuard(Mutex &m) : mutex(m) {
-	mutex.lock();
-    }
-    
-    ~MutexGuard() { 
-	mutex.unlock();	
-    }
+class MutexGuard
+{
+public:
+  MutexGuard(Mutex &m) : mutex(m) { mutex.lock();}
+  ~MutexGuard() { mutex.unlock();}
 private:
   Mutex &mutex;
 };

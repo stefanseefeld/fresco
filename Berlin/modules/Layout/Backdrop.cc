@@ -41,14 +41,15 @@ void Backdrop::request(Requisition &r)
 
 void Backdrop::draw(DrawTraversal_ptr t)
 {
+  DrawTraversal_var traversal = t;
   // Get the origin of our allocation.
   Vertex origin;
-  Region_var allocation = t->allocation();
+  Region_var allocation = traversal->allocation();
   allocation->origin(origin);
 
   // Get the visible regions bounds.
   Vertex lower, upper;
-  Painter_var painter = t->current_painter();
+  Painter_var painter = traversal->current_painter();
   Region_var visible = painter->visible();
   visible->bounds(lower, upper);
 

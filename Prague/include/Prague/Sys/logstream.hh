@@ -2,7 +2,6 @@
  *
  * This source file is a part of the Berlin Project.
  * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
- * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -20,33 +19,25 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _DrawTraversal_hh
-#define _DrawTraversal_hh
+#ifndef _logstream_hh
+#define _logstream_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Traversal.hh>
-#include <Berlin/TraversalImpl.hh>
-#include <vector>
+#include <Prague/Sys/logbuf.hh>
+#include <iostream>
 
-declare_corba_ptr_type(DrawingKit)
-declare_corba_ptr_type(Drawable)
-declare_corba_ptr_type(Region)
+namespace Prague
+{
 
-class DrawTraversalImpl : implements(DrawTraversal), virtual public TraversalImpl
+class logstream : public ostream
 {
 public:
-  DrawTraversalImpl(DrawingKit_ptr, Region_ptr);
-  DrawTraversalImpl(const DrawTraversalImpl &);
-  ~DrawTraversalImpl();
-  CORBA::Boolean intersects();
-  void visit(Graphic_ptr);
-  order direction() { return up;}
-  CORBA::Boolean ok() { return true;}
-  DrawingKit_ptr kit();
+  logstream(logbuf *lb) : ios(lb) {}
+  logbuf *rdbuf () { return static_cast<logbuf *> (ios::rdbuf()); }
+  logbuf *operator -> () { return rdbuf(); }
+  void dump(ostream &os) { rdbuf()->dump(os);}
 private:
-  DrawingKit_var drawingkit;
-  Drawable_var drawable;
-  Region_var clipping;
 };
 
-#endif /* _DrawTraversalImpl_hh */
+};
+
+#endif /* _logstream_hh */

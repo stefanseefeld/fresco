@@ -31,4 +31,5 @@ DamageImpl::DamageImpl(ScreenManager *m)
 void DamageImpl::extend(Region_ptr region)
 {
   manager->damage(region);
+  CORBA::release(region);
 }

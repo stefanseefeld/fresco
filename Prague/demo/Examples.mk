@@ -1,5 +1,8 @@
 world:	Timer DataType
 
+Lock:		Lock.o
+		$(CXX) $(LDFLAGS) -o $@ $< $(LIBS)
+
 Timer:		Timer.o
 		$(CXX) $(LDFLAGS) -o $@ $< $(LIBS)
 

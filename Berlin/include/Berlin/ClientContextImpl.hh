@@ -27,16 +27,13 @@
 #include "Warsaw/config.hh"
 #include "Warsaw/ClientContext.hh"
 #include "Berlin/Thread.hh"
+#include "Prague/Sys/User.hh"
 
 
 // This is a handle to a client application that the display server holds. It
 // provides the display server with enough mechanisms to check to see if the
 // client is alive and to determine the client's security rights. It is
 // instantiated within the client address space.
-
-namespace Prague {
-  class User;
-};
 
 class ClientContextImpl : implements(ClientContext)
 {

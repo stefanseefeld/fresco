@@ -32,7 +32,7 @@ CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw
 LDFLAGS	= -shared -rdynamic -L$(lpath)
 LIBS	= -lnana -lPrague $(ORBLIBS)
 
-SRC 	= Debug.cc GenericFactoryImpl.cc FactoryFinderImpl.cc CloneableImpl.cc \
+SRC 	= Logger.cc GenericFactoryImpl.cc FactoryFinderImpl.cc CloneableImpl.cc \
 	  RegionImpl.cc TransformImpl.cc TraversalImpl.cc DamageImpl.cc AllocationImpl.cc GraphicImpl.cc \
 	  ScreenImpl.cc MonoGraphic.cc PolyGraphic.cc Allocator.cc Requestor.cc DebugGraphic.cc \
 	  DrawTraversalImpl.cc PickTraversalImpl.cc ScreenManager.cc NameUtil.cc \

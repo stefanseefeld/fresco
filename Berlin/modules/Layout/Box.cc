@@ -57,9 +57,10 @@ void Box::request(Requisition &r)
   r = requisition;
 }
 
-void Box::extension(const Allocation::Info &a, Region_ptr r)
+void Box::extension(const Allocation::Info &info, Region_ptr r)
 {
-  long n = children.size();
+  Region_var region = r;
+  long n = numChildren();
   if (n > 0)
     {
       Allocation::Info child;
@@ -73,8 +74,8 @@ void Box::extension(const Allocation::Info &a, Region_ptr r)
       tmp_tx->_obj_is_ready(_boa());
       
       child.transformation = child_tx->_this();
-      child.transformation->copy(a.transformation);
-      RegionImpl **result = childrenAllocations(a.allocation);
+      child.transformation->copy(Transform::_duplicate(info.transformation));
+      RegionImpl **result = childrenAllocations(info.allocation);
 
       for (long i = 0; i < n; i++)
 	{
@@ -84,13 +85,10 @@ void Box::extension(const Allocation::Info &a, Region_ptr r)
 	  v.z = o.z - prev_o.z;
 	  tmp_tx->loadIdentity();
 	  tmp_tx->translate(v);
-	  child.allocation = Region::_duplicate(result[i]->_this());
+	  child.allocation = result[i]->_this();
 	  child.transformation->premultiply(tmp_tx->_this());
-	  cerr << "extending Box by Child" << endl;
-	  children[i]->extension(child, r);
-	  cerr << "extended Box by Child" << endl;
+	  children[i]->extension(child, region);
 	  prev_o = o;
-	  CORBA::release(child.allocation);
 	}
       child_tx->_dispose();
       tmp_tx->_dispose();
@@ -101,12 +99,16 @@ void Box::extension(const Allocation::Info &a, Region_ptr r)
 
 void Box::traverse(Traversal_ptr t)
 {
+  Traversal_var traversal = t;
   if (numChildren())
     {
-      Region_var given = Region::_duplicate(t->allocation());
+      Region_var given = traversal->allocation();
       if (!CORBA::is_nil(given))
- 	{ if (t->intersects()) traverseWithAllocation(t, given);}
-      else traverseWithoutAllocation(t);
+ 	{
+	  if (traversal->intersects())
+	    traverseWithAllocation(traversal, given);
+	}
+      else traverseWithoutAllocation(traversal);
     }
 }
 
@@ -121,21 +123,21 @@ void Box::needResize(long)
   needResize();
 }
 
-void Box::allocateChild(long index, Allocation::Info &a)
+void Box::allocateChild(long index, Allocation::Info &info)
 {
-  RegionImpl **result = childrenAllocations(a.allocation);
+  RegionImpl **result = childrenAllocations(info.allocation);
   TransformImpl *tx = new TransformImpl;
   tx->_obj_is_ready(_boa());
   Placement::normalTransform(result[index], tx);
-  a.transformation->premultiply(tx->_this());
-  a.allocation->copy(result[index]);
+  info.transformation->premultiply(tx->_this());
+  info.allocation->copy(result[index]->_this());
   for (size_t i = 0; i < children.size(); i++) result[i]->_dispose();
   delete [] result;
 }
 
-RegionImpl **Box::childrenAllocations(Region_ptr a)
+RegionImpl **Box::childrenAllocations(Region_ptr region)
 {
-  long n = children.size();
+  long n = numChildren();
   Graphic::Requisition *r = childrenRequests();
   if (!requested)
     {
@@ -150,14 +152,14 @@ RegionImpl **Box::childrenAllocations(Region_ptr a)
       result[i]->_obj_is_ready(_boa());
       result[i]->valid = true;
     }
-  layout->allocate(n, r, a, result);
+  layout->allocate(n, r, region, result);
   pool.deallocate(r);
   return result;
 }
 
-void Box::traverseWithAllocation(Traversal_ptr t, Region_ptr a)
+void Box::traverseWithAllocation(Traversal_ptr t, Region_ptr r)
 {
-  RegionImpl **result = childrenAllocations(a);
+  RegionImpl **result = childrenAllocations(r);
   long size = numChildren();
   long begin, end, incr;
   TransformImpl *tx = new TransformImpl;
@@ -184,7 +186,7 @@ void Box::traverseWithAllocation(Traversal_ptr t, Region_ptr a)
        * only translating them  -stefan
        */
       tx->translate(o);
-      t->traverseChild(children[i], result[i]->_this(), tx->_this());
+      t->traverseChild(Graphic::_duplicate(children[i]), result[i]->_this(), tx->_this());
       if (!t->ok()) break;
     }
   for (long i = 0; i < size; i++) result[i]->_dispose();
@@ -197,13 +199,13 @@ void Box::traverseWithoutAllocation(Traversal_ptr t)
   if (t->direction() == Traversal::up)
     for (clist_t::iterator i = children.begin(); i != children.end(); i++)
       {
-	t->traverseChild(*i, Region::_nil(), Transform::_nil());
+	t->traverseChild(Graphic::_duplicate(*i), Region::_nil(), Transform::_nil());
 	if (!t->ok()) break;
       }
   else
     for (clist_t::reverse_iterator i = children.rbegin(); i != children.rend(); i++)
       {
-	t->traverseChild(*i, Region::_nil(), Transform::_nil());
+	t->traverseChild(Graphic::_duplicate(*i), Region::_nil(), Transform::_nil());
 	if (!t->ok()) break;
       }    
 }
@@ -214,14 +216,16 @@ BoxAlignElements::~BoxAlignElements() {}
 
 void BoxAlignElements::append(Graphic_ptr g)
 {
-  Placement *placement = new Placement(g, new LayoutCenter(axis, alignment));
+  Placement *placement = new Placement(new LayoutCenter(axis, alignment));
   placement->_obj_is_ready(_boa());
-  Box::append(Graphic_var(placement->_this()));
+  placement->body(g);
+  Box::append(placement->_this());
 }
 
 void BoxAlignElements::prepend(Graphic_ptr g)
 {
-  Placement *placement = new Placement(g, new LayoutCenter(axis, alignment));
+  Placement *placement = new Placement(new LayoutCenter(axis, alignment));
   placement->_obj_is_ready(_boa());
-  Box::prepend(Graphic_var(placement->_this()));
+  placement->body(g);
+  Box::prepend(placement->_this());
 }

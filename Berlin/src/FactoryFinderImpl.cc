@@ -21,7 +21,6 @@
 //
 //
 #include "Berlin/FactoryFinderImpl.hh"
-#include "Berlin/Debug.hh"
 #include "Berlin/GenericFactoryImpl.hh"
 
 // this is the simplest factoryFinder I could think of. It's just a
@@ -41,7 +40,7 @@ CosLifeCycle::Factories * FactoryFinderImpl::find_factories ( const CosLifeCycle
 FactoryFinderImpl::FactoryFinderImpl(CosLifeCycle::GenericFactory_ptr theFactory) {  
   myFactories = new CosLifeCycle::Factories();  
   myFactories->length(1);
-  (*myFactories)[0] = CosLifeCycle::GenericFactory::_duplicate(theFactory);
+  (*myFactories)[0] = theFactory;
 }
 
 //These two global variables are for storing the

@@ -32,8 +32,9 @@ void Filler::request(Requisition &requisition)
   GraphicImpl::require(requisition.y, 0, infinity, 0, 0);
 }
 
-void Filler::draw(DrawTraversal_ptr traversal)
+void Filler::draw(DrawTraversal_ptr t)
 {
+  DrawTraversal_var traversal = t;
   DrawingKit_var dk = traversal->kit();
   Pencil_var pen;// = dk->getPencil();
   Vertex lower, upper, origin;

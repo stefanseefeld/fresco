@@ -23,16 +23,17 @@
 #define _StageImpl_hh
 
 #include "Warsaw/config.hh"
-#include "Layout/StageImpl.hh"
+#include "Warsaw/Stage.hh"
 #include "Warsaw/Traversal.hh"
 #include "Berlin/GraphicImpl.hh"
+#include "Berlin/RegionImpl.hh"
 #include "Berlin/QuadTree.hh"
 #include <list>
 
 struct StageInfoImpl : Stage::Info
 {
   StageInfoImpl(Graphic_ptr g, const Vertex &p, const Vertex &s, Stage::Index l)
-    : child(Graphic::_duplicate(g))
+    : child(g)
     {
       position = p;
       size = s;
@@ -141,7 +142,7 @@ class StageImpl : implements(Stage), public GraphicImpl
   virtual void end();
   virtual Stage::Info insert(Graphic_ptr, const Vertex &, const Vertex &, Index);
 
-  void remove(const Stage::Info &);
+  void erase(const Stage::Info &);
   void reposition(const Stage::Info &, const Vertex &);
   void relayer(const Stage::Info &, Stage::Index);
 

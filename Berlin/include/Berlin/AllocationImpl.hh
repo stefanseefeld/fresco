@@ -46,7 +46,6 @@ public:
   Allocation::Info *get(CORBA::Long);
 private:
   list_t list;
-  Allocation::Info info;
 };
 
 #endif /* _AllocationImpl_hh */

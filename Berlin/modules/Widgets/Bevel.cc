@@ -60,33 +60,38 @@ void Bevel::request(Requisition &requisition)
     }
 }
 
-void Bevel::traverse(Traversal_ptr traversal)
+void Bevel::traverse(Traversal_ptr t)
 {
+  Traversal_var traversal = t;
   traversal->visit(_this());
-  if (!CORBA::is_nil(body()))
+  Graphic_var child = body();
+  if (!CORBA::is_nil(child))
     {
       if (hmargin || vmargin)
 	{
-	  Allocation::Info a;
-	  a.allocation = traversal->allocation();
+	  Allocation::Info info;
+	  info.allocation = traversal->allocation();
 	  TransformImpl *tx = new TransformImpl;
 	  tx->_obj_is_ready(_boa());
-	  a.transformation = tx->_this();
-	  allocateChild(a);
-	  traversal->traverseChild(body(), a.allocation, a.transformation);
+	  info.transformation = tx->_this();
+	  allocateChild(info);
+	  traversal->traverseChild(Graphic::_duplicate(child),
+				   Region::_duplicate(info.allocation),
+				   Transform::_duplicate(info.transformation));
 	  tx->_dispose();
 	}
       else
-	MonoGraphic::traverse(traversal);
+	MonoGraphic::traverse(Traversal::_duplicate(traversal));
     }
 }
 
-void Bevel::extension(const Allocation::Info &a, Region_ptr r)
+void Bevel::extension(const Allocation::Info &info, Region_ptr r)
 {
-  if (!CORBA::is_nil(a.allocation))
-    defaultExtension(a, r);
+  Region_var region = r;
+  if (!CORBA::is_nil(info.allocation))
+    defaultExtension(info, region);
   else
-    MonoGraphic::extension(a, r);
+    MonoGraphic::extension(info, Region::_duplicate(region));
 }
 
 void Bevel::allocateChild(Allocation::Info &info)
@@ -132,16 +137,6 @@ void Bevel::allocateChild(Allocation::Info &info)
 
 void Bevel::allocateSpan(const Requirement &r, Region::Allotment &a, Coord margin, Alignment align)
 {
-//   Coord length = a.end - a.begin - 2*margin;
-//   Coord offset = margin;
-//   if (r.defined)
-//     {
-//       if (length > r.maximum)
-// 	{
-// 	  offset += align * (length - r.maximum);
-// 	  length = r.maximum;
-// 	}
-//     }
   a.align = ((a.end - a.begin)*a.align - margin)/(a.end - a.begin - 2*margin);
   a.begin += margin;
   a.end -= margin;

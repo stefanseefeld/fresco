@@ -27,9 +27,7 @@
 #include "Berlin/RegionImpl.hh"
 #include "Drawing/openGL/GLDrawingKit.hh"
 #include "Drawing/openGL/Pointer.hh"
-#include "Berlin/Debug.hh"
-#include <strstream>
-
+#include "Berlin/Logger.hh"
 
 static Mutex ggi_mutex;
 static ggi_event event;
@@ -48,76 +46,73 @@ ScreenManager::~ScreenManager()
 void ScreenManager::damage(Region_ptr r)
 {
   MutexGuard guard(damageMutex);
-    RegionImpl *region = new RegionImpl;
-    region->_obj_is_ready(CORBA::BOA::getBOA());
-    region->copy(r);
-    damages.push_back(region);
-    Debug::log(Debug::drawing, "ScreenManager::damage region (%d,%d),(%d,%d)", 
-	       region->lower.x, region->lower.y,
-	       region->upper.x, region->upper.y );
+  RegionImpl *region = new RegionImpl(r, Transform::_nil());
+  region->_obj_is_ready(CORBA::BOA::getBOA());
+  damages.push_back(region);
+  Logger::log(Logger::drawing) << "ScreenManager::damage region ("
+			       << region->lower.x << ',' << region->lower.y << "),("
+			       << region->upper.x << ',' << region->upper.y << ')' << endl;
+  // this injects a damage notice into the event queue, waking up
+  // the sleeping event thread.
 
-    // this injects a damage notice into the event queue, waking up
-    // the sleeping event thread.
+  // sadly it appears that GGI's event queue is not threadsafe, so
+  // we must use a poll loop with a timeout. this is not totally
+  // awful, it just means we are zooming through a short loop once
+  // every 20000 microseconds. it doesn't take too much CPU time on my
+  // machine, and if it takes too much on yours, hey, go fix GGI. 
 
-    // sadly it appears that GGI's event queue is not threadsafe, so
-    // we must use a poll loop with a timeout. this is not totally
-    // awful, it just means we are zooming through a short loop once
-    // every 20000 microseconds. it doesn't take too much CPU time on my
-    // machine, and if it takes too much on yours, hey, go fix GGI. 
-
-    //     ggi_mutex.lock();
-    //     ggi_event *damageEvent = new ggi_event;
-    //     gettimeofday(&(damageEvent->any.time), NULL);
-    //     damageEvent->any.type = evCommand;
-    //     ggiEventSend (visual, damageEvent);    
-    //     ggi_mutex.unlock();
+  //     ggi_mutex.lock();
+  //     ggi_event *damageEvent = new ggi_event;
+  //     gettimeofday(&(damageEvent->any.time), NULL);
+  //     damageEvent->any.type = evCommand;
+  //     ggiEventSend (visual, damageEvent);    
+  //     ggi_mutex.unlock();
 }
 
 void ScreenManager::repair()
 {
-    damageMutex.lock();
-    DamageList tmp = damages;
-    damages.erase(damages.begin(), damages.end());
-    damageMutex.unlock();
-
-    glClearColor(0,0,0,0);
-    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-    
-    Debug::log(Debug::drawing, "ScreenManager::repair");
-    
-    for (DamageList::iterator i = tmp.begin(); i != tmp.end(); i++)
+  SectionLog section(Logger::drawing, "ScreenManager::repair");
+  damageMutex.lock();
+  DamageList tmp = damages;
+  damages.erase(damages.begin(), damages.end());
+  damageMutex.unlock();
+  
+  glClearColor(0,0,0,0);
+  glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+  
+  for (DamageList::iterator i = tmp.begin(); i != tmp.end(); i++)
+    {
+      DrawTraversalImpl *traversal = new DrawTraversalImpl(DrawingKit::_duplicate(drawing), (*i)->_this());
+      traversal->_obj_is_ready(CORBA::BOA::getBOA());
+      screen->traverse(traversal->_this());
+      traversal->_dispose();
+      if (pointer->intersects((*i)->lower.x, (*i)->upper.x, (*i)->lower.y, (*i)->upper.y))
 	{
-	    DrawTraversalImpl *traversal = new DrawTraversalImpl(drawing, (*i)->_this());
-	    traversal->_obj_is_ready(CORBA::BOA::getBOA());
-	    screen->traverse(traversal->_this());
-	    traversal->_dispose();
-	    if (pointer->intersects((*i)->lower.x, (*i)->upper.x, (*i)->lower.y, (*i)->upper.y))
-	      {
-		pointer->backup();
-		pointer->draw();
-	      }
-	    (*i)->_dispose();
+	  pointer->backup();
+	  pointer->draw();
 	}
-    
-    glFinish();
-//     ggiSetGCForeground(visual,255);
-//     GGIMesaSwapBuffers();
+      (*i)->_dispose();
+    }
+  
+  glFinish();
+  //     ggiSetGCForeground(visual,255);
+  //     GGIMesaSwapBuffers();
 }
 
 void ScreenManager::nextEvent()
 {
 
-    ggi_event_mask mask = ggi_event_mask (emCommand | emKeyboard | emPtrMove | emPtrButtonPress | emPtrButtonRelease);
-    timeval t;
+  ggi_event_mask mask = ggi_event_mask (emCommand | emKeyboard | emPtrMove | emPtrButtonPress | emPtrButtonRelease);
+  timeval t;
 
-    t.tv_sec = 0;
-    t.tv_usec = 20000; 
+  t.tv_sec = 0;
+  t.tv_usec = 20000; 
     
-    if (ggiEventPoll(visual, mask, &t)) {
-	ggiEventRead(visual, &event, mask);
-    } else {
-      return;
-    }
+  if (ggiEventPoll(visual, mask, &t)) {
+    ggiEventRead(visual, &event, mask);
+  } else {
+    return;
+  }
 
   CORBA::Any a;
 
@@ -128,35 +123,35 @@ void ScreenManager::nextEvent()
   switch (event.any.type) {
   case evKeyPress:
   case evKeyRepeat: {      
-      Event::Key ke;
-      ke.theChar = event.key.sym;
-      a <<= ke;
-      break;
+    Event::Key ke;
+    ke.theChar = event.key.sym;
+    a <<= ke;
+    break;
   }
   
   case evPtrAbsolute: {
-      ptrPositionX = event.pmove.x;
-      ptrPositionY = event.pmove.y;
-      pointer->move(ptrPositionX, ptrPositionY);
-      // absence of break statement here is intentional
+    ptrPositionX = event.pmove.x;
+    ptrPositionY = event.pmove.y;
+    pointer->move(ptrPositionX, ptrPositionY);
+    // absence of break statement here is intentional
   }
   case evPtrButtonPress:
   case evPtrButtonRelease: {
-      Event::Pointer pe;	  
-      pe.location.x = ptrPositionX;
-      pe.location.y = ptrPositionY;	  
-      pe.location.z = 0; // time being we're using non-3d mice.
-      pe.buttonNumber = event.pbutton.button;	  
-      pe.whatHappened = 
-	  event.any.type == evPtrAbsolute ? Event::hold :
-	  event.any.type == evPtrButtonPress ? Event::press :
-	  event.any.type == evPtrButtonRelease ? Event::release : Event::hold;
-      a <<= pe;
-      break;
+    Event::Pointer pe;	  
+    pe.location.x = ptrPositionX;
+    pe.location.y = ptrPositionY;	  
+    pe.location.z = 0; // time being we're using non-3d mice.
+    pe.buttonNumber = event.pbutton.button;	  
+    pe.whatHappened = 
+      event.any.type == evPtrAbsolute ? Event::hold :
+      event.any.type == evPtrButtonPress ? Event::press :
+      event.any.type == evPtrButtonRelease ? Event::release : Event::hold;
+    a <<= pe;
+    break;
   }
   }
 
-  Debug::log(Debug::picking, "starting PickTraversal");
+  Logger::log(Logger::picking) << "starting PickTraversal" << endl;
   PickTraversalImpl *traversal = new PickTraversalImpl(a, screen->getRegion());
   traversal->_obj_is_ready(CORBA::BOA::getBOA());
   screen->traverse(traversal->_this());

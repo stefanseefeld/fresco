@@ -43,34 +43,6 @@ TransformImpl::TransformImpl(Transform::Matrix m)
 
 TransformImpl::~TransformImpl() { }
 
-// void TransformImpl::externalize_to_stream(CosStream::StreamIO_ptr targetStreamIO, _Ix_Env& _env) {
-//     bool identical = Identity();
-
-//     targetStreamIO->write_boolean(identical);
-//     if (!identical) {
-// 	for (CORBA::ULong i = 0; i < 4; i++) {
-// 	    for (CORBA::ULong j = 0; j < 4; j++) {
-// 		targetStreamIO->write_float(mat_[i][j]);
-// 	    }
-// 	}
-//     }
-// }
-
-// void TransformImpl::internalize_from_stream(CosStream::StreamIO_ptr sourceStreamIO, CosLifeCycle::FactoryFinder_ptr there, _Ix_Env& _env) {
-//     bool identical = sourceStreamIO->read_boolean();
-
-//     if (!identical) {
-// 	for (CORBA::ULong i = 0; i < 4; i++) {
-// 	    for (CORBA::ULong j = 0; j < 4; j++) {
-// 		mat_[i][j] = sourceStreamIO->read_float();
-// 	    }
-// 	}
-// 	modified();
-//     } else {
-// 	load_Identity();
-//     }
-// }
-
 void TransformImpl::init()
 {
   mat[0][0] = mat[1][1] = Coord(1);
@@ -122,6 +94,7 @@ void TransformImpl::copy(Transform_ptr t)
       Transform::Matrix m;
       t->storeMatrix(m);
       loadMatrix(m);
+      CORBA::release(t);
     }
 }
 
@@ -154,11 +127,12 @@ void TransformImpl::storeMatrix(Matrix m)
 
 CORBA::Boolean TransformImpl::equal(Transform_ptr t)
 {
+  Transform_var transform = t;
   if (!valid) recompute();
-  if (identity) return CORBA::is_nil(t) || t->Identity();
-  if (CORBA::is_nil(t) || t->Identity()) return false;
+  if (identity) return CORBA::is_nil(transform) || transform->Identity();
+  if (CORBA::is_nil(transform) || transform->Identity()) return false;
   Transform::Matrix m;
-  t->storeMatrix(m);
+  transform->storeMatrix(m);
   Coord m00 = mat[0][0];
   Coord m01 = mat[0][1];
   Coord m10 = mat[1][0];
@@ -237,10 +211,11 @@ void TransformImpl::translate(const Vertex &v)
 
 void TransformImpl::premultiply(Transform_ptr t)
 {
-  if (!CORBA::is_nil(t) && !t->Identity())
+  Transform_var transform = t;
+  if (!CORBA::is_nil(transform) && !transform->Identity())
     {
       Transform::Matrix m;
-      t->storeMatrix(m);
+      transform->storeMatrix(m);
 
       Coord tmp1 = mat[0][0];
       Coord tmp2 = mat[1][0];
@@ -260,10 +235,11 @@ void TransformImpl::premultiply(Transform_ptr t)
 
 void TransformImpl::postmultiply(Transform_ptr t)
 {
-  if (!CORBA::is_nil(t) && !t->Identity())
+  Transform_var transform = t;
+  if (!CORBA::is_nil(transform) && !transform->Identity())
     {
       Transform::Matrix m;
-      t->storeMatrix(m);
+      transform->storeMatrix(m);
 
       Coord tmp = mat[0][0] * m[0][1] + mat[0][1] * m[1][1];
       mat[0][0] = mat[0][0] * m[0][0] + mat[0][1] * m[1][0];

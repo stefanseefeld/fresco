@@ -26,8 +26,8 @@
 // up objects in dynamically loadable modules, on the disk, and tries to find one which
 // claims to be the correct key
 
-#ifndef __GENERICFACTORY_IMPL__
-#define __GENERICFACTORY_IMPL__
+#ifndef _GenericFactoryImpl_hh
+#define _GenericFactoryImpl_hh
 
 #include <Warsaw/config.hh>
 #include <Warsaw/LifeCycle.hh>
@@ -43,10 +43,9 @@ class noSuchPluginException {};
 class SeverContextImpl;
 
 // this is a comparator for our lookup table
-class keyComp {
-public:
+struct keyComp
+{
   bool operator()(const CosLifeCycle::Key &a, const CosLifeCycle::Key &b);
-
 };
 
 class GenericFactoryImpl : implementsscoped(CosLifeCycle,GenericFactory) {

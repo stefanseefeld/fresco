@@ -39,6 +39,7 @@ interface BoundedValue;
 interface BoundedRange;
 interface TextBuffer;
 interface Graphic;
+interface View;
 
 interface WidgetKit : Cloneable {
 
@@ -52,7 +53,7 @@ interface WidgetKit : Cloneable {
   
   Graphic inset(in Graphic g, in Color c);
   Graphic outset(in Graphic g, in Color c);
-  Graphic pushButtonFrame(in Graphic g, in Color c, in Telltale t);
+  View    pushButtonFrame(in Graphic g, in Color c, in Telltale t);
 //   Graphic button(in Reactor strategy, in Telltale subj);
 //   Graphic slider(in Reactor strategy, in BoundedValue subj);
 //   Graphic viewport(in Reactor strategy, in BoundedValue x, in BoundedValue y, in Graphic child);

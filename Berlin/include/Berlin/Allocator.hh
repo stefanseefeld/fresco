@@ -44,9 +44,9 @@ public:
 protected:
   virtual void allocateChild(Allocation::Info &);
   bool requested;
-  Graphic::Requisition req;
-  RegionImpl *nat;
-  RegionImpl *ext;
+  Graphic::Requisition requisition;
+  RegionImpl *natural;
+  RegionImpl *extension;
   
   void updateRequisition();
   void needDamage(RegionImpl *, Allocation_ptr);

@@ -27,13 +27,13 @@ SubjectImpl::SubjectImpl()
 void SubjectImpl::attach(Observer_ptr o)
 {
   MutexGuard guard(observerMutex);
-  observers.push_back(Observer::_duplicate(o));
+  observers.push_back(o);
 }
 
 void SubjectImpl::detach(Observer_ptr o)
 {
   MutexGuard guard(observerMutex);
-  observers.remove(o);
+  observers.remove(Observer_var(o));
 }
 
 

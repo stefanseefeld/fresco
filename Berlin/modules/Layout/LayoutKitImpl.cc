@@ -293,13 +293,20 @@ Graphic_ptr LayoutKitImpl::shapeOfXYZ(Graphic_ptr gx, Graphic_ptr gy, Graphic_pt
 
 Graphic_ptr LayoutKitImpl::align(Graphic_ptr g, Alignment x, Alignment y)
 {
-  return create<Placement, Graphic_ptr>(new Placement(g, new LayoutSuperpose(new LayoutCenter(xaxis, x),
-									     new LayoutCenter(yaxis, y))), this);
+  Placement *placement = new Placement(new LayoutSuperpose(new LayoutCenter(xaxis, x), new LayoutCenter(yaxis, y)));
+  placement->_obj_is_ready(_boa());
+  placement->body(g);
+  graphics.push_back(placement);
+  return placement->_this();
 }
 
 Graphic_ptr LayoutKitImpl::alignAxis(Graphic_ptr g, Axis a, Alignment align)
 {
-  return create<Placement, Graphic_ptr>(new Placement(g, new LayoutCenter(a, align)), this);
+  Placement *placement = new Placement(new LayoutCenter(a, align));
+  placement->_obj_is_ready(_boa());
+  placement->body(g);
+  graphics.push_back(placement);
+  return placement->_this();
 }
  
 Graphic_ptr LayoutKitImpl::halign(Graphic_ptr g, Alignment x)
@@ -314,13 +321,20 @@ Graphic_ptr LayoutKitImpl::valign(Graphic_ptr g, Alignment y)
 
 Graphic_ptr LayoutKitImpl::fixed(Graphic_ptr g, Coord x, Coord y)
 {
-  return create<Placement, Graphic_ptr>(new Placement(g, new LayoutSuperpose(new LayoutFixed(xaxis, x),
-									     new LayoutFixed(yaxis, y))), this);
+  Placement *placement = new Placement(new LayoutSuperpose(new LayoutFixed(xaxis, x), new LayoutFixed(yaxis, y)));
+  placement->_obj_is_ready(_boa());
+  placement->body(g);
+  graphics.push_back(placement);
+  return placement->_this();
 }
 
 Graphic_ptr LayoutKitImpl::fixedAxis(Graphic_ptr g, Axis a, Coord size)
 {
-  return create<Placement, Graphic_ptr>(new Placement(g, new LayoutFixed(a, size)), this);
+  Placement *placement = new Placement(new LayoutFixed(a, size));
+  placement->_obj_is_ready(_boa());
+  placement->body(g);
+  graphics.push_back(placement);
+  return placement->_this();
 }
 
 Graphic_ptr LayoutKitImpl::hfixed(Graphic_ptr g, Coord x)
@@ -335,9 +349,12 @@ Graphic_ptr LayoutKitImpl::vfixed(Graphic_ptr g, Coord y)
 
 Graphic_ptr LayoutKitImpl::flexible(Graphic_ptr g, Coord stretch, Coord shrink)
 {
-  return create<Placement, Graphic_ptr>(new Placement(g, new LayoutSuperpose(new LayoutVariable(xaxis, stretch, shrink),
-									     new LayoutVariable(yaxis, stretch, shrink))),
-					this);
+  Placement *placement = new Placement(new LayoutSuperpose(new LayoutVariable(xaxis, stretch, shrink),
+							   new LayoutVariable(yaxis, stretch, shrink)));
+  placement->_obj_is_ready(_boa());
+  placement->body(g);
+  graphics.push_back(placement);
+  return placement->_this();
 }
 
 Graphic_ptr LayoutKitImpl::flexibleFil(Graphic_ptr g)
@@ -347,7 +364,11 @@ Graphic_ptr LayoutKitImpl::flexibleFil(Graphic_ptr g)
 
 Graphic_ptr LayoutKitImpl::flexibleAxis(Graphic_ptr g, Axis a, Coord stretch, Coord shrink)
 {
-  return create<Placement, Graphic_ptr>(new Placement(g, new LayoutVariable(a, stretch, shrink)), this);
+  Placement *placement = new Placement(new LayoutVariable(a, stretch, shrink));
+  placement->_obj_is_ready(_boa());
+  placement->body(g);
+  graphics.push_back(placement);
+  return placement->_this();
 }
 
 Graphic_ptr LayoutKitImpl::hflexible(Graphic_ptr g, Coord stretch, Coord shrink)
@@ -362,14 +383,20 @@ Graphic_ptr LayoutKitImpl::vflexible(Graphic_ptr g, Coord stretch, Coord shrink)
 
 Graphic_ptr LayoutKitImpl::natural(Graphic_ptr g, Coord x, Coord y)
 {
-  return create<Placement, Graphic_ptr>(new Placement(g, new LayoutSuperpose(new LayoutNatural(xaxis, x),
-									     new LayoutNatural(yaxis, y))),
-					this);
+  Placement *placement = new Placement(new LayoutSuperpose(new LayoutNatural(xaxis, x), new LayoutNatural(yaxis, y)));
+  placement->_obj_is_ready(_boa());
+  placement->body(g);
+  graphics.push_back(placement);
+  return placement->_this();
 }
 
 Graphic_ptr LayoutKitImpl::naturalAxis(Graphic_ptr g, Axis a, Coord size)
 {
-  return create<Placement, Graphic_ptr>(new Placement(g, new LayoutNatural(a, size)), this);
+  Placement *placement = new Placement(new LayoutNatural(a, size));
+  placement->_obj_is_ready(_boa());
+  placement->body(g);
+  graphics.push_back(placement);
+  return placement->_this();
 }
 
 Graphic_ptr LayoutKitImpl::hnatural(Graphic_ptr g, Coord x)
@@ -384,19 +411,30 @@ Graphic_ptr LayoutKitImpl::vnatural(Graphic_ptr g, Coord y)
 
 Graphic_ptr LayoutKitImpl::margin(Graphic_ptr g, Coord all)
 {
-  return create<Placement, Graphic_ptr>(new Placement(g, new LayoutMargin(all)), this);
+  Placement *placement = new Placement(new LayoutMargin(all));
+  placement->_obj_is_ready(_boa());
+  placement->body(g);
+  graphics.push_back(placement);
+  return placement->_this();
 }
 
 Graphic_ptr LayoutKitImpl::marginFlexible(Graphic_ptr g, Coord margin, Coord stretch, Coord shrink)
 {
-  return create<Placement, Graphic_ptr>(new Placement(g, new LayoutMargin(margin, stretch, shrink, margin, stretch, shrink,
-									  margin, stretch, shrink, margin, stretch, shrink)),
-					this);
+  Placement *placement = new Placement(new LayoutMargin(margin, stretch, shrink, margin, stretch, shrink,
+							margin, stretch, shrink, margin, stretch, shrink));
+  placement->_obj_is_ready(_boa());
+  placement->body(g);
+  graphics.push_back(placement);
+  return placement->_this();
 }
 
 Graphic_ptr LayoutKitImpl::marginLRBT(Graphic_ptr g, Coord lmargin, Coord rmargin, Coord bmargin, Coord tmargin)
 {
-  return create<Placement, Graphic_ptr>(new Placement(g, new LayoutMargin(lmargin, rmargin, bmargin, tmargin)), this);
+  Placement *placement = new Placement(new LayoutMargin(lmargin, rmargin, bmargin, tmargin));
+  placement->_obj_is_ready(_boa());
+  placement->body(g);
+  graphics.push_back(placement);
+  return placement->_this();
 }
 
 Graphic_ptr LayoutKitImpl::marginLRBTFlexible(Graphic_ptr g, Coord lmargin, Coord lstretch, Coord lshrink,
@@ -404,9 +442,12 @@ Graphic_ptr LayoutKitImpl::marginLRBTFlexible(Graphic_ptr g, Coord lmargin, Coor
 					      Coord bmargin, Coord bstretch, Coord bshrink,
 					      Coord tmargin, Coord tstretch, Coord tshrink)
 {
-  return create<Placement, Graphic_ptr>(new Placement(g, new LayoutMargin(lmargin, lstretch, lshrink, rmargin, rstretch, rshrink,
-									  bmargin, bstretch, bshrink, tmargin, tstretch, tshrink)),
-					this);
+  Placement *placement = new Placement(new LayoutMargin(lmargin, lstretch, lshrink, rmargin, rstretch, rshrink,
+							bmargin, bstretch, bshrink, tmargin, tstretch, tshrink));
+  placement->_obj_is_ready(_boa());
+  placement->body(g);
+  graphics.push_back(placement);
+  return placement->_this();
 }
 
 Graphic_ptr LayoutKitImpl::hmargin(Graphic_ptr g, Coord both)

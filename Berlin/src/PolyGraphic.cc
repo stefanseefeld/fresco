@@ -47,7 +47,7 @@ PolyGraphic::~PolyGraphic()
 void PolyGraphic::append(Graphic_ptr child)
 {
   MutexGuard guard(childMutex);
-  children.push_back(Graphic::_duplicate(child));
+  children.push_back(Graphic_var(child));
   child->addParent(_this());
   needResize();
 }
@@ -55,18 +55,23 @@ void PolyGraphic::append(Graphic_ptr child)
 void PolyGraphic::prepend(Graphic_ptr child)
 {
   MutexGuard guard(childMutex);
-  children.insert(children.begin(), Graphic::_duplicate(child));
+  children.insert(children.begin(), Graphic_var(child));
   child->addParent(_this());
   needResize();
 }
 
-void PolyGraphic::allocate(Graphic_ptr g, Allocation_ptr allocation)
+void PolyGraphic::allocate(Graphic_ptr g, Allocation_ptr a)
 {
+  Graphic_var child = g;
+  Allocation_var allocation = a;
   long start = allocation->size();
-  GraphicImpl::allocate(g, allocation);
+  GraphicImpl::allocate(Graphic::_duplicate(g), Allocation::_duplicate(allocation));
   long l = findChild(g);
   for (long i = start; i != allocation->size(); i++)
-    allocateChild(l, *allocation->get(i));
+    {
+      Allocation::Info_var info = allocation->get(i);
+      allocateChild(l, info);
+    }
 }
 
 void PolyGraphic::needResize() { GraphicImpl::needResize();}
@@ -87,11 +92,11 @@ long PolyGraphic::numChildren()
 long PolyGraphic::findChild(Graphic_ptr g)
 {
   MutexGuard guard(childMutex);
-  Graphic_var tmp = Graphic::_duplicate(g);
+  Graphic_var child = Graphic::_duplicate(g);
   long l = 0;
   for (clist_t::iterator i = children.begin(); i != children.end(); i++, l++)
-    if (tmp == *i) break;
-  return l;
+    if (child == *i) return l;
+  return -1;
 }
 
 Graphic::Requisition *PolyGraphic::childrenRequests()

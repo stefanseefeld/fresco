@@ -1,10 +1,8 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- *
  * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
  * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
- *
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -31,6 +29,7 @@
 #include "Drawing/openGL/GLDrawable.hh"
 #include "Drawing/openGL/GLPencil.hh"
 #include "Drawing/openGL/GLFont.hh"
+#include "Berlin/Thread.hh"
 
 #include <string>
 #include <vector>
@@ -52,7 +51,7 @@ public:
   ggi_visual_t getVisual() { return drawable->Visual();}
   Pencil_ptr getPencil(const Style::Spec &sty);
  protected:
-  omni_mutex myMutex;
+  Mutex myMutex;
   GLFont *myFont;
   GLDrawable *drawable;
   vector<GLPencil *> pencils;

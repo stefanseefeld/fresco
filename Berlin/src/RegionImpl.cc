@@ -50,8 +50,10 @@ RegionImpl::RegionImpl(const RegionImpl &region)
 RegionImpl::RegionImpl(Region_ptr a, Transform_ptr t)
 {
   RegionImpl::copy(a);
-  if (!CORBA::is_nil(t) && !t->Identity())
-    RegionImpl::applyTransform(t);
+  if (!CORBA::is_nil(t))
+    if (!t->Identity())
+      RegionImpl::applyTransform(t);
+    else CORBA::release(t);
 }
 
 RegionImpl::~RegionImpl() {}
@@ -62,8 +64,8 @@ CORBA::Boolean RegionImpl::contains(const Vertex &v)
 {
   return (valid &&
 	  v.x >= lower.x && v.x <= upper.x &&
-	  v.y >= lower.y && v.y <= upper.y
-	  //v.z >= lower.z && v.z <= upper.z
+	  v.y >= lower.y && v.y <= upper.y &&
+	  v.z >= lower.z && v.z <= upper.z
 	  );
 }
 
@@ -93,10 +95,11 @@ CORBA::Boolean RegionImpl::containsPlane(const Vertex &v, Axis a)
 
 CORBA::Boolean RegionImpl::intersects(Region_ptr r)
 {
+  Region_var region = r;
   if (valid)
     {
       Vertex l, u;
-      r->bounds(l, u);
+      region->bounds(l, u);
       return lower.x <= u.x && upper.x >= l.x && lower.y <= u.y && upper.y >= l.y;
     }
   return false;
@@ -104,12 +107,13 @@ CORBA::Boolean RegionImpl::intersects(Region_ptr r)
 
 void RegionImpl::copy(Region_ptr r)
 {
-  if (!CORBA::is_nil(r) && r->defined())
+  Region_var region = r;
+  if (!CORBA::is_nil(region) && region->defined())
     {
       Region::Allotment x, y, z;
-      r->span(xaxis, x);
-      r->span(yaxis, y);
-      r->span(zaxis, z);
+      region->span(xaxis, x);
+      region->span(yaxis, y);
+      region->span(zaxis, z);
       valid = true;
       lower.x = x.begin;
       lower.y = y.begin;
@@ -125,49 +129,53 @@ void RegionImpl::copy(Region_ptr r)
 
 void RegionImpl::mergeIntersect(Region_ptr r)
 {
-  if (r->defined())
+  Region_var region = r;
+  if (region->defined())
     {
       if (valid)
 	{
 	  Vertex l, u;
-	  r->bounds(l, u);
+	  region->bounds(l, u);
 	  mergeMax(lower, l);
 	  mergeMin(upper, u);
         }
-      else copy(r);
+      else copy(Region::_duplicate(region));
     }
 }
 
 void RegionImpl::mergeUnion(Region_ptr r)
 {
-  if (r->defined())
+  Region_var region = r;
+  if (region->defined())
     {
       if (valid)
 	{
 	  Vertex l, u;
-	  r->bounds(l, u);
+	  region->bounds(l, u);
 	  mergeMin(lower, l);
 	  mergeMax(upper, u);
         }
-      else copy(r);
+      else copy(Region::_duplicate(region));
     }
 }
 
-void RegionImpl::subtract(Region_ptr)
+void RegionImpl::subtract(Region_ptr r)
 {
   // not implemented
+  CORBA::release(r);
 }
 
 void RegionImpl::applyTransform(Transform_ptr t)
 {
+  Transform_var transform;
   if (valid)
     {
       Vertex o;
 
       origin(o);
-      t->transformVertex(o);
+      transform->transformVertex(o);
       Transform::Matrix m;
-      t->storeMatrix(m);
+      transform->storeMatrix(m);
 
       Coord w = upper.x - lower.x;
       Coord h = upper.y - lower.y;
@@ -205,14 +213,12 @@ Coord RegionImpl::spanAlign(Coord lower, Coord upper, Coord origin)
 
 void RegionImpl::bounds(Vertex &l, Vertex &u)
 {
-//   fresco_assert(valid);
   l = lower;
   u = upper;
 }
 
 void RegionImpl::center(Vertex &c)
 {
-//   fresco_assert(valid);
   c.x = (lower.x + upper.x) * 0.5;
   c.y = (lower.y + upper.y) * 0.5;
   c.z = 0.0;
@@ -220,7 +226,6 @@ void RegionImpl::center(Vertex &c)
 
 void RegionImpl::origin(Vertex &v)
 {
-//   fresco_assert(valid);
   v.x = spanOrigin(lower.x, upper.x, xalign);
   v.y = spanOrigin(lower.y, upper.y, yalign);
   v.z = spanOrigin(lower.z, upper.z, zalign);
@@ -236,7 +241,6 @@ Coord RegionImpl::spanOrigin(Coord lower, Coord upper, Coord align)
 
 void RegionImpl::span(Axis a, Region::Allotment &s)
 {
-//   fresco_assert(valid);
   switch (a)
     {
     case xaxis:
@@ -255,24 +259,20 @@ void RegionImpl::span(Axis a, Region::Allotment &s)
       s.align = zalign;
       break;
     }
-//   s.length = s.end - s.begin;
-//   s.origin = s.begin + s.align * s.length;
 }
-
-// void RegionImpl::notify() {}
 
 void RegionImpl::mergeMin(Vertex &v0, const Vertex &v)
 {
   v0.x = Math::min(v0.x, v.x);
   v0.y = Math::min(v0.y, v.y);
-  //v0.z = Math::min(v0.z, v.z);
+  v0.z = Math::min(v0.z, v.z);
 }
 
 void RegionImpl::mergeMax(Vertex &v0, const Vertex &v)
 {
   v0.x = Math::max(v0.x, v.x);
   v0.y = Math::max(v0.y, v.y);
-  //v0.z = Math::max(v0.z, v.z);
+  v0.z = Math::max(v0.z, v.z);
 }
 
 void RegionImpl::outline(Path *&p)

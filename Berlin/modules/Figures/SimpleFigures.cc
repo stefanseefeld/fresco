@@ -32,15 +32,25 @@
 #include "Warsaw/Pencil.hh"
 #include "Berlin/RegionImpl.hh"
 #include "Warsaw/FigureKit.hh"
+#include "Warsaw/Transform.hh"
 #include <iostream>
 
 // rectangles
 
-void RectFig::draw(DrawTraversal_ptr dt) {
-  DrawingKit_ptr dk = dt->kit();
-  Pencil_ptr p = getStyledPencil(dk);
-  RegionImpl region(dt->allocation(), dt->transformation());
-  p->drawRect(region.upper, region.lower);    
+void RectFig::draw(DrawTraversal_ptr t)
+{
+  DrawTraversal_var traversal = t;
+  DrawingKit_var dk = traversal->kit();
+  Pencil_var pen = getStyledPencil(dk);
+  Path path;
+  path.p.length(5);
+  traversal->allocation()->bounds(path.p[0], path.p[2]);
+  path.p[1].x = path.p[2].x, path.p[1].y = path.p[0].y, path.p[1].z = 0.;
+  path.p[3].x = path.p[0].x, path.p[3].y = path.p[2].y, path.p[3].z = 0.;
+  path.p[4] = path.p[0];
+  Transform_var transform = traversal->transformation();
+  for (unsigned int i = 0; i != path.p.length(); i++) transform->transformVertex(path.p[i]);
+  pen->drawPath(path);
 }
 
 Graphic_ptr RectFig::copyTo(FigureKit_ptr fk) {return fk->rect(myStyle);}
@@ -50,7 +60,8 @@ RectFig::~RectFig() {}
 
 // ellipses
 
-void EllipseFig::draw(DrawTraversal_ptr dt) {
+void EllipseFig::draw(DrawTraversal_ptr dt)
+{
   DrawingKit_ptr dk = dt->kit();
   Pencil_ptr p = getStyledPencil(dk);
   RegionImpl region(dt->allocation(), dt->transformation());

@@ -19,7 +19,7 @@
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 # MA 02139, USA.
 
-SYS_SRC	= regex.cc Signal.cc User.cc Stopwatch.cc Time.cc \
+SYS_SRC	= logbuf.cc regex.cc Signal.cc User.cc Stopwatch.cc Time.cc \
 	  File.cc Directory.cc Path.cc GetOpt.cc DataTypeManager.cc \
 	  DLL.cc SHM.cc Thread.cc Timer.cc
 
@@ -45,7 +45,7 @@ $(ppath)/%.o:	Sys/%.cc
 
 $(opath)/DataTypeManager.o:	Sys/DataTypeManager.cc
 		@if [ ! -d $(opath) ]; then mkdir $(opath); fi
-		$(CXX) $(CXXFLAGS) $(GDBFLAGS) $(SOFLAGS) -ftemplate-depth-23 -c $< -o $@
+		$(CXX) $(CXXFLAGS) $(OPTFLAGS) $(SOFLAGS) -ftemplate-depth-23 -c $< -o $@
 
 clean:		sysclean
 sysclean:

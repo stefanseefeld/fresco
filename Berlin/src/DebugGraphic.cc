@@ -51,37 +51,40 @@ void DebugGraphic::request(Requisition &r)
 
 void DebugGraphic::traverse(Traversal_ptr t)
 {
-  if (flags & traversals) t->visit(_this());
-  else MonoGraphic::traverse(t);
+  Traversal_var traversal = t;
+  if (flags & traversals) traversal->visit(_this());
+  else MonoGraphic::traverse(Traversal::_duplicate(traversal));
 }
 
 void DebugGraphic::draw(DrawTraversal_ptr t)
 {
+  DrawTraversal_var traversal = t;
   if (flags & draws)
     {
       heading(" draw\t");
-      RegionImpl region(t->allocation(), t->transformation());
+      RegionImpl region(traversal->allocation(), traversal->transformation());
       printRegion(&region);
       cout << endl;
     }
-  MonoGraphic::traverse(t);
+  MonoGraphic::traverse(DrawTraversal::_duplicate(traversal));
 };
 
 void DebugGraphic::pick(PickTraversal_ptr t)
 {
+  PickTraversal_var traversal = t;
   if (flags & picks)
     {
       heading(" pick\t");
-      RegionImpl region(Region_var(t->allocation()), t->transformation());
+      RegionImpl region(traversal->allocation(), traversal->transformation());
       printRegion(&region);
       cout << endl;
     }
-  MonoGraphic::traverse(t);
+  MonoGraphic::traverse(PickTraversal::_duplicate(traversal));
 }
 
 void DebugGraphic::heading(const char *s)
 {
-  Graphic_ptr g = body();
+  Graphic_var g = body();
   cout << message << " (" << g << ')' << s;
 }
 
@@ -117,15 +120,16 @@ void DebugGraphic::printRequirement(Graphic::Requirement &r)
 
 void DebugGraphic::printRegion(Region_ptr r)
 {
+  Region_var region = r;
   Region::Allotment a;
   cout << "X(";
-  r->span(xaxis, a);
+  region->span(xaxis, a);
   printAllotment(a);
   cout << "), Y(";
-  r->span(yaxis, a);
+  region->span(yaxis, a);
   printAllotment(a);
   cout << "), Z(";
-  r->span(zaxis, a);
+  region->span(zaxis, a);
   printAllotment(a);
   cout << ')';
 }

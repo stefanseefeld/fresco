@@ -1,10 +1,8 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- *
  * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
  * Copyright (C) 1998 Graydon Hoare <graydon@pobox.com> 
- *
  * http://www.berlin-consortium.org
  *
  * this code is based on code from Fresco.
@@ -234,55 +232,58 @@ GraphicImpl::GraphicImpl() {}
 GraphicImpl::~GraphicImpl() {}
 
 Graphic_ptr GraphicImpl::body() { return Graphic::_nil();}
-void GraphicImpl::body(Graphic_ptr) {}
-void GraphicImpl::append(Graphic_ptr) {}
-void GraphicImpl::prepend(Graphic_ptr) {}
+void GraphicImpl::body(Graphic_ptr g) { CORBA::release(g);}
+void GraphicImpl::append(Graphic_ptr g) { CORBA::release(g);}
+void GraphicImpl::prepend(Graphic_ptr g) { CORBA::release(g);}
 
 void GraphicImpl::addParent(Graphic_ptr parent)
 {
   MutexGuard guard(parentMutex);
-  parents.insert(Graphic::_duplicate(parent));
+  parents.insert(Graphic_var(parent));
 }
 
 void GraphicImpl::removeParent(Graphic_ptr parent)
 {
   MutexGuard guard(parentMutex);
-  parents.erase(parent);
+  parents.erase(Graphic_var(parent));
 }
 
 Transform_ptr GraphicImpl::transformation() { return Transform::_nil();}
 void GraphicImpl::request(Requisition &) {}
-void GraphicImpl::extension(const Allocation::Info &a, Region_ptr r) { GraphicImpl::defaultExtension(a, r);}
-void GraphicImpl::shape(Region_ptr) {}
+void GraphicImpl::extension(const Allocation::Info &a, Region_ptr r) { GraphicImpl::defaultExtension(a, r); CORBA::release(r);}
+void GraphicImpl::shape(Region_ptr r) { CORBA::release(r);}
 
-void GraphicImpl::traverse(Traversal_ptr t) { t->visit(_this());}
-void GraphicImpl::draw(DrawTraversal_ptr) {}
-void GraphicImpl::pick(PickTraversal_ptr) {}
+void GraphicImpl::traverse(Traversal_ptr t) { t->visit(_this()); CORBA::release(t);}
+void GraphicImpl::draw(DrawTraversal_ptr t) { CORBA::release(t);}
+void GraphicImpl::pick(PickTraversal_ptr t) { CORBA::release(t);}
 
-void GraphicImpl::allocate(Graphic_ptr, Allocation_ptr a) { allocateParents(a);}
+void GraphicImpl::allocate(Graphic_ptr g, Allocation_ptr a) { allocateParents(a); CORBA::release(g); CORBA::release(a);}
 void GraphicImpl::needRedraw()
 {
   AllocationImpl *allocation = new AllocationImpl;
   allocation->_obj_is_ready(_boa());
   allocateParents(allocation->_this());
-  for (CORBA::Long i = 0; i < allocation->size(); i++)
+  RegionImpl *region = new RegionImpl;
+  region->_obj_is_ready(_boa());
+  CORBA::Long size = allocation->size();
+  for (CORBA::Long i = 0; i < size; i++)
     {
-      Allocation::Info *a = allocation->get(i);
-      if (!CORBA::is_nil(a->damaged))
+      Allocation::Info_var info = allocation->get(i);
+      if (!CORBA::is_nil(info->damaged))
 	{
-	  RegionImpl *region = new RegionImpl;
-	  region->_obj_is_ready(_boa());
-	  extension(*a, region->_this());
-	  if (region->valid) a->damaged->extend(region->_this());
-	  region->_dispose();
+	  region->valid = false;
+	  extension(info, region->_this());
+	  if (region->valid) info->damaged->extend(region->_this());
 	}
     }
+  region->_dispose();
   allocation->_dispose();
 }
 
 void GraphicImpl::needRedrawRegion(Region_ptr r)
 {
-  if (r->defined())
+  Region_var region = r;
+  if (region->defined())
     {
       AllocationImpl *allocation = new AllocationImpl;
       allocation->_obj_is_ready(_boa());
@@ -291,12 +292,12 @@ void GraphicImpl::needRedrawRegion(Region_ptr r)
       dr->_obj_is_ready(_boa());
       for (CORBA::Long i = 0; i < allocation->size(); i++)
 	{
-	  Allocation::Info *a = allocation->get(i);
- 	  if (!CORBA::is_nil(a->damaged))
+	  Allocation::Info_var info = allocation->get(i);
+ 	  if (!CORBA::is_nil(info->damaged))
  	    {
- 	      dr->copy(r);
- 	      dr->applyTransform(a->transformation);
- 	      a->damaged->extend(dr->_this());
+ 	      dr->copy(Region::_duplicate(region));
+ 	      dr->applyTransform(Transform::_duplicate(info->transformation));
+ 	      info->damaged->extend(dr->_this());
  	    }
 	}
       dr->_dispose();
@@ -386,15 +387,15 @@ Graphic::Requirement *GraphicImpl::requirement(Graphic::Requisition &r, Axis a)
   return req;
 }
 
-void GraphicImpl::defaultExtension (const Allocation::Info &a, Region_ptr r)
+void GraphicImpl::defaultExtension (const Allocation::Info &info, Region_ptr r)
 {
-  if (!CORBA::is_nil(a.allocation))
+  if (!CORBA::is_nil(info.allocation))
     {
-      if (CORBA::is_nil(a.transformation))
-	r->mergeUnion(a.allocation);
+      if (CORBA::is_nil(info.transformation))
+	r->mergeUnion(Region::_duplicate(info.allocation));
       else
 	{
-	  RegionImpl *tmp = new RegionImpl(a.allocation, a.transformation);
+	  RegionImpl *tmp = new RegionImpl(Region::_duplicate(info.allocation), Transform::_duplicate(info.transformation));
 	  tmp->_obj_is_ready(CORBA::BOA::getBOA());
 	  r->mergeUnion(tmp->_this());
 	  tmp->_dispose();
@@ -536,5 +537,5 @@ void GraphicImpl::allocateParents(Allocation_ptr a)
 {
   MutexGuard guard(parentMutex);
   for (plist_t::iterator i = parents.begin(); i != parents.end(); i++)
-    (*i)->allocate(_this(), a);
+    (*i)->allocate(_this(), Allocation::_duplicate(a));
 }

@@ -59,5 +59,5 @@ void Deck::extension(const Allocation::Info &a, Region_ptr r)
 
 void Deck::traverse(Traversal_ptr t)
 {
-  if (size_t n = children.size()) t->traverseChild(children[n - 1], Region::_nil(), Transform::_nil());
+  if (size_t n = children.size()) t->traverseChild(Graphic::_duplicate(children[n - 1]), Region::_nil(), Transform::_nil());
 }

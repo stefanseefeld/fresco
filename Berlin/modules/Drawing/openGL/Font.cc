@@ -1,7 +1,7 @@
 #include "Drawing/openGL/GLFont.hh"
 #include "Drawing/openGL/gltt/GLTTPixmapFont.h"
 #include "Drawing/openGL/gltt/FTFace.h"
-#include "Berlin/Debug.hh"
+#include "Berlin/Logger.hh"
 #include <iostream>
 
 // this is an awful hack to make gltt start working. the correct
@@ -26,7 +26,7 @@ GLFont::GLFont(const Text::FontDescriptor &fd, const Style::Spec &sty)
   if( ! face->open(txt.c_str()) ) throw Text::NoSuchFontException();
   font = new GLTTPixmapFont(face); 
   if( ! font->create(fd.pointsize) ) throw Text::NoSuchFontException();
-  Debug::log(Debug::text, "GLFont::GLFont() : instantiated %s at %d pt", txt.c_str(), fd.pointsize);
+  Logger::log(Logger::text) << "GLFont::GLFont() : instantiated " << txt.c_str() << " at " << fd.pointsize << " pt" << endl;
   for (unsigned long i = 0; i < sty.length(); i++) {    
     Color *tmp;
     if (sty[i].a == Style::fillcolor) {
@@ -45,8 +45,9 @@ void GLFont::drawText(const Unistring &u, const Vertex &p) {
   // ... OpenGL initialization commands... 
 
   glColor4d(myFontColor[0],myFontColor[1],myFontColor[2],myFontColor[3]);
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  // this goes into the GLDrawable constructor -stefan
+  //   glEnable(GL_BLEND);
+  //   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   string txt = ASCIIFY(u);
   font->output( p.x, p.y, txt.c_str()); 
 }
@@ -54,6 +55,7 @@ void GLFont::drawText(const Unistring &u, const Vertex &p) {
 
 void GLFont::acceptFontVisitor(Text::FontVisitor_ptr v){
   v->visitBaseFont(this->_this());
+  CORBA::release(v);
 }
 
 void GLFont::allocateText(const Unistring &u, Graphic::Requisition &r){

@@ -1,10 +1,8 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- *
  * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
  * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
- *
  * http://www.berlin-consortium.org
  *
  * this code is based on code from Fresco.
@@ -29,7 +27,7 @@
  */
 #include "Berlin/TraversalImpl.hh"
 #include "Berlin/TransformImpl.hh"
-#include "Berlin/Debug.hh"
+#include "Berlin/Logger.hh"
 #include "Warsaw/Graphic.hh"
 #include "Warsaw/Region.hh"
 
@@ -37,7 +35,7 @@ TraversalImpl::TraversalImpl(Region_ptr r)
 {
   TransformImpl *transform = new TransformImpl;
   transform->_obj_is_ready(CORBA::BOA::getBOA());
-  push(Graphic::_nil(), Region::_duplicate(r), transform);
+  push(Graphic::_nil(), r, transform);
 }
 
 TraversalImpl::TraversalImpl(const TraversalImpl &t)
@@ -63,7 +61,7 @@ TraversalImpl::~TraversalImpl()
 
 Region_ptr TraversalImpl::allocation()
 {
-  return stack.back().allocation;
+  return Region::_duplicate(stack.back().allocation);
 }
 
 Transform_ptr TraversalImpl::transformation() 
@@ -87,23 +85,27 @@ CORBA::Boolean TraversalImpl::bounds(Vertex &lower, Vertex &upper, Vertex &origi
 
 void TraversalImpl::traverseChild(Graphic_ptr g, Region_ptr a, Transform_ptr t)
 {
-  Debug::log(Debug::traversal, "begin TraversalImpl::traverseChild");
-  if (CORBA::is_nil(a)) a = allocation();
+  SectionLog section(Logger::traversal, "TraversalImpl::traverseChild");
+  Graphic_var child = g;
+  Region_var region = CORBA::is_nil(a) ? allocation() : a;
   TransformImpl *cumulative = new TransformImpl;
   cumulative->_obj_is_ready(_boa());
   cumulative->copy(transformation());
-  if (!CORBA::is_nil(t)) cumulative->premultiply(t);
-  push(g, a, cumulative);
-  g->traverse(_this());
+  if (!CORBA::is_nil(t))
+    {
+      cumulative->premultiply(t);
+      CORBA::release(t);
+    }
+  push(Graphic::_duplicate(child), Region::_duplicate(region), cumulative);
+  child->traverse(_this());
   pop();
-  Debug::log(Debug::traversal, "end TraversalImpl::traverseChild");
 }
 
 void TraversalImpl::push(Graphic_ptr g, Region_ptr r, TransformImpl *t)
 {
   State state;
-  state.graphic = Graphic::_duplicate(g);
-  state.allocation = Region::_duplicate(r);
+  state.graphic = g;
+  state.allocation = r;
   state.transformation = t;
   stack.push_back(state);
 }

@@ -38,7 +38,7 @@ public:
  
   virtual void request(Requisition &);
 protected:
-  Graphic::Requisition req;
+  Graphic::Requisition requisition;
 };
 
 #endif /* _Requestor_hh */

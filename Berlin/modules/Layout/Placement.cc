@@ -28,9 +28,8 @@
 #include "Layout/Placement.hh"
 #include "Layout/LayoutManager.hh"
 
-Placement::Placement(Graphic_ptr g, LayoutManager *l)
+Placement::Placement(LayoutManager *l)
 {
-  body(g);
   layout = l;
   region = new RegionImpl;
   region->_obj_is_ready(CORBA::BOA::getBOA());

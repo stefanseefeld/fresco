@@ -29,11 +29,10 @@
 #include "Berlin/ServerContextManagerImpl.hh"
 #include "Berlin/ServerContextImpl.hh"
 #include "Warsaw/Stage.hh"
-#include "Berlin/Debug.hh"
 
 ServerContextManagerImpl::ServerContextManagerImpl(GenericFactoryImpl *factory, Stage_ptr g) {
   myFactoryFinder = FactoryFinderImpl::getInstance(factory);
-  mySceneRoot = Stage::_duplicate(g);
+  mySceneRoot = g;
 }
 
 void ServerContextManagerImpl::run(void* arg) {
@@ -61,10 +60,10 @@ void ServerContextManagerImpl::verify() {
 ServerContext_ptr ServerContextManagerImpl::newServerContext(ClientContext_ptr c) 
 throw (SecurityException) {
     MutexGuard guard (myMutex);
-    ServerContextImpl *temp = new ServerContextImpl(myFactoryFinder->_this(), c, mySceneRoot);
+    ServerContextImpl *temp = new ServerContextImpl(myFactoryFinder->_this(), c, Stage::_duplicate(mySceneRoot));
     temp->_obj_is_ready(this->_boa());
     allocatedServerContexts.push_back(temp);
-    return ServerContext::_duplicate(temp->_this());
+    return temp->_this();
 }
   
 

@@ -1,6 +1,3 @@
-#ifndef _CloneableImpl_hh
-#define _CloneableImpl_hh
-
 //
 // $Id$
 //
@@ -23,6 +20,8 @@
 // Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 //
+#ifndef _CloneableImpl_hh
+#define _CloneableImpl_hh
 
 #include "Warsaw/Cloneable.hh"
 

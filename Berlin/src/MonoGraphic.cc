@@ -46,7 +46,7 @@ void MonoGraphic::body(Graphic_ptr c)
 {
   MutexGuard guard(childMutex);
   if (!CORBA::is_nil(child)) child->removeParent(_this());
-  child = Graphic::_duplicate(c);
+  child = c;
   child->addParent(_this());
 }
 
@@ -54,73 +54,77 @@ void MonoGraphic::append(Graphic_ptr c)
 {
   MutexGuard guard(childMutex);
   if (!CORBA::is_nil(child)) child->append(c);
+  else CORBA::release(c);
 }
 
 void MonoGraphic::prepend(Graphic_ptr c)
 {
   MutexGuard guard(childMutex);
   if (!CORBA::is_nil(child)) child->prepend(c);
+  else CORBA::release(c);
 }
 
 Transform_ptr MonoGraphic::transformation()
 {
-  Graphic_ptr child = body();
-  return CORBA::is_nil(child) ? 0 : child->transformation();
+  Graphic_var child = body();
+  return CORBA::is_nil(child) ? Transform::_nil() : child->transformation();
 }
 
 void MonoGraphic::request(Graphic::Requisition &r)
 {
-  Graphic_ptr child = body();
+  Graphic_var child = body();
   if (!CORBA::is_nil(child)) child->request(r);
 }
 
-void MonoGraphic::extension(const Allocation::Info &a, Region_ptr r)
+void MonoGraphic::extension(const Allocation::Info &info, Region_ptr r)
 {
-  Graphic_ptr child = body();
+  Graphic_var child = body();
+  Region_var region = r;
   if (!CORBA::is_nil(child))
     {
       Allocation::Info i;
-      RegionImpl *region = new RegionImpl;
-      region->_obj_is_ready(_boa());
-      i.allocation = region->_this();
-      i.allocation->copy(a.allocation);
+      RegionImpl *tmpregion = new RegionImpl;
+      tmpregion->_obj_is_ready(_boa());
+      i.allocation = tmpregion->_this();
+      i.allocation->copy(Region::_duplicate(info.allocation));
       TransformImpl *transform = new TransformImpl;
       transform->_obj_is_ready(_boa());
-      i.transformation = transform;
-      i.transformation->copy(a.transformation);
+      i.transformation = transform->_this();
+      i.transformation->copy(Transform::_duplicate(info.transformation));
       allocateChild(i);
-      child->extension(i, r);
+      child->extension(i, Region::_duplicate(region));
       transform->_dispose();
-      region->_dispose();
+      tmpregion->_dispose();
     }
 }
 
 void MonoGraphic::shape(Region_ptr r)
 {
-  Graphic_ptr child = body();
-  if (!CORBA::is_nil(child)) child->shape(r);
+  Graphic_var child = body();
+  Region_var region = r;
+  if (!CORBA::is_nil(child)) child->shape(region);
 }
 
 void MonoGraphic::traverse(Traversal_ptr t)
 {
-  Graphic_ptr child = body();
-  if (!CORBA::is_nil(child)) {
-      t->traverseChild(child, Region::_nil(), Transform::_nil());
-  }
+  Graphic_var child = body();
+  Traversal_var traversal = t;
+  if (!CORBA::is_nil(child))
+    traversal->traverseChild(Graphic::_duplicate(child), Region::_nil(), Transform::_nil());
 }
 
 void MonoGraphic::allocate(Graphic_ptr g, Allocation_ptr a)
 {
-  /*
-   * tmp isn't really used here, it's just a test that it refers
-   * to the child -stefan
-   */
-  Graphic_var tmp = Graphic::_duplicate(g);
-  if (tmp != body()) return;
-  GraphicImpl::allocate(tmp, a);
-  CORBA::Long size = a->size();
+  Graphic_var child = g;
+  Allocation_var allocation = a;
+  if (child != Graphic_var(body())) return;
+  GraphicImpl::allocate(Graphic::_duplicate(child), Allocation::_duplicate(a));
+  CORBA::Long size = allocation->size();
   for (CORBA::Long i = 0; i != size; i++)
-    allocateChild(*a->get(i));
+    {
+      Allocation::Info_var info = allocation->get(i);
+      allocateChild(info);
+    }
 }
 
 void MonoGraphic::allocateChild(Allocation::Info &) {}

@@ -27,7 +27,7 @@
 
 #include "Warsaw/config.hh"
 #include "Berlin/NameUtil.hh"
-#include "Berlin/Debug.hh"
+#include "Berlin/Logger.hh"
 
 static CosNaming::NamingContext_var rootContext;
 static Mutex rootContext_mutex;
@@ -35,33 +35,45 @@ static Mutex rootContext_mutex;
 // this verifies that we have a root context reference. there's really
 // no point in trying to catch these. If you have no name service,
 // you're sunk.
-static void getRootContext(CORBA::ORB_ptr orb) {
-  try {
-    if (CORBA::is_nil(rootContext)) {  
-	Debug::log(Debug::corba, "getRootContext: looking up root corba name context");
-	CORBA::Object_var initServ;
-	initServ = orb->resolve_initial_references("NameService");
-	rootContext = CosNaming::NamingContext::_narrow(initServ);
+static void getRootContext(CORBA::ORB_ptr orb)
+{
+  try
+    {
+      if (CORBA::is_nil(rootContext))
+	{  
+	  Logger::log(Logger::corba) << "getRootContext: looking up root corba name context" << endl;
+	  CORBA::Object_var initServ;
+	  initServ = orb->resolve_initial_references("NameService");
+	  rootContext = CosNaming::NamingContext::_narrow(initServ);
+	}
     }
-  } catch(CORBA::ORB::InvalidName& ex) {
-      Debug::log(Debug::corba, "getRootContext: Service required is invalid [does not exist].");
+  catch(CORBA::ORB::InvalidName& ex)
+    {
+      Logger::log(Logger::corba) << "getRootContext: Service required is invalid [does not exist]." << endl;
       throw ex;
-  } catch(CosNaming::NamingContext::NotFound& ex) {
-      Debug::log(Debug::corba, "getRootContext: Root Name Context not found.");
-    throw ex;
-  } catch (CORBA::COMM_FAILURE& ex) { 
-      Debug::log(Debug::corba, "getRootContext: had a COMM_FAILURE during root name service lookup");
+    }
+  catch(CosNaming::NamingContext::NotFound& ex)
+    {
+      Logger::log(Logger::corba) << "getRootContext: Root Name Context not found." << endl;
       throw ex;
-  } catch (...) { 
-      Debug::log(Debug::corba, "getRootContext: unknown exception during root name service lookup");
+    }
+  catch (CORBA::COMM_FAILURE &ex)
+    { 
+      Logger::log(Logger::corba) << "getRootContext: had a COMM_FAILURE during root name service lookup" << endl;
+      throw ex;
+    }
+  catch (...)
+    { 
+      Logger::log(Logger::corba) << "getRootContext: unknown exception during root name service lookup" << endl;
       throw CosNaming::NamingContext::NotFound();
-  }
+    }
   
   // can't throw an exception if you are in a try {} block :)
-  if (CORBA::is_nil(rootContext)) {
-      Debug::log(Debug::corba, "getRootContext: root name context is nil");
-    throw CORBA::ORB::InvalidName();
-  }
+  if (CORBA::is_nil(rootContext))
+    {
+      Logger::log(Logger::corba) << "getRootContext: root name context is nil" << endl;
+      throw CORBA::ORB::InvalidName();
+    }
 }
 
 
@@ -93,17 +105,20 @@ CORBA::Object_ptr lookup(CORBA::ORB_ptr orb, char *ch)
   }
   CosNaming::Name ourName = charPtrToName(ch);  
 
-  try {
-    tmpobj = rootContext->resolve(ourName);            
-  }  
-  catch (CORBA::COMM_FAILURE& ex) {
-    Debug::log(Debug::corba, "unable to contact name service for factory lookup");
-    throw lookupFailureException();
-  }
-  catch (...) {
-    Debug::log(Debug::corba, "Caught a system exception while using the naming service.");
-    throw lookupFailureException();
-  }      
+  try
+    {
+      tmpobj = rootContext->resolve(ourName);            
+    }
+  catch (CORBA::COMM_FAILURE &ex)
+    {
+      Logger::log(Logger::corba) << "unable to contact name service for factory lookup" << endl;
+      throw lookupFailureException();
+    }
+  catch (...)
+    {
+      Logger::log(Logger::corba) << "Caught a system exception while using the naming service." << endl;
+      throw lookupFailureException();
+    }      
   return CORBA::Object::_duplicate(tmpobj);
 }
 

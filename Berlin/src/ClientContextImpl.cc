@@ -28,7 +28,6 @@
 // instantiated within the client address space.
 
 #include "Berlin/ClientContextImpl.hh"
-#include "Prague/Sys/User.hh"
 #include <iostream>
 #include <string>
 

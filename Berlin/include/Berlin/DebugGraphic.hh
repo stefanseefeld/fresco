@@ -42,7 +42,7 @@ public:
   virtual void traverse(Traversal_ptr);
   virtual void draw(DrawTraversal_ptr);
   virtual void pick(PickTraversal_ptr);
-  //protected:
+
   static void  printRequirement(Graphic::Requirement &);
   static void  printRegion(Region_ptr);
   static void  printAllotment(const Region::Allotment &);

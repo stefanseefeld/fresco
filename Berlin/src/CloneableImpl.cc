@@ -34,9 +34,10 @@
 // copy produces a new clone on the machine found by the FactoryFinder "there", which 
 // in most cases will actually be "here". But anyway, it copies state. That's what's important!
 
-CosLifeCycle::LifeCycleObject_ptr  CloneableImpl::copy ( CosLifeCycle::FactoryFinder_ptr  there, 
-					    const CosLifeCycle::Criteria & the_criteria ) {
-
+CosLifeCycle::LifeCycleObject_ptr CloneableImpl::copy(CosLifeCycle::FactoryFinder_ptr t, 
+						      const CosLifeCycle::Criteria &the_criteria)
+{
+  CosLifeCycle::FactoryFinder_var there = t;
   CosLifeCycle::Key newObjectName;
   newObjectName.length(1);
   newObjectName[0].id   = (const char*) this->NP_IRRepositoryId();; 
@@ -73,6 +74,7 @@ CosLifeCycle::LifeCycleObject_ptr  CloneableImpl::copy ( CosLifeCycle::FactoryFi
       throw CosLifeCycle::NotCopyable();
     }
   }
+  return CosLifeCycle::LifeCycleObject::_nil();
 }
 
 
@@ -80,9 +82,9 @@ CosLifeCycle::LifeCycleObject_ptr  CloneableImpl::copy ( CosLifeCycle::FactoryFi
 // new copy, and (b) destroys itself once it's made the copy, effectively migrating the object.
 // also, it doesn't actually return anything. It's a "go there" method.
 
-void  CloneableImpl::move ( CosLifeCycle::FactoryFinder_ptr  there, 
-					    const CosLifeCycle::Criteria & the_criteria ) {
-
+void  CloneableImpl::move(CosLifeCycle::FactoryFinder_ptr t, 
+			  const CosLifeCycle::Criteria & the_criteria ) {
+  CosLifeCycle::FactoryFinder_var there = t;
   // do some thread-coordinating magic
   omniLC::ThreadLC zz(this);
 

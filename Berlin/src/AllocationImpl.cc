@@ -44,7 +44,7 @@ void AllocationImpl::add(Region_ptr region, Damage_ptr damage)
   state.allocation->_obj_is_ready(_boa());
   state.transformation = new TransformImpl;
   state.transformation->_obj_is_ready(_boa());
-  state.damage = Damage::_duplicate(damage);
+  state.damage = damage;
   list.push_back(state);
 }
 
@@ -52,8 +52,9 @@ CORBA::Long AllocationImpl::size() { return list.size();}
 
 Allocation::Info *AllocationImpl::get(CORBA::Long l)
 {
-  info.allocation = list[l].allocation->_this();
-  info.transformation = list[l].transformation->_this();
-  info.damaged = list[l].damage;
-  return &info;
+  Allocation::Info *info = new Allocation::Info;
+  info->allocation = list[l].allocation->_this();
+  info->transformation = list[l].transformation->_this();
+  info->damaged = list[l].damage;
+  return info;
 }

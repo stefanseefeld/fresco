@@ -37,7 +37,7 @@ class RegionImpl;
 class Placement : public MonoGraphic
 {
 public:
-  Placement(Graphic_ptr, LayoutManager *);
+  Placement(LayoutManager *);
   virtual ~Placement();
 
   virtual void request(Requisition &);

@@ -1,10 +1,8 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- *
  * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
  * Copyright (C) 1998 Graydon Hoare <graydon@pobox.com> 
- *
  * http://www.berlin-consortium.org
  *
  * this code is based on code from Fresco.
@@ -37,32 +35,33 @@
 Allocator::Allocator()
 {
   requested = false;
-  nat = new RegionImpl;
-  nat->_obj_is_ready(CORBA::BOA::getBOA());
-  ext = new RegionImpl;
-  ext->_obj_is_ready(CORBA::BOA::getBOA());
+  natural = new RegionImpl;
+  natural->_obj_is_ready(CORBA::BOA::getBOA());
+  extension = new RegionImpl;
+  extension->_obj_is_ready(CORBA::BOA::getBOA());
 }
 
 Allocator::~Allocator()
 { 
-  nat->_dispose();
-  ext->_dispose();
+  natural->_dispose();
+  extension->_dispose();
 }
 
 void Allocator::request(Requisition &r)
 {
   updateRequisition();
-  r = req;
+  r = requisition;
 }
 
 void Allocator::traverse(Traversal_ptr t)
 {
+  Traversal_var traversal = t;
   updateRequisition();
-  Region_var a = t->allocation();
+  Region_var a = traversal->allocation();
   if (!CORBA::is_nil(a))
-    t->traverseChild(body(), a, Transform::_nil());
+    traversal->traverseChild(body(), Region::_duplicate(a), Transform::_nil());
   else
-    t->traverseChild(body(), nat, Transform::_nil());
+    traversal->traverseChild(body(), natural->_this(), Transform::_nil());
 }
 
 void Allocator::needResize()
@@ -72,10 +71,10 @@ void Allocator::needResize()
   allocateParents(allocation->_this());
   RegionImpl *region = new RegionImpl;
   region->_obj_is_ready(_boa());
-  if (ext->valid) region->copy(ext);
+  if (extension->valid) region->copy(extension->_this());
   requested = false;
   updateRequisition();
-  if (ext->valid) region->mergeUnion(ext);
+  if (extension->valid) region->mergeUnion(extension->_this());
   if (region->valid) needDamage(region, allocation);
   allocation->_dispose();
 }
@@ -83,31 +82,31 @@ void Allocator::needResize()
 void Allocator::allocateChild(Allocation::Info &i)
 {
   updateRequisition();
-  i.allocation->copy(nat);
+  i.allocation->copy(natural->_this());
 }
 
-static void naturalAllocation(Graphic::Requisition &r, RegionImpl &nat)
+static void naturalAllocation(Graphic::Requisition &r, RegionImpl &natural)
 {
   if (r.x.defined)
     {
-      nat.xalign = r.x.align;
-      nat.lower.x = -r.x.align * r.x.natural;
-      nat.upper.x = nat.lower.x + r.x.natural;
-      nat.valid = true;
+      natural.xalign = r.x.align;
+      natural.lower.x = -r.x.align * r.x.natural;
+      natural.upper.x = natural.lower.x + r.x.natural;
+      natural.valid = true;
     }
   if (r.y.defined)
     {
-      nat.yalign = r.y.align;
-      nat.lower.y = -r.y.align * r.y.natural;
-      nat.upper.y = nat.lower.y + r.y.natural;
-      nat.valid = true;
+      natural.yalign = r.y.align;
+      natural.lower.y = -r.y.align * r.y.natural;
+      natural.upper.y = natural.lower.y + r.y.natural;
+      natural.valid = true;
     }
   if (r.z.defined)
     {
-      nat.zalign = r.z.align;
-      nat.lower.z = -r.z.align * r.z.natural;
-      nat.upper.z = nat.lower.z + r.z.natural;
-      nat.valid = true;
+      natural.zalign = r.z.align;
+      natural.lower.z = -r.z.align * r.z.natural;
+      natural.upper.z = natural.lower.z + r.z.natural;
+      natural.valid = true;
     }
 }
 
@@ -118,26 +117,27 @@ void Allocator::updateRequisition()
       Graphic::Requisition r;
       GraphicImpl::initRequisition(r);
       MonoGraphic::request(r);
-      req = r;
-      ::naturalAllocation(req, *nat);
+      requisition = r;
+      ::naturalAllocation(requisition, *natural);
       requested = r.x.defined && r.y.defined; // && r.z.defined;
-      ext->valid = false;
-      Allocation::Info a;
-      MonoGraphic::extension(a, ext);
+      extension->valid = false;
+      Allocation::Info info;
+      MonoGraphic::extension(info, extension->_this());
     }
 }
 
-void Allocator::needDamage(RegionImpl *ext, Allocation_ptr allocation)
+void Allocator::needDamage(RegionImpl *e, Allocation_ptr a)
 {
+  Allocation_var allocation = a;
   RegionImpl *region = new RegionImpl;
   region->_obj_is_ready(_boa());
   for (long i = 0; i < allocation->size(); i++)
     {
-      Allocation::Info *info = allocation->get(i);
+      Allocation::Info_var info = allocation->get(i);
       if (!CORBA::is_nil(info->damaged))
  	{
- 	  region->copy(ext);
-	  region->applyTransform(info->transformation);
+ 	  region->copy(e->_this());
+	  region->applyTransform(Transform::_duplicate(info->transformation));
   	  info->damaged->extend(region->_this());
  	}
     }
@@ -160,12 +160,12 @@ void TransformAllocator::request(Requisition &r)
   r.y.minimum = zero;
   r.z.maximum = fil;
   r.z.minimum = zero;
-  req.x.maximum = fil;
-  req.x.minimum = zero;
-  req.y.maximum = fil;
-  req.y.minimum = zero;
-  req.z.maximum = fil;
-  req.z.minimum = zero;
+  requisition.x.maximum = fil;
+  requisition.x.minimum = zero;
+  requisition.y.maximum = fil;
+  requisition.y.minimum = zero;
+  requisition.z.maximum = fil;
+  requisition.z.minimum = zero;
 }
 
 void TransformAllocator::allocateChild(Allocation::Info &i)
@@ -179,32 +179,30 @@ void TransformAllocator::allocateChild(Allocation::Info &i)
   computeDelta(lower, upper, delta);
   tx->translate(delta);
   i.transformation->premultiply(tx->_this());
-  i.allocation->copy(nat);
+  i.allocation->copy(natural);
   tx->_dispose();
 }
 
 void TransformAllocator::traverse(Traversal_ptr t)
 {
+  Traversal_var traversal = t;
   TransformImpl *tx = new TransformImpl;
   tx->_obj_is_ready(_boa());
   updateRequisition();
   Vertex lower, upper, v;
-  t->bounds(lower, upper, v);
+  traversal->bounds(lower, upper, v);
   computeDelta(lower, upper, v);
   tx->translate(v);
-  t->traverseChild(body(), nat->_this(), tx->_this());
+  traversal->traverseChild(body(), natural->_this(), tx->_this());
   tx->_dispose();
 }
 
 void TransformAllocator::computeDelta(const Vertex &lower, const Vertex &upper, Vertex &delta)
 {
-  delta.x = (lower.x - nat->lower.x +
-	     xparent * (upper.x - lower.x) -
-	     xchild * (nat->upper.x - nat->lower.x));
-  delta.y = (lower.y - nat->lower.y +
-	     yparent * (upper.y - lower.y) -
-	     ychild * (nat->upper.y - nat->lower.y));
-  delta.z = (lower.z - nat->lower.z +
-	     zparent * (upper.z - lower.z) -
-	     zchild * (nat->upper.z - nat->lower.z));
+  delta.x = (lower.x - natural->lower.x + xparent * (upper.x - lower.x) -
+	     xchild * (natural->upper.x - natural->lower.x));
+  delta.y = (lower.y - natural->lower.y + yparent * (upper.y - lower.y) -
+	     ychild * (natural->upper.y - natural->lower.y));
+  delta.z = (lower.z - natural->lower.z + zparent * (upper.z - lower.z) -
+	     zchild * (natural->upper.z - natural->lower.z));
 }

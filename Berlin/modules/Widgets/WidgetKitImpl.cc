@@ -43,6 +43,7 @@ TelltaleConstraint_ptr WidgetKitImpl::exclusive()
 {
   ExclusiveChoice *constraint = new ExclusiveChoice();
   constraint->_obj_is_ready(applyscope(skeletonize(WidgetKit),_boa()));
+//   subjects.push_back(constraint);
   return constraint->_this();
 }
 
@@ -50,6 +51,7 @@ TelltaleConstraint_ptr WidgetKitImpl::selectionRequired()
 {
   SelectionRequired *constraint = new SelectionRequired;
   constraint->_obj_is_ready(applyscope(skeletonize(WidgetKit),_boa()));
+//   subjects.push_back(constraint);
   return constraint->_this();
 }
 
@@ -57,6 +59,7 @@ Telltale_ptr WidgetKitImpl::normalTelltale()
 {
   TelltaleImpl *telltale = new TelltaleImpl(0);
   telltale->_obj_is_ready(applyscope(skeletonize(WidgetKit),_boa()));
+  subjects.push_back(telltale);
   return telltale->_this();
 }
 
@@ -64,15 +67,16 @@ Telltale_ptr WidgetKitImpl::constrainedTelltale(TelltaleConstraint_ptr constrain
 {
     TelltaleImpl *telltale = new TelltaleImpl(constraint);
     telltale->_obj_is_ready(applyscope(skeletonize(WidgetKit),_boa()));
+    subjects.push_back(telltale);
     constraint->add(telltale->_this());
     return telltale->_this();
 }
 
 BoundedValue_ptr WidgetKitImpl::bvalue(Coord l, Coord u, Coord v, Coord s, Coord p)
 {
-   BoundedValueImpl *bounded = new BoundedValueImpl(l, u, v, s, p);
+  BoundedValueImpl *bounded = new BoundedValueImpl(l, u, v, s, p);
   bounded->_obj_is_ready(applyscope(skeletonize(WidgetKit),_boa()));
-
+  subjects.push_back(bounded);
   return bounded->_this();  
 }
 
@@ -80,7 +84,7 @@ BoundedRange_ptr WidgetKitImpl::brange(Coord l, Coord u, Coord lv, Coord uv, Coo
 {
   BoundedRangeImpl *bounded = new BoundedRangeImpl(l, u, lv, uv, s, p);
   bounded->_obj_is_ready(applyscope(skeletonize(WidgetKit),_boa()));
-
+  subjects.push_back(bounded);
   return bounded->_this();  
 }
 
@@ -88,7 +92,7 @@ TextBuffer_ptr WidgetKitImpl::text()
 {
   TextBufferImpl *buffer = new TextBufferImpl();
   buffer->_obj_is_ready(applyscope(skeletonize(WidgetKit),_boa()));
-
+  subjects.push_back(buffer);
   return buffer->_this();  
 }
 
@@ -96,6 +100,7 @@ Graphic_ptr WidgetKitImpl::inset(Graphic_ptr g, const Color &c)
 {
   Frame *frame = new Frame(2, c, Frame::concav);
   frame->_obj_is_ready(_boa());
+  graphics.push_back(frame);
   frame->body(g);
   return frame->_this();
 }
@@ -104,18 +109,19 @@ Graphic_ptr WidgetKitImpl::outset(Graphic_ptr g, const Color &c)
 {
   Frame *frame = new Frame(2, c, Frame::convex);
   frame->_obj_is_ready(_boa());
+  graphics.push_back(frame);
   frame->body(g);
   return frame->_this();
 }
 
-Graphic_ptr WidgetKitImpl::pushButtonFrame(Graphic_ptr g, const Color &c, Telltale_ptr t)
+View_ptr WidgetKitImpl::pushButtonFrame(Graphic_ptr g, const Color &c, Telltale_ptr t)
 {
-   DynamicFrame *frame = new DynamicFrame(2, c, Frame::convex, Frame::concav, Telltale::toggle);
-   frame->Frame::_obj_is_ready(_boa());
-   frame->body(g);
-   frame->attach(t);
-   return frame->Frame::_this();
-   return Graphic::_nil();
+  DynamicFrame *frame = new DynamicFrame(2, c, Frame::convex, Frame::concav, Telltale::toggle);
+  frame->_obj_is_ready(_boa());
+  graphics.push_back(frame);
+  frame->body(g);
+  frame->attach(t);
+  return frame->_this();
 }
 
 EXPORT_PLUGIN(WidgetKitImpl,interface(WidgetKit))

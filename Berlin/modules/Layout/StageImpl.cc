@@ -24,6 +24,8 @@
 #include <Berlin/AllocationImpl.hh>
 #include <Berlin/TransformImpl.hh>
 #include <Berlin/DebugGraphic.hh>
+#include <Berlin/Logger.hh>
+#include <Warsaw/Damage.hh>
 
 using namespace Geometry;
 
@@ -112,8 +114,8 @@ void StageSequence::remove(StageInfoImpl *info)
     if ((*cursor)->layer <= (front()->layer / 2)) cursor++;
     else cursor--;
 //   int layer = info->layer;
-//   if (item == front()) erase(--end());
-//   if (item == back()) erase(begin());
+//   if (item == front()) list::erase(--end());
+//   if (item == back()) list::erase(begin());
 //   int layer = item->layer_;
 //   StageOffsetImpl *next = item->next();
 //   item->unlink();
@@ -379,7 +381,7 @@ public:
   void execute();
 private:
   void traverse(StageInfoImpl *);
-  Traversal_var traversal;
+  Traversal_ptr traversal;
   vector<StageInfoImpl *> buffer;
 };
 
@@ -409,7 +411,7 @@ void StageTraversal::traverse(StageInfoImpl *info)
   RegionImpl *region = new RegionImpl;
   region->_obj_is_ready(CORBA::BOA::getBOA());
   info->bbox(*region);
-  traversal->traverseChild(info->child, region->_this(), Transform::_nil());
+  traversal->traverseChild(Graphic::_duplicate(info->child), region->_this(), Transform::_nil());
   region->_dispose();
 }
 
@@ -447,59 +449,67 @@ void StageImpl::request(Requisition &r)
 
 void StageImpl::traverse(Traversal_ptr t)
 {
-  RegionImpl region(t->allocation(), Transform::_nil());
+  Traversal_var traversal = t;
+  RegionImpl region(traversal->allocation(), Transform::_nil());
   Geometry::Rectangle<Coord> rectangle;
   rectangle.l = region.lower.x;
   rectangle.t = region.lower.y;
   rectangle.r = region.upper.x;
   rectangle.b = region.upper.y;
 //   dumpQuadTree(tree);
-  StageTraversal st(t);
+  StageTraversal st(traversal);
   tree.intersects(rectangle, st);
   st.execute();
 }
 
-void StageImpl::allocate(Graphic_ptr g, Allocation_ptr allocation)
+void StageImpl::allocate(Graphic_ptr g, Allocation_ptr a)
 {
-  Graphic_var child = Graphic::_duplicate(g);
-  StageInfoImpl *info = 0;
+  SectionLog section(Logger::layout, "StageImpl::allocate");
+  Graphic_var child = g;
+  Allocation_var allocation = a;
+  StageInfoImpl *sinfo = 0;
   for (StageSequence::iterator i = list.begin(); i != list.end(); i++)
     if ((*i)->child == child)
       {
-	info = *i;
+	sinfo = *i;
 	break;
       }
-  if (info)
+  if (sinfo)
     {
       CORBA::Long start = allocation->size();
-      allocateParents(allocation);
-      for (CORBA::Long i = start; i != allocation->size(); i++)
-	allocateChild(info, *allocation->get(i));
+      allocateParents(Allocation::_duplicate(allocation));
+      CORBA::Long size = allocation->size();
+      for (CORBA::Long i = start; i != size; i++)
+	{
+	  Allocation::Info_var info = allocation->get(i);
+	  allocateChild(sinfo, info);
+	}
     }
 }
 
 void StageImpl::needRedraw()
 {
+  SectionLog section(Logger::layout, "StageImpl::needRedraw");
   AllocationImpl *allocation = new AllocationImpl;
   allocation->_obj_is_ready(_boa());
   allocateParents(allocation->_this());
   for (long i = 0; i < allocation->size(); i++)
     {
-      Allocation::Info *a = allocation->get(i);
-      if (!CORBA::is_nil(a->damaged))
+      Allocation::Info_var info = allocation->get(i);
+      if (!CORBA::is_nil(info->damaged))
 	{
 	  RegionImpl *region = new RegionImpl;
 	  region->_obj_is_ready(_boa());
-	  extension(*a, region->_this());
+	  extension(info, region->_this());
 	  if (region->valid)
 	    {
 	      Vertex origin;
-	      a->allocation->origin(origin);
+	      info->allocation->origin(origin);
 	      TransformImpl *tx = new TransformImpl;
 	      tx->_obj_is_ready(_boa());
 	      tx->translate(origin);
 	      region->applyTransform(tx->_this());
-	      if (region->valid) a->damaged->extend(region->_this());
+	      if (region->valid) info->damaged->extend(region->_this());
 	      tx->_dispose();
 	      region->_dispose();
 	    }
@@ -510,29 +520,31 @@ void StageImpl::needRedraw()
 
 void StageImpl::needRedrawRegion(Region_ptr r)
 {
+  SectionLog section(Logger::layout, "StageImpl::needRedrawRegion");
+  Region_var region = r;
   AllocationImpl *allocation = new AllocationImpl;
   allocation->_obj_is_ready(_boa());
   allocateParents(allocation->_this());
-  for (long i = 0; i < allocation->size(); i++)
+  CORBA::Long size = allocation->size();
+  for (long i = 0; i < size; i++)
     {
-      Allocation::Info *a = allocation->get(i);
-      if (!CORBA::is_nil(a->damaged))
+      Allocation::Info_var info = allocation->get(i);
+      if (!CORBA::is_nil(info->damaged))
 	{
-	  RegionImpl *region = new RegionImpl;
-	  region->_obj_is_ready(_boa());
-	  region->copy(r);
-	  region->applyTransform(a->transformation);
+	  RegionImpl *r = new RegionImpl(Region::_duplicate(region), Transform::_duplicate(info->transformation));
+	  r->_obj_is_ready(_boa());
 	  Vertex origin;
-	  a->allocation->origin(origin);
+	  info->allocation->origin(origin);
 	  TransformImpl *tx = new TransformImpl;
 	  tx->_obj_is_ready(_boa());
 	  tx->translate(origin);
-	  region->applyTransform(tx->_this());
-	  if (region->valid) a->damaged->extend(region->_this());
+	  r->applyTransform(tx->_this());
+	  if (r->valid) info->damaged->extend(r->_this());
 	  tx->_dispose();
-	  region->_dispose();
+	  r->_dispose();
 	}
     }
+  allocation->_dispose();
 }
 
 Region_ptr StageImpl::bbox()
@@ -550,6 +562,7 @@ Region_ptr StageImpl::bbox()
 
 void StageImpl::begin()
 {
+  SectionLog section(Logger::layout, "StageImpl::begin");
   if (!nesting++)
     {
       Geometry::Rectangle<Coord> bb = tree.bbox();
@@ -563,6 +576,7 @@ void StageImpl::begin()
 
 void StageImpl::end()
 {
+  SectionLog section(Logger::layout, "StageImpl::end");
   if (!--nesting)
     {
       tree.end();
@@ -586,18 +600,20 @@ void StageImpl::end()
 
 Stage::Info StageImpl::insert(Graphic_ptr g, const Vertex &position, const Vertex &size, Index layer)
 {
+  SectionLog section(Logger::layout, "StageImpl::insert");
   Guard guard(myMutex);
   StageInfoImpl *info = new StageInfoImpl(g, position, size, layer);
-  g->addParent(_this());
+  info->child->addParent(_this());
   tree.insert(info);
   list.insert(info);
   damage(info);
   return *info;
 }
 
-void StageImpl::remove(const Stage::Info &i)
+void StageImpl::erase(const Stage::Info &i)
 {
   StageInfoImpl *info = list.find(i.layer);
+  if (!info) return;
   tree.remove(info);
   list.remove(info);
 
@@ -637,12 +653,12 @@ void StageImpl::relayer(const Stage::Info &i, Stage::Index l)
   damage(info);
 }
 
-void StageImpl::allocateChild(StageInfoImpl *i, Allocation::Info &a)
+void StageImpl::allocateChild(StageInfoImpl *i, Allocation::Info &info)
 {
   RegionImpl *region = new RegionImpl;
-  region->_this();
+  region->_obj_is_ready(_boa());
   i->bbox(*region);
-  a.allocation->copy(region->_this());
+  info.allocation->copy(region->_this());
   region->_dispose();
 }
 

@@ -41,6 +41,9 @@ interface Stage : Graphic
   void end();
 
   Info insert(in Graphic g, in Vertex p, in Vertex size, in Index l);
+  void erase(in Info i);
+  void reposition(in Info i, in Vertex p);
+  void relayer(in Info i, in Index x);
 };
 
 #endif /* _Stage_idl */

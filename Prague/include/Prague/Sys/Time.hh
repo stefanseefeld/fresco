@@ -56,6 +56,7 @@ public:
   Time  operator -  (const Time &T) const { Time t = *this; t -= T; return t;}
   operator bool () const { return tv_sec != 0 || tv_usec != 0;}
   operator timespec () const { timespec t; t.tv_sec = tv_sec, t.tv_nsec = tv_usec * 1000; return t;}
+  operator double () const { return static_cast<double>(tv_sec) + static_cast<double>(tv_usec)/1000000.;}
   operator const char *() const { return ctime(&tv_sec);}
   static Time currentTime();
   friend ostream &operator << (ostream &os, const Time &T) { return os << T.tv_sec << " s, " << T.tv_usec << " us";}

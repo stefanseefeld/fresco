@@ -2,7 +2,6 @@
  *
  * This source file is a part of the Berlin Project.
  * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
- * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -20,33 +19,32 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _DrawTraversal_hh
-#define _DrawTraversal_hh
+#ifndef _logbuf_hh
+#define _logbuf_hh
 
-#include <Warsaw/config.hh>
-#include <Warsaw/Traversal.hh>
-#include <Berlin/TraversalImpl.hh>
-#include <vector>
+#include <streambuf.h>
 
-declare_corba_ptr_type(DrawingKit)
-declare_corba_ptr_type(Drawable)
-declare_corba_ptr_type(Region)
-
-class DrawTraversalImpl : implements(DrawTraversal), virtual public TraversalImpl
+namespace Prague
 {
+
+class logbuf : public streambuf
+{
+  typedef char char_type;
+  typedef int int_type;
 public:
-  DrawTraversalImpl(DrawingKit_ptr, Region_ptr);
-  DrawTraversalImpl(const DrawTraversalImpl &);
-  ~DrawTraversalImpl();
-  CORBA::Boolean intersects();
-  void visit(Graphic_ptr);
-  order direction() { return up;}
-  CORBA::Boolean ok() { return true;}
-  DrawingKit_ptr kit();
+  logbuf(size_t size) : wrapflag(true), wrapped(false) { char_type *p = new char_type[size]; setp(p, p + size);}
+  ~logbuf() { delete [] pbase();}
+  void wrap(bool flag) { wrapflag = flag;}
+  void clear() { setp(pbase(), epptr()); wrapped = false;}
+  void dump(ostream &);
+
+  int_type sputc(char_type c);
+  int_type xsputn(const char_type *s, streamsize n);
 private:
-  DrawingKit_var drawingkit;
-  Drawable_var drawable;
-  Region_var clipping;
+  bool wrapflag : 1;
+  bool wrapped  : 1;
 };
 
-#endif /* _DrawTraversalImpl_hh */
+};
+
+#endif /* _logbuf_hh */

@@ -29,7 +29,7 @@
 Requestor::Requestor(Graphic_ptr g, const Graphic::Requisition &r)
 {
   body(g);
-  req = r;
+  requisition = r;
 }
 
 Requestor::~Requestor() {}
@@ -37,13 +37,13 @@ Requestor::~Requestor() {}
 Requestor::Requestor(Graphic_ptr g, Alignment xalign, Alignment yalign, Coord xspan, Coord yspan)
 {
   body(g);
-  GraphicImpl::defaultRequisition(req);
-  Graphic::Requirement *rx = GraphicImpl::requirement(req, xaxis);
-  Graphic::Requirement *ry = GraphicImpl::requirement(req, yaxis);
+  GraphicImpl::defaultRequisition(requisition);
+  Graphic::Requirement *rx = GraphicImpl::requirement(requisition, xaxis);
+  Graphic::Requirement *ry = GraphicImpl::requirement(requisition, yaxis);
   rx->align = xalign;
   ry->align = yalign;
   rx->natural = xspan;
   ry->natural = yspan; 
 }
 
-void Requestor::request(Requisition &r) { r = req;}
+void Requestor::request(Requisition &r) { r = requisition;}
