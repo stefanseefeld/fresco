@@ -42,7 +42,8 @@ SRC		:= Console.cc Logger.cc DefaultPOA.cc ServantBase.cc IdentifiableImpl.cc \
 	  	   DrawTraversalImpl.cc PickTraversalImpl.cc ControllerImpl.cc \
 	  	   DesktopImpl.cc ScreenImpl.cc ScreenManager.cc EventManager.cc \
 	  	   PositionalFocus.cc NonPositionalFocus.cc FilterImpl.cc SubjectImpl.cc \
-	  	   KitImpl.cc RCManager.cc
+	  	   PNG.cc RasterImpl.cc \
+		   KitImpl.cc RCManager.cc
 
 DEP		:= $(patsubst %.cc, %.d, $(SRC))
 OBJ		:= $(patsubst %.cc, %.o, $(SRC))

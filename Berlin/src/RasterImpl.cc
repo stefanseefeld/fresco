@@ -23,8 +23,8 @@
 
 #include <Prague/Sys/Tracer.hh>
 #include <Prague/Sys/Path.hh>
-#include <Berlin/RCManager.hh>
-#include "Image/RasterImpl.hh"
+#include "Berlin/RCManager.hh"
+#include "Berlin/RasterImpl.hh"
 #include <string>
 
 using namespace Prague;

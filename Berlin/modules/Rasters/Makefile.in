@@ -34,7 +34,7 @@ hdir		:= $(top_srcdir)/include/Image
 CPPFLAGS	+= -I$(hdir)
 LIBS		+= -lBerlin -lpng
 
-SRC		:= PNG.cc RasterImpl.cc ImageKitImpl.cc #ImageImpl.cc
+SRC		:= ImageKitImpl.cc #ImageImpl.cc
 
 MODULE		:= ImageKit
 

@@ -22,10 +22,10 @@
  * MA 02139, USA.
  */
 
-#include <Berlin/ImplVar.hh>
-#include "Image/ImageKitImpl.hh"
-#include "Image/RasterImpl.hh"
 #include <Prague/Sys/Tracer.hh>
+#include <Berlin/ImplVar.hh>
+#include <Berlin/RasterImpl.hh>
+#include "Image/ImageKitImpl.hh"
 
 using namespace Prague;
 using namespace Warsaw;
