@@ -140,45 +140,60 @@ bool GGI::Drawable::nextEvent(ggi_event &event)
   if (autoplay) rfdset.set(input);
   int nfds = ggiEventSelect(vis, &mask, rfdset.max() + 1, rfdset, 0, 0, 0);
  
-  if (nfds == 0) {
-    // no input from the outside world
-    ggiEventRead(vis, &event, mask); 
-    if (event.any.type == evPtrRelative || event.any.type == evPtrAbsolute) {
-      int m = ggiEventsQueued(vis, mask);
-      int n = ggiEventsQueued(vis, move_mask);
-      if (m == n) { // nothing but a bunch of moves queued up
-	int x=event.pmove.x, y=event.pmove.y;
-	for (int i = 0; i < n; ++i) {
-	  // consume them all
-	  ggiEventRead(vis, &event, move_mask); 	  
-	  if (event.any.type == evPtrAbsolute) {
-	    x = event.pmove.x;
-	    y = event.pmove.y;
-	  } else {
-	    x += event.pmove.x;
-	    y += event.pmove.y;
-	  }
+  if (nfds == 0)
+    {
+      // no input from the outside world
+      ggiEventRead(vis, &event, mask); 
+      if (event.any.type == evPtrRelative || event.any.type == evPtrAbsolute)
+	{
+	  int m = ggiEventsQueued(vis, mask);
+	  int n = ggiEventsQueued(vis, move_mask);
+	  if (m == n)  // nothing but a bunch of moves queued up
+	    {
+	      int x=event.pmove.x, y=event.pmove.y;
+	      for (int i = 0; i < n; ++i)
+		{
+		  // consume them all
+		  ggiEventRead(vis, &event, move_mask); 	  
+		  if (event.any.type == evPtrAbsolute)
+		    {
+		      x = event.pmove.x;
+		      y = event.pmove.y;
+		    }
+		  else
+		    {
+		      x += event.pmove.x;
+		      y += event.pmove.y;
+		    }
+		}
+	      if (event.any.type == evPtrRelative)
+		{
+		  // 	event.any.type = evPtrAbsolute;
+		  event.pmove.x = x;
+		  event.pmove.y = y;
+		}
+	    }
 	}
-	event.any.type = evPtrAbsolute;
-	event.pmove.x = x;
-	event.pmove.y = y;
-      }
-    }
-    if (autoplay) writeEvent(event);
-    return true;
-    
-  } else {
-    if (autoplay && rfdset.isset(input)) {
-      readEvent(event);
+      if (autoplay) writeEvent(event);
       return true;
-      
-    } else {
-      if (rfdset.isset(wakeupPipe[0])) {
-	char c; read(wakeupPipe[0], &c, 1);
-	return false;
-      }
+    
     }
-  }
+  else 
+    {
+      if (autoplay && rfdset.isset(input))
+	{
+	  readEvent(event);
+	  return true;  
+	}
+      else
+	{
+	  if (rfdset.isset(wakeupPipe[0]))
+	    {
+	      char c; read(wakeupPipe[0], &c, 1);
+	      return false;
+	    }
+	}
+    }
   return false;
 }
 
