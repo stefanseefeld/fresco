@@ -10,12 +10,14 @@
 #    $ cd ..../QMTest
 #    $ python
 #    >>> import sys
-#    >>> sys.path += '/usr/lib/qm', '/usr/lib/qm/xmlrpc', '/usr/lib/qm/zope-dtml'
+#    >>> sys.path += '/usr/lib/qm'
 #    >>> import os
 #    >>> os.environ["QM_HOME"] = "/usr/lib/qm"
 #    >>> os.environ["QM_SHARE_PATH"] = "/usr/share/qm"
 #    >>> import fresco.test.test
 # These qmtest people are most vexing.
+
+# TODO: update to use the new QMTest executable-running classes
 
 # System libraries
 import re
