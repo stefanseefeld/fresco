@@ -77,29 +77,28 @@ class FontSizeDecorator : public MonoGraphic
 };
 
 class FontIterator : public virtual POA_Fresco::FontIterator,
-                     public virtual PortableServer::ServantBase
+                     public virtual RefCountBase
 {
   public:
     FontIterator::FontIterator(FontKit_var fk) :
         my_fk(fk)
         {}
-    Font_ptr
-    child() const
+    Font_ptr child() const
     {
         return my_fk->default();
     }
-    void
-    next() {}
-    void
-    prev() {}
-    void
-    destroy() { delete this;}
+    void next() {}
+    void prev() {}
+    void destroy() { deactivate();}
   private:
     FontKit_var my_fk;
 };
 
 FontKitImpl::FontKitImpl(const std::string &id, const Fresco::Kit::PropertySeq &p)
-    : KitImpl(id, p) {}
+    : KitImpl(id, p)
+{
+    FT_Init_Freetype(&my_library);
+}
 
 FontKitImpl::~FontKitImpl() {}
 

@@ -27,6 +27,9 @@
 #include <Fresco/Font.hh>
 #include <Berlin/KitImpl.hh>
 
+#include <ft2build.h>
+#include FT_FREETYPE_H
+
 namespace Berlin
 {
 namespace FontKit
@@ -40,33 +43,26 @@ class FontKitImpl : public virtual POA_Fresco::FontKit,
 public:
     FontKitImpl(const std::string &, const Fresco::Kit::PropertySeq &);
     virtual ~FontKitImpl();
-    virtual KitImpl
-    *clone(const Fresco::Kit::PropertySeq &p)
+    virtual KitImpl *clone(const Fresco::Kit::PropertySeq &p)
     {
         return new FontKitImpl(repo_id(), p);
     }
 
-    virtual Font_ptr
-    _cxx_default();
-    virtual Font_ptr
-    filename(const char* file, const Fresco::Unistring& style, Coord size);
-    virtual Font_ptr
-    provide(const Unistring& family, const Unistring& style, Coord size);
-    virtual Graphic_ptr
-    set_font(Graphic_ptr g, Font_ptr f);
-    virtual Graphic_ptr
-    size(Graphic_ptr g, Coord s);
-    virtual Graphic_ptr
-    style(Graphic_ptr g, const Unistring& s);
-    virtual Graphic_ptr
-    delta_size(Graphic_ptr g, Coord ds);
-    virtual Graphic_ptr
-    delta_style(Graphic_ptr g, const Unistring& ds);
+    virtual Font_ptr _cxx_default();
+    virtual Font_ptr filename(const char* file, const Fresco::Unistring& style,
+                              Coord size);
+    virtual Font_ptr provide(const Unistring& family, const Unistring& style,
+                             Coord size);
+    virtual Graphic_ptr set_font(Graphic_ptr g, Font_ptr f);
+    virtual Graphic_ptr size(Graphic_ptr g, Coord s);
+    virtual Graphic_ptr style(Graphic_ptr g, const Unistring& s);
+    virtual Graphic_ptr delta_size(Graphic_ptr g, Coord ds);
+    virtual Graphic_ptr delta_style(Graphic_ptr g, const Unistring& ds);
 
-    virtual FontIterator_ptr
-    first_font();
-    virtual FontIterator_ptr
-    last_font();
+    virtual FontIterator_ptr first_font();
+    virtual FontIterator_ptr last_font();
+private:
+    FT_Library my_library;
 };
 
 } // namespace
