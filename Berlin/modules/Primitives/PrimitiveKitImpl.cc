@@ -40,12 +40,10 @@ PrimitiveKitImpl::~PrimitiveKitImpl() { }
 
 Graphic_ptr PrimitiveKitImpl::root(Graphic_ptr g)
 {
-  Graphic_ptr res =
-      create<Graphic>(new Root(Alignment(0.5), Alignment(0.5),
-			       Alignment(0.5), Alignment(0.5),
-			       Alignment(0.5), Alignment(0.5)));
-  res->body(g);
-  return res;
+    return create_and_set_body<Graphic>(
+	new Root(Alignment(0.5), Alignment(0.5),
+		 Alignment(0.5), Alignment(0.5),
+		 Alignment(0.5), Alignment(0.5)), g);
 }
 
 Primitive::Geometry_ptr PrimitiveKitImpl::geometry(const Fresco::Mesh &mesh)
@@ -108,9 +106,7 @@ Graphic_ptr PrimitiveKitImpl::cube()
 
 Graphic_ptr PrimitiveKitImpl::transformer(Graphic_ptr g)
 {
-  Graphic_ptr res = create<Graphic>(new Transformer);
-  res->body(g);
-  return res;
+  return create_and_set_body<Graphic>(new Transformer, g);
 }
 
 Graphic_ptr PrimitiveKitImpl::directional_light(Fresco::Graphic_ptr g,
@@ -118,9 +114,7 @@ Graphic_ptr PrimitiveKitImpl::directional_light(Fresco::Graphic_ptr g,
 						CORBA::Float i,
 						const Fresco::Vertex &d)
 {
-  Graphic_ptr res = create<Graphic>(new DirectionalLight(c, i, d));
-  res->body(g);
-  return res;
+  return create_and_set_body<Graphic>(new DirectionalLight(c, i, d), g);
 }
 
 Graphic_ptr PrimitiveKitImpl::point_light(Fresco::Graphic_ptr g,
@@ -128,9 +122,7 @@ Graphic_ptr PrimitiveKitImpl::point_light(Fresco::Graphic_ptr g,
 					  CORBA::Float i,
 					  const Fresco::Vertex &p)
 {
-  Graphic_ptr res = create<Graphic>(new PointLight(c, i, p));
-  res->body(g);
-  return res;
+  return create_and_set_body<Graphic>(new PointLight(c, i, p), g);
 }
 
 Graphic_ptr PrimitiveKitImpl::spot_light(Fresco::Graphic_ptr g,
@@ -141,9 +133,7 @@ Graphic_ptr PrimitiveKitImpl::spot_light(Fresco::Graphic_ptr g,
 					 CORBA::Float r,
 					 CORBA::Float a)
 {
-  Graphic_ptr res = create<Graphic>(new SpotLight(c, i, p, d, r, a));
-  res->body(g);
-  return res;
+  return create_and_set_body<Graphic>(new SpotLight(c, i, p, d, r, a), g);
 }
 
 

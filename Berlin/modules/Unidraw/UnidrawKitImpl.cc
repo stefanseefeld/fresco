@@ -60,27 +60,17 @@ void UnidrawKitImpl::bind(ServerContext_ptr context)
 Unidraw::Tool_ptr UnidrawKitImpl::select_tool()
 {
   Graphic_var box = _figures->rectangle(0., 0., 1., 1.);
-  SelectTool *tool = new SelectTool(box);
-  activate(tool);
-  Unidraw::Tool_ptr res = tool->_this();
-  return res;
+  return create<Unidraw::Tool>(new SelectTool(box));
 }
 
 Unidraw::Editor_ptr UnidrawKitImpl::create_editor()
 {
-  EditorImpl *editor = new EditorImpl(this);
-  activate(editor);
-  Unidraw::Editor_ptr res = editor->_this();
-  return res;
+  return create<Unidraw::Editor>(new EditorImpl(this));
 }
 
 Unidraw::View_ptr UnidrawKitImpl::create_view(Graphic_ptr g, Unidraw::Model_ptr m)
 {
-  UViewImpl *view = new UViewImpl(m);
-  activate(view);
-  view->body(g);
-  Unidraw::View_ptr res = view->_this();
-  return res;
+  return create_and_set_body<Unidraw::View>(new UViewImpl(m), g);
 }
 
 Fresco::FigureKit_ptr UnidrawKitImpl::figures()

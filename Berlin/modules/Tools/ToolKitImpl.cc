@@ -116,37 +116,27 @@ ToolKitImpl::~ToolKitImpl() { }
 
 Graphic_ptr ToolKitImpl::debugger(Graphic_ptr g, const char *s)
 {
-  Graphic_ptr res = create<Graphic>(new DebugGraphic(std::cout, s));
-  res->body(g);
-  return res;
+  return create_and_set_body<Graphic>(new DebugGraphic(std::cout, s), g);
 }
 
 DrawingState_ptr ToolKitImpl::decorator(Graphic_ptr g)
 {
-  DrawingState_ptr res = create<DrawingState>(new DrawingStateImpl());
-  res->body(g);
-  return res;
+  return create_and_set_body<DrawingState>(new DrawingStateImpl(), g);
 }
 
 Graphic_ptr ToolKitImpl::rgb(Graphic_ptr gg, Coord r, Coord g, Coord b)
 {
-  Graphic_ptr res = create<Graphic>(new RGBDecorator(r, g, b));
-  res->body(gg);
-  return res;
+  return create_and_set_body<Graphic>(new RGBDecorator(r, g, b), gg);
 }
 
 Graphic_ptr ToolKitImpl::alpha(Graphic_ptr g, Coord a)
 {
-  Graphic_ptr res = create<Graphic>(new AlphaDecorator(a));
-  res->body(g);
-  return res;
+  return create_and_set_body<Graphic>(new AlphaDecorator(a), g);
 }
 
 Graphic_ptr ToolKitImpl::lighting(Graphic_ptr gg, Coord r, Coord g, Coord b)
 {
-  Graphic_ptr res = create<Graphic>(new LightingDecorator(r, g, b));
-  res->body(gg);
-  return res;
+  return create_and_set_body<Graphic>(new LightingDecorator(r, g, b), gg);
 }
 
 Graphic_ptr ToolKitImpl::frame(Graphic_ptr g,
@@ -180,9 +170,7 @@ Graphic_ptr ToolKitImpl::frame(Graphic_ptr g,
       renderer = new ColoredFrame(thickness, spec.foreground(), fill);
       break;
   }
-  Graphic_ptr res = create<Graphic>(new Frame(thickness, renderer));
-  res->body(g);
-  return res;
+  return create_and_set_body<Graphic>(new Frame(thickness, renderer), g);
 }
 
 Graphic_ptr ToolKitImpl::triangle(Graphic_ptr g, Coord thickness,
@@ -217,9 +205,7 @@ Graphic_ptr ToolKitImpl::triangle(Graphic_ptr g, Coord thickness,
 				     fill, d);
       break;
   }
-  Graphic_ptr res = create<Graphic>(new Frame(thickness, renderer));
-  res->body(g);
-  return res;
+  return create_and_set_body<Graphic>(new Frame(thickness, renderer), g);
 }
 
 Graphic_ptr ToolKitImpl::diamond(Graphic_ptr g, Coord thickness,
@@ -252,9 +238,7 @@ Graphic_ptr ToolKitImpl::diamond(Graphic_ptr g, Coord thickness,
       renderer = new ColoredDiamond(thickness, spec.foreground(), fill);
       break;
   }
-  Graphic_ptr res = create<Graphic>(new Frame(thickness, renderer));
-  res->body(g);
-  return res;
+  return create_and_set_body<Graphic>(new Frame(thickness, renderer), g);
 }
 
 // Graphic_ptr ToolKitImpl::filler(Graphic_ptr g, const Color &c)
@@ -281,64 +265,50 @@ Graphic_ptr ToolKitImpl::create_switch(Graphic_ptr g1, Graphic_ptr g2,
 				       Telltale_ptr telltale)
 {
   Switch *s = new Switch(mask);
-  activate(s);
   s->attach(telltale);
   s->init(g1, g2);
-  return s->_this();
+  return create<Graphic>(s);
 }
 
 MainController_ptr ToolKitImpl::group(Graphic_ptr g)
 {
-  MainController_ptr res =
-      create<MainController>(new MainControllerImpl(true));
-  res->body(g);
-  return res;
+  return create_and_set_body<MainController>(new MainControllerImpl(true), g);
 }
 
 Trigger_ptr ToolKitImpl::button(Graphic_ptr g, Command_ptr c)
 {
-  Trigger_ptr trigger = create<Trigger>(new TriggerImpl());
+  Trigger_ptr trigger = create_and_set_body<Trigger>(new TriggerImpl(), g);
   trigger->action(c);
-  trigger->body(g);
   return trigger;
 }
 
 Controller_ptr ToolKitImpl::toggle(Graphic_ptr g)
 {
-  Controller_ptr res = create<Controller>(new Toggle);
-  res->body(g);
-  return res;
+  return create_and_set_body<Controller>(new Toggle, g);
 }
 
 Controller_ptr ToolKitImpl::dragger(Graphic_ptr g, Command_ptr command)
 {
-  Controller_ptr res =create<Controller>(new Dragger(command));
-  res->body(g);
-  return res;
+  return create_and_set_body<Controller>(new Dragger(command), g);
 }
 
 Controller_ptr ToolKitImpl::stepper(Graphic_ptr g, Command_ptr command)
 {
-  Trigger_ptr stepper = create<Trigger>(new Stepper);
+  Trigger_ptr stepper = create_and_set_body<Trigger>(new Stepper, g);
   stepper->action(command);
-  stepper->body(g);
   return stepper;
 }
 
 Controller_ptr ToolKitImpl::text_input(Graphic_ptr g,
 				       TextBuffer_ptr buffer)
 {
-  Controller_ptr res = create<Controller>(new TextInput(buffer));
-  res->body(g);
-  return res;
+  return create_and_set_body<Controller>(new TextInput(buffer), g);
 }
 
 Controller_ptr ToolKitImpl::terminal(Graphic_ptr g,
 				     StreamBuffer_ptr buffer)
 {
-  Controller_ptr res = create<Controller>(new Terminal(buffer));
-  res->body(g);
-  return res;
+  return create_and_set_body<Controller>(new Terminal(buffer), g);
 }
 
 Canvas_ptr ToolKitImpl::create_canvas(PixelCoord width,

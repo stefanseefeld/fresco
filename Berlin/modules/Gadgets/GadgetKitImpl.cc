@@ -225,19 +225,19 @@ Graphic_ptr GadgetKitImpl::rgb(Graphic_ptr gg,
 			       BoundedValue_ptr g,
 			       BoundedValue_ptr b)
 {
-  Graphic_ptr adjuster = create<Graphic>(new RGBAdjuster(r, g, b));
-  adjuster->body(gg);
-  r->attach(Observer_ptr(adjuster));
-  g->attach(Observer_ptr(adjuster));
-  b->attach(Observer_ptr(adjuster));
+  Graphic_var adjuster =
+      create_and_set_body<Graphic>(new RGBAdjuster(r, g, b), gg);
+  r->attach(Observer_ptr(Graphic_ptr(adjuster)));
+  g->attach(Observer_ptr(Graphic_ptr(adjuster)));
+  b->attach(Observer_ptr(Graphic_ptr(adjuster)));
   return adjuster;
 }
 
 Graphic_ptr GadgetKitImpl::alpha(Graphic_ptr g, BoundedValue_ptr value)
 {
-  Graphic_ptr adjuster = create<Graphic>(new AlphaAdjuster(value));
-  value->attach(Observer_ptr(adjuster));
-  adjuster->body(g);
+  Graphic_var adjuster =
+      create_and_set_body<Graphic>(new AlphaAdjuster(value), g);
+  value->attach(Observer_ptr(Graphic_ptr(adjuster)));
   return adjuster;
 }
 
@@ -246,11 +246,11 @@ Graphic_ptr GadgetKitImpl::lighting(Graphic_ptr gg,
 				    BoundedValue_ptr g,
 				    BoundedValue_ptr b)
 {
-  Graphic_ptr adjuster = create<Graphic>(new LightingAdjuster(r, g, b));
-  r->attach(Observer_ptr(adjuster));
-  g->attach(Observer_ptr(adjuster));
-  b->attach(Observer_ptr(adjuster));
-  adjuster->body(gg);
+  Graphic_var adjuster =
+      create_and_set_body<Graphic>(new LightingAdjuster(r, g, b), gg);
+  r->attach(Observer_ptr(Graphic_ptr(adjuster)));
+  g->attach(Observer_ptr(Graphic_ptr(adjuster)));
+  b->attach(Observer_ptr(Graphic_ptr(adjuster)));
 
   return adjuster;
 }
@@ -259,21 +259,19 @@ Graphic_ptr GadgetKitImpl::rotator(Graphic_ptr g,
 				   BoundedValue_ptr value,
 				   Axis axis)
 {
-  Graphic_ptr adjuster = create<Graphic>(new RotationAdjuster(axis));
-  value->attach(Observer_ptr(adjuster));
   Graphic_var transformer = _figure->transformer(g);
-  adjuster->body(transformer);
-
+  Graphic_var adjuster =
+      create_and_set_body<Graphic>(new RotationAdjuster(axis), transformer);
+  value->attach(Observer_ptr(Graphic_ptr(adjuster)));
   return adjuster;
 }
 
 Graphic_ptr GadgetKitImpl::zoomer(Graphic_ptr g, BoundedValue_ptr value)
 {
-  Graphic_ptr adjuster = create<Graphic>(new ZoomAdjuster());
-  value->attach(Observer_ptr(adjuster));
   Graphic_var transformer = _figure->transformer(g);
-  adjuster->body(transformer);
-
+  Graphic_var adjuster =
+      create_and_set_body<Graphic>(new ZoomAdjuster(), transformer);
+  value->attach(Observer_ptr(Graphic_ptr(adjuster)));
   return adjuster;
 }
 

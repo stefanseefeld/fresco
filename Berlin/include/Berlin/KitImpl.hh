@@ -25,6 +25,7 @@
 #include <Prague/Sys/Tracer.hh>
 #include <Fresco/config.hh>
 #include <Fresco/Kit.hh>
+#include <Fresco/Graphic.hh>
 #include <Berlin/DefaultPOA.hh>
 
 class ServerImpl;
@@ -57,6 +58,14 @@ protected:
     {
 	activate(impl);
 	return impl->_this();
+    }
+
+    template <typename I, typename Im>
+    typename I::_ptr_type create_and_set_body(Im *impl, Fresco::Graphic_ptr g)
+    {           
+        activate(impl);
+	impl->body(g);
+        return impl->_this();
     }
 
 private:

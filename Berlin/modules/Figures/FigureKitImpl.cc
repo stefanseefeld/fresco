@@ -41,15 +41,14 @@ FigureKitImpl::~FigureKitImpl() { }
 
 Graphic_ptr FigureKitImpl::root(Graphic_ptr g)
 {
-    Graphic_ptr res =
-	create<Graphic>(new TransformAllocator(Alignment(0.5),
-					       Alignment(0.5),
-					       Alignment(0.5),
-					       Alignment(0.5),
-					       Alignment(0.5),
-					       Alignment(0.5)));
-    res->body(g);
-    return res;
+    return
+	create_and_set_body<Graphic>(new TransformAllocator(Alignment(0.5),
+							    Alignment(0.5),
+							    Alignment(0.5),
+							    Alignment(0.5),
+							    Alignment(0.5),
+							    Alignment(0.5)),
+				     g);
 }
 
 Graphic_ptr FigureKitImpl::fitter(Graphic_ptr g)
@@ -125,16 +124,12 @@ Image_ptr FigureKitImpl::pixmap(Raster_ptr raster)
 
 Graphic_ptr FigureKitImpl::texture(Graphic_ptr g, Raster_ptr raster)
 {
-  Graphic_ptr res = create<Graphic>(new Texture(raster));
-  res->body(g);
-  return res;
+  return create_and_set_body<Graphic>(new Texture(raster), g);
 }
 
 Graphic_ptr FigureKitImpl::transformer(Graphic_ptr g)
 {
-  Graphic_ptr res = create<Graphic>(new Transformer);
-  res->body(g);
-  return res;
+  return create_and_set_body<Graphic>(new Transformer, g);
 }
 
 

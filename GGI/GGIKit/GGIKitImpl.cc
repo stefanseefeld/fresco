@@ -30,7 +30,7 @@ GGIKitImpl::~GGIKitImpl() {}
 
 GGI::Visual_ptr GGIKitImpl::create_visual(Fresco::PixelCoord w, Fresco::PixelCoord h)
 {
-    return create<Visual>(new VisualImpl(w, h));
+    return create<GGI::Visual>(new VisualImpl(w, h));
 }
 
 

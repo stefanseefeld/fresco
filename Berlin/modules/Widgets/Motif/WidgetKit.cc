@@ -165,8 +165,8 @@ Controller_ptr WidgetKit::toggle(Graphic_ptr g)
 Graphic_ptr WidgetKit::gauge(BoundedValue_ptr value)
 {
   Color gray = {0.5, 0.5, 0.5, 1.0};
-  Graphic_ptr g = create<Graphic>(new Gauge(value, gray));
-  value->attach(Observer_ptr(g));
+  Graphic_var g = create<Graphic>(new Gauge(value, gray));
+  value->attach(Observer_ptr(Graphic_ptr(g)));
 
   Fresco::ToolKit::FrameSpec spec;
   spec.brightness(0.5); spec._d(Fresco::ToolKit::outset);

@@ -112,8 +112,7 @@ Graphic_ptr TextKitImpl::glyph(Unichar ch)
       _canonicalDK->allocate_char(ch, r);
       TextChunk *chunk = new TextChunk(ch, r);
       activate(chunk);
-      Graphic_ptr res = chunk->_this();
-      _cache[ch] = res;
+      _cache[ch] = chunk->_this();
   }
   return Graphic::_duplicate(_cache[ch]);
 }
@@ -140,22 +139,22 @@ Graphic_ptr TextKitImpl::strut()
 
 Graphic_ptr TextKitImpl::simple_viewer(TextBuffer_ptr buf)
 {
-  Graphic_ptr tv = create<Graphic>(new TextViewer(buf,
+  Graphic_var tv = create<Graphic>(new TextViewer(buf,
 						  TextKit_var(_this()),
 						  _canonicalDK,
 						  _lineCompositor));
-  buf->attach(Observer_ptr(tv));
+  buf->attach(Observer_ptr(Graphic_ptr(tv)));
   return tv;
 }
 
 Graphic_ptr TextKitImpl::terminal(StreamBuffer_ptr buf)
 {
-  Graphic_ptr tv = create<Graphic>(new TerminalView(buf,
+  Graphic_var tv = create<Graphic>(new TerminalView(buf,
 						    TextKit_var(_this()),
 						    _canonicalDK,
 						    _lineCompositor,
 						    _pageCompositor));
-  buf->attach(Observer_ptr(tv));
+  buf->attach(Observer_ptr(Graphic_ptr(tv)));
   return tv;
 }
 
