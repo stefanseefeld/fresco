@@ -79,6 +79,11 @@ install:	all
 		$(INSTALL) -m 755 $(TARGETS) $(DESTDIR)$(bindir)
 		$(INSTALL) -d 755 $(DESTDIR)$(sysconfdir)
 		$(INSTALL) -m 644 ../etc/berlinrc $(DESTDIR)$(sysconfdir)
+		$(INSTALL) -m 644 ../etc/glyph.dat $(DESTDIR)$(sysconfdir)
+		$(INSTALL) -d 755 $(DESTDIR)$(sysconfdir)/PNG
+		for IMAGE in ../etc/PNG/*.png; do \
+		   $(INSTALL) -m 644 $$IMAGE $(DESTDIR)$(sysconfdir)/PNG; \
+		done
 
 uninstall:
 		for target in $TARGETS ; do \
