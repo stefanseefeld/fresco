@@ -449,7 +449,6 @@ int main(int argc, char **argv) /*FOLD00*/
        Logger::log(Logger::layout) << "started server" << std::endl;
        value = "";
        getopt.get("export-ref",&value);
-       cout << "export-ref is " << value << endl;
        if (value == "ior")
        {
 	   Server_var serverRef = server->_this();
