@@ -45,23 +45,23 @@ module Fresco
       //. All values are given in 1/64th of a pixel
       struct FontMetrics
       {
-	  long ascender;      //.< Ascender in 26.6 frac. pixels
-	  long descender;     //.< Descender in 26.6 frac. pixels
-	  long height;        //.< Text height in 26.6 frac. pixels
-	  long max_advance;   //.< Max. horizontal advance, in 26.6 pixels
+         long ascender;      //.< Ascender in 26.6 frac. pixels
+         long descender;     //.< Descender in 26.6 frac. pixels
+         long height;        //.< Text height in 26.6 frac. pixels
+         long max_advance;   //.< Max. horizontal advance, in 26.6 pixels
       };
-	
+
       //. All values are given in 1/64th of a pixel
       struct GlyphMetrics
       {
-	  long width;         //.< Glyph width
-	  long height;        //.< Glyph height
-	  long horiBearingX;  //.< Left side bearing in horizontal layouts
-	  long horiBearingY;  //.< Top side bearing in horizontal layouts
-	  long horiAdvance;   //.< Advance width for horizontal layout
-	  long vertBearingX;  //.< Left side bearing in vertical layouts
-	  long vertBearingY;  //.< Top side bearing in vertical layouts
-	  long vertAdvance;   //.< Advance height for vertical layout
+         long width;         //.< Glyph width
+         long height;        //.< Glyph height
+         long horiBearingX;  //.< Left side bearing in horizontal layouts
+         long horiBearingY;  //.< Top side bearing in horizontal layouts
+         long horiAdvance;   //.< Advance width for horizontal layout
+         long vertBearingX;  //.< Left side bearing in vertical layouts
+         long vertBearingY;  //.< Top side bearing in vertical layouts
+         long vertAdvance;   //.< Advance height for vertical layout
       };
       //. Matrix to derive arbitrary quadrics from circle segments
       //. FIXME: What's that?
@@ -129,7 +129,7 @@ module Fresco
       //. Return the resolution for the given Axis.
       Coord resolution(in Axis a);
       //. Draws a given Path.
-      //. FIXME: Which restrictions need to apply for pathes/polygones?
+      //. FIXME: Which restrictions need to apply for paths/polygons?
       //.        Direction? Convex? Simple? 
       void draw_path(in Path p);
       //   void drawPatch(in Patch p);
