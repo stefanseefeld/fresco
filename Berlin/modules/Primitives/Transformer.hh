@@ -28,8 +28,10 @@
 #include <Berlin/Allocator.hh>
 #include <Berlin/ImplVar.hh>
 
-namespace Berlin {
-  namespace PrimitiveKit {
+namespace Berlin
+{
+  namespace PrimitiveKit
+  {
 
     class Transformer : public Allocator
     {
