@@ -215,6 +215,8 @@ void GLDrawingKit::drawImage(Raster_ptr raster)
   GLint tbackup = -1;
   if (fs == textured) glGetIntegerv(GL_TEXTURE_BINDING_2D, &tbackup);
   else glEnable(GL_TEXTURE_2D);
+  GLfloat color_cache[4];
+  glGetFloatv(GL_CURRENT_COLOR, color_cache);
   glBindTexture(GL_TEXTURE_2D, glimage->texture);
   glColor4f(1., 1., 1., 1.);
   glBegin(GL_POLYGON);
@@ -231,6 +233,7 @@ void GLDrawingKit::drawImage(Raster_ptr raster)
   glTexCoord2f(glimage->s, glimage->t);   glVertex3f(path[1].x, path[1].y, path[1].z);
   glTexCoord2f(0., glimage->t);           glVertex3f(path[0].x, path[0].y, path[0].z);
   glEnd();
+  glColor4fv(color_cache);  
   if (fs != textured) glDisable(GL_TEXTURE_2D);
   else glBindTexture(GL_TEXTURE_2D, tbackup);
 }

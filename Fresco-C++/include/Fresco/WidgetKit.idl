@@ -70,6 +70,7 @@ interface WidgetKit : Cloneable
   Graphic      gauge(in Color c, in BoundedValue v);
   Controller   slider(in Color c, in BoundedValue v);
   Controller   panner(in Color c, in BoundedRange x, in BoundedRange y);
+  Controller   scrollbar(in Color c, in BoundedRange x, in Axis a);
 };
 
 #endif

@@ -24,6 +24,7 @@
 
 #include "Warsaw/config.hh"
 #include "Warsaw/Viewport.hh"
+#include "Warsaw/BoundedRange.hh"
 #include "Berlin/MonoGraphic.hh"
 
 declare_corba_ptr_type(BoundedRange)
@@ -62,11 +63,7 @@ protected:
   RegionImpl *bodyAllocation(Region_ptr);
   void scrollTransform(Transform_ptr);
 
-  Coord       lv[2];
-  Coord       uv[2];
-  Coord       lo[2]; 
-  Coord       up[2];
-
+  BoundedRange::Settings settings[2];
   Adjustment *xadjustment;
   Adjustment *yadjustment;
   bool        requested;

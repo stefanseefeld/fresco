@@ -20,60 +20,57 @@
  * MA 02139, USA.
  */
 
-#include "Widget/Panner.hh"
+#include "Widget/Scrollbar.hh"
 #include "Berlin/Logger.hh"
 
-class Drag : public Panner::Modifier
+class Drag : public Scrollbar::Modifier
 {
 public:
-  Drag(BoundedRange_ptr x, BoundedRange_ptr y) : xvalue(x), yvalue(y) {}
+  Drag(BoundedRange_ptr v, Axis a) : value(v), axis(a) {}
   virtual void execute(const CORBA::Any &any)
   {
     Vertex *delta;
     if (any >>= delta)
       {
-	if (delta->x != 0.) xvalue->adjust(delta->x);
-	if (delta->y != 0.) yvalue->adjust(delta->y);
+	if (xaxis && delta->x != 0.) value->adjust(delta->x);
+	else if (yaxis && delta->y != 0.) value->adjust(delta->y);
       }
     else  cerr << "Drag::execute : wrong message type !" << endl;
   }
 private:
-  BoundedRange_var xvalue;
-  BoundedRange_var yvalue;
+  BoundedRange_var value;
+  Axis axis;
 };
 
-Panner::Panner(BoundedRange_ptr x, BoundedRange_ptr y)
-  : ControllerImpl(false), redirect(new PObserver(this)), _drag(new Drag(x, y))
+Scrollbar::Scrollbar(BoundedRange_ptr v, Axis a)
+  : ControllerImpl(false), redirect(new SObserver(this)), _drag(new Drag(v, a)), axis(a)
 {
 }
 
-void Panner::init(Controller_ptr t)
+void Scrollbar::init(Controller_ptr t)
 {
   thumb = t;
   t->addParent(Graphic_var(_this()), 1);
   appendController(thumb);
 }
 
-void Panner::update(Subject_ptr, const CORBA::Any &)
+void Scrollbar::update(Subject_ptr, const CORBA::Any &)
 {
-  BoundedRange::Settings settings = x->getSettings();
-  offset[xaxis].lower = settings.lvalue/(settings.upper - settings.lower);
-  offset[xaxis].upper = settings.uvalue/(settings.upper - settings.lower);
-  settings = y->getSettings();
-  offset[yaxis].lower = settings.lvalue/(settings.upper - settings.lower);
-  offset[yaxis].upper = settings.uvalue/(settings.upper - settings.lower);
+  BoundedRange::Settings settings = range->getSettings();
+  offset.lower = settings.lvalue/(settings.upper - settings.lower);
+  offset.upper = settings.uvalue/(settings.upper - settings.lower);
   needRedraw();
 }
 
-void Panner::draw(DrawTraversal_ptr traversal)
+void Scrollbar::draw(DrawTraversal_ptr traversal)
 {
   MonoGraphic::traverse(traversal);
   traverseThumb(traversal);
 }
 
-void Panner::pick(PickTraversal_ptr traversal)
+void Scrollbar::pick(PickTraversal_ptr traversal)
 {
-  SectionLog section("Panner::pick");
+  SectionLog section("Scrollbar::pick");
   if (grabbed(traversal->device()) || traversal->intersectsAllocation())
     {
       traversal->enterController(Controller_var(_this()));
@@ -84,7 +81,7 @@ void Panner::pick(PickTraversal_ptr traversal)
     }
 }
 
-void Panner::allocate(Tag t, const Allocation::Info &info)
+void Scrollbar::allocate(Tag t, const Allocation::Info &info)
 {
   /*
    * t == 0 is the body, t == 1 is the thumb
@@ -93,19 +90,26 @@ void Panner::allocate(Tag t, const Allocation::Info &info)
   //. not yet implemented
 }
 
-void Panner::traverseThumb(Traversal_ptr traversal)
+void Scrollbar::traverseThumb(Traversal_ptr traversal)
 {
   Impl_var<RegionImpl> allocation(new RegionImpl(Region_var(traversal->allocation())));
   Impl_var<TransformImpl> transformation(new TransformImpl);
-  Coord lower = allocation->lower.x;
-  Coord scale = allocation->upper.x - allocation->lower.x;
-  allocation->lower.x = lower + scale*allocation->lower.x;
-  allocation->upper.x = lower + scale*allocation->upper.x;
-  lower = allocation->lower.y;
-  scale = allocation->upper.y - allocation->lower.y;
-  allocation->lower.y = lower + scale*allocation->lower.y;
-  allocation->upper.y = lower + scale*allocation->upper.y;
-  allocation->lower.z = allocation->upper.z = 0.;
+  if (axis == xaxis)
+    {
+      Coord lower = allocation->lower.x;
+      Coord scale = allocation->upper.x - allocation->lower.x;
+      allocation->lower.x = lower + scale*allocation->lower.x;
+      allocation->upper.x = lower + scale*allocation->upper.x;
+      allocation->lower.z = allocation->upper.z = 0.;
+    }
+  else if (axis == yaxis)
+    {
+      Coord lower = allocation->lower.y;
+      Coord scale = allocation->upper.y - allocation->lower.y;
+      allocation->lower.y = lower + scale*allocation->lower.y;
+      allocation->upper.y = lower + scale*allocation->upper.y;
+      allocation->lower.z = allocation->upper.z = 0.;
+    }
   allocation->normalize(Transform_var(transformation->_this()));
   traversal->traverseChild(thumb, 1, Region_var(allocation->_this()), Transform_var(transformation->_this()));
 }

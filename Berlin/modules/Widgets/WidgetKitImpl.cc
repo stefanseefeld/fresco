@@ -39,6 +39,7 @@
 #include "Widget/Gauge.hh"
 #include "Widget/Slider.hh"
 #include "Widget/Panner.hh"
+#include "Widget/Scrollbar.hh"
 #include "Widget/TextInput.hh"
 #include "Berlin/DebugGraphic.hh"
 #include "Berlin/Plugin.hh"
@@ -308,10 +309,23 @@ Controller_ptr WidgetKitImpl::panner(const Color &bg, BoundedRange_ptr x, Bounde
 {
   Panner *panner = new Panner(x, y);
   panner->_obj_is_ready(_boa());
-  panner->body(Graphic_var(inset(Graphic_var(lk->fixedSize(Graphic_var(Graphic::_nil()), 200., 200.)), bg, true)));
+  panner->body(Graphic_var(inset(Graphic_var(lk->fixedSize(Graphic_var(Graphic::_nil()), 1000., 1000.)), bg, true)));
   Controller_var thumb = dragger(Graphic_var(Graphic::_nil()), Command_var(panner->drag()));
   panner->init(thumb);
   return panner->_this();
+}
+
+Controller_ptr WidgetKitImpl::scrollbar(const Color &bg, BoundedRange_ptr x, Axis a)
+{
+  Scrollbar *scrollbar = new Scrollbar(x, a);
+  scrollbar->_obj_is_ready(_boa());
+  Graphic_var body = a == xaxis ?
+    lk->fixedAxis(Graphic_var(Graphic::_nil()), yaxis, 200.) :
+    lk->fixedAxis(Graphic_var(Graphic::_nil()), xaxis, 200.);    
+  scrollbar->body(Graphic_var(inset(body, bg, true)));
+  Controller_var thumb = dragger(Graphic_var(Graphic::_nil()), Command_var(scrollbar->drag()));
+  scrollbar->init(thumb);
+  return scrollbar->_this();
 }
 
 EXPORT_PLUGIN(WidgetKitImpl,interface(WidgetKit))

@@ -29,6 +29,7 @@
 
 void TextInput::keyPress(const Input::Event &event)
 {
+  cout << "key press" << endl;
   SectionLog section("TextInput::keyPress");
   const Input::Toggle &toggle = event[0].attr.kselection();
   Unicode::Char uc(static_cast<Unicode::_Char>(toggle.number));
