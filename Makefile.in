@@ -29,8 +29,8 @@ distdir		:= @PACKAGE_NAME@-@PACKAGE_VERSION@
 
 mandatory	:= Prague Babylon Fresco-IDL Fresco-C++ Berlin 
 optional	:= GGI SDL \
-            Fresco-Python Fresco-Java Fresco-Perl \
-            Fresco-C++-demos Fresco-Python-demos
+                   Fresco-Python Fresco-Java Fresco-Perl \
+                   Fresco-C++-demos Fresco-Python-demos
 
 mandatory_dirs	:= $(foreach package, $(mandatory), $(shell test -d $(package) && echo '$(package)'))
 optional_dirs	:= $(foreach package, $(optional), $(shell test -d $(package) && echo '$(package)'))
@@ -47,14 +47,6 @@ action		:= all
         clean distclean maintainer-clean
 
 all:	$(subdirs)
-
-# insert inter-directory dependencies here
-Babylon: Prague
-Berlin: Babylon Prague Fresco
-Fresco: Babylon
-GGI: Berlin Fresco Prague
-SDL: Berlin Fresco Prague
-Clients-C++: Berlin Babylon Fresco Prague
 
 $(mandatory_dirs): %: %/Makefile
 	@echo "making $(action) in $@"
@@ -76,21 +68,28 @@ install:
 install-doc:
 	$(MAKE) action="install-doc"
 
+dist: $(distdir).tar.gz
+
+$(distdir).tar.gz:
+	@echo "generating $@..."
+	-rm -rf $(distdir)
+	cp -pr $(srcdir) $(distdir)
+	-chmod -R a+r $(distdir)
+	tar czhf $(distdir).tar.gz \
+       --exclude CVS \
+       --exclude .cvsignore \
+       --exclude autom4te.cache \
+       --exclude '*.m4' \
+       --exclude '*.ac' \
+       --exclude '*~' \
+       $(distdir)
+	-rm -rf $(distdir)
+
 uninstall:
 	$(MAKE) action="uninstall"
 
 clean:
 	$(MAKE) action="clean"
-
-dist: distclean
-	-rm -rf $(distdir)
-	mkdir $(distdir)
-	-chmod 777 $(distdir)
-	cp -pr $(srcdir) $(distdir)
-	find $(distdir) -name 'CVS' -print0 | xargs -0 -r rm -rf
-	-chmod -R a+r $(distdir)
-	tar czhf $(distdir).tar.gz $(distdir)
-	-rm -rf $(distdir)
 
 distclean:
 	@echo 'This command removes Makefiles and auxiliary files;'
@@ -110,3 +109,29 @@ maintainer-clean:
                config/Prague-config config/synopsis.py \
                $(top_srcdir)/autom4te.cache $(top_srcdir)/config/aclocal.m4 \
                $(top_srcdir)/configure 
+
+# insert inter-directory dependencies here, but only if the required package
+# is present
+
+ifneq ($(findstring Prague, $(subdirs)),)
+Babylon: Prague
+Berlin: Prague
+GGI: Prague
+SDL: Prague
+Fresco-C++-demos: Prague
+endif
+ifneq ($(findstring Babylon, $(subdirs)),)
+Berlin: Babylon
+Fresco-C++: Babylon
+Clients-C++: Babylon
+endif
+ifneq ($(findstring Fresco-C++, $(subdirs)),)
+Berlin: Fresco-C++
+Fresco-C++-demos: Fresco-C++
+endif
+ifneq ($(findstring Berlin, $(subdirs)),)
+GGI:	Berlin
+SDL:	Berlin
+Fresco-C++-demos: Berlin #FIXME !!!
+endif
+

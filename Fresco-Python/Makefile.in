@@ -23,7 +23,7 @@ SHELL	:= /bin/sh
 
 top_srcdir	:= @top_srcdir@
 
-subdirs	:= Fresco src
+subdirs	:= Fresco
 # insert inter-directory dependencies below
 
 # Overridden by the clean-targets, allowing the same subdirs-rule to be used
@@ -34,9 +34,6 @@ action	:= all
 .PHONY: depend install uninstall clean distclean maintainer-clean dist clean
 
 all:	$(subdirs)
-
-# insert inter-directory dependencies here
-src: Fresco
 
 $(subdirs):
 	@echo making $(action) in $@

@@ -21,17 +21,15 @@
 
 top_srcdir	:= @top_srcdir@
 srcdir		:= @srcdir@
-idir		:= @Fresco_prefix@/share/idl
+idir		:= @idldir@/share/idl
 cdir		:= @top_builddir@/config
 
 include $(cdir)/local.mk
 
 IDLPY		:= omniidl
 IDLPYFLAGS	:= -I$(idir) -nf -bpython# -Wbglobal=Warsaw
-IDLDYNFLAGS	:= 
 
-DYNINT		:= Types.idl
-STATINT		:= RefCountBase.idl Identifiable.idl ClientContext.idl \
+IDL		:= Types.idl RefCountBase.idl Identifiable.idl ClientContext.idl \
 		   Server.idl Kit.idl Transform.idl Region.idl \
 		   Allocation.idl Traversal.idl PickTraversal.idl \
 		   DrawTraversal.idl Graphic.idl Screen.idl Input.idl \
@@ -46,13 +44,7 @@ STATINT		:= RefCountBase.idl Identifiable.idl ClientContext.idl \
 		   Window.idl DesktopKit.idl GGIKit.idl UnidrawKit.idl \
 		   PrimitiveKit.idl Primitive.idl #MenuKit.idl
 
-INT		:= $(DYNINT) $(STATINT) $(LCINT)
-
-#DYNSRC		:= $(patsubst %.idl, %DynSK.py, $(DYNINT))
-DYNSTATSRC 	:= $(patsubst %.idl, %_idl.py, $(DYNINT)) 
-STATSRC		:= $(patsubst %.idl, %_idl.py, $(STATINT))
-
-SRC		:= $(DYNSRC) $(DYNSTATSRC) $(STATSRC)
+SRC	 	:= $(patsubst %.idl, %_idl.py, $(IDL)) 
 CMP		:= $(patsubst %.py, %.pyc, $(SRC))
 
 PACKAGES	:= Fresco Figure GGI Layout Primitive Unidraw Widget
@@ -81,19 +73,10 @@ clean:
 
 distclean:	clean
 	rm -f $(TARGET)
-	rm -rf $(opath) $(dpath)
 
 cvsclean:	distclean
 
-$(STATSRC): %_idl.py:		$(idir)/Fresco/%.idl
+$(SRC): %_idl.py:		$(idir)/Fresco/%.idl
 	@echo generating $(@F)
 	$(IDLPY) $(IDLPYFLAGS) $<
-
-$(DYNSTATSRC): %_idl.py: 	$(idir)/Fresco/%.idl
-	@echo generating $(@F)
-	$(IDLPY) $(IDLPYFLAGS) $(IDLDYNFLAGS) $<
-
-$(DYNSRC): %DynSK.py:	$(idir)/Fresco/%.idl
-	@echo generating $(@F)
-	$(IDLPY) $(IDLPYFLAGS) $(IDLDYNFLAGS) $<
 

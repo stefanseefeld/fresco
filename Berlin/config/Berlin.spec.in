@@ -4,7 +4,7 @@ Version: @PACKAGE_VERSION@
 Release: 1
 License: LGPL
 Group: Development/Libraries
-Source: http://www2.fresco.org/releases/%{name}-%{version}.tar.gz
+Source: http://download.fresco.org/releases/%{version}/src/%{name}-%{version}.tar.gz
 BuildRoot: /var/tmp/%{name}-buildroot
 URL: http://fresco.org/
 Prefix: %{_prefix}
