@@ -27,9 +27,9 @@
 // tags to the objects, so that they may migrate from one server to
 // another.
 
+#include "Berlin/Debug.hh"
 #include "Berlin/GenericFactoryImpl.hh"
 #include "Berlin/CloneableImpl.hh"
-#include "Berlin/Debug.hh"
 #include <sys/types.h>
 #include <dirent.h>
 #include <dlfcn.h>
@@ -71,7 +71,7 @@ GenericFactoryImpl::create_object ( const CosLifeCycle::Key & k,
 
   if (!newCloneable)
     {
-      debug::log((string)"!!WOAH THERE!! trying to work with a NULL pointer -->" + (string)k[0].id, debug::loader);    
+      Debug::log(Debug::loader, "GenericFactory_impl::create_object loaded NULL pointer in response to %s", ((string)(k[0].id)).c_str());    
     }
 
   
@@ -83,18 +83,18 @@ GenericFactoryImpl::create_object ( const CosLifeCycle::Key & k,
   // no lifeCycleInfo detected
   if (CORBA::is_nil(li)) {
 
-     debug::log((string)"not doing lifecycle copy -->" + (string)k[0].id, debug::loader);    
+     Debug::log(Debug::loader, "GenericFactory_impl::create_object not doing lifecycle copy for %s", ((string)(k[0].id)).c_str());    
     newCloneable->_obj_is_ready(this->_boa());
     newObjectPtr = newCloneable->CloneableImpl::_this();
     
     if (CORBA::is_nil(newObjectPtr)) {
-       debug::log((string)"!!WOAH THERE!! returning a nil reference from factory -->" + (string)k[0].id, debug::loader);    
+       Debug::log(Debug::loader, "GenericFactory_impl::create_object returning a nil reference for %s", ((string)(k[0].id)).c_str());    
     }
 
     // lifeCycleInfo was found!
   } else {
 
-     debug::log((string)"doing lifecycle copy -->" + (string)k[0].id, debug::loader);    
+     Debug::log(Debug::loader, "GenericFactory_impl::create_object doing lifecycle copy for %s", ((string)(k[0].id)).c_str());    
     newCloneable->_set_lifecycle(li);
     newCloneable->_obj_is_ready(this->_boa());
     newObjectPtr = CORBA::Object::_duplicate(newCloneable);
@@ -147,16 +147,15 @@ CORBA::Boolean  GenericFactoryImpl::supports ( const CosLifeCycle::Key & k ) {
   map<CosLifeCycle::Key, CloneableImpl *(*)(), keyComp>::iterator p = _pluginLoadingFunctionTable.find(k);
 
   if (p == _pluginLoadingFunctionTable.end()) {
-     debug::log((string)"Sadly, we do not support" + (string)k[0].id, debug::loader);    
-     debug::log((string)"Here's a list of what's on the menu at chez GenericFactory: ", debug::loader);    
-    for(p = _pluginLoadingFunctionTable.begin(); p != _pluginLoadingFunctionTable.end(); p++) {
-       debug::log((string)(p->first[0].id), debug::loader);    
-    }
-    return false;
+      Debug::log(Debug::loader, "GenericFactoryImpl::supports does not support %s", ((string)(k[0].id)).c_str());    
+      Debug::log(Debug::loader, "GenericFactoryImpl::supports interface listing follows: ");    
+      for(p = _pluginLoadingFunctionTable.begin(); p != _pluginLoadingFunctionTable.end(); p++) {
+	  Debug::log(Debug::loader, p->first[0].id);
+      }
+      return false;
   } else {
-    return true;
-  }
-
+      return true;
+  }  
 }
 
 
@@ -184,7 +183,7 @@ void GenericFactoryImpl::init() {
 	{
 	  
 	struct dirent *pluginEntry;
- 	debug::log((string)"Scanning plugin dir: " + (string)pluginDir, debug::loader);
+ 	Debug::log(Debug::loader, "GenericFactoryImpl::init scanning plugin dir %s ", pluginDir);
 	
 	while((pluginEntry = readdir(dirHandle))) {
 	  if (strstr(pluginEntry->d_name, ".so") != 0) {
@@ -198,9 +197,8 @@ void GenericFactoryImpl::init() {
 	    void *handle = dlopen (pluginName, RTLD_NOW);
 	    	    
 	    if (!handle) {
- 	      debug::log((string)"Failed to load: " + (string)pluginName, debug::loader);
- 	      debug::log((string)"Reason: " + (string)dlerror(), debug::loader);
-	      continue;
+		Debug::log(Debug::loader, "GenericFactoryImpl::init failed to load %s (reason: %s)", pluginName, dlerror());
+		continue;
 	    }
 	    
 	    // ask it if it's a plugin, or just some random .so...
@@ -210,8 +208,8 @@ void GenericFactoryImpl::init() {
 	    // check for erorrs in symbol lookup
 	    error = dlerror();
 	    if (error != 0)  {
-		debug::log((string)"can't locate symbol in plugin: " + (string)error, debug::loader);
-	      continue;
+		Debug::log(Debug::loader, "GenericFactoryImpl::init can't locate symbol in plugin: %s", error);
+		continue;
 	    }
 	    
 	    // ask it what plugin it provides
@@ -225,7 +223,7 @@ void GenericFactoryImpl::init() {
 		_pluginLoadingFunctionTable.find(prototypeName);
 	    
 	    if (p != _pluginLoadingFunctionTable.end())
-		debug::log((string)"Warning: multiple definitions for plugin" + (string)nameInFile, debug::loader);
+		Debug::log(Debug::loader, "GenericFactoryImpl::init warning: multiple definitions for plugin %s", nameInFile);
 	    
 	    // believe it or not, this is a "standard C" variable declaration
 	    CloneableImpl *(*pluginGetter)();
@@ -236,39 +234,19 @@ void GenericFactoryImpl::init() {
 	    // if all is well and good, we have a function pointer we can call to get the plugin
 	    char *error = dlerror();
 	    if (error != 0)  {
-		debug::log((string)"Failed to load plugin function: " + ((string)nameInFile), debug::loader);
-	      debug::log((string)"Reason: " + (string)error, debug::loader);
+		Debug::log(Debug::loader,  "GenericFactoryImpl::init failed to load plugin function: %s (reason: %s)", 
+			   nameInFile, error);
 	    }
 	    
 	    // stash the function pointer for loading new object in the future
 	    _pluginLoadingFunctionTable[prototypeName] = pluginGetter;
-	    debug::log((string)"Plugin: " + (string)nameInFile, debug::loader);		       
+	    Debug::log(Debug::loader, "GenericFactoryImpl::init loaded plugin %s", nameInFile);		       
 	  }
 	}
       }
       closedir(dirHandle);
   }
 }
-
-
-// // this is just a helper which tries to activate the threads on objects which happen
-// // to be subclasses of threads. If they aren't, oh well, life's like that.
-// void GenericFactoryImpl::startThread(CORBA::Object_ptr o) {
-//   Reactor_var r = Reactor::_narrow(o);
-//   if (CORBA::is_nil(r)) {
-//     return; // no sweat, it's not a Reactor!
-//   }
-
-//   try {
-//     Reactor_impl *impl = _rm->getReactor(r);
-//     debug::log((string)"Starting Reactor", debug::loader);
-//     impl->start();
-//   } catch (noSuchReactorException &nsre) {
-//     // this Reactor is not present in our registry. How odd!
-//     debug::log((string)"tried to start non-local Reactor!", debug::loader);
-//   }
-// }  
-
 
 bool keyComp::operator()(const CosLifeCycle::Key &a, const CosLifeCycle::Key &b) {
   // Blast C-style strings! see pg 468 of Stroustrup 3rd ed.

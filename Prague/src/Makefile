@@ -42,8 +42,8 @@ MAKEINFO    = makeinfo
 RANLIB      = ranlib
 TEXI2DVI    = texi2dvi
 TEXI2HTML   = texi2html
-TEX         = 
-DVIPS       = 
+TEX         = latex
+DVIPS       = dvips
 
 # Compilation and linking flags.
 CFLAGS	   	= -Wall -I../../include
@@ -85,7 +85,6 @@ distclean:	clean
 
 $(TARGET):	$(OBJ)
 		$(CXX) $(LDFLAGS) -o $@ $(OBJ) $(LIBS)
-		strip --strip-unneeded $@
 
 Makefile:	$(cpath)/Makefile.in $(cpath)/config.status
 		cd $(cpath); ./config.status

@@ -26,29 +26,83 @@
 // it's a singleton, and it's synchronized, which are both 
 // reasonably important :)
 
-#include <vector>
-#include <string>
-#include <Warsaw/config.hh>
-#include <Berlin/Thread.hh>
-
 #ifndef __DEBUG__
 #define __DEBUG__
 
-class debug {
+#include <vector>
+#include <string>
+#include "Warsaw/config.hh"
+#include "Berlin/Thread.hh"
+
+// some NANA stuff
+#include <L_times.h>
+#include <L_buffer.h>
+#include <now.h>
+
+// this is a rewrite of our debugging class to use some NANA features.  the idea
+// is that what was previously just a matter of writing to stderr, we now log
+// *everything* to an internal buffer, and only write to stderr if the group
+// you're writing to is enabled. Then when the system keels over, we dump the
+// in-core log and ask users to mail it to us, as a bug report
+
+class Debug {
 
 public:
-  enum debugGroup { corba, loader, ggi, gwt, name,
-		       gfh, main, widget, mmap,  
-		     message, reactor, thread };
-  
-  static void log(string msg, debugGroup g);
-  static void set(debugGroup g);
-  static void clear(debugGroup g);
-  static void setall();
 
-private:
-  static vector<bool> activeDebugGroups;
-  static Mutex cerrMutex;
+    Debug(); // this creates the logs
+    ~Debug(); // this dumps the logs
+
+    enum debugGroup { corba, loader, traversal, thread, main,
+		      agent, message, command, subject, observer,
+		      text, widget, image, figure, layout, drawing,
+		      picking, geometry //... add more? 
+    };
+
+    static void set(debugGroup g);
+    static void clear(debugGroup g);
+    static void setall();
+    static inline void shutdownOk() {
+	MutexGuard debugGuard(Debug::myMutex); 
+	cleanShutdown = true;
+    }
+    
+    static inline void note(const char *c) {
+	MutexGuard debugGuard(Debug::myMutex); 
+	L_times_add(Debug::core_times_log, (char *)c, now()); 
+    }
+    
+    static inline void log(debugGroup gr,  const char * format, ...) {
+	MutexGuard debugGuard(Debug::myMutex); 
+	double n = now();
+	int i = Thread::self()->id();
+	L_buffer_printf(Debug::core_buf_log, "[%6.6f:%3d:%s] ", n, i, groupNames[gr]);   
+	
+	va_list ap;
+	va_start(ap, format);
+	vsnprintf(cbuf,msgsz,format,ap);
+	L_buffer_printf(Debug::core_buf_log, cbuf);   
+	L_buffer_printf(Debug::core_buf_log, "\n");
+	
+	if (Debug::g[gr]) { 
+	    fprintf(stderr, "[%6.6f:%d:%s] ", n, i, groupNames[gr]); fprintf(stderr, cbuf); 	    
+	    fprintf(stderr, "\n");
+	}
+    } 
+    
+    protected:
+    static const int msgsz = 256;
+    static const int logsz = 1024 * 64;
+    static const int stampsz = 256;
+    static const int numGroups = 18;
+
+    static char cbuf[msgsz];
+    static Debug staticTrigger; // this is a global, single trigger object.    
+    static bool g[numGroups];
+    static char * groupNames[numGroups]; 
+    static L_BUFFER *core_buf_log;
+    static L_TIMES *core_times_log;    
+    static Mutex myMutex;
+    static bool cleanShutdown;
 };
 
 

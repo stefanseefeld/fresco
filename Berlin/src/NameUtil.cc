@@ -38,28 +38,28 @@ static Mutex rootContext_mutex;
 static void getRootContext(CORBA::ORB_ptr orb) {
   try {
     if (CORBA::is_nil(rootContext)) {  
-      debug::log("Looking up Root Nameservice", debug::name);
-      CORBA::Object_var initServ;
-      initServ = orb->resolve_initial_references("NameService");
-      rootContext = CosNaming::NamingContext::_narrow(initServ);
+	Debug::log(Debug::corba, "getRootContext: looking up root corba name context");
+	CORBA::Object_var initServ;
+	initServ = orb->resolve_initial_references("NameService");
+	rootContext = CosNaming::NamingContext::_narrow(initServ);
     }
   } catch(CORBA::ORB::InvalidName& ex) {
-    debug::log("Service required is invalid [does not exist].", debug::name);
-    throw ex;
+      Debug::log(Debug::corba, "getRootContext: Service required is invalid [does not exist].");
+      throw ex;
   } catch(CosNaming::NamingContext::NotFound& ex) {
-    debug::log("Root Name Context not found.", debug::name);
+      Debug::log(Debug::corba, "getRootContext: Root Name Context not found.");
     throw ex;
   } catch (CORBA::COMM_FAILURE& ex) { 
-    debug::log("had a COMM_FAILURE during root name service lookup", debug::name);
-    throw ex;
+      Debug::log(Debug::corba, "getRootContext: had a COMM_FAILURE during root name service lookup");
+      throw ex;
   } catch (...) { 
-    debug::log("unknown exception during root name service lookup", debug::name);
-    throw CosNaming::NamingContext::NotFound();
+      Debug::log(Debug::corba, "getRootContext: unknown exception during root name service lookup");
+      throw CosNaming::NamingContext::NotFound();
   }
-
+  
   // can't throw an exception if you are in a try {} block :)
   if (CORBA::is_nil(rootContext)) {
-    debug::log("Root name context is nil!", debug::name);
+      Debug::log(Debug::corba, "getRootContext: root name context is nil");
     throw CORBA::ORB::InvalidName();
   }
 }
@@ -97,11 +97,11 @@ CORBA::Object_ptr lookup(CORBA::ORB_ptr orb, char *ch)
     tmpobj = rootContext->resolve(ourName);            
   }  
   catch (CORBA::COMM_FAILURE& ex) {
-    debug::log("unable to contact name service for factory lookup", debug::name);
+    Debug::log(Debug::corba, "unable to contact name service for factory lookup");
     throw lookupFailureException();
   }
   catch (...) {
-    debug::log("Caught a system exception while using the naming service.", debug::name);
+    Debug::log(Debug::corba, "Caught a system exception while using the naming service.");
     throw lookupFailureException();
   }      
   return CORBA::Object::_duplicate(tmpobj);

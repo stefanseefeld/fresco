@@ -40,29 +40,16 @@ typedef Prague::Condition Condition;
 typedef Prague::Semaphore Semaphore;
 typedef Prague::Thread Thread;
 #endif
-#include <Berlin/Debug.hh>
 #include <strstream>
 
-class MutexGuard
-{
-public:
-  MutexGuard(Mutex &m) : mutex(m)
-    {
-      ostrstream msg;
-      msg << "locking Mutex " << &mutex << ends;
-      char *log = msg.str();
-      debug::log(log, debug::thread);
-      delete log;
-      mutex.lock();
+class MutexGuard {
+    public:
+    MutexGuard(Mutex &m) : mutex(m) {
+	mutex.lock();
     }
-  ~MutexGuard()
-    {
-      ostrstream msg;
-      msg << "unlocking Mutex " << &mutex << ends;
-      char *log = msg.str();
-      debug::log(log, debug::thread);
-      delete log;
-      mutex.unlock();	
+    
+    ~MutexGuard() { 
+	mutex.unlock();	
     }
 private:
   Mutex &mutex;

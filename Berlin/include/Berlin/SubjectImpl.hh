@@ -28,7 +28,7 @@
 #include "Berlin/Thread.hh"
 #include <list>
 
-class SubjectImpl : implements(Subject), virtual public CloneableImpl
+class SubjectImpl : implements(Subject)
 {
 public:
   SubjectImpl();

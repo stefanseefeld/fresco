@@ -23,20 +23,42 @@
 
 #include "Berlin/Debug.hh"
 
-vector<bool> debug::activeDebugGroups(12, false);
-Mutex debug::cerrMutex;
-  
-void debug::log(string msg, debugGroup g)
-{
-  cerrMutex.lock();
-  if (activeDebugGroups[g])  cerr << msg << endl;
-  cerrMutex.unlock();
+char Debug::cbuf[msgsz];
+Debug Debug::staticTrigger; // this is a global, single trigger object.
+bool Debug::g[numGroups] = { false, false, false, false, false, false, false, false, false, 
+			    false, false, false, false, false, false, false, false, false };
+char * Debug::groupNames[numGroups] = {"corba", "loader", "traversal", "thread", "main",
+				       "agent", "message", "command", "subject", 
+				       "observer", "text", "widget", "image", "figure",
+				       "layout", "drawing", "picking", "geometry"};
+L_BUFFER *Debug::core_buf_log;
+L_TIMES *Debug::core_times_log;    
+Mutex Debug::myMutex;
+bool Debug::cleanShutdown;
+
+
+Debug::Debug() {
+    cleanShutdown = false;
+    core_buf_log = L_buffer_create(logsz); // 64k log buffer size
+    core_times_log = L_times_create(stampsz); // number of timestamps held in stamplog    
+    L_times_clear(core_times_log);
+}  
+
+Debug::~Debug() {
+    if (!cleanShutdown) {
+	fprintf(stderr, "\nSomething went wrong. Here's a debugging log. \nPlease mail this output to bugs@berlin-consortium.org :\n\n");
+	L_buffer_dump(core_buf_log, stderr);
+	L_buffer_delete(core_buf_log);
+	fprintf(stderr, "\n\nDetailed Trace:\n");
+	L_times_dump(core_times_log, stderr);
+	L_times_delete(core_times_log);
+    }
 }
 
-void debug::set(debugGroup g) { activeDebugGroups[g] = true; }
-void debug::clear(debugGroup g) { activeDebugGroups[g] = false; }
-void debug::setall()
+void Debug::set(debugGroup gr) { g[gr] = true; }
+void Debug::clear(debugGroup gr) { g[gr] = false; }
+void Debug::setall()
 {
-  for (vector<bool>::iterator i = activeDebugGroups.begin(); i != activeDebugGroups.end(); i++)
-    *i = true;
+  for (int i = 0; i < numGroups; i++)
+    g[i] = true;
 }
