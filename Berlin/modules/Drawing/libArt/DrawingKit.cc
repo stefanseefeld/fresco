@@ -40,6 +40,7 @@ extern "C"
 #include <art_rect_svp.h>
 #include <art_rgb_svp.h>
 
+
 LibArtDrawingKit::~LibArtDrawingKit() {}
 LibArtDrawingKit::LibArtDrawingKit() : 
   drawable(GGI::drawable()), 
@@ -61,9 +62,7 @@ LibArtDrawingKit::LibArtDrawingKit() :
   buf = ggiDBGetBuffer (memvis, 0);
   int stride = buf->buffer.plb.stride;
   pb = art_pixbuf_new_const_rgb ((art_u8 *)buf->write, drawable->width(), drawable->height(), stride);
-
-  // clear the bbox
-  bbox.x0 = bbox.y0 = bbox.x1 = bbox.y1 = 0;  
+  bbox.x0 = bbox.y0 = bbox.x1 = bbox.y1 = 0;    
 }
 
 static inline ggi_pixel ggiColor(Color c1, ggi_visual_t vis) {
@@ -101,15 +100,6 @@ void LibArtDrawingKit::setTransformation(Transform_ptr t)
 void LibArtDrawingKit::setClipping(Region_ptr r)
 {
   cl->copy(r);
-//   double xr = drawable->resolution(xaxis);
-//   double yr = drawable->resolution(yaxis);
-
-//   int x = (int)(cl->upper.x * xr);
-//   int y = (int)(cl->upper.y * yr);
-//   int x2 = (int)(cl->lower.x * xr);  
-//   int y2 = (int)(cl->lower.y * yr);
-
-//   ggiSetGCClipping(memvis, x, y, x2, y2);
 }
 
 void LibArtDrawingKit::setForeground(const Color &c)
@@ -162,15 +152,15 @@ void LibArtDrawingKit::drawPath(const Path &p)
 
   if (fs == outline) {
     for (int i = 0; i < len; i++) {
-      vpath[i].code = i == 0 ? ART_MOVETO_OPEN 
-	: (i == len - 1 ? ART_END : ART_LINETO);
+      vpath[i].code = (i == 0 ? ART_MOVETO_OPEN 
+		       : (i == len - 1 ? ART_END : ART_LINETO));
       vpath[i].x = p[i].x;
       vpath[i].y = p[i].y;
     }
 
   } else {
     for (int i = 0; i < len; i++) {
-      vpath[i].code = i == 0 ? ART_MOVETO : ART_LINETO;
+      vpath[i].code = (i == 0 ? ART_MOVETO : ART_LINETO);
       vpath[i].x = p[i].x;
       vpath[i].y = p[i].y;
     }
@@ -182,29 +172,34 @@ void LibArtDrawingKit::drawPath(const Path &p)
   ArtIRect loc;
   ArtDRect clip = {cl->upper.x, cl->upper.y,
 		     cl->lower.x, cl->lower.y};
-  art_drect_affine_transform(&clip,&clip,resScale);
+  ArtDRect screen = {0,0,drawable->width(), drawable->height()};
 
+  art_drect_affine_transform(&clip,&clip,resScale);
   tvpath = art_vpath_affine_transform(vpath,affine);
   tsvpath = art_vpath_affine_transform(tvpath,resScale);
 
+  // get an svp
   ArtSVP *svp = art_svp_from_vpath (tsvpath); 
+
+  // prepare clip box for drawing
   art_drect_svp (&locd, svp);
   art_drect_intersect(&locd,&locd,&clip);
+  art_drect_intersect(&locd,&locd,&screen);
   art_drect_to_irect(&loc, &locd);
   art_irect_union (&bbox,&bbox,&loc);
-//   cerr << "bbox " << loc.x0 << " " << loc.y0 << " " << loc.x1 << " " << loc.y1 << endl;
 
-  // WARNING: I do not know why these parameters work for rgb_svp..
-  // imho they should not, but they appear to. I have asked raph
-  // levien why, and hope to hear back soon. in the mean time,
-  // do not assume that I actually know how libart does coordinates
-  // :(
+  // why this might happen, who knows. they might be insane somehow.
+  // it appears to happen in practise sometimes (?)
+  if (loc.x0 > loc.x1) {int tmp = loc.x0; loc.x1 = loc.x0; loc.x0 = tmp;}
+  if (loc.y0 > loc.y1) {int tmp = loc.y0; loc.y0 = loc.y1; loc.y1 = tmp;}
+
+  //cerr << "bbox " << loc.x0 << " " << loc.y0 << " " << loc.x1 << " " << loc.y1 << endl;
 
   art_rgb_svp_alpha (svp,
-		     0, 0, 
+		     loc.x0, loc.y0, 
 		     loc.x1, loc.y1,
 		     artColor(fg),
-		     pb->pixels, 
+		     pb->pixels + (loc.y0 * pb->rowstride) + (loc.x0 * 3), 
 		     pb->rowstride,
 		     agam);
   art_svp_free(svp);
@@ -237,13 +232,15 @@ void LibArtDrawingKit::drawRect(const Vertex &bot, const Vertex &top)
 //     }
   
   Path path;
-  path.length(5);
+  path.length(4);
   path[0].x = top.x, path[0].y = top.y, path[0].z = 0.;
   path[1].x = bot.x, path[1].y = top.y, path[1].z = 0.;
   path[2].x = bot.x, path[2].y = bot.y, path[2].z = 0.;
   path[3].x = top.x, path[3].y = bot.y, path[3].z = 0.;
-  path[4].x = top.x, path[4].y = top.y, path[4].z = 0.;
-  drawPath(path);
+  DrawingKit::Fillstyle tmp = fs;
+  fs = solid;
+  this->drawPath(static_cast<const Path>(path));
+  fs = tmp;
 }
 
 void LibArtDrawingKit::drawEllipse(const Vertex &, const Vertex &) {}
@@ -263,7 +260,9 @@ void LibArtDrawingKit::drawText(const Unistring &u)
   r.y0 = (int)(affine[5] * yr);
   r.x1 = (int)(affine[4] * xr + req.x.maximum);
   r.y1 = (int)(affine[5] * yr + req.y.maximum);
+
   art_irect_union (&bbox,&bbox,&r);
+
   font->drawText(u,r.x0,r.y0,pb,fg);
 }
 
@@ -273,7 +272,6 @@ void LibArtDrawingKit::allocateText(const Unistring & s, Graphic::Requisition & 
 
 void LibArtDrawingKit::flush() {   
   ggi_visual_t vis = drawable->visual();
-  //   ggiSetGCClipping(vis, bbox.x0, bbox.y0, bbox.x1, bbox.y1);
   ggiCrossBlit(memvis, bbox.x0,bbox.y0,
 	       bbox.x1-bbox.x0,
 	       bbox.y1-bbox.y0, 
