@@ -34,6 +34,8 @@
 
 namespace Babylon {
     typedef std::basic_string<size_t> Char_Mapping;
+    struct Paragraph;
+    typedef vector<struct Paragraph> Paragraphs;
 
     // g++ does not yet support char_traits :-(
     class String : public std::basic_string<Babylon::Char> {
@@ -81,11 +83,52 @@ namespace Babylon {
     
 	// returns the normalized form of a string without changing it.
 	String norm(const Norm norm) const;
-    
+
+	vector<size_t> get_defined();
+	vector<size_t> get_Spaces();
+	vector<size_t> get_ISO_Controls();
+	vector<size_t> get_Punctuations();
+	vector<size_t> get_Line_Separators();
+	vector<size_t> get_Paragraph_Separators();
+	vector<size_t> get_Currency_Symbols();
+	vector<size_t> get_Bidi_Left_to_Rights();
+	vector<size_t> get_Bidi_European_Digits();
+	vector<size_t> get_Bidi_Eur_Num_Separators();
+	vector<size_t> get_Bidi_Eur_Num_Terminators();
+	vector<size_t> get_Bidi_Arabic_Digits();
+	vector<size_t> get_Bidi_Common_Separator();
+	vector<size_t> get_Bidi_Block_Separator();
+	vector<size_t> get_Bidi_Segment_Separator();
+	vector<size_t> get_Bidi_Whitespaces();
+	vector<size_t> get_Bidi_Non_spacing_Marks();
+	vector<size_t> get_Bidi_Boundary_Neutrals();
+	vector<size_t> get_Bidi_PDFs();
+	vector<size_t> get_Bidi_Embedding_or_Overrides();
+	vector<size_t> get_Bidi_Other_Neutrals();
+	vector<size_t> get_Viramas();
+	vector<size_t> get_Printables();
+	vector<size_t> get_Not_a_Characters();
+	vector<size_t> get_Maths();
+	vector<size_t> get_Alphabetics();
+	vector<size_t> get_Lowercases();
+	vector<size_t> get_Uppercases();
+	vector<size_t> get_Titlecases();
+	vector<size_t> get_ID_Starts();
+	vector<size_t> get_ID_Continues();
+	vector<size_t> get_XID_Starts();
+	vector<size_t> get_XID_Continues();
+	vector<size_t> get_Decimals();
+	vector<size_t> get_Digits();
+	vector<size_t> get_Numerics();
+	vector<size_t> get_Private_Uses();
+
 	// OPERATORS:
     
 	// UTILITIES:
 	// void erase();
+
+	//. Get a list of paragraphs, their beginnings and ends etc.
+	Paragraphs get_paragraphs();
 
 	// DESTRUCTOR:
 	~String(); // nothing special needed...
@@ -93,8 +136,30 @@ namespace Babylon {
     protected:
     private:
 	Babylon::Norm m_current_norm;
+	Prague::Mutex _mutex;
     }; // class String
-    
+
+    struct Paragraph {
+	size_t begin;
+	size_t end;
+	Embedding_Levels levels;
+
+	Paragraph() : begin(0), end(0), levels() {}
+	Paragraph(size_t b, size_t e) : begin(b), end(e), levels() {}
+    };
+
+    class Paragraph_lt {
+    public:
+	Paragraph_lt() {}
+	bool operator() (const Paragraph &, const Paragraph &);
+    };
+
+    class Paragraph_eq {
+    public:
+	Paragraph_eq() {}
+	bool operator() (const Paragraph &, const Paragraph &);
+    };
+
 } // namespace Babylon
 
 namespace std {

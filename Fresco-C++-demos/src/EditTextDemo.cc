@@ -1,4 +1,4 @@
-/*$Id$
+ /*$Id$
  *
  * This source file is a part of the Berlin Project.
  * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
@@ -46,10 +46,11 @@ EditTextDemo::EditTextDemo(Application *a)
   Babylon::String str(34, chars);
     
   TextBuffer_var buf = command->text();
-  Graphic_var txt = text->simple_viewer(buf);
+  TextBuffer_var vis_buf = buf->get_visual_buffer();
+  Graphic_var txt = text->simple_viewer(vis_buf);
   ToolKit::FrameSpec spec;
   spec.brightness(0.5); spec._d(ToolKit::inset);
   Graphic_var frame = tool->frame(Graphic_var(layout->margin(Graphic_var(layout->hfixed(Graphic_var(tool->rgb(txt, 0., 0., 0.)), 4000)), 50.)), 20., spec, true);
   buf->insert_string(Unicode::to_CORBA(str));
-  application->append(Controller_var(tool->text_input(frame, buf)), Babylon::String("editable text demo"));
+  application->append(Controller_var(tool->text_input(frame, vis_buf)), Babylon::String("editable text demo"));
 };

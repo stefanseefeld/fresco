@@ -21,6 +21,7 @@
  */
 
 #include <Babylon/utils.hh>
+#include <Prague/Sys/Tracer.hh>
 #include <functional>
 #include <algorithm>
 #include <stack>
@@ -34,6 +35,7 @@ namespace Babylon {
 
 std::vector<Babylon::Type>
 run_length_encode_types(std::vector<Babylon::Bidir_Props> char_type) {
+    Prague::Trace trace("Babylon::run_lenght_encode(...)");
     std::vector<Babylon::Type> result;
     // Sweep over the string_types
     Babylon::Type current;
@@ -55,6 +57,10 @@ run_length_encode_types(std::vector<Babylon::Bidir_Props> char_type) {
 
     return(result);
 }
+
+
+
+
 
 inline bool bidir_is_strong(const Babylon::Bidir_Props & p) {
     return (p & Babylon::BIDIR_MASK_STRONG);
@@ -143,6 +149,7 @@ inline Babylon::Bidir_Props change_number_to_rtl(Babylon::Bidir_Props p) {
 std::vector<Babylon::Type>::iterator
 compact(const std::vector<Babylon::Type>::iterator & start,
 	const std::vector<Babylon::Type>::iterator & end) {
+    Prague::Trace trace("Babylon::compact(...)");
     if (start == end) return(end);
 
     std::vector<Babylon::Type>::iterator last_used = start;
@@ -166,6 +173,7 @@ compact(const std::vector<Babylon::Type>::iterator & start,
 std::vector<Babylon::Type>::iterator
 compact_neutrals(const std::vector<Babylon::Type>::iterator & start,
 		 const std::vector<Babylon::Type>::iterator & end) {
+    Prague::Trace trace("Babylon::compact_neutrals(...)");
     if (start == end) return (end);
 
     std::vector<Babylon::Type>::iterator last_used = start;
@@ -190,8 +198,8 @@ compact_neutrals(const std::vector<Babylon::Type>::iterator & start,
 
 std::vector<Babylon::Type> override_lists(const std::vector<Babylon::Type> & base,
 			       const std::vector<Babylon::Type> & over) {
+    Prague::Trace trace("Babylon::override_lists(...)");
     if (base.empty()) return (over);
-
     if (over.empty()) return (base);
 
     std::vector<Babylon::Type>::const_iterator over_it = over.begin();
@@ -199,8 +207,8 @@ std::vector<Babylon::Type> override_lists(const std::vector<Babylon::Type> & bas
 
     std::vector<Babylon::Type> result;
 
-    Babylon::Type current = *base_it;
     while(!(over_it == over.end() && base_it == base.end())) {
+	// One list is empty, copy the other over:
 	if (over_it == over.end()) {
 	    // copy base
 	    std::copy(base_it, base.end(),
@@ -217,7 +225,7 @@ std::vector<Babylon::Type> override_lists(const std::vector<Babylon::Type> & bas
 	    continue;
 	}
 
-	// mix...
+	// skip invalid entries
 	if (over_it->length == 0 ||
 	    over_it->start < 0) {
 	    ++over_it;
@@ -230,31 +238,104 @@ std::vector<Babylon::Type> override_lists(const std::vector<Babylon::Type> & bas
 	    continue;
 	}
 	
-	size_t max_current = current.start + current.length - 1;
-	if (current.start < over_it->start) {
-	    current.length = over_it->start - current.start;
-	    result.push_back(current);
-	    result.push_back(*over_it);
-	    ++over_it;
-	} else {
-	    result.push_back(*over_it);
-	    ++over_it;
+	size_t max_current = base_it->start + base_it->length - 1;
+
+	// copying base:
+	if (max_current < over_it->start) {
+	    result.push_back(*base_it);
+	    ++base_it;
+	    continue;
 	}
-	current.start = result.back().start + result.back().length + 1;
-	current.length = max_current - current.start;
+
+	// inserting over_it into base_it
+	if (max_current >= over_it->start) {
+	    Babylon::Type current = *base_it;
+
+	    // Insert first part of base if not empty:
+	    current.length = over_it->start - current.start;
+	    if (current.length != 0)
+		// current.length can't become < 0 as max_current >= over_it.start
+		result.push_back(current);
+
+	    // Insert over_it (we allways need to do this!)
+	    result.push_back(*over_it);
+
+	    // over_it reaches into the next base_it:
+	    while (base_it != base.end() &&
+		   base_it->start + base_it->length <
+		   over_it->start + over_it->length) {
+		++base_it;
+	    }
+	    if(base_it == base.end()) continue;
+	    
+	    current = *base_it;
+	    current.length = (current.start + current.length) -
+		(over_it->start + over_it->length);
+	    current.start = over_it->start + over_it->length + 1;
+	    ++base_it;
+	    ++over_it;
+	    continue;
+	}
     } // while
 
     return (result);
 }
 
+    /*
+std::vector<Babylon::Type> override_lists(const std::vector<Babylon::Type> & base,
+			       const std::vector<Babylon::Type> & over) {
+    Prague::Trace trace("Babylon::override_lists(...)");
+    if (base.empty()) return (over);
+    if (over.empty()) return (base);
+    
+    std::vector<Babylon::Type>::const_iterator over_it = over.begin();
+    std::vector<Babylon::Type>::const_iterator base_it = base.begin();
+
+    std::vector<Babylon::Type> result;    
+    size_t base_start = 0; size_t base_end = 0;
+    size_t over_start = 0; size_t over_end = 0;
+
+    while(over_it != over.end()) {
+	if(over_it->length <= 0 || over_it->start < base_start) {
+	    ++over_it;
+	    continue; // over_it != over.end() is checked in while!
+	}
+	over_start = over_it->start; over_end = over_start + over_it.length;
+
+	while(base_it != base.end() && base_it->start <= over_start) {
+	    result.push_back(*base_it);
+	    ++base_it;
+	}
+	result.pop_back();
+	--base_it;
+	// now base_it is the element that over_it needs to be inserted into.
+
+	std::vector<Babylon::Type>::const_iterator base_end_it = base_it;
+	while(base_end_it != base.end() && base_end_it->start <= over_end)
+	    ++base_end_it;
+	--base_end_it;
+	// now base_end_it is the last element affected by over_it
+	
+	if(base_it == base_end_it) {
+	    
+	} else {
+	}
+    }
+    return result;
+} 
+    */
+
+
 Embedding_Levels
 Babylon::analyse(const Babylon::String::const_iterator start,
 		 const Babylon::String::const_iterator end,
-		 const Babylon::Base_Dir & pbase_dir) {
+		 const Babylon::Base_Dir pbase_dir = Babylon::BASE_DIR_WL,
+		 const char right = 0) {
+    Prague::Trace trace("Babylon::analyse(...)");
     Embedding_Levels emb;
     if (start == end) return (emb);
 
-    size_t str_length(distance(start, end));
+    size_t str_length(std::distance(start, end));
 
     std::vector<Babylon::Type> type_rl;
     std::vector<Babylon::Bidir_Props> char_type(str_length);
@@ -267,28 +348,28 @@ Babylon::analyse(const Babylon::String::const_iterator start,
     // Run length encode the character types
     type_rl = run_length_encode_types(char_type);
 
-    unsigned char base_level = 0;
+    unsigned char base_level = 0 + right;
     Babylon::Bidir_Props base_dir = Babylon::BIDIR_ON;
 
     // Find the base level
-    if(bidir_is_strong(Babylon::Bidir_Props(pbase_dir)))
-	base_level = bidir_to_level(Babylon::Bidir_Props(pbase_dir));
+    if (bidir_is_strong(Babylon::Bidir_Props(pbase_dir)))
+	base_level = bidir_to_level(Babylon::Bidir_Props(pbase_dir)) + right;
     else {
 	// P2. P3. Search for first strong character and use its
 	// direction as base direction
-	base_level = 0; // default
+	base_level = right; // default
 	for(std::vector<Babylon::Type>::const_iterator i = type_rl.begin();
 	    i != type_rl.end();
 	    ++i)
 	    if(bidir_is_letter(i->bidir_type)) {
-		base_level = bidir_to_level(i->bidir_type);
+		base_level = bidir_to_level(i->bidir_type) + right;
 		base_dir = level_to_bidir(base_level);
 		break;
 	    }
 	// If no strong base_dir was found, resort to the weak direction
 	// that was passed on input.
 	if (bidir_is_neutral(base_dir))
-	    base_level = bidir_to_level(Babylon::Bidir_Props(pbase_dir));
+	    base_level = bidir_to_level(Babylon::Bidir_Props(pbase_dir)) + right;
     }
     base_dir = level_to_bidir(base_level);
     
@@ -622,6 +703,7 @@ Babylon::analyse(const Babylon::String::const_iterator start,
 
 std::basic_string<unsigned char>
 get_embedding_levels(const Babylon::Embedding_Levels & emb) {
+    Prague::Trace trace("Babylon::get_embedding_levels(...)");
     std::basic_string<unsigned char> result;
     for(std::vector<Babylon::Type>::const_iterator i = emb.types.begin();
 	i != emb.types.end();
@@ -632,13 +714,54 @@ get_embedding_levels(const Babylon::Embedding_Levels & emb) {
 }
 
 Babylon::Char_Mapping
-get_vis2log(const size_t & start_offset,
+get_vis2log(const size_t start_offset,
+	    const Babylon::Paragraphs & paras) {
+    Prague::Trace trace("Babylon::get_vis2log(..., Paragraphs)");
+    Babylon::Char_Mapping result;
+    if (paras.empty()) return result;
+
+    size_t start(paras[0].begin);
+
+    for(Babylon::Paragraphs::const_iterator i = paras.begin();
+	i != paras.end();
+	++i)
+	result += get_vis2log(i->begin - start + start_offset,
+			      i->levels);
+
+    return result;
+}
+
+Babylon::Char_Mapping
+get_vis2log(const size_t start_offset,
+	    const Babylon::Paragraphs::const_iterator first,
+	    const Babylon::Paragraphs::const_iterator last) {
+    Prague::Trace trace("Babylon::get_vis2log(..., iterators)");
+    Babylon::Char_Mapping result;
+    if (first == last) return result;
+
+    size_t start(first->begin);
+
+    for(Babylon::Paragraphs::const_iterator i = first;
+	i != last;
+	++i)
+	result += get_vis2log(i->begin - start + start_offset,
+			      i->levels);
+
+    return result;
+}
+
+Babylon::Char_Mapping
+get_vis2log(const size_t start_offset,
 	    const Babylon::Embedding_Levels & emb) {
-    Babylon::Char_Mapping vis2log_str;
+    Prague::Trace trace("Babylon::get_vis2log(..., Embedding_Levels)");
+    Babylon::Char_Mapping result;
+    if (emb.types.empty())
+	return result;
+
     size_t str_length(emb.types.back().start + emb.types.back().length);
 
     for(size_t i = 0; i < str_length; ++i)
-	vis2log_str += i + start_offset; // WORKAROUND: should be push_back(...)
+	result.push_back(i + start_offset);
 
     // FIXME: This is missing:
     // L4. Mirror all characters that are in odd levels and have mirrors
@@ -658,8 +781,8 @@ get_vis2log(const size_t & start_offset,
 		    len += k->length;
 		    ++k;
 		}
-		std::reverse(vis2log_str.begin() + pos,
-			     vis2log_str.begin() + pos + len);
+		std::reverse(result.begin() + pos,
+			     result.begin() + pos + len);
 
 		if (k == emb.types.end())
 		    break;
@@ -668,10 +791,10 @@ get_vis2log(const size_t & start_offset,
 	    }
 	}
 
-    return vis2log_str;
+    return result;
 }
 
-
+/*
 Babylon::Char_Mapping
 get_log2vis(const size_t & start_offset,
 	    const Babylon::Char_Mapping & vis2log) {
@@ -680,5 +803,6 @@ get_log2vis(const size_t & start_offset,
 	log2vis[vis2log[i] - start_offset] = i + start_offset;
     return log2vis;
 }
+*/
 
 } // namespace Babylon

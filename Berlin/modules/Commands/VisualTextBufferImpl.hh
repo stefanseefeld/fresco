@@ -20,27 +20,27 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
-#ifndef _TextBufferImpl_hh
-#define _TextBufferImpl_hh
+#ifndef _VisualTextBufferImpl_hh
+#define _VisualTextBufferImpl_hh
 
 #include <Warsaw/config.hh>
 
 #include <Warsaw/TextBuffer.hh>
 #include <Berlin/SubjectImpl.hh>
+#include <Berlin/ObserverImpl.hh>
 
-#include <Berlin/GapBuffer.hh>
 #include <Prague/Sys/Thread.hh>
 
-class VisualTextBufferImpl;
+#include <Babylon/defs.hh>
+#include <Babylon/String.hh>
 
-class TextBufferImpl : public virtual POA_Warsaw::TextBuffer,
-		       public SubjectImpl
-{
+class TextBufferImpl;
+
+class VisualTextBufferImpl : public virtual POA_Warsaw::TextBuffer,
+			     public SubjectImpl {
 public:
-    friend class VisualTextBufferImpl;
-
-    TextBufferImpl();
-    virtual ~TextBufferImpl();
+    VisualTextBufferImpl(TextBufferImpl *);
+    virtual ~VisualTextBufferImpl();
     virtual CORBA::ULong size();
     virtual Warsaw::Unistring *value();
     virtual Warsaw::Unistring *get_chars(CORBA::ULong, CORBA::ULong);
@@ -58,9 +58,27 @@ public:
     virtual Warsaw::TextBuffer_ptr get_memory_buffer();
     virtual Warsaw::TextBuffer_ptr get_visual_buffer();
 private:
-    GapBuffer<Warsaw::Unichar, 32> _buffer;
+    class Observer;
+    friend class Observer;
+    Observer * _observer;
+
+    void update(const Warsaw::TextBuffer::ChangeType,
+		const CORBA::ULong,
+		const CORBA::Long);
+    std::vector<Warsaw::TextBuffer::Change> insert(const CORBA::ULong,
+						   const CORBA::Long);
+    std::vector<Warsaw::TextBuffer::Change> remove(const CORBA::ULong,
+						   const CORBA::Long);
+    std::vector<Warsaw::TextBuffer::Change> cursor(const CORBA::ULong,
+						   const CORBA::Long);
+    CORBA::ULong current_position();
+
+    TextBufferImpl * _memory;
+
+    Babylon::Paragraphs _paragraphs;
+    Babylon::Char_Mapping _vis2log;
+
     Prague::Mutex _mutex;
-    VisualTextBufferImpl * _visual;
 };
 
 #endif

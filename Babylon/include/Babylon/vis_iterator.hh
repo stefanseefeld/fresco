@@ -29,7 +29,6 @@
 #define _Babylon_vis_iterator_hh
 
 #include <Babylon/defs.hh>
-#include <Babylon/utils.hh>
 #include <Babylon/String.hh>
 #include <iterator>
 

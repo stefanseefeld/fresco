@@ -1,0 +1,220 @@
+#!/usr/bin/python
+
+import sys, time
+import string
+import curses
+
+# Import Warsaw Stubs
+import Warsaw
+import Warsaw__POA
+
+# Import berlin client lib
+import berlin
+
+class TextBufferObserver (Warsaw__POA.Observer):
+    "A simple Observer for a textbuffer."
+    def __init__(self, buffer, window, name):
+        self._buffer = buffer
+        self._window = window
+        self._name = name
+        self._window.box()
+        self._window.clear()
+        self._window.addstr(0, 0, "Pos: " + str(self._buffer._get_position()))
+        output = stringify(map(to_python, self._buffer.get_chars(0, self._buffer._get_size())))
+        self._window.addstr(1, 0, output)
+        self._window.addstr(2, 0, "^")
+        
+        self._window.refresh()
+        sys.stderr.write("INITIALISING\n")
+        sys.stderr.write(self._name + ":\n")
+        sys.stderr.write(self._name + ": " +"^\n\n");
+        self._buffer.attach(self._this())
+    
+    def update(self, any):
+        self._window.addstr(0, 10, "UPDATING")
+        self._window.refresh()
+
+        position = self._buffer._get_position()
+        self._window.addstr(0, 0, "Pos: " + str(position))
+        output = " " + stringify(map(to_python, self._buffer.get_chars(0, self._buffer._get_size())))
+
+        any_out = ""
+        change = any.value()
+        if change.type == Warsaw.TextBuffer.insert:
+            any_out += "insert  "
+        elif change.type == Warsaw.TextBuffer.remove:
+            any_out += "remove  "
+        elif change.type == Warsaw.TextBuffer.cursor:
+            any_out += "cursor  "
+        else:
+            any_out += "ERROR   "
+
+        any_out += "pos: "
+        any_out += str(change.pos)
+        any_out += "  len: "
+        any_out += str(change.len)
+        any_out += "          "
+
+        self._window.addstr(0, 20, any_out)
+        self._window.refresh()
+
+        self._window.move(1,0)
+        self._window.clrtoeol()
+        
+        self._window.addstr(1, 0, output)
+        self._window.addstr(0, 10, "        ")
+
+        self._window.move(2,0)
+        self._window.clrtoeol()
+        self._window.addstr(2, position, "^")
+        
+        self._window.refresh()
+        sys.stderr.write(self._name + ": " + output + "\n")
+        sys.stderr.write(self._name + ": " + " " * position + "^\n");
+
+
+def to_python(s):
+    if s in range(ord('a'), ord('z')):
+        return chr(s)
+    if s in range(0x05D0, 0x05E9):
+        return chr(s - 0x05D0 + ord('A'))
+    if s == 0x2029:
+        return '/'
+    return '#'
+
+
+def to_berlin(s):
+    if ord(s) in range(ord('A'), ord('Z')):
+        return ord(s) - ord('A') + 0x05D0 # transform into hebrew
+    elif s == '/':
+        return 0x2029 # PARAGRAPH SEPARATOR
+    else:
+        return ord(s)
+
+def insert(current, s):
+    if (len(s) == 0):
+        sys.stderr.write("inserting a string of length 0. IGNORING")
+        return
+    if (len(s) == 1):
+        sys.stderr.write("inserting a single char (" + s[0] + ")\n")
+        current.insert_char(to_berlin(s[0]))
+    else:
+        sys.stderr.write("inserting a string.\n")
+        current.insert_string(map(to_berlin, s))
+
+def stringify(s):
+    output = ''
+    if (len(s) == 0):
+        return output
+    for i in range(0, len(s)):
+        output += s[i]
+    return output
+
+def main():
+    # curses setup
+    stdscr = curses.initscr()
+    curses.noecho()
+    curses.cbreak()
+    stdscr.keypad(1)
+    stdscr.clear()
+    curses.curs_set(0)
+    stdscr.refresh()
+    
+    
+    # Create singletons
+    global app, kits, connection
+    connection = berlin.get_connection()
+    kits = berlin.get_kits()
+
+    # Get TextBuffers
+    buffer = kits.command.text()
+    stdscr.addstr(0, 0, 'Got the buffer...')
+    stdscr.refresh()
+
+    visual = buffer.get_visual_buffer()
+    stdscr.addstr(1, 0, 'Got the visual buffer...')
+    stdscr.refresh()
+
+    # Create Observers for those Buffers with their own windows
+    stdscr.addstr(3, 0, 'Memory: ')
+    mem_observe = TextBufferObserver(buffer, stdscr.subwin(4, 70,  3, 8), "MEM")
+    
+    stdscr.addstr(8, 0, 'Visual: ')
+    vis_observe = TextBufferObserver(visual, stdscr.subwin(4, 70,  8, 8), "VIS")
+
+    # Write explaination
+    stdscr.addstr(13, 0, '*     Quit')
+    stdscr.addstr(14, 0, '$     Switch inputbuffer')
+    stdscr.addstr(15, 0, 'a-z   insert as Left-to-Right')
+    stdscr.addstr(16, 0, 'A-Z   insert as Rigth-to-Left')
+    stdscr.addstr(17, 0, '/     insert paragraph separator')
+
+    stdscr.addstr(13,40, 'RIGHT forward')
+    stdscr.addstr(14,40, 'LEFT  backward')
+    stdscr.addstr(15,40, 'BS    remove_backward(1)')
+    stdscr.addstr(16,40, 'DEL   remove_forward(1)')
+
+    current = visual;
+    stdscr.addstr(9, 0, "(active)")
+    stdscr.refresh()
+
+    # Wait for commands
+    while 1:
+        c = stdscr.getch()
+        if c == ord('*'):
+            sys.stderr.write("QUITTING\n\n")
+            break;
+        elif c == ord('$'):
+            if current == visual:
+                current = buffer
+                stdscr.addstr(9, 0, "        ")
+                stdscr.addstr(4, 0, "(active)")
+                stdscr.refresh()
+                sys.stderr.write("MEM activated\n\n")
+            else:
+                current = visual
+                stdscr.addstr(4, 0, "        ")
+                stdscr.addstr(9, 0, "(active)")
+                stdscr.refresh()
+                sys.stderr.write("VIS activated\n\n")
+        elif (c >= ord('a') and c <= ord('z')) or (c >= ord('A') and c <= ord('Z')) or c == ord('/'):
+            insert(current, chr(c))
+            sys.stderr.write("\n");
+        elif c == ord('"'):
+            sys.stderr.write("\n");
+            pass
+        elif c == curses.KEY_RIGHT:
+            sys.stderr.write("FORWARD\n");
+            current.forward()
+            sys.stderr.write("\n");
+        elif c == curses.KEY_LEFT:
+            sys.stderr.write("BACKWARD\n");
+            current.backward()
+            sys.stderr.write("\n");
+        elif c == curses.KEY_BACKSPACE:
+            sys.stderr.write("REMOVE_BACKWARD(1)\n");
+            current.remove_backward(1)
+            sys.stderr.write("\n");
+        elif c == curses.KEY_DC:
+            sys.stderr.write("REMOVE_FORWARD(1)\n");
+            current.remove_forward(1)
+            sys.stderr.write("\n");
+        else:
+            stdscr.addstr(20, 0, "I DON'T KNOW THAT COMMAND")
+            stdscr.refresh()
+
+    # Tell the orb to shutdown (and wait for pending calls to complete)
+    connection.orb.shutdown(1)
+
+    # curses deinit.
+    stdscr.clear()
+    stdscr.refresh()
+    stdscr.keypad(0)
+    
+    curses.nocbreak()
+    curses.echo()
+    curses.curs_set(1)
+    curses.endwin()
+
+if __name__ == '__main__':
+    main()

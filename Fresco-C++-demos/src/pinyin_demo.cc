@@ -96,7 +96,7 @@ public:
 		} else
 		    // delete the uppercase char since it did not
 		    // denote a character in 'select':
-		    input->remove_backward(1);
+		    input->remove_backward(CORBA::ULong(1));
 	    } else {
 		// sharpen 'select':
 		select->clear();
@@ -185,6 +185,16 @@ int main(int argc, char ** argv) {
 	Warsaw::TextBuffer_var output_buf = ck->text();
 
 	// These buffers need associated views, else they are invisible:
+	// Since both ASCII and chinese do not need bidirectional output
+	// I use the buffers in memory-order. That way I don't need to do
+	// and reordering of the strings. If you can't be sure that
+	// no text in araqbic, hebrew or whatever will ever be entered,
+	// get a TextBuffer in visual order by calling get_visual_buffer() on
+	// the standard, memory-ordered TextBuffer.
+	// This line with a simple textviewer displaying in visual order would
+	// look like this:
+	// Warsaw::Graphic_var input_view =
+	//     tk->simple_viewer(input_buf->get_visual_buffer());
 	Warsaw::Graphic_var input_view = tk->simple_viewer(input_buf);
 	Warsaw::Graphic_var chinese_view = tk->simple_viewer(chinese_buf);
 	Warsaw::Graphic_var output_view = tk->simple_viewer(output_buf);

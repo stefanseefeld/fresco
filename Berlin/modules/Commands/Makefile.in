@@ -36,7 +36,7 @@ LIBS		+= -lBerlin
 
 SRC 		:= BoundedValueImpl.cc BoundedRangeImpl.cc TelltaleImpl.cc \
 		   SelectionImpl.cc TextBufferImpl.cc StreamBufferImpl.cc \
-		   CommandKitImpl.cc # ReactorImpl.cc
+		   CommandKitImpl.cc VisualTextBufferImpl.cc # ReactorImpl.cc
 
 MODULE		:= CommandKit
 

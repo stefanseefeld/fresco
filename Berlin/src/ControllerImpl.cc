@@ -461,13 +461,13 @@ void ControllerImpl::key_press(const Input::Event &event)
   const Input::Toggle &toggle = event[0].attr.selection();
   switch (toggle.number)
     {
-    case Babylon::KEY_CURSOR_LEFT:          // left
+    case Babylon::UC_KEY_CURSOR_LEFT:          // left
       {
 	prev_focus(event[0].dev);
 	break;
       }
     case Babylon::UC_HORIZONTAL_TABULATION: // tab
-    case Babylon::KEY_CURSOR_RIGHT:         // right
+    case Babylon::UC_KEY_CURSOR_RIGHT:         // right
       {
 	next_focus(event[0].dev);
 	break;

@@ -23,9 +23,11 @@
 
 #include <Babylon/String.hh>
 #include <Babylon/Char.hh>
+#include <Prague/Sys/Tracer.hh>
 
 // Conversion:
 Babylon::UTF8_string Babylon::Char::utf8() const throw (Trans_Error) {
+    Prague::Trace trace("Babylon::Char::utf8()");
     unsigned int chars_needed;
     
     UCS4 c = m_value;
@@ -58,6 +60,7 @@ Babylon::UTF8_string Babylon::Char::utf8() const throw (Trans_Error) {
 }
 
 Babylon::UTF16_string Babylon::Char::utf16() const throw (Trans_Error) {
+    Prague::Trace trace("Babylon::Char::utf16()");
     UTF16_string res;
     UCS4 c = m_value;
     if (c > 0x0010FFFF)
@@ -76,6 +79,7 @@ Babylon::UTF16_string Babylon::Char::utf16() const throw (Trans_Error) {
 }
 
 Babylon::UTF32_string Babylon::Char::utf32() const throw (Trans_Error) {
+    Prague::Trace trace("Babylon::Char::utf32()");
     if (m_value > 0x10FFFF)
         throw Trans_Error(TRANS_CAN_NOT_ENCODE);
     UTF32_string res;//(m_value, Babylon::NORM_NONE);
@@ -86,6 +90,7 @@ Babylon::UTF8_string::const_iterator
 Babylon::Char::utf8(const Babylon::UTF8_string & s,
 		    Babylon::UTF8_string::const_iterator it)
     throw (Trans_Error) {
+    Prague::Trace trace("Babylon::Char::utf8(...)");
  
     // rfc2279.txt: The trasfromation of UCS2 to UCS1 should be:
     // UCS2 ---> UCS4 ---> UCS1, so surrogates of UCS2 are removed
@@ -152,6 +157,7 @@ Babylon::UTF16_string::const_iterator
 Babylon::Char::utf16(const Babylon::UTF16_string & s,
 		     Babylon::UTF16_string::const_iterator it)
     throw (Trans_Error) {
+    Prague::Trace trace("Babylon::Char::utf16(...)");
     UCS4 c = *it;
     if (c >= 0xD800 && c <= 0xDFFF) {
 	// we found part of a surrogate pair...
@@ -172,6 +178,7 @@ Babylon::UTF32_string::const_iterator
 Babylon::Char::utf32(const Babylon::UTF32_string & s,
 		     Babylon::UTF32_string::const_iterator it)
     throw (Trans_Error) {
+    Prague::Trace trace("Babylon::Char::utf32(...)");
     if (*it > 0x10FFFF)
         throw Trans_Error(TRANS_CAN_NOT_ENCODE);
     m_value = *it;
@@ -179,6 +186,7 @@ Babylon::Char::utf32(const Babylon::UTF32_string & s,
 }
 
 bool Babylon::Char::is_Alphabetic() const throw (Block_Error) {
+    Prague::Trace trace("Babylon::Char::is_Alphabetic()");
     Gen_Cat cat = Dictionary::instance()->category(m_value);
     return (cat == CAT_Ll ||
 	    cat == CAT_Lu ||
@@ -189,6 +197,7 @@ bool Babylon::Char::is_Alphabetic() const throw (Block_Error) {
 }
 
 bool Babylon::Char::is_ID_Start() const throw (Block_Error) {
+    Prague::Trace trace("Babylon::Char::is_ID_Start()");
     Gen_Cat cat = Dictionary::instance()->category(m_value);
     return (cat == CAT_Ll ||
 	    cat == CAT_Lu ||
@@ -199,6 +208,7 @@ bool Babylon::Char::is_ID_Start() const throw (Block_Error) {
 }
 
 bool Babylon::Char::is_ID_Continue() const throw (Block_Error) {
+    Prague::Trace trace("Babylon::Char::is_ID_Continue()");
     Gen_Cat cat = Dictionary::instance()->category(m_value);
     return (cat == CAT_Ll ||
 	    cat == CAT_Lu ||
@@ -215,20 +225,24 @@ bool Babylon::Char::is_ID_Continue() const throw (Block_Error) {
 // TRANSFORMATIONS:
 void Babylon::Char::to_lower()
     throw (Block_Error) {
+    Prague::Trace trace("Babylon::Char::to_lower()");
     *this = this->lowercase();
 } // to_lowercase
 
 void Babylon::Char::to_upper()
     throw (Block_Error) {
+    Prague::Trace trace("Babylon::Char::to_upper()");
     *this = this->uppercase();
 } // to_uppercase
 
 void Babylon::Char::to_title()
     throw (Block_Error) {
+    Prague::Trace trace("Babylon::Char::to_title()");
     *this = this->titlecase();
 } // to_titlecase
 
 Babylon::String Babylon::Char::decompose() const
     throw (Undefined_Property, Block_Error) {
+    Prague::Trace trace("Babylon::Char::decompose()");
     return String(Dictionary::instance()->decompose(m_value));
 } // decompose

@@ -52,11 +52,16 @@ module Warsaw
       };
       
       //. The length of the TextBuffer.
-      readonly attribute long size;
+      readonly attribute unsigned long size;
       //. The contents of the TextBuffer.
       readonly attribute Unistring value;
-      //. Return or set the position of the cursor.
-      attribute long position;
+      //. Return or set the position of the cursor. The number gives
+      //. the position of the character in front of which the cursor is.
+      //.
+      //. If you *set* the position a TextChange will be generated and
+      //. passed to all observers of this TextBuffer. It will have a len of
+      //. 0 and be of type cursor. pos will contain the new position.
+      attribute unsigned long position;
       //. Get a substring of the TextBuffer starting at pos
       //. that is len characters long.
       Unistring get_chars(in unsigned long pos, in unsigned long len);
@@ -67,22 +72,57 @@ module Warsaw
       
       //. FIXME: What does this do?! -- tobias
       void shift(in long d);
-      //. Insert a character at the current position.
-      //. Allways use insert_string since this
-      //. might lead to unexspected results when adding characters with
-      //. codevalues higher then 0xFFFF!
+      //. Insert a character in front of the current position into the
+      //. TextBuffer. You can only insert characters below 0xFFFF, you will
+      //. need to insert a surrogate pair with insert_string() if you need
+      //. characters above that.
+      //. 
+      //. The current position is right behind the inserted character once this
+      //. operation is finished.
+      //.
+      //. The TextChange that will be passed around after the insertion will
+      //. allways have a length of 1, the pos field will be the cursor position
+      //. *before* the insertion and the type will be insert.
       void insert_char(in Unichar u);
-      //. Insert a string into the Buffer. It gets inserted at the
-      //. current cursor position.
+      //. Insert a string into the Buffer before the current position.
+      //. It gets inserted at the current cursor position.
+      //.
+      //. The current position is right behind the inserted string once this
+      //. operation is finished.
+      //.
+      //. The TextChange that will be passed around after the insertion will
+      //. allways have a positive length, the pos field will be the cursor position
+      //. *before* the insertion and the type will be insert.
       void insert_string(in Unistring u);
-      //. Remove d characters backward.
-      //. This is relative to the current cursor position.
-      void remove_backward(in long d);
-      //. Remove d characters forward.
-      //. This is relative to the current cursor position.
-      void remove_forward(in long d);
+      //. Remove d characters backward. This is relative to the current position.
+      //.
+      //. The TextChange that will be passed around after the removal will
+      //. allways have a *negative* length, the pos field will be the cursor
+      //. position *before* the removal and the type will be remove.
+      void remove_backward(in unsigned long d);
+      //. Remove d characters forward. This is relative to the current position.
+      //.
+      //. The TextChange that will be passed around after the removal will
+      //. allways have a *positive* length, the pos field will be the cursor
+      //. position *before* the removal and the type will be remove.
+      void remove_forward(in unsigned long d);
       //. Clear the buffer. It will be empty afterwards.
       void clear();
+
+      //. The order in which the String in this TextBuffer is stored.
+      readonly attribute StringOrder order;
+
+      //. Get the accociated TextBuffer that contains the String stored
+      //. in here in memory order. This operation returns a reference to
+      //. _this() if order() returns StringOrder::memory_order or a
+      //. reference to the associated buffer.
+      TextBuffer get_memory_buffer();
+      
+      //. Get the accociated TextBuffer that contains the String stored
+      //. in here in visual order. This operation returns a reference to
+      //. _this() if order() returns StringOrder::visual_order or a
+      //. reference to the associated buffer.
+      TextBuffer get_visual_buffer(); 
     };
 };
 

@@ -87,7 +87,7 @@ void TextViewer::update(const CORBA::Any &a)
 	case TextBuffer::cursor:
 	  {
 	    Trace trace2("TextViewer::update - cursor");
-	    // we'll do some cursor-ish stuff someday
+	    // FIXME: we'll do some cursor-ish stuff someday
 	  }
 	  break;
 	}

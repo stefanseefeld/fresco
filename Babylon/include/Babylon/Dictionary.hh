@@ -151,13 +151,16 @@ namespace Babylon {
     
 	float numeric_value(const UCS4 uc)
 	    throw (Undefined_Property, Block_Error);
-	bool is_Numeric(const UCS4 uc);
+	bool is_Numeric(const UCS4 uc)
+	    throw (Block_Error);
 	int dec_digit_value(const UCS4 uc)
 	    throw (Undefined_Property, Block_Error);
-	bool is_Decimal_Digit(const UCS4 uc);
+	bool is_Decimal_Digit(const UCS4 uc)
+	    throw (Block_Error);
 	int digit_value(const UCS4 uc)
 	    throw (Undefined_Property, Block_Error);
-	bool is_Digit(const UCS4 uc);
+	bool is_Digit(const UCS4 uc)
+	    throw (Block_Error);
 
 	std::string blockname(const UCS4 uc)
 	    throw (Block_Error);

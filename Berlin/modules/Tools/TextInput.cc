@@ -37,8 +37,8 @@ void TextInput::key_press(const Input::Event &event)
   switch (toggle.number)
       {
       case Babylon::UC_BACKSPACE:     buffer->remove_backward(1); break; // backspace
-      case Babylon::KEY_CURSOR_LEFT:  buffer->backward(); break;        // left
-      case Babylon::KEY_CURSOR_RIGHT: buffer->forward(); break;         // right
+      case Babylon::UC_KEY_CURSOR_LEFT:  buffer->backward(); break;        // left
+      case Babylon::UC_KEY_CURSOR_RIGHT: buffer->forward(); break;         // right
       default:
 	  if (uc.is_Printable() && !uc.is_Private_Use())
 	      buffer->insert_char(Unicode::to_CORBA(uc));

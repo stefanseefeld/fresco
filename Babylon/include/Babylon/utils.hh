@@ -57,12 +57,13 @@
 #include <Babylon/String.hh>
 
 namespace Babylon {
-
 //. This takes a single paragraph for input!
 //. Returns a vector of embedding levels and the max. embedding level used
-Embedding_Levels analyse(const Babylon::String::const_iterator, //.< start of input string
-			 const Babylon::String::const_iterator, //.< end of input string
-			 const Babylon::Base_Dir &);
+Babylon::Embedding_Levels
+analyse(const Babylon::String::const_iterator, //.< start of input string
+	const Babylon::String::const_iterator, //.< end of input string
+	const Babylon::Base_Dir = Babylon::BASE_DIR_WL,
+	const char right = 0); //.< Level to the left of the string.
 
 //. This function gets returns a string of embedding levels from
 //. the runlength encoded list of levels in Embedding_Level.
@@ -72,14 +73,29 @@ get_embedding_levels(const Babylon::Embedding_Levels & emb);
 //. Generates a mapping from the visual string of characters to the
 //. logical string.
 Babylon::Char_Mapping
-get_vis2log(const size_t & start_offset,
-	    const Babylon::Embedding_Levels & emb);
+get_vis2log(const size_t, const Babylon::Paragraphs &);
 
+//. Generates a mapping from the visual string of characters to the
+//. logical string.
+Babylon::Char_Mapping
+get_vis2log(const size_t,
+	    const Babylon::Paragraphs::const_iterator,
+	    const Babylon::Paragraphs::const_iterator);
+
+//. Generates a mapping from the visual string of characters to the
+//. logical string.
+Babylon::Char_Mapping
+get_vis2log(const size_t, const Babylon::Embedding_Levels &);
+
+
+
+/*
 //. Generates a mapping from the logical string of characters to the
 //. visual string.
 Babylon::Char_Mapping
 get_log2vis(const size_t & start_offset,
 	    const Babylon::Char_Mapping & vis2log);
+*/
 
 } // namespace Babylon
 

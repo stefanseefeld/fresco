@@ -316,7 +316,7 @@ namespace Babylon {
 	//.          if the block containing the character
 	//.          could not get loaded.
 	//.          THIS SHOULD NEVER HAPPEN!
-	bool is_Space()
+	bool is_Space() const
 	    throw (Block_Error) {
 	    return Dictionary::instance()->category(m_value) == CAT_Zs;
 	}
@@ -327,7 +327,7 @@ namespace Babylon {
 	//.          if the block containing the character
 	//.          could not get loaded.
 	//.          THIS SHOULD NEVER HAPPEN!
-	bool is_ISO_Control()
+	bool is_ISO_Control() const
 	    throw (Block_Error) {
 	    return Dictionary::instance()->category(m_value) == CAT_Cc;
 	}
@@ -338,7 +338,7 @@ namespace Babylon {
 	//.          if the block containing the character
 	//.          could not get loaded.
 	//.          THIS SHOULD NEVER HAPPEN!
-	bool is_Punctuation()
+	bool is_Punctuation() const
 	    throw (Block_Error) {
 	    return (Dictionary::instance()->category(m_value) == CAT_Pc ||
 		    Dictionary::instance()->category(m_value) == CAT_Pd ||
@@ -355,7 +355,7 @@ namespace Babylon {
 	//.          if the block containing the character
 	//.          could not get loaded.
 	//.          THIS SHOULD NEVER HAPPEN!
-	bool is_Line_Separator()
+	bool is_Line_Separator() const
 	    throw (Block_Error) {
 	    return Dictionary::instance()->category(m_value) == CAT_Zl;
 	}
@@ -366,7 +366,7 @@ namespace Babylon {
 	//.          if the block containing the character
 	//.          could not get loaded.
 	//.          THIS SHOULD NEVER HAPPEN!
-	bool is_Paragraph_Separator()
+	bool is_Paragraph_Separator() const
 	    throw (Block_Error) {
 	    return Dictionary::instance()->category(m_value) == CAT_Zp;
 	}
@@ -377,7 +377,7 @@ namespace Babylon {
 	//.          if the block containing the character
 	//.          could not get loaded.
 	//.          THIS SHOULD NEVER HAPPEN!	
-	bool is_Currency_Symbol()
+	bool is_Currency_Symbol() const
 	    throw (Block_Error) {
 	    return Dictionary::instance()->category(m_value) == CAT_Sc;
 	}
@@ -388,7 +388,7 @@ namespace Babylon {
 	//.          if the block containing the character
 	//.          could not get loaded.
 	//.          THIS SHOULD NEVER HAPPEN!			
-	bool is_Bidi_Left_to_Right()
+	bool is_Bidi_Left_to_Right() const
 	    throw (Block_Error) {
 	    return Dictionary::instance()->bidir_props(m_value) == BIDIR_L;
 	}
@@ -399,7 +399,7 @@ namespace Babylon {
 	//.          if the block containing the character
 	//.          could not get loaded.
 	//.          THIS SHOULD NEVER HAPPEN!
-	bool is_Bidi_European_Digit()
+	bool is_Bidi_European_Digit() const
 	    throw (Block_Error) {
 	    return Dictionary::instance()->bidir_props(m_value) == BIDIR_EN;
 	}
@@ -411,7 +411,7 @@ namespace Babylon {
 	//.          if the block containing the character
 	//.          could not get loaded.
 	//.          THIS SHOULD NEVER HAPPEN!
-	bool is_Bidi_Eur_Num_Separator()
+	bool is_Bidi_Eur_Num_Separator() const
 	    throw (Block_Error) {
 	    return Dictionary::instance()->bidir_props(m_value) == BIDIR_ES;
 	}	
@@ -423,7 +423,7 @@ namespace Babylon {
 	//.          if the block containing the character
 	//.          could not get loaded.
 	//.          THIS SHOULD NEVER HAPPEN!
-	bool is_Bidi_Eur_Num_Terminator()
+	bool is_Bidi_Eur_Num_Terminator() const
 	    throw (Block_Error) {
 	    return Dictionary::instance()->bidir_props(m_value) == BIDIR_ET;
 	}
@@ -435,7 +435,7 @@ namespace Babylon {
 	//.          if the block containing the character
 	//.          could not get loaded.
 	//.          THIS SHOULD NEVER HAPPEN!
-	bool is_Bidi_Arabic_Digit()
+	bool is_Bidi_Arabic_Digit() const
 	    throw (Block_Error) {
 	    return Dictionary::instance()->bidir_props(m_value) == BIDIR_AN;
 	}
@@ -447,7 +447,7 @@ namespace Babylon {
 	//.          if the block containing the character
 	//.          could not get loaded.
 	//.          THIS SHOULD NEVER HAPPEN!
-	bool is_Bidi_Common_Separator()
+	bool is_Bidi_Common_Separator() const
 	    throw (Block_Error) {
 	    return Dictionary::instance()->bidir_props(m_value) == BIDIR_CS;
 	}
@@ -459,7 +459,7 @@ namespace Babylon {
 	//.          if the block containing the character
 	//.          could not get loaded.
 	//.          THIS SHOULD NEVER HAPPEN!
-	bool is_Bidi_Block_Separator()
+	bool is_Bidi_Block_Separator() const
 	    throw (Block_Error) {
 	    return Dictionary::instance()->bidir_props(m_value) == BIDIR_B;
 	}
@@ -471,7 +471,7 @@ namespace Babylon {
 	//.          if the block containing the character
 	//.          could not get loaded.
 	//.          THIS SHOULD NEVER HAPPEN!
-	bool is_Bidi_Segment_Separator()
+	bool is_Bidi_Segment_Separator() const
 	    throw (Block_Error) {
 	    return Dictionary::instance()->bidir_props(m_value) == BIDIR_S;
 	}
@@ -483,7 +483,7 @@ namespace Babylon {
 	//.          if the block containing the character
 	//.          could not get loaded.
 	//.          THIS SHOULD NEVER HAPPEN!
-	bool is_Bidi_Whitespace()
+	bool is_Bidi_Whitespace() const
 	    throw (Block_Error) {
 	    return Dictionary::instance()->bidir_props(m_value) == BIDIR_WS;
 	}
@@ -495,7 +495,7 @@ namespace Babylon {
 	//.          if the block containing the character
 	//.          could not get loaded.
 	//.          THIS SHOULD NEVER HAPPEN!
-	bool is_Bidi_Non_spacing_Mark()
+	bool is_Bidi_Non_spacing_Mark() const
 	    throw (Block_Error) {
 	    return Dictionary::instance()->bidir_props(m_value) == BIDIR_NSM;
 	}
@@ -507,7 +507,7 @@ namespace Babylon {
 	//.          if the block containing the character
 	//.          could not get loaded.
 	//.          THIS SHOULD NEVER HAPPEN!
-	bool is_Bidi_Boundary_Neutral()
+	bool is_Bidi_Boundary_Neutral() const
 	    throw (Block_Error) {
 	    return Dictionary::instance()->bidir_props(m_value) == BIDIR_BN;
 	}
@@ -518,7 +518,7 @@ namespace Babylon {
 	//.          if the block containing the character
 	//.          could not get loaded.
 	//.          THIS SHOULD NEVER HAPPEN!
-	bool is_Bidi_PDF()
+	bool is_Bidi_PDF() const
 	    throw (Block_Error) {
 	    return Dictionary::instance()->bidir_props(m_value) == BIDIR_PDF;
 	}
@@ -529,7 +529,7 @@ namespace Babylon {
 	//.          if the block containing the character
 	//.          could not get loaded.
 	//.          THIS SHOULD NEVER HAPPEN!
-	bool is_Bidi_Embedding_or_Override()
+	bool is_Bidi_Embedding_or_Override() const
 	    throw (Block_Error) {
 	    return (Dictionary::instance()->bidir_props(m_value) == BIDIR_LRE ||
 		    Dictionary::instance()->bidir_props(m_value) == BIDIR_RLE ||
@@ -544,7 +544,7 @@ namespace Babylon {
 	//.          if the block containing the character
 	//.          could not get loaded.
 	//.          THIS SHOULD NEVER HAPPEN!				
-	bool is_Bidi_Other_Neutral()
+	bool is_Bidi_Other_Neutral() const
 	    throw (Block_Error) {
 	    return Dictionary::instance()->bidir_props(m_value) == BIDIR_ON;
 	}
@@ -555,7 +555,7 @@ namespace Babylon {
 	//.          if the block containing the character
 	//.          could not get loaded.
 	//.          THIS SHOULD NEVER HAPPEN!
-	bool is_Virama()
+	bool is_Virama() const
 	    throw (Block_Error) {
 	    return Dictionary::instance()->comb_class(m_value) == CC_VIRAMAS;
 	}
@@ -566,7 +566,7 @@ namespace Babylon {
 	//.          if the block containing the character
 	//.          could not get loaded.
 	//.          THIS SHOULD NEVER HAPPEN!
-	bool is_Printable()
+	bool is_Printable() const
 	    throw (Block_Error) {
 	    return (Dictionary::instance()->category(m_value) != CAT_MAX &&
 		    Dictionary::instance()->category(m_value) != CAT_Cc &&
@@ -574,12 +574,12 @@ namespace Babylon {
 	}
 
 	//. Returns true, if this is NOT character and false otherwise. 
-	bool is_Not_a_Character() {
+	bool is_Not_a_Character() const {
 	    return (m_value & 0xFFFD == 0);
 	}
 
 	// Derived Properties:
-	bool is_Math()
+	bool is_Math() const
 	    throw (Block_Error) {
 	    return (Dictionary::instance()->category(m_value) == CAT_Sm ||
 		    Dictionary::instance()->is_Other_Math(m_value));

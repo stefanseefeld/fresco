@@ -21,6 +21,9 @@
  */
 
 #include <Babylon/vis_iterator.hh>
+#include <Babylon/utils.hh>
+
+// FIXME: REWORK THIS TO WORK WITH MULTIPLE PARAGRAPHS.
 
 Babylon::vis_iterator::vis_iterator(const Babylon::String::iterator start,
 				    const Babylon::String::iterator end) : m_start(start),

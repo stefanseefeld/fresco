@@ -21,6 +21,7 @@
  */
 
 #include <Babylon/Dictionary.hh>
+#include <Prague/Sys/Tracer.hh>
 #include <fstream>
 #include <iostream>
 #include <iomanip>
@@ -38,6 +39,7 @@ Mutex                   Dictionary::m_singleton_mutex;
 
 bool Dictionary::is_defined(const UCS4 uc)
     throw (Block_Error) {
+    Prague::Trace trace("Babylon::Dictionary::is_defined(...)");
     bool result = 0;
     Prague::Guard<RWLock> guard(m_rw_lock);
     result = find_char(uc)->is_defined(uc);
@@ -47,6 +49,7 @@ bool Dictionary::is_defined(const UCS4 uc)
 
 UCS4 Dictionary::uppercase(const UCS4 uc) 
     throw (Block_Error) {
+    Prague::Trace trace("Babylon::Dictionary::uppercase(...)");
     UCS4 result;
     Guard<RWLock> guard(m_rw_lock);
     result=find_char(uc)->uppercase(uc);
@@ -56,6 +59,7 @@ UCS4 Dictionary::uppercase(const UCS4 uc)
 
 UCS4 Dictionary::lowercase(const UCS4 uc) 
     throw (Block_Error) {
+    Prague::Trace trace("Babylon::Dictionary::lowercase(...)");
     UCS4 result;
     Guard<RWLock> guard(m_rw_lock);
     result=find_char(uc)->lowercase(uc);
@@ -65,6 +69,7 @@ UCS4 Dictionary::lowercase(const UCS4 uc)
 
 UCS4 Dictionary::titlecase(const UCS4 uc) 
     throw (Block_Error) {
+    Prague::Trace trace("Babylon::Dictionary::titlecase(...)");
     UCS4 result;
     Guard<RWLock> guard(m_rw_lock);
     result=find_char(uc)->titlecase(uc);
@@ -74,6 +79,7 @@ UCS4 Dictionary::titlecase(const UCS4 uc)
 
 float Dictionary::numeric_value(const UCS4 uc) 
     throw (Undefined_Property, Block_Error) {
+    Prague::Trace trace("Babylon::Dictionary::numeric_value(...)");
     float result;
     Guard<RWLock> guard(m_rw_lock);
     if (!find_char(uc)->is_Numeric(uc)) {
@@ -87,6 +93,7 @@ float Dictionary::numeric_value(const UCS4 uc)
 
 int Dictionary::dec_digit_value(const UCS4 uc) 
     throw (Undefined_Property, Block_Error) {
+    Prague::Trace trace("Babylon::Dictionary::dec_digit_value(...)");
     int result;
     Guard<RWLock> guard(m_rw_lock);
     if (!find_char(uc)->is_Decimal_Digit(uc)) {
@@ -100,6 +107,7 @@ int Dictionary::dec_digit_value(const UCS4 uc)
     
 int Dictionary::digit_value(const UCS4 uc) 
     throw (Undefined_Property, Block_Error) {
+    Prague::Trace trace("Babylon::Dictionary::digit_value(...)");
     int result;
     Guard<RWLock> guard(m_rw_lock);
     if (!(find_char(uc)->is_Digit(uc))) {
@@ -113,6 +121,7 @@ int Dictionary::digit_value(const UCS4 uc)
 
 std::string Dictionary::blockname(const UCS4 uc) 
     throw (Block_Error) {
+    Prague::Trace trace("Babylon::Dictionary::blockname(...)");
     std::string result;
     Guard<RWLock> guard(m_rw_lock);
     result=find_char(uc)->blockname(uc);
@@ -122,6 +131,7 @@ std::string Dictionary::blockname(const UCS4 uc)
     
 Gen_Cat Dictionary::category(const UCS4 uc) 
     throw (Undefined_Property, Block_Error) {
+    Prague::Trace trace("Babylon::Dictionary::category(...)");
     Gen_Cat result;
     Guard<RWLock> guard(m_rw_lock);
     result=find_char(uc)->category(uc);
@@ -135,6 +145,7 @@ Gen_Cat Dictionary::category(const UCS4 uc)
 
 Can_Comb_Class Dictionary::comb_class(const UCS4 uc) 
     throw (Undefined_Property, Block_Error) {
+    Prague::Trace trace("Babylon::Dictionary::comb_class(...)");
     Can_Comb_Class result;
     Guard<RWLock> guard(m_rw_lock);
     result=find_char(uc)->comb_class(uc);
@@ -148,6 +159,7 @@ Can_Comb_Class Dictionary::comb_class(const UCS4 uc)
     
 Bidir_Props Dictionary::bidir_props(const UCS4 uc) 
     throw (Undefined_Property, Block_Error) {
+    Prague::Trace trace("Babylon::Dictionary::bidir_props(...)");
     Bidir_Props result;
     Guard<RWLock> guard(m_rw_lock);
     result=find_char(uc)->bidir_props(uc);
@@ -161,6 +173,7 @@ Bidir_Props Dictionary::bidir_props(const UCS4 uc)
     
 Char_Decomp Dictionary::decomp_type(const UCS4 uc) 
     throw (Undefined_Property, Block_Error) {
+    Prague::Trace trace("Babylon::Dictionary::decomp_type(...)");
     Char_Decomp result;
     Guard<RWLock> guard(m_rw_lock);
     result=find_char(uc)->decomp_type(uc);
@@ -174,6 +187,7 @@ Char_Decomp Dictionary::decomp_type(const UCS4 uc)
 
 UTF32_string Dictionary::decompose(const UCS4 uc) 
     throw (Block_Error) {
+    Prague::Trace trace("Babylon::Dictionary::decompose(...)");
     UTF32_string result;
     Guard<RWLock> guard(m_rw_lock);
     result = find_char(uc)->decompose(uc);
@@ -183,6 +197,7 @@ UTF32_string Dictionary::decompose(const UCS4 uc)
 
 UCS4 Dictionary::compose(const UCS4 starter, const UCS4 last) 
     throw (Block_Error) {
+    Prague::Trace trace("Babylon::Dictionary::compose(...)");
     UCS4 result;
     Guard<RWLock> guard(m_rw_lock);
     result=find_char(starter)->compose(starter, last);
@@ -192,6 +207,7 @@ UCS4 Dictionary::compose(const UCS4 starter, const UCS4 last)
     
 bool Dictionary::must_mirror(const UCS4 uc) 
     throw (Block_Error) {
+    Prague::Trace trace("Babylon::Dictionary::must_mirror(...)");
     bool result;
     Guard<RWLock> guard(m_rw_lock);
     result=find_char(uc)->must_mirror(uc);
@@ -201,6 +217,7 @@ bool Dictionary::must_mirror(const UCS4 uc)
 
 EA_Width Dictionary::EA_width(const UCS4 uc) 
     throw (Block_Error) {
+    Prague::Trace trace("Babylon::Dictionary::EA_width(...)");
     EA_Width result;
     Guard<RWLock> guard(m_rw_lock);
     result=find_char(uc)->EA_width(uc);
@@ -210,6 +227,7 @@ EA_Width Dictionary::EA_width(const UCS4 uc)
 
 Line_Break Dictionary::linebreak(const UCS4 uc) 
     throw (Block_Error) {
+    Prague::Trace trace("Babylon::Dictionary::linebreak(...)");
     Line_Break result;
     Guard<RWLock> guard(m_rw_lock);
     result=find_char(uc)->linebreak(uc);
@@ -220,6 +238,7 @@ Line_Break Dictionary::linebreak(const UCS4 uc)
 
 bool Dictionary::is_White_space(const UCS4 uc) 
     throw (Block_Error)  {
+    Prague::Trace trace("Babylon::Dictionary::is_White_space(...)");
     bool result;
     Guard<RWLock> guard(m_rw_lock);
     result = find_char(uc)->is_White_space(uc);
@@ -229,6 +248,7 @@ bool Dictionary::is_White_space(const UCS4 uc)
 
 bool Dictionary::is_Bidi_Control(const UCS4 uc) 
     throw (Block_Error) {
+    Prague::Trace trace("Babylon::Dictionary::is_Bidi_Control(...)");
     bool result;
     Guard<RWLock> guard(m_rw_lock);
     result = find_char(uc)->is_Bidi_Control(uc);
@@ -238,6 +258,7 @@ bool Dictionary::is_Bidi_Control(const UCS4 uc)
 
 bool Dictionary::is_Join_Control(const UCS4 uc) 
     throw (Block_Error) {
+    Prague::Trace trace("Babylon::Dictionary::is_Join_Control(...)");
     bool result;
     Guard<RWLock> guard(m_rw_lock);
     result = find_char(uc)->is_Join_Control(uc);
@@ -247,6 +268,7 @@ bool Dictionary::is_Join_Control(const UCS4 uc)
 
 bool Dictionary::is_Dash(const UCS4 uc) 
     throw (Block_Error) {
+    Prague::Trace trace("Babylon::Dictionary::is_Dash(...)");
     bool result;
     Guard<RWLock> guard(m_rw_lock);
     result = find_char(uc)->is_Dash(uc);
@@ -256,6 +278,7 @@ bool Dictionary::is_Dash(const UCS4 uc)
 
 bool Dictionary::is_Hyphen(const UCS4 uc) 
     throw (Block_Error) {
+    Prague::Trace trace("Babylon::Dictionary::is_Hyphen(...)");
     bool result;
     Guard<RWLock> guard(m_rw_lock);
     result = find_char(uc)->is_Hyphen(uc);
@@ -265,6 +288,7 @@ bool Dictionary::is_Hyphen(const UCS4 uc)
 
 bool Dictionary::is_Quotation_Mark(const UCS4 uc) 
     throw (Block_Error) {
+    Prague::Trace trace("Babylon::Dictionary::is_Quotation_Mark(...)");
     bool result;
     Guard<RWLock> guard(m_rw_lock);
     result = find_char(uc)->is_Quotation_Mark(uc);
@@ -274,6 +298,7 @@ bool Dictionary::is_Quotation_Mark(const UCS4 uc)
 
 bool Dictionary::is_Terminal_Punctuation(const UCS4 uc) 
     throw (Block_Error) {
+    Prague::Trace trace("Babylon::Dictionary::is_Terminal_Punctuation(...)");
     bool result;
     Guard<RWLock> guard(m_rw_lock);
     result = find_char(uc)->is_Terminal_Punctuation(uc);
@@ -283,6 +308,7 @@ bool Dictionary::is_Terminal_Punctuation(const UCS4 uc)
 
 bool Dictionary::is_Other_Math(const UCS4 uc) 
     throw (Block_Error) {
+    Prague::Trace trace("Babylon::Dictionary::is_Other_Math(...)");
     bool result;
     Guard<RWLock> guard(m_rw_lock);
     result = find_char(uc)->is_Other_Math(uc);
@@ -292,6 +318,7 @@ bool Dictionary::is_Other_Math(const UCS4 uc)
 
 bool Dictionary::is_Hex_Digit(const UCS4 uc) 
     throw (Block_Error) {
+    Prague::Trace trace("Babylon::Dictionary::is_Hex_Digit(...)");
     bool result;
     Guard<RWLock> guard(m_rw_lock);
     result = find_char(uc)->is_Hex_Digit(uc);
@@ -301,6 +328,7 @@ bool Dictionary::is_Hex_Digit(const UCS4 uc)
 
 bool Dictionary::is_Other_Alphabetic(const UCS4 uc) 
     throw (Block_Error) {
+    Prague::Trace trace("Babylon::Dictionary::is_Other_Alphabetic(...)");
     bool result;
     Guard<RWLock> guard(m_rw_lock);
     result = find_char(uc)->is_Other_Alphabetic(uc);
@@ -310,6 +338,7 @@ bool Dictionary::is_Other_Alphabetic(const UCS4 uc)
 
 bool Dictionary::is_Ideographic(const UCS4 uc) 
     throw (Block_Error) {
+    Prague::Trace trace("Babylon::Dictionary::is_Ideographic(...)");
     bool result;
     Guard<RWLock> guard(m_rw_lock);
     result = find_char(uc)->is_Ideographic(uc);
@@ -319,6 +348,7 @@ bool Dictionary::is_Ideographic(const UCS4 uc)
 
 bool Dictionary::is_Diacritic(const UCS4 uc) 
     throw (Block_Error) {
+    Prague::Trace trace("Babylon::Dictionary::is_Diacritic(...)");
     bool result;
     Guard<RWLock> guard(m_rw_lock);
     result = find_char(uc)->is_Diacritic(uc);
@@ -328,6 +358,7 @@ bool Dictionary::is_Diacritic(const UCS4 uc)
 
 bool Dictionary::is_Extender(const UCS4 uc) 
     throw (Block_Error) {
+    Prague::Trace trace("Babylon::Dictionary::is_Extender(...)");
     bool result;
     Guard<RWLock> guard(m_rw_lock);
     result = find_char(uc)->is_Extender(uc);
@@ -337,6 +368,7 @@ bool Dictionary::is_Extender(const UCS4 uc)
 
 bool Dictionary::is_Other_Uppercase(const UCS4 uc) 
     throw (Block_Error) {
+    Prague::Trace trace("Babylon::Dictionary::is_Other_Uppercase(...)");
     bool result;
     Guard<RWLock> guard(m_rw_lock);
     result = find_char(uc)->is_Other_Uppercase(uc);
@@ -346,6 +378,7 @@ bool Dictionary::is_Other_Uppercase(const UCS4 uc)
 
 bool Dictionary::is_Other_Lowercase(const UCS4 uc) 
     throw (Block_Error) {
+    Prague::Trace trace("Babylon::Dictionary::is_Other_Lowercase(...)");
     bool result;
     Guard<RWLock> guard(m_rw_lock);
     result = find_char(uc)->is_Other_Lowercase(uc);
@@ -355,14 +388,44 @@ bool Dictionary::is_Other_Lowercase(const UCS4 uc)
 
 bool Dictionary::is_Noncharacter_Code_Point(const UCS4 uc)
     throw (Block_Error) {
+    Prague::Trace trace("Babylon::Dictionary::is_Noncharacter_Code_Point(...)");
     bool result;
     Guard<RWLock> guard(m_rw_lock);
     result = find_char(uc)->is_Noncharacter_Code_Point(uc);
     return result;
 }    
 
+bool Dictionary::is_Decimal_Digit(const UCS4 uc)
+    throw (Block_Error) {
+    Prague::Trace trace("Babylon::Dictionary::is_Decimal_Digit(...)");
+    bool result;
+    Guard<RWLock> guard(m_rw_lock);
+    result = find_char(uc)->is_Decimal_Digit(uc);
+    return result;
+}
+
+bool Dictionary::is_Digit(const UCS4 uc)
+    throw (Block_Error) {
+    Prague::Trace trace("Babylon::Dictionary::is_Digit(...)");
+    bool result;
+    Guard<RWLock> guard(m_rw_lock);
+    result = find_char(uc)->is_Digit(uc);
+    return result;
+}
+
+bool Dictionary::is_Numeric(const UCS4 uc)
+    throw (Block_Error) {
+    Prague::Trace trace("Babylon::Dictionary::is_Numeric(...)");
+    bool result;
+    Guard<RWLock> guard(m_rw_lock);
+    result = find_char(uc)->is_Numeric(uc);
+    return result;
+}
+
+
 UCS4 Dictionary::first_letter_of_block(const UCS4 uc)
     throw () {
+    Prague::Trace trace("Babylon::Dictionary::first_Letter_of_block(...)");
     UCS4 result = UC_MAX_DEFINED;
     if (uc >= UC_MAX_DEFINED)
 	return result;
@@ -378,6 +441,7 @@ UCS4 Dictionary::first_letter_of_block(const UCS4 uc)
 
 UCS4 Dictionary::last_letter_of_block(const UCS4 uc)
     throw () {
+    Prague::Trace trace("Babylon::Dictionary::last_letter_of_block(...)");
     UCS4 result = UC_MAX_DEFINED;
     if (uc >= UC_MAX_DEFINED)
 	return result;
@@ -393,6 +457,7 @@ UCS4 Dictionary::last_letter_of_block(const UCS4 uc)
 
 UCS4 Dictionary::start_of_next_block(const UCS4 uc) 
     throw () {
+    Prague::Trace trace("Babylon::Dictionary::start_of_next_block(...)");
     UCS4 result = UC_MAX_DEFINED;
     if (uc >= UC_MAX_DEFINED)
 	return result;
@@ -411,6 +476,7 @@ UCS4 Dictionary::start_of_next_block(const UCS4 uc)
 }
 
 Dictionary * Dictionary::instance() {
+    Prague::Trace trace("Babylon::Dictionary::instance()");
     // Create Dictionary just once
     {
 	Prague::Guard<Mutex> guard(m_singleton_mutex);
@@ -422,6 +488,7 @@ Dictionary * Dictionary::instance() {
 
 UTF32_string Dictionary::recursive_decompose(const bool compat, const UCS4 uc)
     throw (Block_Error) {
+    Prague::Trace trace("Babylon::Dictionary::recursive_decompose(...)");
     UTF32_string decomp;
     UTF32_string result;
     
@@ -447,6 +514,7 @@ UTF32_string Dictionary::recursive_decompose(const bool compat, const UCS4 uc)
 
 Dictionary::Block * Dictionary::find_char(const UCS4 uc)
     throw (Block_Error) {
+    Prague::Trace trace("Babylon::Dictionary::find_char(...)");
     // Gets only called after the dictionary is rlocked!
 
     // Binary search version:
@@ -478,6 +546,7 @@ Dictionary::Block * Dictionary::find_char(const UCS4 uc)
 
 
 void Dictionary::update(const std::string & scanDir) {
+    Prague::Trace trace("Babylon::Dictionary::update(...)");
     Guard<RWLock, WLock_Trait<RWLock> > guard(m_rw_lock);
     clean();
     
@@ -535,6 +604,7 @@ void Dictionary::update(const std::string & scanDir) {
 
 
 Dictionary::Dictionary() {
+    Prague::Trace trace("Babylon::Dictionary::Dictionary()");
     {
 	Guard<RWLock, WLock_Trait<RWLock> > guard(m_rw_lock);
 	m_version.resize(1);
@@ -552,12 +622,14 @@ Dictionary::Dictionary() {
 
 
 Dictionary::~Dictionary() {
+    Prague::Trace trace("Babylon::Dictionary::~Dictionary()");
     Guard<RWLock, WLock_Trait<RWLock> > guard(m_rw_lock);
     clean();
 } // Dictionary::~Dictionary()
 
 
 void Dictionary::clean() {
+    Prague::Trace trace("Babylon::Dictionary::clean()");
     // gets only called in writelocked functions!
     for (std::vector<Data>::const_iterator i = m_data.begin();
 	 i != m_data.end();
