@@ -31,6 +31,11 @@
 #include <Berlin/ImplVar.hh>
 
 class Allocator : public MonoGraphic
+//. An Allocator is a graphic that always gives its child
+//. an allocation that matches the child's requisition.
+//. This functionality is useful as a gateway between
+//. figure objects, which ignore their allocation, and
+//. layout objects.
 {
 public:
   Allocator();
@@ -53,6 +58,11 @@ protected:
 };
 
 class TransformAllocator : public Allocator
+//. A TransformAllocator maps its allocate to a translation
+//. during traversal and always gives its child the child's
+//. natural allocation.  This functionality is useful
+//. as a gateway between layout objects and figure objects
+//. (which ignore their allocation).
 {
 public:
   TransformAllocator(Alignment, Alignment, Alignment, Alignment, Alignment, Alignment);

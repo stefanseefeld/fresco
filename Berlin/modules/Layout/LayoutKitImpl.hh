@@ -84,7 +84,7 @@ public:
   virtual Graphic_ptr alignAxis(Graphic_ptr, Axis, Alignment);
   virtual Graphic_ptr halign(Graphic_ptr, Alignment);
   virtual Graphic_ptr valign(Graphic_ptr, Alignment);
-  virtual Graphic_ptr fixed(Graphic_ptr, Coord, Coord);
+  virtual Graphic_ptr fixedSize(Graphic_ptr, Coord, Coord);
   virtual Graphic_ptr fixedAxis(Graphic_ptr, Axis, Coord);
   virtual Graphic_ptr hfixed(Graphic_ptr, Coord);
   virtual Graphic_ptr vfixed(Graphic_ptr, Coord);

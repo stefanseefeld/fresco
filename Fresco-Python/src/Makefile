@@ -21,19 +21,17 @@
 
 SHELL	= /bin/sh
 
-cpath	= ../../config
-ipath	= ../../include
-lpath	= ../../lib
+cpath	= ../../../config
+ipath	= ../../../include
+lpath	= ../../../lib
 dpath	= dep
 opath	= obj
 rpath	= $(lpath)
+wpath   = $(ipath)/Warsaw
 
-include $(cpath)/local.mk
-
-CPPFLAGS= $(SYSCPPFLAGS) $(ORBCPPFLAGS) -I. -I..
-CXXFLAGS+= $(SOFLAGS)# $(ORBOPTFLAGS)
-LDFLAGS	= -shared -rdynamic
-LIBS	+= $(ORBLIBS)
+#include $(cpath)/local.mk
+IDL	= omniidl
+IDLFLAGS= -I$(wpath) -bpython
 
 DYNINT	= Types.idl
 STATINT	= ClientContext.idl ServerContext.idl Naming.idl \
@@ -53,69 +51,28 @@ LCINT	= LifeCycle.idl Cloneable.idl DrawingKit.idl FigureKit.idl LayoutKit.idl C
 
 INT	= $(DYNINT) $(STATINT) $(LCINT)
 
-DEP	= $(patsubst %.idl, $(dpath)/%.d, $(INT))
+#DYNSRC	= $(patsubst %.idl, %DynSK.py, $(DYNINT))
+DYNSTATSRC = $(patsubst %.idl, %_idl.py, $(DYNINT)) 
+STATSRC	= $(patsubst %.idl, %_idl.py, $(STATINT))
+LCSRC	= $(patsubst %.idl, %_idl.py, $(LCINT))
 
-DYNSRC	= $(patsubst %.idl, %DynSK.cc, $(DYNINT))
-DYNSTATSRC = $(patsubst %.idl, %SK.cc, $(DYNINT)) 
-STATSRC	= $(patsubst %.idl, %SK.cc, $(STATINT))
-LCSRC	= $(patsubst %.idl, %SK.cc, $(LCINT))
-
-UTIL	= Warsaw.cc Unicode.cc
-
-SRC	= $(DYNSRC) $(DYNSTATSRC) $(STATSRC) $(LCSRC) $(UTIL)
-
-DYNHDR	= $(patsubst %.idl, %.hh, $(DYNINT))
-STATHDR	= $(patsubst %.idl, %.hh, $(STATINT))
-LCHDR	= $(patsubst %.idl, %.hh, $(LCINT))
-HDR	= $(DYNHDR) $(STATHDR) $(LCHDR)
-
-OBJ	= $(patsubst %.cc, $(opath)/%.o, $(SRC))
-TARGET	= $(lpath)/libWarsaw.so
+SRC	= $(DYNSRC) $(DYNSTATSRC) $(STATSRC) $(LCSRC)
 
 vpath %.d $(dpath)
 
-world:	$(TARGET)
+world:	$(SRC)
 
-$(TARGET):	$(OBJ)
-		$(CXX) $(LDFLAGS) -o $@ $(OBJ) $(LIBS)
-		strip --strip-unneeded $@
-
-$(dpath)/%.d:	%.idl
-		@echo making dependencies for $<
-		@if [ ! -d $(dpath) ]; then mkdir $(dpath); fi
-		@$(SHELL) -ec "$(CXX) -x c++ -M $(CPPFLAGS) $(CXXFLAGS) $< \
-		| perl -e 'undef \$$/; while(<>)\
-		    {\
-	    	      (/^(.*)\\.idl\\.o:((.|\\n)*)/);\
-		      \$$file = \$$1;\
-		      \$$dep = \$$2;\
-		      print \"\$$1\", \"SK.cc \", \$$file, \"DynSK.cc \",\
-			    \$$file, \".hh $(dpath)\/\", \$$file, \".d:\", \$$dep;\
-		      \$$file .= \"SK\";\
-		      \$$dep =~ s/\\.idl/\\.hh/g;\
-		      print \"$(opath)\/\", \$$file, \".o\", \": \", \$$file, \".cc\", \$$dep ;\
-		    }' > $@"
-$(STATHDR): %.hh:		%.idl
+$(STATSRC): %_idl.py:		$(wpath)/%.idl
 		$(IDL) $(IDLFLAGS) $<
-$(DYNHDR): %.hh:	%.idl
+$(DYNSTATSRC): %_idl.py: 	$(wpath)/%.idl
 		$(IDL) $(IDLFLAGS) $(DYNIDLFLAGS) $<
-$(LCHDR): %.hh:	%.idl
+$(DYNSRC): %DynSK.py:	$(wpath)/%.idl
+		$(IDL) $(IDLFLAGS) $(DYNIDLFLAGS) $<
+$(LCSRC): %_idl.py:	$(wpath)/%.idl
 		$(IDL) $(IDLFLAGS) $(LCIDLFLAGS) $<
-$(STATSRC): %SK.cc:		%.idl
-		$(IDL) $(IDLFLAGS) $<
-$(DYNSTATSRC): %SK.cc: 	%.idl
-		$(IDL) $(IDLFLAGS) $(DYNIDLFLAGS) $<
-$(DYNSRC): %DynSK.cc:	%.idl
-		$(IDL) $(IDLFLAGS) $(DYNIDLFLAGS) $<
-$(LCSRC): %SK.cc:	%.idl
-		$(IDL) $(IDLFLAGS) $(LCIDLFLAGS) $<
-$(opath)/%.o:	%.cc
-		@if [ ! -d $(opath) ]; then mkdir $(opath); fi
-		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
 clean:	
-		rm -f $(opath)/*.o $(dpath)/*.d
-		rm -f $(DYNSRC) $(STATSRC) $(LCSRC) $(DYNHDR) $(STATHDR) $(LCHDR) *~
+		rm -f $(DYNSRC) $(STATSRC) $(LCSRC) *~
 
 distclean:	clean
 		rm -f $(TARGET)

@@ -31,7 +31,6 @@ interface BoundedValue;
 interface Graphic;
 interface Raster;
 interface Image;
-interface Transformator;
 
 // This kit produces graphics with appropriate logic for rendering
 // abstract shapes.  you input paths, patches, styles (which define
@@ -109,7 +108,7 @@ interface FigureKit : Cloneable
   Image   pixmap(in Raster r);
   Graphic texture(in Graphic g, in Raster r);
   //. Return a figure that draws the raster.
-  Transformator projection(in Graphic g);
+  Graphic projection(in Graphic g);
 };
 
 #endif

@@ -28,6 +28,7 @@
 #include "Warsaw/Focus.hh"
 #include "Berlin/Logger.hh"
 #include "Berlin/Event.hh"
+#include "Prague/Unicode/Unicode.hh"
 
 using namespace Prague;
 
@@ -307,17 +308,18 @@ void ControllerImpl::doubleClick(PickTraversal_ptr, const Input::Event &)
 
 void ControllerImpl::keyPress(const Input::Event &event)
 {
+  SectionLog section("ControllerImpl::keyPress");
   const Input::Toggle &toggle = event[0].attr.kselection();
 //   cout << "ControllerImpl::keyPress : " << toggle.number << ' ' << (char) toggle.number << endl;
   switch (toggle.number)
     {
-    case 57396: // left
+    case Unicode::KEY_CURSOR_LEFT:          // left
       {
 	prevFocus(event[0].dev);
 	break;
       }
-    case 9: // tab
-    case 57397: // right
+    case Unicode::UC_HORIZONTAL_TABULATION: // tab
+    case Unicode::KEY_CURSOR_RIGHT:         // right
       {
 	nextFocus(event[0].dev);
 	break;

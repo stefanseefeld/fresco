@@ -28,7 +28,7 @@
 #include "Figure/PolyFigure.hh"
 #include "Figure/Figures.hh"
 #include "Figure/ImageImpl.hh"
-#include "Figure/TransformatorImpl.hh"
+#include "Figure/Transformer.hh"
 #include "Berlin/Plugin.hh"
 
 using namespace Figures;
@@ -143,13 +143,13 @@ Graphic_ptr FigureKitImpl::texture(Graphic_ptr g, Raster_ptr raster)
   return t->_this();
 }
 
-Transformator_ptr FigureKitImpl::projection(Graphic_ptr g)
+Graphic_ptr FigureKitImpl::projection(Graphic_ptr g)
 {
-  TransformatorImpl *transformator = new TransformatorImpl;
-  transformator->_obj_is_ready(_boa());
+  Transformer *transformer = new Transformer;
+  transformer->_obj_is_ready(_boa());
 //   figures.push_back(image);
-  transformator->body(g);
-  return transformator->_this();
+  transformer->body(g);
+  return transformer->_this();
 }
 
 EXPORT_PLUGIN(FigureKitImpl, interface(FigureKit))

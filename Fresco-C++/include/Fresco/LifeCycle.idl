@@ -1,28 +1,27 @@
+/*$Id$
+ *
+ * This source file is a part of the Berlin Project.
+ * Copyright (C) 1998 Graydon Hoare <graydon@pobox.com> 
+ * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * http://www.berlin-consortium.org
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
+ * MA 02139, USA.
+ */
 #ifndef _LifeCycle_idl
 #define _LifeCycle_idl 
-
-//
-// $Id$
-//
-// This source file is a part of the Berlin Project.
-// Copyright (C) 1998 Graydon Hoare <graydon@pobox.com> 
-// http://www.berlin-consortium.org
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Library General Public License
-// as published by the Free Software Foundation; either version 2 of
-// the License, or (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful, but
-// WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// General Public License for more details.
-//
-// You should have received a copy of the GNU Library General Public
-// License along with this program; if not, write to the Free Software
-// Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-//
-//
 
 #include "Naming.idl"
 
@@ -36,67 +35,56 @@ interface omniLifeCycleInfo;
 // this module contains the standard COS Lifecycle interface, which we use for
 // procuding all of our objects, migrating them, destroying them, refreshing them, etc.
 
-module CosLifeCycle {
+module CosLifeCycle
+{
 
-  typedef ::CosNaming::Name Key;
+typedef ::CosNaming::Name Key;
+#ifdef __OMNIIDL__
+typedef Object _Factory;
+typedef sequence <_Factory> Factories;
+#else
+typedef Object Factory;
+typedef sequence <Factory> Factories;
+#endif
+struct NameValuePair
+{
+  ::CosNaming::Istring name;
+  any value;
+};
+typedef sequence <NameValuePair> Criteria;
 
-  typedef Object Factory;
+exception NoFactory { Key search_key;};
+exception NotCopyable { string reason;};
+exception NotMovable { string reason;};
+exception NotRemovable { string reason;};
+exception InvalidCriteria { Criteria invalid_criteria;};
+exception CannotMeetCriteria { Criteria unmet_criteria;};
 
-  typedef sequence <Factory> Factories;
-
-  typedef struct NVP {
-    ::CosNaming::Istring name;
-    any value;
-  } NameValuePair;
-
-  typedef sequence <NameValuePair> Criteria;
-
-  exception NoFactory {
-    Key search_key;
-  };
-
-  exception NotCopyable { string reason; };
-
-  exception NotMovable { string reason; };
-
-  exception NotRemovable { string reason; };
-
-  exception InvalidCriteria{
-    Criteria invalid_criteria;
-  };
-
-  exception CannotMeetCriteria {
-    Criteria unmet_criteria;
-  };
-
-
-interface FactoryFinder {
-  Factories find_factories(in Key factory_key)
-    raises(NoFactory);
+interface FactoryFinder
+{
+  Factories find_factories(in Key k) raises(NoFactory);
 };
 
- interface LifeCycleObject {
+interface LifeCycleObject
+{
+  LifeCycleObject copy(in FactoryFinder there, in Criteria c)
+    raises(NoFactory, NotCopyable, InvalidCriteria, CannotMeetCriteria);
+  void move(in FactoryFinder there, in Criteria c)
+    raises(NoFactory, NotMovable, InvalidCriteria, CannotMeetCriteria);
+  void remove()
+    raises(NotRemovable);
+};
 
-   LifeCycleObject copy(in FactoryFinder there,
-			in Criteria the_criteria)
-     raises(NoFactory, NotCopyable, InvalidCriteria,
-	    CannotMeetCriteria);
-   void move(in FactoryFinder there,
-	     in Criteria the_criteria)
-     raises(NoFactory, NotMovable, InvalidCriteria,
-	    CannotMeetCriteria);
-   void remove()
-     raises(NotRemovable);
- };
-
- interface GenericFactory {
-   boolean supports(in Key k);
-   Object create_object(
-			in Key k,			
-			in Criteria the_criteria)
-     raises (NoFactory, InvalidCriteria,
-	     CannotMeetCriteria);
- };
+interface GenericFactory
+{
+#ifdef __OMNIIDL__
+  boolean _supports(in Key k);
+#else
+  boolean supports(in Key k);
+#endif
+  Object create_object(in Key k, in Criteria c)
+    raises (NoFactory, InvalidCriteria, CannotMeetCriteria);
+};
 };
 
 

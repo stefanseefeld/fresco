@@ -32,7 +32,7 @@ CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw $(ORBCPPFLAGS)
 LDFLAGS	= -shared -rdynamic -L$(lpath)
 LIBS	= -lPrague -lBerlin
 
-SRC	= FigureImpl.cc PolyFigure.cc Figures.cc ImageImpl.cc TransformatorImpl.cc FigureKitImpl.cc
+SRC	= FigureImpl.cc PolyFigure.cc Figures.cc ImageImpl.cc Transformer.cc FigureKitImpl.cc
 
 TARGET	= $(mpath)/libFigure.so
 

@@ -40,7 +40,7 @@ module Input
   };
   typedef Vertex        Position;
   //. positional events have one...
-  typedef double        Float;
+  typedef double        Value;
   //. also possible: simple value input
   enum Discriminator { telltale, key, button, positional, valuation};
   //. the actual attributes; the concrete type is discriminated by these
@@ -51,7 +51,7 @@ module Input
   case key: Toggle kselection;
   case button: Toggle bselection;
   case positional: Position location;
-  case valuation: Float value;
+  case valuation: Value val;
   };
 
   struct Item

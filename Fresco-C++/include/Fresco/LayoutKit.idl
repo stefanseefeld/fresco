@@ -213,7 +213,7 @@ interface LayoutKit : Cloneable
     //. The halign and valign operations return graphics aligned for
     //. the horizontal and vertical axes, respectively.
     
-    Graphic fixed(in Graphic g, in Coord x, in Coord y);
+    Graphic fixedSize(in Graphic g, in Coord x, in Coord y);
     Graphic fixedAxis(in Graphic g, in Axis a, in Coord size);
     Graphic hfixed(in Graphic g, in Coord x);
     Graphic vfixed(in Graphic g, in Coord y);

@@ -25,17 +25,19 @@
 #include "Widget/TextInput.hh"
 #include "Prague/Unicode/Unicode.hh"
 #include "Warsaw/Unicode.hh"
+#include "Berlin/Logger.hh"
 
 void TextInput::keyPress(const Input::Event &event)
 {
+  SectionLog section("TextInput::keyPress");
   const Input::Toggle &toggle = event[0].attr.kselection();
   Unicode::Char uc(static_cast<Unicode::_Char>(toggle.number));
   if (uc.is_printable()) buffer->insertChar(Unicode::toCORBA(uc));
   else switch (toggle.number)
     {
-    case 8:     buffer->removeBackward(1); break; // backspace
-    case 57396: buffer->backward(); break;        // left
-    case 57397: buffer->forward(); break;         // right
-    default:    ControllerImpl::keyPress(event); break;
+    case Unicode::UC_BACKSPACE:     buffer->removeBackward(1); break; // backspace
+    case Unicode::KEY_CURSOR_LEFT:  buffer->backward(); break;        // left
+    case Unicode::KEY_CURSOR_RIGHT: buffer->forward(); break;         // right
+    default:                        ControllerImpl::keyPress(event); break;
     };
 }
