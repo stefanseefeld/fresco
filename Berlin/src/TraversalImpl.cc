@@ -27,6 +27,7 @@
  */
 #include "Berlin/TraversalImpl.hh"
 #include "Berlin/TransformImpl.hh"
+#include "Berlin/Debug.hh"
 #include "Warsaw/Graphic.hh"
 
 TraversalImpl::TraversalImpl(Region_ptr r)
@@ -83,6 +84,7 @@ CORBA::Boolean TraversalImpl::bounds(Vertex &lower, Vertex &upper, Vertex &origi
 
 void TraversalImpl::traverseChild(Graphic_ptr g, Region_ptr a, Transform_ptr t)
 {
+  Debug::log(Debug::traversal, "begin TraversalImpl::traverseChild");
   if (CORBA::is_nil(a)) a = allocation();
   TransformImpl *cumulative = new TransformImpl;
   cumulative->_obj_is_ready(_boa());
@@ -91,6 +93,7 @@ void TraversalImpl::traverseChild(Graphic_ptr g, Region_ptr a, Transform_ptr t)
   push(g, a, cumulative);
   g->traverse(_this());
   pop();
+  Debug::log(Debug::traversal, "end TraversalImpl::traverseChild");
 }
 
 void TraversalImpl::push(Graphic_ptr g, Region_ptr r, TransformImpl *t)

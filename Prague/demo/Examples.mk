@@ -9,6 +9,9 @@ DataType:	DataType.o
 Regex:		Regex.o
 		$(CXX) $(LDFLAGS) -o $@ $< $(LIBS)
 
+Logger:		Logger.o
+		$(CXX) $(LDFLAGS) -o $@ $< $(LIBS)
+
 
 DataType.o:	DataType.cc
 		$(CXX) $(CXXFLAGS) $(GDBFLAGS) $(SOFLAGS) -ftemplate-depth-23 -c $< -o $@

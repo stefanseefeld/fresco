@@ -29,6 +29,7 @@
 #include <Warsaw/Graphic.hh>
 #include <Berlin/TraversalImpl.hh>
 #include <Berlin/RegionImpl.hh>
+#include <Berlin/Debug.hh>
 
 /* this is a traversal which is responsible for distributing events to
    graphics.  as such, speed is somewhat important. We set everything for

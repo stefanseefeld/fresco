@@ -156,10 +156,11 @@ void ScreenManager::nextEvent()
   }
   }
 
-    PickTraversalImpl *traversal = new PickTraversalImpl(a, screen->getRegion());
-    traversal->_obj_is_ready(CORBA::BOA::getBOA());
-    screen->traverse(traversal->_this());
-    traversal->_dispose();
+  Debug::log(Debug::picking, "starting PickTraversal");
+  PickTraversalImpl *traversal = new PickTraversalImpl(a, screen->getRegion());
+  traversal->_obj_is_ready(CORBA::BOA::getBOA());
+  screen->traverse(traversal->_this());
+  traversal->_dispose();
 
 }
 

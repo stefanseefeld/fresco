@@ -27,9 +27,6 @@
 
 using namespace Geometry;
 
-
-//static const Coord epsilon = 10e-6;
- 
 void StageInfoImpl::cacheBBox()
 {
   Graphic::Requisition r;
@@ -66,8 +63,8 @@ void StageInfoImpl::cacheBBox()
       yalign = 0.;
       boundingbox.l = position.x;
       boundingbox.r = position.x;
-      boundingbox.b = position.y;
       boundingbox.t = position.y;
+      boundingbox.b = position.y;
     }
 }
 
@@ -440,9 +437,9 @@ void StageImpl::request(Requisition &r)
     {
       Geometry::Rectangle<Coord> b = tree.bbox();
       Coord w = b.r - b.l;
-      Coord h = b.t - b.b;
+      Coord h = b.b - b.t;
       Coord ax = (Math::equal(w, 0., epsilon) ? 0 : (-b.l / w));
-      Coord ay = (Math::equal(h, 0., epsilon) ? 0 : (-b.b / h));
+      Coord ay = (Math::equal(h, 0., epsilon) ? 0 : (-b.t / h));
       GraphicImpl::require(r.x, w, 0, 0, ax);
       GraphicImpl::require(r.y, h, 0, 0, ay);
     }
@@ -543,10 +540,10 @@ Region_ptr StageImpl::bbox()
   Geometry::Rectangle<Coord> bb = tree.bbox();
   bbregion->valid = true;
   bbregion->lower.x = bb.l;
-  bbregion->lower.y = bb.b;
+  bbregion->lower.y = bb.t;
   bbregion->lower.z = 0.;
   bbregion->upper.x = bb.r;
-  bbregion->upper.y = bb.t;
+  bbregion->upper.y = bb.b;
   bbregion->upper.z = 0.;
   return bbregion->_this();
 }
@@ -557,9 +554,9 @@ void StageImpl::begin()
     {
       Geometry::Rectangle<Coord> bb = tree.bbox();
       bbregion->lower.x = bb.l;
-      bbregion->lower.y = bb.b;
+      bbregion->lower.y = bb.t;
       bbregion->upper.x = bb.r;
-      bbregion->upper.y = bb.t;
+      bbregion->upper.y = bb.b;
       tree.begin();
     }
 }
@@ -578,9 +575,9 @@ void StageImpl::end()
 	{
 	  Geometry::Rectangle<Coord> bb = tree.bbox();
 	  if (! Math::equal(bbregion->lower.x, bb.l, epsilon) ||
-	      ! Math::equal(bbregion->lower.y, bb.b, epsilon) ||
+	      ! Math::equal(bbregion->lower.y, bb.t, epsilon) ||
 	      ! Math::equal(bbregion->upper.x, bb.r, epsilon) ||
-	      ! Math::equal(bbregion->upper.y, bb.t, epsilon))
+	      ! Math::equal(bbregion->upper.y, bb.b, epsilon))
 	    needResize();
 	  need_resize = false;
 	}
@@ -621,9 +618,9 @@ void StageImpl::reposition(const Stage::Info &i, const Vertex &p)
   Coord dx = p.x - info->position.x;
   Coord dy = p.y - info->position.y;
   info->boundingbox.l += dx;
-  info->boundingbox.b += dy;
-  info->boundingbox.r += dx;
   info->boundingbox.t += dy;
+  info->boundingbox.r += dx;
+  info->boundingbox.b += dy;
   info->position = p;
   tree.insert(info);
 

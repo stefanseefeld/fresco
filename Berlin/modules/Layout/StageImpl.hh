@@ -47,8 +47,8 @@ struct StageInfoImpl : Stage::Info
       region.lower.x = boundingbox.l;
       region.upper.x = boundingbox.r;
       region.xalign  = xalign;
-      region.lower.y = boundingbox.b;
-      region.upper.y = boundingbox.t;
+      region.lower.y = boundingbox.t;
+      region.upper.y = boundingbox.b;
       region.yalign  = yalign;
     }
   Graphic_var child;

@@ -120,7 +120,6 @@ void RegionImpl::copy(Region_ptr r)
       xalign = x.align;
       yalign = y.align;
       zalign = z.align;
-//       notify();
     }
 }
 
@@ -136,7 +135,6 @@ void RegionImpl::mergeIntersect(Region_ptr r)
 	  mergeMin(upper, u);
         }
       else copy(r);
-//       notify();
     }
 }
 
@@ -152,14 +150,12 @@ void RegionImpl::mergeUnion(Region_ptr r)
 	  mergeMax(upper, u);
         }
       else copy(r);
-//       notify();
     }
 }
 
 void RegionImpl::subtract(Region_ptr)
 {
   // not implemented
-//   notify();
 }
 
 void RegionImpl::applyTransform(Transform_ptr t)
@@ -196,7 +192,6 @@ void RegionImpl::applyTransform(Transform_ptr t)
 
       if (!Math::equal(nw, Coord(0), 1e-4)) xalign = (o.x - lower.x) / nw;
       if (!Math::equal(nh, Coord(0), 1e-4)) yalign = (o.y - lower.y) / nh;
-//       notify();
     }
 }
 
