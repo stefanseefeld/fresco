@@ -115,6 +115,9 @@ FTFont::FTFont(double xres, double yres)
 	}
     }
   Logger::log(Logger::text) << "completed scaning font directories" << std::endl;
+  Logger::log(Logger::text) << _faces.size() << " fonts found" << std::endl;
+  if (!_faces.size())
+     throw std::runtime_error("no fonts found. Please check your font path !");
   char *env = getenv("BERLIN_FONT_CHOOSER");
   Babylon::String tmpFam, tmpStyle;
   if (env && chooseFaceInteractively(_faces, env, tmpFam, tmpStyle))
