@@ -23,6 +23,8 @@
 #include <Prague/Sys/Tracer.hh>
 #include <Warsaw/config.hh>
 #include <Warsaw/Server.hh>
+#include <Warsaw/ClientContext.hh>
+#include <Warsaw/Trigger.hh>
 #include <Warsaw/resolve.hh>
 #include <Berlin/ImplVar.hh>
 #include <Berlin/CommandImpl.hh>
@@ -50,6 +52,8 @@ void DesktopKitImpl::bind(ServerContext_ptr context)
   _layout = resolve_kit<LayoutKit>(context, "IDL:Warsaw/LayoutKit:1.0", props);
   _tool   = resolve_kit<ToolKit>(context, "IDL:Warsaw/ToolKit:1.0", props);
   _widget = resolve_kit<WidgetKit>(context, "IDL:Warsaw/WidgetKit:1.0", props);
+  ClientContext_var client = context->client();
+  _exit = client->exit();
 }
 
 Desktop_ptr DesktopKitImpl::desk()
@@ -75,12 +79,15 @@ Window_ptr DesktopKitImpl::shell(Controller_ptr g)
   req.y.natural = 200.;
   req.y.maximum = 200.;
   req.y.align = 0;
+  Trigger_var exit = _widget->button(RefCount_var<Warsaw::Graphic>(_layout->fixed_size(Warsaw::Graphic::_nil(), 200., 200.)), _exit);
   Command_var mover = move(wptr);
   ToolKit::FrameSpec spec;
   spec.brightness(0.5); spec._d(ToolKit::outset);
   RefCount_var<Graphic> tbframe = _tool->frame(RefCount_var<Graphic>(_layout->glue_requisition(req)), 10., spec, true);
   RefCount_var<Graphic> tbdragger = _tool->dragger(tbframe, mover);
-
+  Graphic_var top = _layout->hbox();
+  top->append_graphic(tbdragger);
+  top->append_graphic(exit);
   req.x.minimum = 200.;
   req.x.natural = 200.;
   req.x.maximum = 200.;
@@ -116,7 +123,7 @@ Window_ptr DesktopKitImpl::shell(Controller_ptr g)
   hbox->append_graphic(ldragger);
   hbox->append_graphic(bdragger);
   hbox->append_graphic(rdragger);
-  vbox->append_graphic(tbdragger);
+  vbox->append_graphic(top);
   vbox->append_graphic(RefCount_var<Graphic>(_layout->align(g, 0., 0.)));
   vbox->append_graphic(hbox);
   RefCount_var<Graphic> background = _tool->rgb(vbox, 0.7, 0.7, 0.7);
