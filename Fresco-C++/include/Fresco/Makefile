@@ -36,23 +36,36 @@ LDFLAGS	= -shared -rdynamic
 LIBS	+= $(ORBLIBS)
 
 DYNINT	= Types.idl Message.idl Event.idl Style.idl
-STATINT	= ClientContext.idl ServerContext.idl LifeCycle.idl Naming.idl Cloneable.idl \
-	  Drawable.idl Pencil.idl DrawingKit.idl \
+STATINT	= ClientContext.idl ServerContext.idl Naming.idl \
+	  Drawable.idl Pencil.idl \
 	  Transform.idl Region.idl Allocation.idl Traversal.idl PickTraversal.idl DrawTraversal.idl Graphic.idl Screen.idl \
 	  Focus.idl \
-	  Image.idl Transformator.idl FigureKit.idl \
-	  Grid.idl Viewport.idl Stage.idl LayoutKit.idl \
-	  Command.idl CommandKit.idl \
+	  Image.idl Transformator.idl \
+	  Grid.idl Viewport.idl Stage.idl \
+	  Command.idl \
 	  Subject.idl Controller.idl View.idl \
 	  Telltale.idl BoundedValue.idl BoundedRange.idl TextBuffer.idl StreamBuffer.idl \
-	  Button.idl WidgetKit.idl \
-	  Metrics.idl Text.idl TextKit.idl \
-	  Raster.idl ImageKit.idl \
-	  Desktop.idl Window.idl DesktopKit.idl
+	  Button.idl \
+	  Metrics.idl Text.idl \
+	  Raster.idl \
+	  Desktop.idl Window.idl 
+LCINT	= LifeCycle.idl Cloneable.idl DrawingKit.idl FigureKit.idl LayoutKit.idl CommandKit.idl \
+	  WidgetKit.idl TextKit.idl ImageKit.idl DesktopKit.idl
 
-INT	= $(DYNINT) $(STATINT)
+INT	= $(DYNINT) $(STATINT) $(LCINT)
+
 DEP	= $(patsubst %.idl, $(dpath)/%.d, $(INT))
-SRC	= $(patsubst %.idl, %DynSK.cc, $(DYNINT)) $(patsubst %.idl, %SK.cc, $(INT))
+
+DYNSRC	= $(patsubst %.idl, %DynSK.cc, $(DYNINT))
+STATSRC	= $(patsubst %.idl, %SK.cc, $(DYNINT)) $(patsubst %.idl, %SK.cc, $(STATINT))
+LCSRC	= $(patsubst %.idl, %SK.cc, $(LCINT))
+SRC	= $(DYNSRC) $(STATSRC) $(LCSRC)
+
+DYNHDR	= $(patsubst %.idl, %.hh, $(DYNINT))
+STATHDR	= $(patsubst %.idl, %.hh, $(STATINT))
+LCHDR	= $(patsubst %.idl, %.hh, $(LCINT))
+HDR	= $(DYNHDR) $(STATHDR) $(LCHDR)
+
 OBJ	= $(patsubst %.cc, $(opath)/%.o, $(SRC))
 TARGET	= $(lpath)/libWarsaw.so
 
@@ -79,12 +92,18 @@ $(dpath)/%.d:	%.idl
 		      \$$dep =~ s/\\.idl/\\.hh/g;\
 		      print \"$(opath)\/\", \$$file, \".o\", \": \", \$$file, \".cc\", \$$dep ;\
 		    }' > $@"
-%.hh:		%.idl
-		$(IDL) $(IDLFLAGS) $< 
-%SK.cc:		%.idl
+$(STATHDR): %.hh:		%.idl
 		$(IDL) $(IDLFLAGS) $<
-%DynSK.cc:	%.idl
-		$(IDL) $(DYNIDLFLAGS) $<
+$(DYNHDR): %.hh:	%.idl
+		$(IDL) $(IDLFLAGS) $(DYNIDLFLAGS) $<
+$(LCHDR): %.hh:	%.idl
+		$(IDL) $(IDLFLAGS) $(LCIDLFLAGS) $<
+$(STATSRC): %SK.cc:		%.idl
+		$(IDL) $(IDLFLAGS) $<
+$(DYNSRC): %DynSK.cc:	%.idl
+		$(IDL) $(IDLFLAGS) $(DYNIDLFLAGS) $<
+$(LCSRC): %SK.cc:	%.idl
+		$(IDL) $(IDLFLAGS) $(LCIDLFLAGS) $<
 $(opath)/%.o:	%.cc
 		@if [ ! -d $(opath) ]; then mkdir $(opath); fi
 		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@

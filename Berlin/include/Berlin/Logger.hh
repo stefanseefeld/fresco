@@ -34,6 +34,7 @@
 #include "Prague/Sys/logstream.hh"
 #include "Prague/Sys/EventLogger.hh"
 #include "Prague/Sys/Time.hh"
+#include "Prague/Sys/Profiler.hh"
 
 // this is a rewrite of our debugging class to use some NANA features.  the idea
 // is that what was previously just a matter of writing to stderr, we now log
@@ -86,11 +87,12 @@ protected:
 private:
   struct _streamlock
   {
-    _streamlock(group gg) : owner(true), g(gg) { Logger::mutex.lock();}
-    _streamlock(const _streamlock &sl) : owner(true), g(sl.g) { sl.owner = false;}
+    _streamlock(group gg) : owner(true), g(gg), prf("logger") { Logger::mutex.lock();}
+    _streamlock(const _streamlock &sl) : owner(true), g(sl.g), prf("logger") { sl.owner = false;}
     ~_streamlock() { if (owner) Logger::mutex.unlock();}
     mutable bool owner;
     group g;
+    Prague::Profiler prf;
   };
   friend _streamlock operator << (const _streamlock &sl, ostream & (func)(ostream &)) { Logger::write(sl.g, func); return sl;}
   template <class T>

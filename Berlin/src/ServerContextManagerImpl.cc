@@ -28,12 +28,49 @@
 
 #include "Berlin/ServerContextManagerImpl.hh"
 #include "Berlin/ServerContextImpl.hh"
-#include "Desktop/DesktopKitImpl.hh"
 
-ServerContextManagerImpl::ServerContextManagerImpl(GenericFactoryImpl *factory, DesktopKitImpl *dk)
-  : kit(dk)
+ServerContextManagerImpl::ServerContextManagerImpl(GenericFactoryImpl *factory)
 {
   ffinder = FactoryFinderImpl::Instance(factory);
+}
+
+ServerContext_ptr ServerContextManagerImpl::newServerContext(ClientContext_ptr c)
+throw (SecurityException)
+{
+  MutexGuard guard (mutex);
+  ServerContextImpl *sc = new ServerContextImpl(this, CosLifeCycle::FactoryFinder_var(ffinder->_this()), c);
+  sc->_obj_is_ready(_boa());
+  contexts.push_back(sc);
+  return sc->_this();
+}
+
+void ServerContextManagerImpl::setSingleton(const char *name, CORBA::Object_ptr singleton) 
+  throw (SecurityException, SingletonFailureException)
+{
+  MutexGuard guard (mutex);
+  singletons[name] = singleton;
+}
+
+void ServerContextManagerImpl::delSingleton(const char *name) 
+  throw (SecurityException, SingletonFailureException)
+{
+  MutexGuard guard (mutex);
+  map<string, CORBA::Object_var>::iterator p = singletons.find(name);
+  if (p != singletons.end())
+    {
+      Cloneable_var cloneable = Cloneable::_narrow(p->second);
+      if (!CORBA::is_nil(cloneable)) cloneable->remove();
+      singletons.erase(p);
+    }
+}
+
+CORBA::Object_ptr ServerContextManagerImpl::getSingleton(const char *name) 
+  throw (SecurityException, SingletonFailureException)
+{
+  MutexGuard guard (mutex);
+  map<string, CORBA::Object_var>::iterator p = singletons.find(name);
+  if (p != singletons.end()) return CORBA::Object::_duplicate(p->second);
+  throw SingletonFailureException();
 }
 
 void ServerContextManagerImpl::run(void *arg)
@@ -56,15 +93,3 @@ void ServerContextManagerImpl::ping()
     }
   contexts = tmp;
 };
-
-ServerContext_ptr ServerContextManagerImpl::newServerContext(ClientContext_ptr c)
-throw (SecurityException)
-{
-  MutexGuard guard (mutex);
-  ServerContextImpl *sc = new ServerContextImpl(CosLifeCycle::FactoryFinder_var(ffinder->_this()), c, kit);
-  sc->_obj_is_ready(_boa());
-  contexts.push_back(sc);
-  return sc->_this();
-}
-
-

@@ -1,38 +1,36 @@
-//
-// $Id$
-//
-// This source file is a part of the Berlin Project.
-// Copyright (C) 1998 Graydon Hoare <graydon@pobox.com> 
-// Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
-// http://www.berlin-consortium.org
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Library General Public License
-// as published by the Free Software Foundation; either version 2 of
-// the License, or (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful, but
-// WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// General Public License for more details.
-//
-// You should have received a copy of the GNU Library General Public
-// License along with this program; if not, write to the Free Software
-// Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-//
-//
+/*$Id$
+ *
+ * This source file is a part of the Berlin Project.
+ * Copyright (C) 1998 Graydon Hoare <graydon@pobox.com> 
+ * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
+ * http://www.berlin-consortium.org
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
+ * MA 02139, USA.
+ */
+#include "Berlin/GenericFactoryImpl.hh"
+#include "Berlin/CloneableImpl.hh"
+#include "Berlin/Logger.hh"
+#include "Prague/Sys/DLL.hh"
+#include "Prague/Sys/Directory.hh"
 
 // genericFactory is a dynamic linking facility conforming to the
 // corba COS Lifecycle specification. It produces objects based on
 // their interface names. It also handles assigning lifecycle info
 // tags to the objects, so that they may migrate from one server to
 // another.
-
-#include "Berlin/GenericFactoryImpl.hh"
-#include "Berlin/CloneableImpl.hh"
-#include "Berlin/Logger.hh"
-#include "Prague/Sys/DLL.hh"
-#include "Prague/Sys/Directory.hh"
 
 using namespace Prague;
 
@@ -74,22 +72,22 @@ GenericFactoryImpl::~GenericFactoryImpl() { clear();}
 CORBA::Object_ptr
 GenericFactoryImpl::create_object(const CosLifeCycle::Key &key, const CosLifeCycle::Criteria &criteria)
 {  
-  CloneableImpl *newCloneable = 0;
+  CloneableImpl *cloneable = 0;
   try
     {    
       MutexGuard guard(mutex);
-      newCloneable = loadPlugin(key);
+      cloneable = loadPlugin(key);
     }
   catch (noSuchPluginException e)
     {
       throw CosLifeCycle::CannotMeetCriteria();
     }
-  if (!newCloneable)
+  if (!cloneable)
     {
       Logger::log(Logger::loader) << "GenericFactoryImpl: loaded NULL pointer in response to "
 				  << ((string)(key[0].id)).c_str() << endl;
     }
-  CORBA::Object_var newObjectPtr;
+  CORBA::Object_var object;
   // see if we are doing a lifecycle migration here
   omniLifeCycleInfo_ptr li = extractLifeCycleFromCriteria(criteria);
 
@@ -98,10 +96,10 @@ GenericFactoryImpl::create_object(const CosLifeCycle::Key &key, const CosLifeCyc
     {
       Logger::log(Logger::loader) << "GenericFactoryImpl: not doing lifecycle copy for "
 				  << ((string)(key[0].id)).c_str() << endl;    
-      newCloneable->_obj_is_ready(this->_boa());
-      newObjectPtr = newCloneable->CloneableImpl::_this();
+      cloneable->_obj_is_ready(_boa());
+      object = cloneable->_this();
     
-      if (CORBA::is_nil(newObjectPtr))
+      if (CORBA::is_nil(object))
 	{
 	  Logger::log(Logger::loader) << "GenericFactoryImpl: returning a nil reference for "
 				      << ((string)(key[0].id)).c_str() << endl;    
@@ -113,14 +111,14 @@ GenericFactoryImpl::create_object(const CosLifeCycle::Key &key, const CosLifeCyc
     {
       Logger::log(Logger::loader) << "GenericFactoryImpl: doing lifecycle copy for "
 				  << ((string)(key[0].id)).c_str() << endl;    
-      newCloneable->_set_lifecycle(li);
-      newCloneable->_obj_is_ready(this->_boa());
-      newObjectPtr = newCloneable->_this();
+      cloneable->_set_lifecycle(li);
+      cloneable->_obj_is_ready(_boa());
+      object = cloneable->_this();
     }
   
   //    newCloneable->registerWithMyManagers();
   //    startThread(CORBA::Object::_duplicate(newObjectPtr));
-  return CORBA::Object::_duplicate(newObjectPtr);
+  return CORBA::Object::_duplicate(object);
 }
 
 

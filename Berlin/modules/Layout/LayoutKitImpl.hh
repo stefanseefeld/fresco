@@ -34,7 +34,7 @@
 
 class GraphicImpl;
 
-class LayoutKitImpl : implements(LayoutKit), virtual public CloneableImpl
+class LayoutKitImpl : lcimplements(LayoutKit), virtual public CloneableImpl
 {
 public:
   LayoutKitImpl();

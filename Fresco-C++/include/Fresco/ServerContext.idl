@@ -29,7 +29,6 @@ module CosLifeCycle
 };
 
 interface ClientContext;
-interface DesktopKit;
 
 exception SecurityException {};
 exception SingletonFailureException {};
@@ -46,7 +45,6 @@ interface ServerContext
 //. to.
 {    
   readonly attribute ClientContext client;
-  readonly attribute DesktopKit deskKit;
   readonly attribute ::CosLifeCycle::FactoryFinder factoryFinder;
 
   // this is the entry point to generic object creation on a server. 
@@ -54,13 +52,13 @@ interface ServerContext
     raises (SecurityException, CreationFailureException);
     
   // access to singletons (like the fontManager) this way
-  void setSingleton(in string name, in CosLifeCycle::LifeCycleObject singleton) 
+  void setSingleton(in string name, in Object singleton) 
     raises (SecurityException, SingletonFailureException);
 
-  void delSingleton(in string name) 
+  void delSingleton(in string name)
     raises (SecurityException, SingletonFailureException);
 
-  CosLifeCycle::LifeCycleObject getSingleton(in string name) 
+  Object getSingleton(in string name) 
     raises (SecurityException, SingletonFailureException);
 };
 

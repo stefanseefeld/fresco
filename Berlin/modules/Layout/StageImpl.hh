@@ -28,20 +28,23 @@
 #include "Berlin/GraphicImpl.hh"
 #include "Berlin/RegionImpl.hh"
 #include "Berlin/QuadTree.hh"
+#include "Berlin/Thread.hh"
 #include <list>
 
-struct StageInfoImpl : Stage::Info
+class StageImpl;
+
+class StageHandleImpl : implements(StageHandle)
 {
-  StageInfoImpl(Graphic_ptr g, const Vertex &p, const Vertex &s, Stage::Index l)
-    : child(g)
-    {
-      position = p;
-      size = s;
-      layer = l;
-      cacheBBox();
-    }
-  const Geometry::Rectangle<Coord> &bbox()
-    { return boundingbox;}
+ public:
+  StageHandleImpl(StageImpl *, Graphic_ptr, const Vertex &, const Vertex &, Stage::Index);
+  virtual Vertex position() { MutexGuard guard(mutex); return p;}
+  virtual void position(const Vertex &);
+  virtual Vertex size() { MutexGuard guard(mutex); return s;}
+  virtual void size(const Vertex &);
+  virtual Stage::Index layer() { MutexGuard guard(mutex); return l;}
+  virtual void layer(Stage::Index);
+
+  const Geometry::Rectangle<Coord> &bbox() { return boundingbox;}
   void bbox(RegionImpl &region)
     {
       region.valid   = true;
@@ -52,27 +55,33 @@ struct StageInfoImpl : Stage::Info
       region.upper.y = boundingbox.b;
       region.yalign  = yalign;
     }
+//  private:
+  void cacheBBox();
+  StageImpl *parent;
   Graphic_var child;
+  Vertex p;
+  Vertex s;
+  Stage::Index l;
   Geometry::Rectangle<Coord> boundingbox;
   Alignment xalign;
   Alignment yalign;
-  void cacheBBox();
+  Mutex mutex;
 };
 
-class StageSequence : public list<StageInfoImpl *>
+class StageSequence : public list<StageHandleImpl *>
 {
-  typedef list<StageInfoImpl *> parent_t;
+  typedef list<StageHandleImpl *> parent_t;
   iterator lookup(Stage::Index layer);
 public:
   StageSequence() : cursor(begin()) {}
   ~StageSequence() {}
   
-  void insert(StageInfoImpl *);
-  void remove(StageInfoImpl *);
+  void insert(StageHandleImpl *);
+  void remove(StageHandleImpl *);
   
-  StageInfoImpl *find(Stage::Index layer) { return *lookup(layer);}
-  StageInfoImpl *front() { return parent_t::front();}
-  StageInfoImpl *back() { return parent_t::back();}
+  StageHandleImpl *find(Stage::Index layer) { return *lookup(layer);}
+  StageHandleImpl *front() { return parent_t::front();}
+  StageHandleImpl *back() { return parent_t::back();}
 private:
   iterator cursor;
 };
@@ -81,12 +90,12 @@ class StageFinder
 {
 public:
   virtual ~StageFinder() {}
-  virtual void found(StageInfoImpl *) = 0;
+  virtual void found(StageHandleImpl *) = 0;
 };
 
-class StageQuad : public QTNode<Coord, StageInfoImpl>
+class StageQuad : public QTNode<Coord, StageHandleImpl *>
 {
-  typedef QTNode<Coord, StageInfoImpl> parent_t;
+  typedef QTNode<Coord, StageHandleImpl *> parent_t;
 public:
   StageQuad(const Geometry::Rectangle<Coord> &);
   StageQuad(const Geometry::Rectangle<Coord> &, StageQuad *);
@@ -97,18 +106,18 @@ public:
   void intersects(const Geometry::Rectangle<Coord> &, const Geometry::Polygon<Coord> &, StageFinder &);
 };
 
-class StageQuadTree : public QuadTree<Coord, StageInfoImpl>
+class StageQuadTree : public QuadTree<Coord, StageHandleImpl *>
 {
-  typedef QuadTree<Coord, StageInfoImpl> parent_t;
+  typedef QuadTree<Coord, StageHandleImpl *> parent_t;
 public:
   StageQuadTree() : transaction(0), operations(0) {}
   StageQuad *node() { return static_cast<StageQuad *>(parent_t::node());}
 
   void begin(){ transaction++;}
-  void insert(StageInfoImpl *);
-  void remove(StageInfoImpl *);
+  void insert(StageHandleImpl *);
+  void remove(StageHandleImpl *);
   void end();
-  StageInfoImpl *contains(const Geometry::Point<Coord> &);
+  StageHandleImpl *contains(const Geometry::Point<Coord> &);
   void within(const Geometry::Rectangle<Coord> &r, StageFinder &f) { if (node()) node()->within(r, f);}
   void intersects(const Geometry::Rectangle<Coord> &r, StageFinder &f) { if (node()) node()->intersects(r, f);}
   void intersects(const Geometry::Polygon<Coord> &, StageFinder &);
@@ -135,22 +144,22 @@ class StageImpl : implements(Stage), public GraphicImpl
   
   virtual Region_ptr bbox();
   virtual CORBA::Long layers() { return tree.size();}
-  virtual Stage::Info layer(Stage::Index i) { return *list.find(i);}
+  virtual StageHandle_ptr layer(Stage::Index);
   /*
    * begin() and end() 'lock' the stage
    * in that only after the last end() conditions for needRedraw() & needResize() are done
    */
   virtual void begin();
   virtual void end();
-  virtual Stage::Info insert(Graphic_ptr, const Vertex &, const Vertex &, Index);
+  virtual StageHandle_ptr insert(Graphic_ptr, const Vertex &, const Vertex &, Index);
+  virtual void remove(StageHandle_ptr);
 
-  void erase(const Stage::Info &);
-  void reposition(const Stage::Info &, const Vertex &);
-  void relayer(const Stage::Info &, Stage::Index);
-
+  void reposition(StageHandleImpl *, const Vertex &);
+  void resize(StageHandleImpl *, const Vertex &);
+  void relayer(StageHandleImpl *, Stage::Index);
 private:
-  void allocateChild(StageInfoImpl *, Allocation::Info &);
-  void damage(StageInfoImpl *);
+  void allocateChild(StageHandleImpl *, Allocation::Info &);
+  void damage(StageHandleImpl *);
 
   StageSequence list;
   StageQuadTree tree;

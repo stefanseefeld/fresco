@@ -40,7 +40,7 @@ extern "C" {
 #include <ggi/ggi.h>
 }
 
-class GLDrawingKit : implements(DrawingKit), virtual public CloneableImpl
+class GLDrawingKit : lcimplements(DrawingKit), virtual public CloneableImpl
 {
 public:
   GLDrawingKit();

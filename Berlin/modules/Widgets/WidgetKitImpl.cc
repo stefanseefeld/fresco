@@ -47,7 +47,7 @@ WidgetKitImpl::~WidgetKitImpl()
 TelltaleConstraint_ptr WidgetKitImpl::exclusive()
 {
   ExclusiveChoice *constraint = new ExclusiveChoice();
-  constraint->_obj_is_ready(applyscope(skeletonize(WidgetKit),_boa()));
+  constraint->_obj_is_ready(_boa());
 //   subjects.push_back(constraint);
   return constraint->_this();
 }
@@ -55,7 +55,7 @@ TelltaleConstraint_ptr WidgetKitImpl::exclusive()
 TelltaleConstraint_ptr WidgetKitImpl::selectionRequired()
 {
   SelectionRequired *constraint = new SelectionRequired;
-  constraint->_obj_is_ready(applyscope(skeletonize(WidgetKit),_boa()));
+  constraint->_obj_is_ready(_boa());
 //   subjects.push_back(constraint);
   return constraint->_this();
 }
@@ -63,7 +63,7 @@ TelltaleConstraint_ptr WidgetKitImpl::selectionRequired()
 Telltale_ptr WidgetKitImpl::normalTelltale()
 {
   TelltaleImpl *telltale = new TelltaleImpl(TelltaleConstraint::_nil());
-  telltale->_obj_is_ready(applyscope(skeletonize(WidgetKit),_boa()));
+  telltale->_obj_is_ready(_boa());
   subjects.push_back(telltale);
   return telltale->_this();
 }
@@ -71,7 +71,7 @@ Telltale_ptr WidgetKitImpl::normalTelltale()
 Telltale_ptr WidgetKitImpl::constrainedTelltale(TelltaleConstraint_ptr constraint)
 {
     TelltaleImpl *telltale = new TelltaleImpl(constraint);
-    telltale->_obj_is_ready(applyscope(skeletonize(WidgetKit),_boa()));
+    telltale->_obj_is_ready(_boa());
     subjects.push_back(telltale);
     constraint->add(telltale->_this());
     return telltale->_this();
@@ -80,7 +80,7 @@ Telltale_ptr WidgetKitImpl::constrainedTelltale(TelltaleConstraint_ptr constrain
 BoundedValue_ptr WidgetKitImpl::bvalue(Coord l, Coord u, Coord v, Coord s, Coord p)
 {
   BoundedValueImpl *bounded = new BoundedValueImpl(l, u, v, s, p);
-  bounded->_obj_is_ready(applyscope(skeletonize(WidgetKit),_boa()));
+  bounded->_obj_is_ready(_boa());
   subjects.push_back(bounded);
   return bounded->_this();  
 }
@@ -88,7 +88,7 @@ BoundedValue_ptr WidgetKitImpl::bvalue(Coord l, Coord u, Coord v, Coord s, Coord
 BoundedRange_ptr WidgetKitImpl::brange(Coord l, Coord u, Coord lv, Coord uv, Coord s, Coord p)
 {
   BoundedRangeImpl *bounded = new BoundedRangeImpl(l, u, lv, uv, s, p);
-  bounded->_obj_is_ready(applyscope(skeletonize(WidgetKit),_boa()));
+  bounded->_obj_is_ready(_boa());
   subjects.push_back(bounded);
   return bounded->_this();  
 }
@@ -96,7 +96,7 @@ BoundedRange_ptr WidgetKitImpl::brange(Coord l, Coord u, Coord lv, Coord uv, Coo
 TextBuffer_ptr WidgetKitImpl::text()
 {
   TextBufferImpl *buffer = new TextBufferImpl();
-  buffer->_obj_is_ready(applyscope(skeletonize(WidgetKit),_boa()));
+  buffer->_obj_is_ready(_boa());
   subjects.push_back(buffer);
   return buffer->_this();  
 }
@@ -104,7 +104,7 @@ TextBuffer_ptr WidgetKitImpl::text()
 StreamBuffer_ptr WidgetKitImpl::stream()
 {
   StreamBufferImpl *buffer = new StreamBufferImpl(80);
-  buffer->_obj_is_ready(applyscope(skeletonize(WidgetKit),_boa()));
+  buffer->_obj_is_ready(_boa());
   subjects.push_back(buffer);
   return buffer->_this();  
 }

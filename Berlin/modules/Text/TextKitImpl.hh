@@ -56,7 +56,7 @@ struct GlyphComp {
     }
 };
 
-class TextKitImpl : implements(TextKit), public virtual CloneableImpl {
+class TextKitImpl : lcimplements(TextKit), public virtual CloneableImpl {
  public:
     TextKitImpl();
     virtual ~TextKitImpl();

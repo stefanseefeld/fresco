@@ -24,26 +24,27 @@
 
 #include <Graphic.idl>
 
+interface StageHandle;
+
 interface Stage : Graphic
 {
   typedef long Index;
-  struct Info
-  {
-    Vertex position;
-    Vertex size;
-    Stage::Index layer;
-  };
   Region bbox();
   long layers();
-  Info layer(in Index l);
+  StageHandle layer(in Index l);
 
   void begin();
   void end();
 
-  Info insert(in Graphic g, in Vertex p, in Vertex size, in Index l);
-  void erase(in Info i);
-  void reposition(in Info i, in Vertex p);
-  void relayer(in Info i, in Index x);
+  StageHandle insert(in Graphic g, in Vertex p, in Vertex size, in Index l);
+  void remove(in StageHandle h);
+};
+
+interface StageHandle
+{
+  attribute Vertex position;
+  attribute Vertex size;
+  attribute Stage::Index layer;
 };
 
 #endif /* _Stage_idl */

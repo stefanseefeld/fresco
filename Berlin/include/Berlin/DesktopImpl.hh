@@ -1,7 +1,6 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
  * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
  * http://www.berlin-consortium.org
  *
@@ -20,31 +19,38 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
+#ifndef _DesktopImpl_hh
+#define _DesktopImpl_hh
 
-#ifndef _FigureKitImpl_hh
-#define _FigureKitImpl_hh
+#include <Warsaw/config.hh>
+#include <Warsaw/Desktop.hh>
+#include <Berlin/ControllerImpl.hh>
 
-#include "Warsaw/FigureKit.hh"
-#include "Warsaw/config.hh"
-#include "Berlin/CloneableImpl.hh"
-#include <vector>
+class WindowImpl;
 
-class Figure;
-
-class FigureKitImpl : lcimplements(FigureKit), virtual public CloneableImpl {
+class DesktopImpl : implements(Desktop), public ControllerImpl
+{
  public:
-    FigureKitImpl();
-    virtual ~FigureKitImpl();
+  DesktopImpl();
+  virtual ~DesktopImpl();
+  virtual void body(Graphic_ptr) {}
+  virtual Graphic_ptr body() { return CORBA::is_nil(stage) ? Stage::_nil() : Stage::_duplicate(stage);}
 
-    Graphic_ptr rectangle(Coord, Coord, const Style::Spec &);
-    Graphic_ptr ellipse(const Style::Spec &sty);
-    Graphic_ptr path(const Style::Spec &sty, const Path &p);
-    Graphic_ptr patch(const Style::Spec &sty, const Patch &p);
-    Image_ptr   pixmap(Raster_ptr);
-    Transformator_ptr projection(Graphic_ptr);
- protected:
-    vector<Figure *> figures;
+  Region_ptr bbox() { return stage->bbox();}
+  long layers() { return stage->layers();}
+  StageHandle_ptr layer(Index l) { return stage->layer(l);}
+  void begin() { stage->begin();}
+  void end() { stage->end();}
+
+  StageHandle_ptr insert(Graphic_ptr g, const Vertex &p, const Vertex &s, Stage::Index l)
+    {
+      return stage->insert(g, p, s, l);
+    }
+  void remove(StageHandle_ptr h) { stage->remove(h);}
+
+  void init(Stage_ptr);
+ private:
+  Stage_var stage;
 };
 
-
-#endif
+#endif /* _DesktopImpl_hh */

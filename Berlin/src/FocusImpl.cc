@@ -20,10 +20,11 @@
  * MA 02139, USA.
  */
 
-#include <Berlin/FocusImpl.hh>
-#include <Berlin/ScreenImpl.hh>
-#include <Berlin/PickTraversalImpl.hh>
-#include <Berlin/Logger.hh>
+#include "Berlin/FocusImpl.hh"
+#include "Berlin/ScreenImpl.hh"
+#include "Berlin/PickTraversalImpl.hh"
+#include "Berlin/Logger.hh"
+#include "Prague/Sys/Profiler.hh"
 
 FocusImpl::FocusImpl(ScreenImpl *s) : screen(s), traversal(0) {}
 FocusImpl::~FocusImpl() { if (traversal) traversal->_dispose();}
@@ -62,6 +63,7 @@ void FocusImpl::damage(Region_ptr region)
 void FocusImpl::dispatch(const Event::Pointer &pointer)
 {
   MutexGuard guard(mutex);
+  Prague::Profiler prf("FocusImpl::dispatch(pointer)");
   SectionLog section(Logger::picking, "FocusImpl::dispatch(pointer)");
   /*
    * if we have no traversal, create one

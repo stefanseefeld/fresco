@@ -1,25 +1,24 @@
-//
-// $Id$
-//
-// This source file is a part of the Berlin Project.
-// Copyright (C) 1998 Graydon Hoare <graydon@pobox.com> 
-// http://www.berlin-consortium.org
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Library General Public License
-// as published by the Free Software Foundation; either version 2 of
-// the License, or (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful, but
-// WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// General Public License for more details.
-//
-// You should have received a copy of the GNU Library General Public
-// License along with this program; if not, write to the Free Software
-// Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-//
-//
+/*$Id$
+ *
+ * This source file is a part of the Berlin Project.
+ * Copyright (C) 1998 Graydon Hoare <graydon@pobox.com> 
+ * http://www.berlin-consortium.org
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
+ * MA 02139, USA.
+ */
 #ifndef _ServerContextManagerImpl_hh
 #define _ServerContextManagerImpl_hh
 
@@ -30,8 +29,6 @@
 #include "Berlin/GenericFactoryImpl.hh"
 #include "Berlin/Thread.hh"
 
-class DesktopKitImpl;
-
 class ServerContextManagerImpl : implements(ServerContextManager), public virtual Thread
 //. the ServerContextManager just hands out new ServerContexts to
 //. people who are connecting.  it might want to do some checking on
@@ -39,15 +36,21 @@ class ServerContextManagerImpl : implements(ServerContextManager), public virtua
 {
   typedef vector<ServerContextImpl *> clist_t;
 public:  
-  ServerContextManagerImpl(GenericFactoryImpl *, DesktopKitImpl *);
+  ServerContextManagerImpl(GenericFactoryImpl *);
+  ServerContext_ptr newServerContext(ClientContext_ptr c) throw (SecurityException);
+  void setSingleton(const char *, CORBA::Object_ptr)
+    throw (SecurityException, SingletonFailureException);
+  void delSingleton(const char *)
+    throw (SecurityException, SingletonFailureException);
+  CORBA::Object_ptr getSingleton(const char *) 
+    throw (SecurityException, SingletonFailureException);
   void ping();
   virtual void run(void *);
-  ServerContext_ptr newServerContext(ClientContext_ptr c) throw (SecurityException);
 protected:
   FactoryFinderImpl *ffinder;
+  map<string, CORBA::Object_var> singletons;
   Mutex mutex;
   clist_t contexts;
-  DesktopKitImpl *kit;
 };
 
 #endif

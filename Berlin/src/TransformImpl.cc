@@ -27,6 +27,7 @@
 #include "Berlin/TransformImpl.hh"
 #include "Berlin/Math.hh"
 #include "Berlin/Logger.hh"
+#include "Prague/Sys/Profiler.hh"
 
 static const double radians_per_degree = Math::pi / 180;
 static const double tolerance = 1e-4;
@@ -212,6 +213,7 @@ void TransformImpl::premultiply(Transform_ptr transform)
 {
   if (!CORBA::is_nil(transform) && !transform->Identity())
     {
+      Prague::Profiler prf("TransformImpl::premultiply");
       Transform::Matrix m;
       transform->storeMatrix(m);
 
@@ -235,6 +237,7 @@ void TransformImpl::postmultiply(Transform_ptr transform)
 {
   if (!CORBA::is_nil(transform) && !transform->Identity())
     {
+      Prague::Profiler prf("TransformImpl::postmultiply");
       Transform::Matrix m;
       transform->storeMatrix(m);
 
@@ -284,6 +287,7 @@ void TransformImpl::invert()
 
 void TransformImpl::transformVertex(Vertex &v)
 {
+  Prague::Profiler prf("TransformImpl::transformVertex");
   Coord tx = v.x;
   v.x = tx * mat[0][0] + v.y * mat[1][0] + mat[2][0];
   v.y = tx * mat[0][1] + v.y * mat[1][1] + mat[2][1];
@@ -291,6 +295,7 @@ void TransformImpl::transformVertex(Vertex &v)
 
 void TransformImpl::inverseTransformVertex(Vertex &v)
 {
+  Prague::Profiler prf("TransformImpl::inverseTransformVertex");
   Coord d = det();
   Coord a = (v.x - mat[2][0]) / d;
   Coord b = (v.y - mat[2][1]) / d;

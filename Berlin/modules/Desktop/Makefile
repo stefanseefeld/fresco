@@ -32,12 +32,12 @@ CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw
 LDFLAGS	= -shared -rdynamic -L$(lpath) -L$(mpath)
 LIBS	= -lPrague -lBerlin
 
-SRC	= WindowImpl.cc DesktopImpl.cc DesktopKitImpl.cc
+SRC	= WindowImpl.cc DesktopKitImpl.cc
 
-TARGET	= $(lpath)/libDesktop.so
+TARGET	= $(mpath)/libDesktop.so
 
 vpath %.d $(dpath)
 vpath %.hh  $(ipath)/Warsaw $(ipath)/Berlin $(ipath)/Layout $(ipath)/Desktop
 
-include $(cpath)/library.mk
+include $(cpath)/module.mk
 

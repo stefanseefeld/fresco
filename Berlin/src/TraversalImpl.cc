@@ -32,6 +32,7 @@
 #include "Warsaw/Allocation.hh"
 #include "Warsaw/Graphic.hh"
 #include "Warsaw/Region.hh"
+#include "Prague/Sys/Profiler.hh"
 
 TraversalImpl::TraversalImpl(Graphic_ptr g, Region_ptr r, Transform_ptr t)
 {

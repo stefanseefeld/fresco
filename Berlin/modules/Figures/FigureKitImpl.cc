@@ -35,28 +35,31 @@ FigureKitImpl::~FigureKitImpl() {}
 Graphic_ptr FigureKitImpl::rectangle(Coord w, Coord h, const Style::Spec &sty)
 {
   RectFig *r = new RectFig(w, h, sty);
-  r->_obj_is_ready(applyscope(skeletonize(FigureKit), _boa()));
+  r->_obj_is_ready(_boa());
   figures.push_back(r);
   return r->_this();
 }
 
-Graphic_ptr FigureKitImpl::ellipse(const Style::Spec &sty) {
+Graphic_ptr FigureKitImpl::ellipse(const Style::Spec &sty)
+{
   EllipseFig *e = new EllipseFig(sty);
-  e->_obj_is_ready(applyscope(skeletonize(FigureKit), _boa()));
+  e->_obj_is_ready(_boa());
   figures.push_back(e);
   return e->_this();
 }
 
-Graphic_ptr FigureKitImpl::path(const Style::Spec &sty, const Path &p) {
+Graphic_ptr FigureKitImpl::path(const Style::Spec &sty, const Path &p)
+{
   PathFig *pf = new PathFig(sty,p);
-  pf->_obj_is_ready(applyscope(skeletonize(FigureKit), _boa()));
+  pf->_obj_is_ready(_boa());
   figures.push_back(pf);
   return pf->_this();
 }
 
-Graphic_ptr FigureKitImpl::patch(const Style::Spec &sty, const Patch &p) {
+Graphic_ptr FigureKitImpl::patch(const Style::Spec &sty, const Patch &p)
+{
   PatchFig *pf = new PatchFig(sty,p);
-  pf->_obj_is_ready(applyscope(skeletonize(FigureKit), _boa()));
+  pf->_obj_is_ready(_boa());
   figures.push_back(pf);
   return pf->_this();
 }
@@ -64,7 +67,7 @@ Graphic_ptr FigureKitImpl::patch(const Style::Spec &sty, const Patch &p) {
 Image_ptr FigureKitImpl::pixmap(Raster_ptr raster)
 {
   ImageImpl *image = new ImageImpl(raster);
-  image->_obj_is_ready(applyscope(skeletonize(FigureKit), _boa()));
+  image->_obj_is_ready(_boa());
 //   figures.push_back(image);
   return image->_this();
 }
@@ -72,7 +75,7 @@ Image_ptr FigureKitImpl::pixmap(Raster_ptr raster)
 Transformator_ptr FigureKitImpl::projection(Graphic_ptr g)
 {
   TransformatorImpl *transformator = new TransformatorImpl;
-  transformator->_obj_is_ready(applyscope(skeletonize(FigureKit), _boa()));
+  transformator->_obj_is_ready(_boa());
 //   figures.push_back(image);
   transformator->body(g);
   return transformator->_this();

@@ -20,48 +20,15 @@
  * MA 02139, USA.
  */
 
-#include "Desktop/DesktopImpl.hh"
-#include "Desktop/WindowImpl.hh"
+#include "Berlin/DesktopImpl.hh"
 #include "Berlin/Vertex.hh"
 #include "Berlin/Logger.hh"
 
-DesktopImpl::DesktopImpl()
-{
-}
-
-DesktopImpl::~DesktopImpl()
-{
-}
+DesktopImpl::DesktopImpl() {}
+DesktopImpl::~DesktopImpl() {}
 
 void DesktopImpl::init(Stage_ptr s)
 {
   stage = Stage::_duplicate(s);
   ControllerImpl::body(stage);
 }
-
-DesktopImpl::Info DesktopImpl::insert(WindowImpl *window, const Vertex &position, const Vertex &size, Index index)
-{
-  windows.push_back(window);
-  stage->begin();
-  Info info = stage->insert(Graphic_var(window->_this()), position, size, index);
-  stage->end();
-  return info;
-}
-
-void DesktopImpl::erase(WindowImpl *window)
-{
-  cerr << "DesktopImpl::erase : not implemented" << endl;
-}
-
-void DesktopImpl::reposition(const Info &info, const Vertex &position)
-{
-  stage->begin();
-  stage->reposition(info, position);
-  stage->end();
-}
-
-void DesktopImpl::relayer(const Info &info, Stage::Index index)
-{
-  stage->relayer(info, index);
-}
-

@@ -84,7 +84,7 @@ Pencil_ptr GLDrawingKit::getPencil(const Style::Spec &sty)
 {
   MutexGuard guard(mutex);
   GLPencil *pencil = new GLPencil(sty, drawable);
-  pencil->_obj_is_ready(applyscope(skeletonize(DrawingKit), _boa()));
+  pencil->_obj_is_ready(_boa());
   pencils.push_back(pencil);
   return pencil->_this();
 }

@@ -26,7 +26,7 @@
 #include <Warsaw/CommandKit.hh>
 #include <Berlin/CloneableImpl.hh>
 
-class CommandKitImpl : implements(CommandKit), virtual public CloneableImpl
+class CommandKitImpl : lcimplements(CommandKit), virtual public CloneableImpl
 {
 public:
   

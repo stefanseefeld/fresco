@@ -23,8 +23,9 @@
 #define _Desktop_idl
 
 #include <Controller.idl>
+#include <Stage.idl>
 
-interface Desktop : Controller
+interface Desktop : Controller, Stage
 {
 };
 

@@ -27,14 +27,14 @@
 class Repositioner : public WindowImpl::Manipulator
 {
 public:
-  Repositioner(DesktopImpl *desktop, DesktopImpl::Info &info) : WindowImpl::Manipulator(desktop, info) {}
   virtual void execute(const Message &message)
     {
-      Vertex *position;
-      if (message.payload >>= position)
+      if (CORBA::is_nil(handle)) return;
+      Vertex *p;
+      if (message.payload >>= p)
 	{
-	  info.position += *position;
-	  desktop->reposition(info, info.position);
+// 	  info.position += *p;
+	  handle->position(*p);
 	}
       else  cerr << "Repositioner::execute : wrong message type !" << endl;
     }
@@ -43,11 +43,14 @@ public:
 class Resizer : public WindowImpl::Manipulator
 {
 public:
-  Resizer(DesktopImpl *desktop, DesktopImpl::Info &info) : WindowImpl::Manipulator(desktop, info) {}
   virtual void execute(const Message &message)
     {
-      Vertex *size;
-      if (message.payload >>= size);// window->desktop->resize(window->info, size);
+      if (CORBA::is_nil(handle)) return;
+      Vertex *s;
+      if (message.payload >>= s)
+	{
+	  handle->size(*s);
+	}
       else cerr << "Resizer::execute : wrong message type !" << endl;
     }
 };
@@ -55,38 +58,49 @@ public:
 class Relayerer : public WindowImpl::Manipulator
 {
 public:
-  Relayerer(DesktopImpl *desktop, DesktopImpl::Info &info) : WindowImpl::Manipulator(desktop, info) {}
   virtual void execute(const Message &message)
     {
+      if (CORBA::is_nil(handle)) return;
+      Stage::Index i;
+      if (message.payload >>= i)
+	{
+	  handle->layer(i);
+	}
+      else cerr << "Relayerer::execute : wrong message type !" << endl;
     }
 };
 
-WindowImpl::WindowImpl(DesktopImpl *d)
-  : desktop(d), manipulators(2)
+WindowImpl::WindowImpl()
+  : manipulators(3)
 {
-  manipulators[0] = new Repositioner(desktop, info);
+  manipulators[0] = new Repositioner;
   manipulators[0]->_obj_is_ready(_boa());
-  manipulators[1] = new Resizer(desktop, info);
+  manipulators[1] = new Resizer;
   manipulators[1]->_obj_is_ready(_boa());
+  manipulators[2] = new Relayerer;
+  manipulators[2]->_obj_is_ready(_boa());
 }
 
 WindowImpl::~WindowImpl()
 {
   manipulators[0]->_dispose();
   manipulators[1]->_dispose();  
+  manipulators[2]->_dispose();  
 }
 
-void WindowImpl::insert()
+void WindowImpl::insert(Desktop_ptr desktop)
 {
   Vertex position, size;
   position.x = position.y = position.z = 100;
   size.x = size.y = size.z = 0;
-  info = desktop->insert(this, position, size, 0);
+  handle = desktop->insert(Graphic_var(_this()), position, size, 0);
+  for (mtable_t::iterator i = manipulators.begin(); i != manipulators.end(); i++)
+    (*i)->bind(handle);
 }
 
 Command_ptr WindowImpl::reposition() { return manipulators[0]->_this();}
 Command_ptr WindowImpl::resize() { return manipulators[1]->_this();}
-Command_ptr WindowImpl::relayer() { return Command::_nil();}
+Command_ptr WindowImpl::relayer() { return manipulators[2]->_this();}
 
 void WindowImpl::pick(PickTraversal_ptr traversal)
 {
@@ -94,4 +108,3 @@ void WindowImpl::pick(PickTraversal_ptr traversal)
   MonoGraphic::traverse(traversal);
   traversal->leaveController();
 }
-

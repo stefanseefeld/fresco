@@ -40,10 +40,10 @@
 template <class T, class I>
 class QTNode
 {
-  struct move_down : unary_function<I *, bool>
+  struct move_down : unary_function<I, bool>
   {
     move_down(QTNode<T, I> *n) : node(n) {}
-    bool operator()(I *i)
+    bool operator()(I i)
       {
 	QTNode<T, I>::index idx = node->where(i);
 	if (idx != QTNode<T, I>::fence) { node->quadrants[idx]->insert(i); return true;}
@@ -66,7 +66,7 @@ public:
     lefttop = left|top,
     righttop = right|top
   };
-  typedef vector<I *> list;
+  typedef vector<I> list;
   QTNode(const Geometry::Rectangle<T> &r)
     : region(r), elements(0) { quadrants[0] = quadrants[1] = quadrants[2] = quadrants[3] = 0;}
   ~QTNode() { free();}
@@ -79,8 +79,8 @@ public:
    * bounding box of objects in this node
    */
   const Geometry::Rectangle<T> &bbox() const { return boundingbox;}
-  void insert(I *);
-  void remove(I *);
+  void insert(I);
+  void remove(I);
   /*
    * number of objects in this node
    */
@@ -95,7 +95,7 @@ protected:
   index where(const Geometry::Point<T> &p)
     { return index ((p.x <= region.cx() ? left : right) | (p.y <= region.cy() ? bottom : top));}
   index where(const Geometry::Rectangle<T> &);
-  index where(I *i) { return where(i->bbox());}
+  index where(I i) { return where(i->bbox());}
 
   Geometry::Rectangle<T> region;
   Geometry::Rectangle<T> boundingbox;
@@ -202,7 +202,7 @@ inline QTNode<T, I>::index QTNode<T, I>::where(const Geometry::Rectangle<T> &r)
 }
 
 template <class T, class I>
-inline void QTNode<T, I>::insert(I *i)
+inline void QTNode<T, I>::insert(I i)
 {
   index idx = where(i);
   if (idx == fence) items.push_back(i);
@@ -215,7 +215,7 @@ inline void QTNode<T, I>::insert(I *i)
 }
 
 template <class T, class I>
-inline void QTNode<T, I>::remove(I *i)
+inline void QTNode<T, I>::remove(I i)
 {
   index idx = where(i);
   if (idx == fence)

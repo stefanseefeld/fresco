@@ -26,24 +26,23 @@
 #include <Warsaw/DesktopKit.hh>
 #include <Warsaw/LayoutKit.hh>
 #include <Warsaw/WidgetKit.hh>
-#include <Warsaw/Screen.hh>
+#include <Warsaw/Desktop.hh>
 #include <Berlin/CloneableImpl.hh>
 #include <vector>
 
 class WindowImpl;
 class DesktopImpl;
 
-class DesktopKitImpl : implements(DesktopKit), virtual public CloneableImpl
+class DesktopKitImpl : lcimplements(DesktopKit), virtual public CloneableImpl
 {
  public:
-  DesktopKitImpl(Screen_ptr, LayoutKit_ptr, WidgetKit_ptr);
+  DesktopKitImpl();
   virtual ~DesktopKitImpl();
-  Window_ptr shell(Graphic_ptr);
-  Window_ptr transient(Graphic_ptr);
+  virtual void bind(ServerContext_ptr);
+  virtual Window_ptr shell(Graphic_ptr);
+  virtual Window_ptr transient(Graphic_ptr);
  private:
-  Screen_var screen;
-  DesktopImpl *desktop;
-  Stage_var  stage;
+  Desktop_var   desktop;
   LayoutKit_var lk;
   WidgetKit_var wk;
   vector<WindowImpl *> windows;

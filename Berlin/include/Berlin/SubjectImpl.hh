@@ -24,7 +24,6 @@
 
 #include "Warsaw/config.hh"
 #include "Warsaw/Subject.hh"
-#include "Berlin/CloneableImpl.hh"
 #include "Berlin/Thread.hh"
 #include <list>
 

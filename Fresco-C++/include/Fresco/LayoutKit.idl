@@ -27,10 +27,12 @@
 #ifndef _LayoutKit_idl
 #define _LayoutKit_idl
 
+#include "Grid.idl"
+#include "Cloneable.idl"
+
 interface Viewport;
 interface Stage;
 interface Graphic;
-#include "Grid.idl"
 
 interface LayoutKit : Cloneable 
 {

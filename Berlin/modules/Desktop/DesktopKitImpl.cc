@@ -22,30 +22,27 @@
 
 #include <Desktop/DesktopKitImpl.hh>
 #include <Desktop/WindowImpl.hh>
-#include <Desktop/DesktopImpl.hh>
 #include <Desktop/Titlebar.hh>
 #include <Berlin/Logger.hh>
+#include "Berlin/Plugin.hh"
 
-DesktopKitImpl::DesktopKitImpl(Screen_ptr s, LayoutKit_ptr l, WidgetKit_ptr w)
-  : screen(Screen::_duplicate(s)), lk(LayoutKit::_duplicate(l)), wk(WidgetKit::_duplicate(w))
-{
-  desktop = new DesktopImpl;
-  desktop->_obj_is_ready(CORBA::BOA::getBOA());
-  screen->body(Desktop_var(desktop->_this()));
-  stage = lk->createStage();
-  desktop->init(stage);
-  screen->appendController(Controller_var(desktop->_this()));
-}
+DesktopKitImpl::DesktopKitImpl() {}
+DesktopKitImpl::~DesktopKitImpl() {}
 
-DesktopKitImpl::~DesktopKitImpl()
+void DesktopKitImpl::bind(ServerContext_ptr sc)
 {
-  desktop->_dispose();
+  CloneableImpl::bind(sc);
+  CORBA::Object_var object = context->getSingleton(interface(Desktop));
+  desktop = Desktop::_narrow(object);
+  
+  lk = obtain(context, LayoutKit);
+  wk = obtain(context, WidgetKit);
 }
 
 Window_ptr DesktopKitImpl::shell(Graphic_ptr g)
 {
   SectionLog section(Logger::traversal, "DesktopKitImpl::shell");
-  WindowImpl *window = new WindowImpl(desktop);
+  WindowImpl *window = new WindowImpl;
   window->_obj_is_ready(_boa());
   Color gray = {0.5, 0.5, 0.5, 1.0};
   Titlebar *tb = new Titlebar(gray);
@@ -57,7 +54,7 @@ Window_ptr DesktopKitImpl::shell(Graphic_ptr g)
   box->append(dragger);
   box->append(g);
   window->body(box);
-  window->insert();
+  window->insert(desktop);
   windows.push_back(window);
   desktop->appendController(Controller_var(window->_this()));
   return window->_this();
@@ -67,3 +64,5 @@ Window_ptr DesktopKitImpl::transient(Graphic_ptr g)
 {
   return Window::_nil();
 }
+
+EXPORT_PLUGIN(DesktopKitImpl,interface(DesktopKit))

@@ -32,7 +32,7 @@
 
 class RasterImpl;
 
-class ImageKitImpl : implements(ImageKit), virtual public CloneableImpl
+class ImageKitImpl : lcimplements(ImageKit), virtual public CloneableImpl
 {
 public:
   ImageKitImpl();

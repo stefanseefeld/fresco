@@ -1,25 +1,26 @@
-//
-// $Id$
-//
-// This source file is a part of the Berlin Project.
-// Copyright (C) 1998 Graydon Hoare <graydon@pobox.com> 
-// http://www.berlin-consortium.org
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Library General Public License
-// as published by the Free Software Foundation; either version 2 of
-// the License, or (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful, but
-// WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// General Public License for more details.
-//
-// You should have received a copy of the GNU Library General Public
-// License along with this program; if not, write to the Free Software
-// Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-//
-//
+/*$Id$
+ *
+ * This source file is a part of the Berlin Project.
+ * Copyright (C) 1998 Graydon Hoare <graydon@pobox.com> 
+ * http://www.berlin-consortium.org
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
+ * MA 02139, USA.
+ */
+#include "Warsaw/config.hh"
+#include "Berlin/CloneableImpl.hh"
 
 // Cloneable is a subclass of LifeCycleObject with some handy methods
 // tacked on the side, a "copyStateToOther" pure virtual it forces
@@ -28,8 +29,11 @@
 // session-management system which is rudimentary and probably will be
 // replaced some day in the future when we know more.
 
-#include "Warsaw/config.hh"
-#include "Berlin/CloneableImpl.hh"
+void CloneableImpl::bind(ServerContext_ptr sc)
+{
+  context = ServerContext::_duplicate(sc);
+}
+
 
 // copy produces a new clone on the machine found by the FactoryFinder "there", which 
 // in most cases will actually be "here". But anyway, it copies state. That's what's important!

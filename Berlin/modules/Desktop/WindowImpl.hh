@@ -25,35 +25,34 @@
 #include <Warsaw/config.hh>
 #include <Warsaw/Window.hh>
 #include <Warsaw/Command.hh>
+#include <Warsaw/Desktop.hh>
 #include <Berlin/ControllerImpl.hh>
-#include <Desktop/DesktopImpl.hh>
 #include <vector>
 
 class WindowImpl : implements(Window), public ControllerImpl
 {
   class Manipulator : implements(Command)
-    {
-    public:
-      Manipulator(DesktopImpl *d, DesktopImpl::Info &i) : desktop(d), info(i) {}
-      virtual ~Manipulator() {}
-      virtual void execute(const Message &) = 0;
-    protected:
-      DesktopImpl *desktop;
-      DesktopImpl::Info &info;
-    };
+  {
+  public:
+    virtual ~Manipulator() {}
+    void bind(StageHandle_ptr h) { handle = StageHandle::_duplicate(h);}
+    virtual void execute(const Message &) = 0;
+  protected:
+    StageHandle_var handle;
+  };
+  typedef vector<Manipulator *> mtable_t;
  public:
-  WindowImpl(DesktopImpl *);
+  WindowImpl();
   virtual ~WindowImpl();
-  void insert();
+  void insert(Desktop_ptr);
   Command_ptr reposition();
   Command_ptr resize();
   Command_ptr relayer();
 
   virtual void pick(PickTraversal_ptr);
  private:
-  DesktopImpl *desktop;
-  DesktopImpl::Info  info;
-  vector<Manipulator *> manipulators;
+  StageHandle_var handle;
+  mtable_t manipulators;
 };
 
 #endif /* _WindowImpl_hh */
