@@ -24,6 +24,7 @@ import Warsaw__POA
 import pywarsaw
 
 Toggle_hover = 32L
+Toggle_active = 64L
 
 class MenuKit:
     """Pretend kit that builds menu objects"""
@@ -110,17 +111,14 @@ class MenuItem (pywarsaw.PyController):
 	    self.callback_command = Callback(self.clicked)._this()
 	return self.callback_command
 
-    def close_all(self):
-	"Closes this and all parent pulldown menus"
-	self.__parent_menu.cascade_close()
-
     def receive_focus(self, focus):
 	print "receive focus"
 	self.set(Toggle_hover)
+	self.__parent_menu.set_active_submenu(self)
 	return pywarsaw.PyController.receive_focus(self, focus)
     def lose_focus(self, device):
 	print "lose focus"
-	self.clear(Toggle_hover)
+	if not self.test(Toggle_active): self.clear(Toggle_hover)
 	pywarsaw.PyController.lose_focus(self, device)
     def press(self, traversal, event):
 	try:
@@ -131,15 +129,14 @@ class MenuItem (pywarsaw.PyController):
 		self.callback.execute(nullAny)
 	    # Show submenu
 	    if self.submenu is not None:
+		self.set(Toggle_active)
 		sub = self.submenu.get_pulldown()
-		self.__parent_menu.assert_submenu(self.submenu)
+		self.__parent_menu.set_active_submenu(self)
 		# Move to right place
-		region = traversal.current_allocation()
-		lower, upper = region.bounds()
+		lower, upper = traversal.current_allocation().bounds()
 		if self.__orientation:to = Warsaw.Vertex(upper.x, lower.y, 0.)
 		else: to = Warsaw.Vertex(lower.x, upper.y, 0.)
-		transform = traversal.current_transformation()
-		to = transform.transform_vertex(to)
+		to = traversal.current_transformation().transform_vertex(to)
 		pos = sub._get_position()
 		pos.x = to.x-pos.x; pos.y = to.y-pos.y
 		# Do the move, and map
@@ -147,12 +144,20 @@ class MenuItem (pywarsaw.PyController):
 		kits.desktop.move(sub).execute(any)
 		kits.desktop.map(sub, 1).execute(nullAny)
 	    # Else close this menu and all parents
-	    else: self.close_all()
+	    else: self.cascade_close_up()
 	except:
 	    print "An error occurred somewhere in clicked()"
 	    import traceback
 	    traceback.print_exc()
-	    self.close_all()
+	    self.cascade_close_up()
+    def cascade_close_down(self):
+	if self.test(Toggle_active):
+	    self.clear(Toggle_active)
+	    self.clear(Toggle_hover)
+	    self.submenu.cascade_close_down()
+    def cascade_close_up(self):
+	self.cascade_close_down()
+	self._get_parent_menu().cascade_close_up()
 
 class Menu (pywarsaw.PyController):
     """Encapsulates a vertical menu of MenuItems"""
@@ -187,16 +192,19 @@ class Menu (pywarsaw.PyController):
 
 	map(self._add_item, self.items)
 
-    def assert_submenu(self, submenu):
+    def set_active_submenu(self, item):
 	"""Hides any submenu currently open and sets the given as open"""
+	if item is self._current_submenu: return
 	if self._current_submenu:
-	    kits.desktop.map(self._current_submenu.get_pulldown(), 0).execute(nullAny)
-	self._current_submenu = submenu
-    def cascade_close(self):
-	"""Close this menu and all parents"""
-	self.assert_submenu(None)
+	    self._current_submenu.cascade_close_down()
+	self._current_submenu = item
+    def cascade_close_down(self):
+	self.set_active_submenu(None)
 	kits.desktop.map(self.get_pulldown(), 0).execute(nullAny)
-	self.parent_item._get_parent_menu().cascade_close()
+    def cascade_close_up(self):
+	"""Close this menu and all parents"""
+	self.cascade_close_down()
+	self.parent_item.cascade_close_up()
     def get_pulldown(self):
 	"""Returns a top-level pulldown graphic for this Menu"""
 	if self.pulldown is None:
@@ -225,7 +233,7 @@ class MenuBar(Menu):
 	fspec = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.outset, 0.2)
 	frame = kits.tool.frame(spacer_box, 10.0, fspec, 1)
 	self._set_body(frame)
-    def cascade_close(self):
+    def cascade_close_up(self):
 	"""Terminate the cascade traversal"""
 	pass
 
@@ -290,7 +298,7 @@ class MenuApp (berlin.App):
 
 	self.window = kits.desktop.shell(kits.tool.group(vbox))
 	pos = self.window._get_position()
-	pos.x = -pos.x; pos.y = -pos.y-200.
+	pos.x = -pos.x; pos.y = -pos.y-210.
 	kits.desktop.move(self.window).execute(CORBA.Any(Warsaw._tc_Vertex, pos))
 	#pos.x = 6400.; pos.y = 4800.
 	#kits.desktop.resize(self.window).execute(CORBA.Any(Warsaw._tc_Vertex, pos))
