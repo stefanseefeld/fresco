@@ -20,18 +20,18 @@
  * MA 02139, USA.
  */
 
-#ifndef _Text_Convertor_hh
-#define _Text_Convertor_hh
+#ifndef _Text_Converter_hh
+#define _Text_Converter_hh
 
 #include <string>
 #include <vector>
 #include <Prague/Sys/MMap.hh>
 #include <Babylon/Babylon.hh>
 
-class TextConvertor {
+class TextConverter {
 public:
-    TextConvertor(std::string);
-    ~TextConvertor() { delete tree_map; }
+    TextConverter(const std::string &);
+    ~TextConverter() { delete tree_map; }
 
     Babylon::String
     convert(const Babylon::String &) const;
@@ -51,4 +51,4 @@ private:
     size_t tree_size;
 };
 
-#endif // _TextConvertor_hh
+#endif // _TextConverter_hh

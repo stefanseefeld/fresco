@@ -40,10 +40,13 @@
 #include <Berlin/ObserverImpl.hh>
 
 // pinyin input class
-#include "TextConvertor.hh"
+#include "TextConverter.hh"
 
 #include <Warsaw/TextBuffer.hh>
 #include <Babylon/Babylon.hh>
+#include <Prague/Sys/Path.hh>
+#include <Prague/Sys/GetOpt.hh>
+#include <Berlin/RCManager.hh>
 
 class InputObserver : public ObserverImpl {
 public:
@@ -53,15 +56,9 @@ public:
 					      select(s),
 					      output(o)
     {
-	char * root_path = getenv("BERLIN_ROOT");
-	if (!root_path) {
-	    cerr << "Please set environment variabled BERLIN_ROOT first" << endl;
-	    exit(-1);
-	}
-	std::string path(root_path);
-	path += "/etc/pinyin.db";
-	cerr << "I'll use this Path for my MMap: " << path << endl;
-	convertor = new TextConvertor(path);
+	Prague::Path path = RCManager::get_path("pinyindbpath");
+	string pinyinDB = path.lookup_file("pinyin.db");
+	converter = new TextConverter(pinyinDB);
     }
 	
 
@@ -70,9 +67,7 @@ public:
 
 	if (any >>= change) {
 	    Warsaw::Unistring_var us(input->get_chars(0, input->size()));
-	    cerr << "us:" << us->length() << ":";
 	    Babylon::String bs(Unicode::to_internal(us));
-	    cerr << "  bs:" << bs.length() << ":" << endl;
 
 	    Babylon::Char last = bs[bs.length() - 1];
 	    if (last >= 'A' && last <= 'Z') {
@@ -80,7 +75,7 @@ public:
 
 		// FIXME: substr does not work, so I have to use replace:-(
 		bs.replace(bs.length(), 1, Babylon::String(""));
-		Babylon::String select_from(convertor->convert(bs));
+		Babylon::String select_from(converter->convert(bs));
 		
 		if (size_t(last.value() - 'A') < size_t(select_from.length())) {
 		    select->remove_backward(26);
@@ -101,7 +96,7 @@ public:
 		if (bs.empty())
 		    select_from = "";
 		else
-		    select_from = convertor->convert(bs);
+		    select_from = converter->convert(bs);
 		cerr << " results in " << select_from.length() << " answers." << endl;
 		select->remove_backward(26);
 		// FIXME: substr(26); doesen't work:-(
@@ -120,10 +115,19 @@ private:
     Warsaw::TextBuffer_var select;
     Warsaw::TextBuffer_var output;
     
-    TextConvertor * convertor;
+    TextConverter * converter;
 }; // class InputObserver
 
 int main(int argc, char ** argv) {
+    Prague::GetOpt getopt(argv[0], "a simple pinyin input application.");
+    getopt.add('r', "resource", Prague::GetOpt::mandatory, "the resource file to load");
+    size_t argo = getopt.parse(argc, argv);
+    argc -= argo;
+    argv += argo;
+    std::string value;
+    getopt.get("resource", &value);
+    if (!value.empty()) RCManager::read(Prague::Path::expand_user(value));
+
     try {
 	// Do CORBA-magic and connect to server:
 	Berlin_Server server(argc, argv);

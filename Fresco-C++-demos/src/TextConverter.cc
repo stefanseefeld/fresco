@@ -20,9 +20,9 @@
  * MA 02139, USA.
  */
 
-#include "TextConvertor.hh"
+#include "TextConverter.hh"
 
-TextConvertor::TextConvertor(const std::string file) {
+TextConverter::TextConverter(const std::string & file) {
     tree_map = new Prague::MMap(file,
 				-1,
 				Prague::MMap::read,
@@ -34,7 +34,7 @@ TextConvertor::TextConvertor(const std::string file) {
 }
 
 Babylon::String
-TextConvertor::convert(const Babylon::String & pinyin) const {
+TextConverter::convert(const Babylon::String & pinyin) const {
     Babylon::String result;
     size_t cur_start = 0;
     size_t cur_end = 0;
@@ -61,7 +61,7 @@ TextConvertor::convert(const Babylon::String & pinyin) const {
 }
 
 size_t
-TextConvertor::find_char(const char p,
+TextConverter::find_char(const char p,
 		  const size_t s,
 		  const size_t e) const {
     size_t start = s;
