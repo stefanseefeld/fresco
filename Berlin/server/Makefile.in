@@ -40,7 +40,7 @@ CPPFLAGS	+= -I$(top_srcdir)/contrib/jprof -DJPROF
 endif
 
 CPPFLAGS	+= -DRC_PREFIX='"$(prefix)"' -DVERSION='"$(VERSION)"'
-LIBS		+= -lBerlin -lWarsaw -lBabylon -lPrague @CON_LIBS@
+LIBS		+= -lBerlin -lWarsaw -lBabylon -lPrague
 
 TARGETS		:= $(bdir)/server $(bdir)/kits $(bdir)/devices
 

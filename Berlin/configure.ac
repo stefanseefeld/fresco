@@ -242,6 +242,7 @@ AC_MSG_PART(Output Substitution)
 
 mkdir -p $builddir/bin
 mkdir -p $builddir/lib
+mkdir -p $builddir/modules/Console
 mkdir -p $builddir/config/Server
 mkdir -p $builddir/include/Berlin
 mkdir -p $builddir/src/Berlin

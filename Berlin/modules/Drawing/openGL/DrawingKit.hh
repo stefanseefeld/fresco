@@ -39,7 +39,9 @@
 #include <Console/GGI/GGI.hh>
 #  include <GL/ggimesa.h>
 #elif defined(CONSOLE_SDL)
+#include <Berlin/Console.hh>
 #elif defined(CONSOLE_GLUT)
+#include <Berlin/Console.hh>
 #else
 #  error "GLDrawingKit needs a OpenGL-enabled console to compile"
 #endif
@@ -167,7 +169,7 @@ public:
 #if defined(CONSOLE_GGI)
   GGIConsole::Drawable                      *_drawable;
   GGIMesaContext                             _context;
-#elif
+#else
   Console::Drawable                         *_drawable;
 #endif
   Prague::Mutex                              _mutex;

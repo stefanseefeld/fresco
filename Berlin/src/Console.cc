@@ -48,9 +48,9 @@ int Console::open(int argc, char **argv, PortableServer::POA_ptr poa) throw(std:
   getopt.add('c', "console", GetOpt::mandatory, "the console to choose");
   int argo = getopt.parse(argc, argv);
   std::string value;
-  if (!getopt.get("console", &value)) value = "GGIConsole";
+  if (!getopt.get("console", &value)) value = "GGI";
   Prague::Path path = RCManager::get_path("modulepath");
-  std::string name = path.lookup_file(value + ".so");
+  std::string name = path.lookup_file(std::string("Console/") + value + ".so");
   plugin = new Plugin<Console::Loader>(name);
   _console = (*plugin)->load(argo, argv);
   _console->_poa = PortableServer::POA::_duplicate(poa);
