@@ -63,7 +63,9 @@ class Application
   };
   typedef std::vector<Item> list_t;
   class Mapper;
+  class PrintCommand;
   friend class Mapper;
+  friend class PrintCommand;
 public:
   class CommandImpl : public virtual POA_Fresco::Command,
                       public virtual PortableServer::RefCountServantBase

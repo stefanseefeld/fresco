@@ -30,6 +30,20 @@
 using namespace Prague;
 using namespace Fresco;
 
+class Application::PrintCommand : public Application::CommandImpl
+{
+public:
+  PrintCommand(Window_var w, Application *a) : _w(w), _a(a) {}
+  virtual void execute(const CORBA::Any &any)
+  {
+    std::cerr << "(" << _w->size().x << "," << _w->size().y << ")" << std::endl;
+    Command_var(_a->_ck->print(_a->_ttk->rgb(_a->_lk->fixed_size(_a->_lk->align(_w, 0., 0.), _w->size().x, _w->size().y), 0.8, 0.8, 0.8)))->execute(any);
+  }
+private:
+  Window_var _w;
+  Application *_a;
+};
+
 class Application::Mapper : public Application::CommandImpl
 {
 public:
@@ -133,8 +147,9 @@ void Application::append(Controller_ptr demo, const Babylon::String &name)
   group->append_controller(button2);
   group->append_controller(button3);
   Window_var window = _dk->transient(group);
+  PrintCommand *_pc = new PrintCommand(window, this);
   button1->action(Command_var(_dk->map(window, false)));
-  button3->action(Command_var(_ck->print(_ttk->rgb(_lk->align(group, 0., 0.), 0.8, 0.8, 0.8))));
+  button3->action(Command_var(_pc->_this()));
   item.mapper = _dk->map(window, true);
   _demos.push_back(item);
 }
