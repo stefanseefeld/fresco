@@ -41,7 +41,7 @@ dnl ------------------------------------------------------------------
 dnl ORB
 dnl ------------------------------------------------------------------
 
-AC_CHECK_LIB(resolv, recv, [LIBS="$LIBS -lresolv"])
+AC_SEARCH_LIBS(recv, resolv, [LIBS="$LIBS -lresolv"])
 
 FRESCO_ORB
 MAKEFILE=
