@@ -332,7 +332,7 @@ VisualTextBufferImpl::insert(const CORBA::ULong pos,
 	    size_t first_par_pos = std::distance(_paragraphs.begin(), first_par);
 
 	    // update first paragraph...
-	    vector<size_t>::const_iterator i = separators.begin();
+	    std::vector<size_t>::const_iterator i = separators.begin();
 	    first_par->end = first_par->begin + *i;
 	    first_par->levels = Babylon::analyse(ins_str.begin(),
 						 ins_str.begin() +

@@ -35,7 +35,7 @@
 namespace Babylon {
     typedef std::basic_string<size_t> Char_Mapping;
     struct Paragraph;
-    typedef vector<struct Paragraph> Paragraphs;
+    typedef std::vector<struct Paragraph> Paragraphs;
 
     // g++ does not yet support char_traits :-(
     class String : public std::basic_string<Babylon::Char> {
@@ -84,43 +84,43 @@ namespace Babylon {
 	// returns the normalized form of a string without changing it.
 	String norm(const Norm norm) const;
 
-	vector<size_t> get_defined();
-	vector<size_t> get_Spaces();
-	vector<size_t> get_ISO_Controls();
-	vector<size_t> get_Punctuations();
-	vector<size_t> get_Line_Separators();
-	vector<size_t> get_Paragraph_Separators();
-	vector<size_t> get_Currency_Symbols();
-	vector<size_t> get_Bidi_Left_to_Rights();
-	vector<size_t> get_Bidi_European_Digits();
-	vector<size_t> get_Bidi_Eur_Num_Separators();
-	vector<size_t> get_Bidi_Eur_Num_Terminators();
-	vector<size_t> get_Bidi_Arabic_Digits();
-	vector<size_t> get_Bidi_Common_Separator();
-	vector<size_t> get_Bidi_Block_Separator();
-	vector<size_t> get_Bidi_Segment_Separator();
-	vector<size_t> get_Bidi_Whitespaces();
-	vector<size_t> get_Bidi_Non_spacing_Marks();
-	vector<size_t> get_Bidi_Boundary_Neutrals();
-	vector<size_t> get_Bidi_PDFs();
-	vector<size_t> get_Bidi_Embedding_or_Overrides();
-	vector<size_t> get_Bidi_Other_Neutrals();
-	vector<size_t> get_Viramas();
-	vector<size_t> get_Printables();
-	vector<size_t> get_Not_a_Characters();
-	vector<size_t> get_Maths();
-	vector<size_t> get_Alphabetics();
-	vector<size_t> get_Lowercases();
-	vector<size_t> get_Uppercases();
-	vector<size_t> get_Titlecases();
-	vector<size_t> get_ID_Starts();
-	vector<size_t> get_ID_Continues();
-	vector<size_t> get_XID_Starts();
-	vector<size_t> get_XID_Continues();
-	vector<size_t> get_Decimals();
-	vector<size_t> get_Digits();
-	vector<size_t> get_Numerics();
-	vector<size_t> get_Private_Uses();
+	std::vector<size_t> get_defined();
+	std::vector<size_t> get_Spaces();
+	std::vector<size_t> get_ISO_Controls();
+	std::vector<size_t> get_Punctuations();
+	std::vector<size_t> get_Line_Separators();
+	std::vector<size_t> get_Paragraph_Separators();
+	std::vector<size_t> get_Currency_Symbols();
+	std::vector<size_t> get_Bidi_Left_to_Rights();
+	std::vector<size_t> get_Bidi_European_Digits();
+	std::vector<size_t> get_Bidi_Eur_Num_Separators();
+	std::vector<size_t> get_Bidi_Eur_Num_Terminators();
+	std::vector<size_t> get_Bidi_Arabic_Digits();
+	std::vector<size_t> get_Bidi_Common_Separator();
+	std::vector<size_t> get_Bidi_Block_Separator();
+	std::vector<size_t> get_Bidi_Segment_Separator();
+	std::vector<size_t> get_Bidi_Whitespaces();
+	std::vector<size_t> get_Bidi_Non_spacing_Marks();
+	std::vector<size_t> get_Bidi_Boundary_Neutrals();
+	std::vector<size_t> get_Bidi_PDFs();
+	std::vector<size_t> get_Bidi_Embedding_or_Overrides();
+	std::vector<size_t> get_Bidi_Other_Neutrals();
+	std::vector<size_t> get_Viramas();
+	std::vector<size_t> get_Printables();
+	std::vector<size_t> get_Not_a_Characters();
+	std::vector<size_t> get_Maths();
+	std::vector<size_t> get_Alphabetics();
+	std::vector<size_t> get_Lowercases();
+	std::vector<size_t> get_Uppercases();
+	std::vector<size_t> get_Titlecases();
+	std::vector<size_t> get_ID_Starts();
+	std::vector<size_t> get_ID_Continues();
+	std::vector<size_t> get_XID_Starts();
+	std::vector<size_t> get_XID_Continues();
+	std::vector<size_t> get_Decimals();
+	std::vector<size_t> get_Digits();
+	std::vector<size_t> get_Numerics();
+	std::vector<size_t> get_Private_Uses();
 
 	// OPERATORS:
     

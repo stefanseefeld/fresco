@@ -535,6 +535,7 @@ void LibArtDrawingKit::flush()
   _buffer->flush(x, y, w, h);
   _drawable->blit(*_buffer, x, y, w, h, x, y);
   _bbox.x0 = _bbox.y0 = _bbox.x1 = _bbox.y1 = 0;  
+  _drawable->flush(x, y, w, h);
 }
 
 extern "C" KitImpl *load()

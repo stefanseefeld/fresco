@@ -163,10 +163,10 @@ module Warsaw
       void copy_drawable(in Drawable d, in PixelCoord x, in PixelCoord y, in PixelCoord w, in PixelCoord h);
       //. Initialize DrawingKit for a rendering pass. Called before
       //. each pass.
-      void init();
+      void start_traversal();
       
       //. Finish the rendering pass. Called after each pass.
-      void finish();
+      void finish_traversal();
       
       //. Flush the drawing kit.
       void flush();

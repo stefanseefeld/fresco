@@ -35,22 +35,39 @@ public:
   {
   public:
     Guard(const Console::Drawable *drawable, data_type *data)
-      : _drawable(drawable), _data(data) {}
-    ~Guard() {}
+      : _drawable(drawable), _data(data)
+    {
+      Prague::Trace("DirectBuffer::Guard::Guard(...)");
+    }
+
+    ~Guard()
+    {
+      Prague::Trace("DirectBuffer::Guard::~Guard()");
+    }
+
     Guard(const Guard &buffer)
     {
+      Prague::Trace("DirectBuffer::Buard::Guard(Guard)");
       _data = buffer.release();
       _drawable = buffer._drawable;
     }
     Guard &operator = (const Guard &buffer)
     {
+      Prague::Trace("DirectBuffer::Guard::operator =");
       _data = buffer.release();
       _drawable = buffer._drawable;
       return *this;
     }
-    data_type *get() const { return _data;}
+
+    data_type *get() const
+    {
+      Prague::Trace("DirectBuffer::Guard::get()");
+      return _data;
+    }
+
     data_type *release() const
     {
+      Prague::Trace("DirectBuffer::Guard::release()");
       data_type *tmp = _data;
       _data = 0;
       return tmp;

@@ -115,6 +115,8 @@ public:
   virtual void copy_drawable(Warsaw::Drawable_ptr, Warsaw::PixelCoord, Warsaw::PixelCoord, Warsaw::PixelCoord, Warsaw::PixelCoord);
   virtual void flush();
 
+  virtual void start_traversal() { _drawable->init(); }
+  virtual void finish_traversal() { _drawable->finish(); }
  private:
   void init();
   void rasterize_pixbuf(ArtPixBuf *pixbuf);

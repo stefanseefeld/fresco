@@ -35,7 +35,7 @@ using namespace Prague;
 using namespace Warsaw;
 
 ScreenManager::ScreenManager(Graphic_ptr g, EventManager *em, DrawingKit_ptr d)
-  : _screen(g), _emanager(em), _drawing(DrawingKit::_duplicate(d)), _drawable(Console::instance()->drawable())
+  : _screen(g), _emanager(em), _drawing(DrawingKit::_duplicate(d))
 {
 }
 
@@ -69,36 +69,35 @@ void ScreenManager::repair()
   _mutex.unlock();
   _emanager->restore(Region_var(_tmpDamage->_this()));
   _traversal->init();
-  _drawable->init();
+  _drawing->start_traversal();
   mid = myclock();
-  try { _screen->traverse(Traversal_var(_traversal->_this()));}
-  catch (const CORBA::OBJECT_NOT_EXIST &) { cerr << "ScreenManager: warning: corrupt scene graph !" << endl;}
-  catch (const CORBA::BAD_PARAM &) { cerr << "ScreenManager: caught bad parameter" << endl;}
-  _drawable->finish();
+  try
+    {
+      _screen->traverse(Traversal_var(_traversal->_this()));
+    }
+  catch (const CORBA::OBJECT_NOT_EXIST &)
+    {
+      cerr << "ScreenManager: warning: corrupt scene graph !" << endl;
+    }
+  catch (const CORBA::BAD_PARAM &)
+    {
+      cerr << "ScreenManager: caught bad parameter" << endl;
+    }
+
+  _drawing->finish_traversal();
   _traversal->finish();
   mid2 = myclock();
   _drawing->flush();
-  {
-    //     Profiler prf("Drawable::flush");
-    Vertex l,u;
-    _tmpDamage->bounds(l,u);
-    double xres = _drawing->resolution(xaxis);
-    double yres = _drawing->resolution(yaxis);
-    l.x *= xres;
-    u.x *= xres;
-    l.y *= yres;
-    u.y *= yres;
-    mid3 = myclock();
-    _drawable->flush(static_cast<long>(l.x), static_cast<long>(l.y), static_cast<long>(u.x - l.x), static_cast<long>(u.y - l.y));
-  }
+
   end = myclock();
   _emanager->damage(Region_var(_tmpDamage->_this()));
   {
     std::ostrstream buf;
     buf << "ScreenManager::repair: took " << (end-start)/1000. << " : ";
     buf << (mid-start)/1000. << " " << (mid2-mid)/1000. << " ";
-    buf << (mid3-mid2)/1000. << " ";
-    buf << (end-mid3)/1000. << " ("<<1000000./(end-start+1)<<")" << std::endl << std::ends;
+    buf << (end-mid2)/1000. << " ";
+    buf << " ("<<1000000./(end-start+1)<<")" << std::endl << std::ends;
+
     Logger::log(Logger::drawing) << buf.str();
     Logger::log(Logger::lifecycle) << "Provider<Transform> pool size is " << Provider<TransformImpl>::size() << std::endl;
     Logger::log(Logger::lifecycle) << "Provider<Region> pool size is " << Provider<RegionImpl>::size() << std::endl;

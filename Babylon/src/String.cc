@@ -302,8 +302,8 @@ Babylon::Paragraphs Babylon::String::get_paragraphs() {
     return result;
 }
 
-vector<size_t> Babylon::String::get_defined() {
-    vector<size_t> result;
+std::vector<size_t> Babylon::String::get_defined() {
+    std::vector<size_t> result;
     for(Babylon::String::const_iterator i = this->begin();
 	i != this->end();
 	++i)
@@ -312,8 +312,8 @@ vector<size_t> Babylon::String::get_defined() {
     return result;
 }
 
-vector<size_t> Babylon::String::get_Spaces() {
-    vector<size_t> result;
+std::vector<size_t> Babylon::String::get_Spaces() {
+    std::vector<size_t> result;
     for(Babylon::String::const_iterator i = this->begin();
 	i != this->end();
 	++i)
@@ -322,8 +322,8 @@ vector<size_t> Babylon::String::get_Spaces() {
     return result;
 }
 
-vector<size_t> Babylon::String::get_ISO_Controls() {
-    vector<size_t> result;
+std::vector<size_t> Babylon::String::get_ISO_Controls() {
+    std::vector<size_t> result;
     for(Babylon::String::const_iterator i = this->begin();
 	i != this->end();
 	++i)
@@ -332,8 +332,8 @@ vector<size_t> Babylon::String::get_ISO_Controls() {
     return result;
 }
 
-vector<size_t> Babylon::String::get_Punctuations() {
-    vector<size_t> result;
+std::vector<size_t> Babylon::String::get_Punctuations() {
+    std::vector<size_t> result;
     for(Babylon::String::const_iterator i = this->begin();
 	i != this->end();
 	++i)
@@ -342,8 +342,8 @@ vector<size_t> Babylon::String::get_Punctuations() {
     return result;
 }
 
-vector<size_t> Babylon::String::get_Line_Separators() {
-    vector<size_t> result;
+std::vector<size_t> Babylon::String::get_Line_Separators() {
+    std::vector<size_t> result;
     for(Babylon::String::const_iterator i = this->begin();
 	i != this->end();
 	++i)
@@ -352,8 +352,8 @@ vector<size_t> Babylon::String::get_Line_Separators() {
     return result;
 }
 
-vector<size_t> Babylon::String::get_Paragraph_Separators() {
-    vector<size_t> result;
+std::vector<size_t> Babylon::String::get_Paragraph_Separators() {
+    std::vector<size_t> result;
     for(Babylon::String::const_iterator i = this->begin();
 	i != this->end();
 	++i)
@@ -362,8 +362,8 @@ vector<size_t> Babylon::String::get_Paragraph_Separators() {
     return result;
 }
 
-vector<size_t> Babylon::String::get_Currency_Symbols() {
-    vector<size_t> result;
+std::vector<size_t> Babylon::String::get_Currency_Symbols() {
+    std::vector<size_t> result;
     for(Babylon::String::const_iterator i = this->begin();
 	i != this->end();
 	++i)
@@ -372,8 +372,8 @@ vector<size_t> Babylon::String::get_Currency_Symbols() {
     return result;
 }
 
-vector<size_t> Babylon::String::get_Bidi_Left_to_Rights() {
-    vector<size_t> result;
+std::vector<size_t> Babylon::String::get_Bidi_Left_to_Rights() {
+    std::vector<size_t> result;
     for(Babylon::String::const_iterator i = this->begin();
 	i != this->end();
 	++i)
@@ -382,8 +382,8 @@ vector<size_t> Babylon::String::get_Bidi_Left_to_Rights() {
     return result;
 }
 
-vector<size_t> Babylon::String::get_Bidi_European_Digits() {
-    vector<size_t> result;
+std::vector<size_t> Babylon::String::get_Bidi_European_Digits() {
+    std::vector<size_t> result;
     for(Babylon::String::const_iterator i = this->begin();
 	i != this->end();
 	++i)
@@ -392,8 +392,8 @@ vector<size_t> Babylon::String::get_Bidi_European_Digits() {
     return result;
 }
 
-vector<size_t> Babylon::String::get_Bidi_Eur_Num_Separators() {
-    vector<size_t> result;
+std::vector<size_t> Babylon::String::get_Bidi_Eur_Num_Separators() {
+    std::vector<size_t> result;
     for(Babylon::String::const_iterator i = this->begin();
 	i != this->end();
 	++i)
@@ -402,8 +402,8 @@ vector<size_t> Babylon::String::get_Bidi_Eur_Num_Separators() {
     return result;
 }
 
-vector<size_t> Babylon::String::get_Bidi_Eur_Num_Terminators() {
-    vector<size_t> result;
+std::vector<size_t> Babylon::String::get_Bidi_Eur_Num_Terminators() {
+    std::vector<size_t> result;
     for(Babylon::String::const_iterator i = this->begin();
 	i != this->end();
 	++i)
@@ -412,8 +412,8 @@ vector<size_t> Babylon::String::get_Bidi_Eur_Num_Terminators() {
     return result;
 }
 
-vector<size_t> Babylon::String::get_Bidi_Arabic_Digits() {
-    vector<size_t> result;
+std::vector<size_t> Babylon::String::get_Bidi_Arabic_Digits() {
+    std::vector<size_t> result;
     for(Babylon::String::const_iterator i = this->begin();
 	i != this->end();
 	++i)
@@ -422,8 +422,8 @@ vector<size_t> Babylon::String::get_Bidi_Arabic_Digits() {
     return result;
 }
 
-vector<size_t> Babylon::String::get_Bidi_Common_Separator() {
-    vector<size_t> result;
+std::vector<size_t> Babylon::String::get_Bidi_Common_Separator() {
+    std::vector<size_t> result;
     for(Babylon::String::const_iterator i = this->begin();
 	i != this->end();
 	++i)
@@ -432,8 +432,8 @@ vector<size_t> Babylon::String::get_Bidi_Common_Separator() {
     return result;
 }
 
-vector<size_t> Babylon::String::get_Bidi_Block_Separator() {
-    vector<size_t> result;
+std::vector<size_t> Babylon::String::get_Bidi_Block_Separator() {
+    std::vector<size_t> result;
     for(Babylon::String::const_iterator i = this->begin();
 	i != this->end();
 	++i)
@@ -442,8 +442,8 @@ vector<size_t> Babylon::String::get_Bidi_Block_Separator() {
     return result;
 }
 
-vector<size_t> Babylon::String::get_Bidi_Segment_Separator() {
-    vector<size_t> result;
+std::vector<size_t> Babylon::String::get_Bidi_Segment_Separator() {
+    std::vector<size_t> result;
     for(Babylon::String::const_iterator i = this->begin();
 	i != this->end();
 	++i)
@@ -452,8 +452,8 @@ vector<size_t> Babylon::String::get_Bidi_Segment_Separator() {
     return result;
 }
 
-vector<size_t> Babylon::String::get_Bidi_Whitespaces() {
-    vector<size_t> result;
+std::vector<size_t> Babylon::String::get_Bidi_Whitespaces() {
+    std::vector<size_t> result;
     for(Babylon::String::const_iterator i = this->begin();
 	i != this->end();
 	++i)
@@ -461,8 +461,8 @@ vector<size_t> Babylon::String::get_Bidi_Whitespaces() {
     return result;
 }
 
-vector<size_t> Babylon::String::get_Bidi_Non_spacing_Marks() {
-    vector<size_t> result;
+std::vector<size_t> Babylon::String::get_Bidi_Non_spacing_Marks() {
+    std::vector<size_t> result;
     for(Babylon::String::const_iterator i = this->begin();
 	i != this->end();
 	++i)
@@ -471,8 +471,8 @@ vector<size_t> Babylon::String::get_Bidi_Non_spacing_Marks() {
     return result;
 }
 
-vector<size_t> Babylon::String::get_Bidi_Boundary_Neutrals() {
-    vector<size_t> result;
+std::vector<size_t> Babylon::String::get_Bidi_Boundary_Neutrals() {
+    std::vector<size_t> result;
     for(Babylon::String::const_iterator i = this->begin();
 	i != this->end();
 	++i)
@@ -481,8 +481,8 @@ vector<size_t> Babylon::String::get_Bidi_Boundary_Neutrals() {
     return result;
 }
 
-vector<size_t> Babylon::String::get_Bidi_PDFs() {
-    vector<size_t> result;
+std::vector<size_t> Babylon::String::get_Bidi_PDFs() {
+    std::vector<size_t> result;
     for(Babylon::String::const_iterator i = this->begin();
 	i != this->end();
 	++i)
@@ -491,8 +491,8 @@ vector<size_t> Babylon::String::get_Bidi_PDFs() {
     return result;
 }
 
-vector<size_t> Babylon::String::get_Bidi_Embedding_or_Overrides() {
-    vector<size_t> result;
+std::vector<size_t> Babylon::String::get_Bidi_Embedding_or_Overrides() {
+    std::vector<size_t> result;
     for(Babylon::String::const_iterator i = this->begin();
 	i != this->end();
 	++i)
@@ -501,8 +501,8 @@ vector<size_t> Babylon::String::get_Bidi_Embedding_or_Overrides() {
     return result;
 }
 
-vector<size_t> Babylon::String::get_Bidi_Other_Neutrals() {
-    vector<size_t> result;
+std::vector<size_t> Babylon::String::get_Bidi_Other_Neutrals() {
+    std::vector<size_t> result;
     for(Babylon::String::const_iterator i = this->begin();
 	i != this->end();
 	++i)
@@ -511,8 +511,8 @@ vector<size_t> Babylon::String::get_Bidi_Other_Neutrals() {
     return result;
 }
 
-vector<size_t> Babylon::String::get_Viramas() {
-    vector<size_t> result;
+std::vector<size_t> Babylon::String::get_Viramas() {
+    std::vector<size_t> result;
     for(Babylon::String::const_iterator i = this->begin();
 	i != this->end();
 	++i)
@@ -521,8 +521,8 @@ vector<size_t> Babylon::String::get_Viramas() {
     return result;
 }
 
-vector<size_t> Babylon::String::get_Printables() {
-    vector<size_t> result;
+std::vector<size_t> Babylon::String::get_Printables() {
+    std::vector<size_t> result;
     for(Babylon::String::const_iterator i = this->begin();
 	i != this->end();
 	++i)
@@ -531,8 +531,8 @@ vector<size_t> Babylon::String::get_Printables() {
     return result;
 }
 
-vector<size_t> Babylon::String::get_Not_a_Characters() {
-    vector<size_t> result;
+std::vector<size_t> Babylon::String::get_Not_a_Characters() {
+    std::vector<size_t> result;
     for(Babylon::String::const_iterator i = this->begin();
 	i != this->end();
 	++i)
@@ -541,8 +541,8 @@ vector<size_t> Babylon::String::get_Not_a_Characters() {
     return result;
 }
 
-vector<size_t> Babylon::String::get_Maths() {
-    vector<size_t> result;
+std::vector<size_t> Babylon::String::get_Maths() {
+    std::vector<size_t> result;
     for(Babylon::String::const_iterator i = this->begin();
 	i != this->end();
 	++i)
@@ -551,8 +551,8 @@ vector<size_t> Babylon::String::get_Maths() {
     return result;
 }
 
-vector<size_t> Babylon::String::get_Alphabetics() {
-    vector<size_t> result;
+std::vector<size_t> Babylon::String::get_Alphabetics() {
+    std::vector<size_t> result;
     for(Babylon::String::const_iterator i = this->begin();
 	i != this->end();
 	++i)
@@ -561,8 +561,8 @@ vector<size_t> Babylon::String::get_Alphabetics() {
     return result;
 }
 
-vector<size_t> Babylon::String::get_Lowercases() {
-    vector<size_t> result;
+std::vector<size_t> Babylon::String::get_Lowercases() {
+    std::vector<size_t> result;
     for(Babylon::String::const_iterator i = this->begin();
 	i != this->end();
 	++i)
@@ -571,8 +571,8 @@ vector<size_t> Babylon::String::get_Lowercases() {
     return result;
 }
 
-vector<size_t> Babylon::String::get_Uppercases() {
-    vector<size_t> result;
+std::vector<size_t> Babylon::String::get_Uppercases() {
+    std::vector<size_t> result;
     for(Babylon::String::const_iterator i = this->begin();
 	i != this->end();
 	++i)
@@ -581,8 +581,8 @@ vector<size_t> Babylon::String::get_Uppercases() {
     return result;
 }
 
-vector<size_t> Babylon::String::get_Titlecases() {
-    vector<size_t> result;
+std::vector<size_t> Babylon::String::get_Titlecases() {
+    std::vector<size_t> result;
     for(Babylon::String::const_iterator i = this->begin();
 	i != this->end();
 	++i)
@@ -591,8 +591,8 @@ vector<size_t> Babylon::String::get_Titlecases() {
     return result;
 }
 
-vector<size_t> Babylon::String::get_ID_Starts() {
-    vector<size_t> result;
+std::vector<size_t> Babylon::String::get_ID_Starts() {
+    std::vector<size_t> result;
     for(Babylon::String::const_iterator i = this->begin();
 	i != this->end();
 	++i)
@@ -601,8 +601,8 @@ vector<size_t> Babylon::String::get_ID_Starts() {
     return result;
 }
 
-vector<size_t> Babylon::String::get_ID_Continues() {
-    vector<size_t> result;
+std::vector<size_t> Babylon::String::get_ID_Continues() {
+    std::vector<size_t> result;
     for(Babylon::String::const_iterator i = this->begin();
 	i != this->end();
 	++i)
@@ -611,8 +611,8 @@ vector<size_t> Babylon::String::get_ID_Continues() {
     return result;
 }
 
-vector<size_t> Babylon::String::get_XID_Starts() {
-    vector<size_t> result;
+std::vector<size_t> Babylon::String::get_XID_Starts() {
+    std::vector<size_t> result;
     for(Babylon::String::const_iterator i = this->begin();
 	i != this->end();
 	++i)
@@ -621,8 +621,8 @@ vector<size_t> Babylon::String::get_XID_Starts() {
     return result;
 }
 
-vector<size_t> Babylon::String::get_XID_Continues() {
-    vector<size_t> result;
+std::vector<size_t> Babylon::String::get_XID_Continues() {
+    std::vector<size_t> result;
     for(Babylon::String::const_iterator i = this->begin();
 	i != this->end();
 	++i)
@@ -631,8 +631,8 @@ vector<size_t> Babylon::String::get_XID_Continues() {
     return result;
 }
 
-vector<size_t> Babylon::String::get_Decimals() {
-    vector<size_t> result;
+std::vector<size_t> Babylon::String::get_Decimals() {
+    std::vector<size_t> result;
     for(Babylon::String::const_iterator i = this->begin();
 	i != this->end();
 	++i)
@@ -641,8 +641,8 @@ vector<size_t> Babylon::String::get_Decimals() {
     return result;
 }
 
-vector<size_t> Babylon::String::get_Digits() {
-    vector<size_t> result;
+std::vector<size_t> Babylon::String::get_Digits() {
+    std::vector<size_t> result;
     for(Babylon::String::const_iterator i = this->begin();
 	i != this->end();
 	++i)
@@ -651,8 +651,8 @@ vector<size_t> Babylon::String::get_Digits() {
     return result;
 }
 
-vector<size_t> Babylon::String::get_Numerics() {
-    vector<size_t> result;
+std::vector<size_t> Babylon::String::get_Numerics() {
+    std::vector<size_t> result;
     for(Babylon::String::const_iterator i = this->begin();
 	i != this->end();
 	++i)
@@ -661,8 +661,8 @@ vector<size_t> Babylon::String::get_Numerics() {
     return result;
 }
 
-vector<size_t> Babylon::String::get_Private_Uses() {
-    vector<size_t> result;
+std::vector<size_t> Babylon::String::get_Private_Uses() {
+    std::vector<size_t> result;
     for(Babylon::String::const_iterator i = this->begin();
 	i != this->end();
 	++i)

@@ -57,7 +57,6 @@ private:
   Warsaw::Graphic_var         _screen;    //.< The graphic that is managed.
   EventManager               *_emanager;
   Warsaw::DrawingKit_var      _drawing;   //.< The DrawingKit used to update this screen. 
-  Console::Drawable          *_drawable;  //.< A chunk of memory we are drawing into.
   Impl_var<RegionImpl>        _theDamage; //.< The region that got damaged.
   Impl_var<RegionImpl>        _tmpDamage; //.< Temporary copy of _theDamage
   Impl_var<DrawTraversalImpl> _traversal;

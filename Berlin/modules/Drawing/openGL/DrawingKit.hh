@@ -148,6 +148,10 @@ public:
 //   virtual void draw_points(const Warsaw::Vertices &coords);
 
   virtual void copy_drawable(Warsaw::Drawable_ptr, Warsaw::PixelCoord, Warsaw::PixelCoord, Warsaw::PixelCoord, Warsaw::PixelCoord);
+
+  virtual void start_traversal() { }
+  virtual void finish_traversal() { }
+
   virtual void flush() { _glcontext->flush(); }
 
 //   void clear(Coord, Coord, Coord, Coord);
