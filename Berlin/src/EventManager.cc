@@ -43,7 +43,9 @@ void EventManager::requestFocus(Controller_ptr c)
 
 void EventManager::damage(Region_ptr r)
 {
+  cout << "I'm here" << endl;
   focus->damage(r);
+  cout << "still there/..." << endl;
 }
 
 void EventManager::dispatch(const Event::Pointer &pointer)

@@ -64,9 +64,8 @@ void ScreenImpl::pick(PickTraversal_ptr traversal)
   else cout << "no intersection !" << endl;
 }
 
-void ScreenImpl::allocate(Graphic_ptr g, Allocation_ptr allocation)
+void ScreenImpl::allocations(Allocation_ptr allocation)
 {
-  if (!g->_is_equivalent(Graphic_var(body()))) return;
   allocation->add(Region_var(region->_this()), Screen_var(_this()));
 }
 

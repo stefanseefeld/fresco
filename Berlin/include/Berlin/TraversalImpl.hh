@@ -37,8 +37,9 @@ class TraversalImpl : implements(Traversal)
 {
   struct State
   {
-    Graphic_var graphic;
-    Region_var allocation;
+    Graphic_var    graphic;
+    Tag            tag;
+    Region_var     allocation;
     TransformImpl *transformation;    
   };
   typedef vector<State> stack_t;
@@ -46,17 +47,18 @@ class TraversalImpl : implements(Traversal)
   TraversalImpl(Graphic_ptr, Region_ptr, Transform_ptr);
   TraversalImpl(const TraversalImpl &);
   ~TraversalImpl();
-  Region_ptr allocation();
-  Transform_ptr transformation();
-  CORBA::Boolean bounds(Vertex &, Vertex &, Vertex &);
-  CORBA::Boolean intersectsAllocation() = 0;
-  CORBA::Boolean intersectsRegion(Region_ptr) = 0;
-  void traverseChild(Graphic_ptr, Region_ptr, Transform_ptr);
-  void visit(Graphic_ptr) = 0;
-  order direction() = 0;
-  CORBA::Boolean ok() = 0;
+  virtual Region_ptr allocation();
+  virtual Transform_ptr transformation();
+  virtual CORBA::Boolean bounds(Vertex &, Vertex &, Vertex &);
+  virtual CORBA::Boolean intersectsAllocation() = 0;
+  virtual CORBA::Boolean intersectsRegion(Region_ptr) = 0;
+  virtual void traverseChild(Graphic_ptr, Tag, Region_ptr, Transform_ptr);
+  virtual void visit(Graphic_ptr) = 0;
+  virtual order direction() = 0;
+  virtual CORBA::Boolean ok() = 0;
+  virtual void update();
  protected:
-  void push(Graphic_ptr, Region_ptr, TransformImpl *);
+  void push(Graphic_ptr, Tag, Region_ptr, TransformImpl *);
   void pop();
   size_t size() { return stack.size();}
  private:

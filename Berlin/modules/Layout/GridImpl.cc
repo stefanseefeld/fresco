@@ -299,9 +299,10 @@ void GridImpl::needResize()
 void GridImpl::replace(Graphic_ptr g, const Grid::Index &i)
 {
   Graphic_var old = dimensions[xaxis].children[i.col][i.row];
-  if (!CORBA::is_nil(old)) old->removeParent(Grid_var(_this()));
+  if (!CORBA::is_nil(old)) old->removeParent(Graphic_var(_this()), index2tag(i));
   dimensions[xaxis].children[i.col][i.row] = g;
   dimensions[yaxis].children[i.row][i.col] = Graphic::_duplicate(g);
+  g->addParent(Graphic_var(_this()), index2tag(i));
 }
 
 Grid::Index GridImpl::find(Traversal_ptr traversal)
@@ -389,11 +390,11 @@ Grid::Index GridImpl::upper()
   return upper;
 }
 
-void GridImpl::allocateChild(Grid::Index index, Allocation::Info &info)
+void GridImpl::allocate(Tag tag, const Allocation::Info &info)
 {
   TransformImpl *tx = new TransformImpl;
   tx->_obj_is_ready(_boa());
-  allocateCell(info.allocation, index, info.allocation);
+  allocateCell(info.allocation, tag2index(tag), info.allocation);
   RegionImpl *region = new RegionImpl(info.allocation, Transform::_nil());
   Placement::normalTransform(region, tx);
   info.allocation->copy(Region_var(region->_this()));
@@ -466,17 +467,16 @@ void GridImpl::traverseWithAllocation(Traversal_ptr t, Region_ptr given, const G
   RegionImpl *region = new RegionImpl;
   region->_obj_is_ready(_boa());
   GridDimension &d = dimensions[yaxis];
-  for (long y = range.lower.row; y < range.upper.row; y++)
-    {
-       for (long x = range.lower.col; x != range.upper.col; x++)
-	 {
-	   tx->loadIdentity();
-	   spansToRegion(xspans[x], yspans[y], region);
-	   offsetRegion(region, dx, dy);
-	   Placement::normalTransform(region, tx);
-	   t->traverseChild(d.children[y][x], Region_var(region->_this()), Transform_var(tx->_this()));
-         }
-    }
+  Grid::Index i;
+  for (i.row = range.lower.row; i.row != range.upper.row; i.row++)
+    for (i.col = range.lower.col; i.col != range.upper.col; i.col++)
+      {
+	tx->loadIdentity();
+	spansToRegion(xspans[i.col], yspans[i.row], region);
+	offsetRegion(region, dx, dy);
+	Placement::normalTransform(region, tx);
+	t->traverseChild(d.children[i.row][i.col], index2tag(i), Region_var(region->_this()), Transform_var(tx->_this()));
+      }
   region->_dispose();
   tx->_dispose();
   delete [] xspans;
@@ -486,9 +486,10 @@ void GridImpl::traverseWithAllocation(Traversal_ptr t, Region_ptr given, const G
 void GridImpl::traverseWithoutAllocation(Traversal_ptr t, const Grid::Range &range)
 {
   GridDimension &d = dimensions[yaxis];
-  for (long i = range.lower.row; i != range.upper.row; i++)
-    for (long j = range.lower.col; j != range.upper.col; j++)
-      t->traverseChild(d.children[i][j], Region::_nil(), Transform::_nil());
+  Grid::Index i;
+  for (i.row = range.lower.row; i.row != range.upper.row; i.row++)
+    for (i.col = range.lower.col; i.col != range.upper.col; i.col++)
+      t->traverseChild(d.children[i.row][i.col], index2tag(i), Region::_nil(), Transform::_nil());
 }
 
 SubGridImpl::SubGridImpl(Grid_ptr grid, const Grid::Range &r)
@@ -499,6 +500,6 @@ void SubGridImpl::request(Requisition &r) { child->requestRange(r, range);}
 
 void SubGridImpl::traverse(Traversal_ptr t)
 {
-  t->traverseChild(child, Region::_nil(), Transform::_nil());
+  t->traverseChild(child, 0, Region::_nil(), Transform::_nil());
 }
 

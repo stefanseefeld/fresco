@@ -93,7 +93,9 @@ void WindowImpl::insert(Desktop_ptr desktop)
   Vertex position, size;
   position.x = position.y = position.z = 100;
   size.x = size.y = size.z = 0;
+  desktop->begin();
   handle = desktop->insert(Graphic_var(_this()), position, size, 0);
+  desktop->end();
   for (mtable_t::iterator i = manipulators.begin(); i != manipulators.end(); i++)
     (*i)->bind(handle);
 }
@@ -104,6 +106,7 @@ Command_ptr WindowImpl::relayer() { return manipulators[2]->_this();}
 
 void WindowImpl::pick(PickTraversal_ptr traversal)
 {
+  SectionLog section(Logger::picking, "WindowImpl::pick");
   traversal->enterController(Controller_var(_this()));
   MonoGraphic::traverse(traversal);
   traversal->leaveController();

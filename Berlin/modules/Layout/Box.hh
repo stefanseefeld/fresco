@@ -41,10 +41,10 @@ public:
 
   virtual void traverse(Traversal_ptr);
   virtual void needResize();
-  virtual void needResize(long);
+  virtual void needResize(Tag);
+  virtual void allocate(Tag, const Allocation::Info &);
 
 protected:
-  void allocateChild(long, Allocation::Info &);
   RegionImpl **childrenAllocations(Region_ptr);
   void traverseWithAllocation(Traversal_ptr, Region_ptr);
   void traverseWithoutAllocation(Traversal_ptr);

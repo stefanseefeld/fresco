@@ -39,10 +39,9 @@ public:
 
   virtual void traverse(Traversal_ptr);
 
+  virtual void allocate(Tag, const Allocation::Info &);
   virtual void needResize();
-
 protected:
-  virtual void allocateChild(Allocation::Info &);
   bool requested;
   Graphic::Requisition requisition;
   RegionImpl *natural;
@@ -60,9 +59,8 @@ public:
 
   virtual void request(Requisition &);
   virtual void traverse(Traversal_ptr);
-
+  virtual void allocate(Tag, const Allocation::Info &);
 protected:
-  virtual void allocateChild(Allocation::Info &);
   Alignment xparent, yparent, zparent;
   Alignment xchild, ychild, zchild;
 

@@ -41,10 +41,11 @@ interface Traversal
   boolean bounds(out Vertex lower, out Vertex upper, out Vertex origin);
   boolean intersectsAllocation();
   boolean intersectsRegion(in Region r);
-  void traverseChild (in Graphic g, in Region r, in Transform t);
+  void traverseChild (in Graphic g, in Tag e, in Region r, in Transform t);
   void visit(in Graphic g);
   order direction();
   boolean ok();
+  void update();
 };
 
 #endif /* _Traversal_idl */

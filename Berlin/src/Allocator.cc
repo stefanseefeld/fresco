@@ -25,12 +25,14 @@
  * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
  * MA 02139, USA.
  */
+#include "Warsaw/config.hh"
+#include "Warsaw/Traversal.hh"
+#include "Warsaw/Screen.hh"
 #include "Berlin/Allocator.hh"
 #include "Berlin/TransformImpl.hh"
 #include "Berlin/AllocationImpl.hh"
-#include "Warsaw/Traversal.hh"
 #include "Berlin/RegionImpl.hh"
-#include "Warsaw/Screen.hh"
+#include "Berlin/Logger.hh"
 
 Allocator::Allocator()
 {
@@ -58,16 +60,16 @@ void Allocator::traverse(Traversal_ptr traversal)
   updateRequisition();
   Region_var allocation = traversal->allocation();
   if (!CORBA::is_nil(allocation))
-    traversal->traverseChild(Graphic_var(body()), allocation, Transform::_nil());
+    traversal->traverseChild(Graphic_var(body()), 0, allocation, Transform_var(Transform::_nil()));
   else
-    traversal->traverseChild(Graphic_var(body()), Region_var(natural->_this()), Transform_var(Transform::_nil()));
+    traversal->traverseChild(Graphic_var(body()), 0, Region_var(natural->_this()), Transform_var(Transform::_nil()));
 }
 
 void Allocator::needResize()
 {
   AllocationImpl *allocation = new AllocationImpl;
   allocation->_obj_is_ready(_boa());
-  allocateParents(Allocation_var(allocation->_this()));
+  allocations(Allocation_var(allocation->_this()));
   RegionImpl *region = new RegionImpl;
   region->_obj_is_ready(_boa());
   if (extension->valid) region->copy(Region_var(extension->_this()));
@@ -78,7 +80,7 @@ void Allocator::needResize()
   allocation->_dispose();
 }
 
-void Allocator::allocateChild(Allocation::Info &i)
+void Allocator::allocate(Tag, const Allocation::Info &i)
 {
   updateRequisition();
   i.allocation->copy(Region_var(natural->_this()));
@@ -111,6 +113,7 @@ static void naturalAllocation(Graphic::Requisition &r, RegionImpl &natural)
 
 void Allocator::updateRequisition()
 {
+  SectionLog section(Logger::layout, "Allocator::updateRequisition");
   if (!requested)
     {
       Graphic::Requisition r;
@@ -164,13 +167,13 @@ void TransformAllocator::request(Requisition &r)
   requisition.z.minimum = zero;
 }
 
-void TransformAllocator::allocateChild(Allocation::Info &i)
+void TransformAllocator::allocate(Tag t, const Allocation::Info &i)
 {
   Vertex lower, upper, delta;
   TransformImpl *tx = new TransformImpl;
   tx->_obj_is_ready(_boa());
 
-  Allocator::allocateChild(i);
+  Allocator::allocate(t, i);
   i.allocation->bounds(lower, upper);
   computeDelta(lower, upper, delta);
   tx->translate(delta);
@@ -189,7 +192,7 @@ void TransformAllocator::traverse(Traversal_ptr t)
   traversal->bounds(lower, upper, v);
   computeDelta(lower, upper, v);
   tx->translate(v);
-  traversal->traverseChild(Graphic_var(body()), Region_var(natural->_this()), Transform_var(tx->_this()));
+  traversal->traverseChild(Graphic_var(body()), 0, Region_var(natural->_this()), Transform_var(tx->_this()));
   tx->_dispose();
 }
 

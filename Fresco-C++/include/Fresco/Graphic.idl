@@ -84,8 +84,8 @@ interface Graphic
   //. If the receiver has a body graphic, it should pass the operation
   //. on to the body. In this way, "wrapper" graphics can
   //. alter appearance without affecting structural operations.
-  void addParent(in Graphic g);
-  void removeParent(in Graphic g);
+  void addParent(in Graphic g, in Tag t);
+  void removeParent(in Graphic g, in Tag t);
   //. Add or remove a parent for this graphic.
   /*
    * layout related methods
@@ -146,7 +146,8 @@ interface Graphic
   /*
    * update related
    */
-  void allocate(in Graphic g, in Allocation a);
+  void allocate(in Tag t, in Allocation::Info i);
+  void allocations(in Allocation a);
   //. Compute cumulative information for each allocation
   //. of the graphic's child g. This operation normally need not
   //. be called directly; instead application objects

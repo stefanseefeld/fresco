@@ -60,5 +60,5 @@ void TransformatorImpl::traverse(Traversal_ptr traversal)
 {
   Graphic_var child = body();
   if (CORBA::is_nil(child)) return;
-  traversal->traverseChild(child, Region::_nil(), Transform_var(transform->_this()));
+  traversal->traverseChild(child, 0, Region::_nil(), Transform_var(transform->_this()));
 }

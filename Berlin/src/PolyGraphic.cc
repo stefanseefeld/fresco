@@ -27,7 +27,6 @@
 #include "Berlin/PolyGraphic.hh"
 #include "Berlin/Logger.hh"
 #include <iostream>
-#include <set>
 
 Pool<Graphic::Requisition> PolyGraphic::pool;
 
@@ -35,47 +34,30 @@ PolyGraphic::PolyGraphic() {}
 
 PolyGraphic::~PolyGraphic()
 {
-  set<Graphic_var> unique;
-  {
-    MutexGuard guard(childMutex);
-    for (clist_t::iterator i = children.begin(); i != children.end(); i++)
-      unique.insert(*i);
-  }
-  for (set<Graphic_var>::iterator i = unique.begin(); i != unique.end(); i++)
-    (*i)->removeParent(Graphic_var(_this()));
+  for (clist_t::iterator i = children.begin(); i != children.end(); i++)
+    (*i).first->removeParent(Graphic_var(_this()), (*i).second);
 }
 
 void PolyGraphic::append(Graphic_ptr child)
 {
   MutexGuard guard(childMutex);
-  children.push_back(Graphic::_duplicate(child));
-  child->addParent(Graphic_var(_this()));
+  edge_t edge(Graphic::_duplicate(child), tag());
+  children.push_back(edge);
+  child->addParent(Graphic_var(_this()), edge.second);
   needResize();
 }
 
 void PolyGraphic::prepend(Graphic_ptr child)
 {
   MutexGuard guard(childMutex);
-  children.insert(children.begin(), Graphic::_duplicate(child));
-  child->addParent(Graphic_var(_this()));
+  edge_t edge(Graphic::_duplicate(child), tag());
+  children.insert(children.begin(), edge);
+  child->addParent(Graphic_var(_this()), edge.second);
   needResize();
 }
 
-void PolyGraphic::allocate(Graphic_ptr child, Allocation_ptr allocation)
-{
-  CORBA::Long begin = allocation->size();
-  GraphicImpl::allocate(child, allocation);
-  CORBA::Long end = allocation->size();
-  long l = findChild(child);
-  for (long i = begin; i != end; i++)
-    {
-      Allocation::Info_var info = allocation->get(i);
-      allocateChild(l, info);
-    }
-}
-
 void PolyGraphic::needResize() { GraphicImpl::needResize();}
-void PolyGraphic::needResize(long) { GraphicImpl::needResize();}
+void PolyGraphic::needResize(Tag) { GraphicImpl::needResize();}
 
 long PolyGraphic::numChildren()
 {
@@ -83,23 +65,25 @@ long PolyGraphic::numChildren()
   return children.size();
 }
 
-/*
- * uses a simple linear search since most containers
- * will want to contain only a few (<5) children.
- * You are free to override it in special purpose containers which expect
- * to get large  -stefan
- */
-/*
- * FIXME !!! this is plain wrong. findChild() should return a list of indexes
- * since the child may appear more than once  -stefan
- */
-long PolyGraphic::findChild(Graphic_ptr child)
+Tag PolyGraphic::tag()
 {
-  MutexGuard guard(childMutex);
-  long l = 0;
-  for (clist_t::iterator i = children.begin(); i != children.end(); i++, l++)
-    if (child->_is_equivalent(*i)) return l;
-  return -1;
+  Tag t = 0;
+  do
+    {
+      for (clist_t::iterator i = children.begin(); i != children.end(); i++)
+	if ((*i).second == t) break;
+      return t;
+    }
+  while (++t);
+  return 0;
+}
+
+CORBA::Long PolyGraphic::index(Tag tag)
+{
+  size_t i = 0;
+  for (; i != children.size(); i++)
+    if (children[i].second == tag) break;
+  return i;
 }
 
 Graphic::Requisition *PolyGraphic::childrenRequests()
@@ -111,10 +95,8 @@ Graphic::Requisition *PolyGraphic::childrenRequests()
   for (clist_t::iterator i = children.begin(); i != children.end(); i++)
     {
       GraphicImpl::initRequisition(*r);
-      if (!CORBA::is_nil(*i)) (*i)->request(*r);
+      if (!CORBA::is_nil((*i).first)) (*i).first->request(*r);
       ++r;
     }
   return requisitions;
 }
-
-void PolyGraphic::allocateChild(long, Allocation::Info &) {}

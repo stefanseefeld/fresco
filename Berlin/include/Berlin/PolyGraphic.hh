@@ -34,7 +34,7 @@
 
 class PolyGraphic : public GraphicImpl
 {
-  typedef vector<Graphic_var> clist_t;
+  typedef vector<edge_t> clist_t;
 public:
   PolyGraphic();
   virtual ~PolyGraphic();
@@ -42,18 +42,13 @@ public:
   virtual void append(Graphic_ptr);
   virtual void prepend(Graphic_ptr);
 
-  virtual void allocate(Graphic_ptr, Allocation_ptr);
   virtual void needResize();
-  virtual void needResize(long);
+  virtual void needResize(Tag);
 protected:
-  long numChildren();
-  /*
-   * FIXME !!! this is plain wrong. findChild() should return a list of indexes
-   * since the child may appear more than once -stefan
-   */
-  long findChild(Graphic_ptr);
+  CORBA::Long numChildren();
+  Tag tag();
+  CORBA::Long index(Tag); 
   Graphic::Requisition *childrenRequests();
-  virtual void allocateChild(long, Allocation::Info &);
   static Pool<Requisition> pool;
   clist_t children;
   Mutex childMutex;

@@ -39,7 +39,7 @@ public:
   virtual ~ScreenImpl();
 
   virtual void pick(PickTraversal_ptr);
-  virtual void allocate(Graphic_ptr, Allocation_ptr);
+  virtual void allocations(Allocation_ptr);
 
   virtual Coord width();
   virtual Coord height();

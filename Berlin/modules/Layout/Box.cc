@@ -88,7 +88,7 @@ void Box::extension(const Allocation::Info &info, Region_ptr region)
 	  tmp_tx->translate(v);
 	  child.allocation = result[i]->_this();
 	  child.transformation->premultiply(Transform_var(tmp_tx->_this()));
-	  children[i]->extension(child, region);
+	  children[i].first->extension(child, region);
 	  prev_o = o;
 	}
       child_tx->_dispose();
@@ -125,7 +125,7 @@ void Box::needResize()
   PolyGraphic::needResize();
 }
 
-void Box::needResize(long)
+void Box::needResize(Tag)
 {
   needResize();
 }
@@ -136,7 +136,7 @@ void Box::needResize(long)
  * located in the child list. It is supposed to "finish off" providing the
  * allocation info for the given child 
  */
-void Box::allocateChild(long index, Allocation::Info &info)
+void Box::allocate(Tag tag, const Allocation::Info &info)
 {
   /*
    * fetch requested (presumably allocated) child regions
@@ -147,16 +147,17 @@ void Box::allocateChild(long index, Allocation::Info &info)
   /*
    * copy transformation and region into allocation
    */
-  Placement::normalTransform(result[index], tx);
+  CORBA::Long idx = index(tag);
+  Placement::normalTransform(result[idx], tx);
   info.transformation->premultiply(Transform_var(tx->_this()));
-  info.allocation->copy(Region_var(result[index]->_this()));
+  info.allocation->copy(Region_var(result[idx]->_this()));
   for (size_t i = 0; i < children.size(); i++) result[i]->_dispose();
   delete [] result;
 }
 
 
 /*
- * this is called from Box::allocateChild to resolve the layout of the box's
+ * this is called from Box::allocate to resolve the layout of the box's
  * children by (a) asking the children how big they want to be, then (b)
  * delegating the actual allocation to the current layoutManager. It also caches
  * the children's requests so that the real layout (at draw time) will happen
@@ -164,7 +165,7 @@ void Box::allocateChild(long index, Allocation::Info &info)
  */
 RegionImpl **Box::childrenAllocations(Region_ptr allocation)
 {
-  long children = numChildren();
+  CORBA::Long children = numChildren();
   Graphic::Requisition *childrenRequisitions = childrenRequests(); // first defined  in PolyGraphic.cc
     
   // cache integrated form of children requisitions
@@ -176,7 +177,7 @@ RegionImpl **Box::childrenAllocations(Region_ptr allocation)
     }
   // build region array for children
   RegionImpl **childrenRegions = new RegionImpl *[children];
-  for (long i = 0; i < children; i++)
+  for (CORBA::Long i = 0; i < children; i++)
     {
       childrenRegions[i] = new RegionImpl;
       childrenRegions[i]->_obj_is_ready(_boa());
@@ -191,8 +192,8 @@ RegionImpl **Box::childrenAllocations(Region_ptr allocation)
 void Box::traverseWithAllocation(Traversal_ptr t, Region_ptr r)
 {
   RegionImpl **result = childrenAllocations(r);
-  long size = numChildren();
-  long begin, end, incr;
+  CORBA::Long size = numChildren();
+  CORBA::Long begin, end, incr;
   TransformImpl *tx = new TransformImpl;
   tx->_obj_is_ready(_boa());
   if (t->direction() == Traversal::up)
@@ -207,7 +208,7 @@ void Box::traverseWithAllocation(Traversal_ptr t, Region_ptr r)
       end = -1;
       incr = -1;
     }
-  for (long i = begin; i != end; i += incr)
+  for (CORBA::Long i = begin; i != end; i += incr)
     {
       Vertex o;
       Placement::normalOrigin(result[i], o);
@@ -217,7 +218,7 @@ void Box::traverseWithAllocation(Traversal_ptr t, Region_ptr r)
        * only translating them -stefan
        */
       tx->translate(o);
-      t->traverseChild(children[i], Region_var(result[i]->_this()), Transform_var(tx->_this()));
+      t->traverseChild(children[i].first, children[i].second, Region_var(result[i]->_this()), Transform_var(tx->_this()));
       if (!t->ok()) break;
     }
   for (long i = 0; i < size; i++) result[i]->_dispose();
@@ -230,13 +231,13 @@ void Box::traverseWithoutAllocation(Traversal_ptr t)
   if (t->direction() == Traversal::up)
     for (clist_t::iterator i = children.begin(); i != children.end(); i++)
       {
-	t->traverseChild(*i, Region::_nil(), Transform::_nil());
+	t->traverseChild((*i).first, (*i).second, Region::_nil(), Transform::_nil());
 	if (!t->ok()) break;
       }
   else
     for (clist_t::reverse_iterator i = children.rbegin(); i != children.rend(); i++)
       {
-	t->traverseChild(*i, Region::_nil(), Transform::_nil());
+	t->traverseChild((*i).first, (*i).second, Region::_nil(), Transform::_nil());
 	if (!t->ok()) break;
       }    
 }

@@ -31,15 +31,18 @@
 #include "Warsaw/Graphic.hh"
 #include "Berlin/CloneableImpl.hh"
 #include "Berlin/Thread.hh"
-#include <set>
+#include <vector>
+#include <algorithm>
 
 declare_corba_ptr_type(Region)
 class RegionImpl;
 
-class GraphicImpl : implements(Graphic)//, public virtual CloneableImpl
+class GraphicImpl : implements(Graphic)
 {
-  typedef set<Graphic_var> plist_t;
-public:
+ protected:
+  typedef pair<Graphic_var, Tag> edge_t;
+  typedef vector<edge_t> plist_t;
+ public:
   static const Coord infinity = 10e6;
   GraphicImpl();
   virtual ~GraphicImpl();
@@ -48,8 +51,8 @@ public:
   virtual void body(Graphic_ptr);
   virtual void append(Graphic_ptr);
   virtual void prepend(Graphic_ptr);
-  virtual void addParent(Graphic_ptr);
-  virtual void removeParent(Graphic_ptr);
+  virtual void addParent(Graphic_ptr, Tag);
+  virtual void removeParent(Graphic_ptr, Tag);
 
   virtual Transform_ptr transformation();
   virtual void request(Requisition &);
@@ -60,7 +63,8 @@ public:
   virtual void draw(DrawTraversal_ptr);
   virtual void pick(PickTraversal_ptr);
 
-  virtual void allocate(Graphic_ptr, Allocation_ptr);
+  virtual void allocate(Tag, const Allocation::Info &);
+  virtual void allocations(Allocation_ptr);
   virtual void needRedraw();
   virtual void needRedrawRegion(Region_ptr);
   virtual void needResize();
@@ -75,7 +79,6 @@ public:
   static void transformRequest(Graphic::Requisition &, Transform_ptr);
   static Vertex transformAllocate(RegionImpl &, const Graphic::Requisition &, Transform_ptr);
 protected:
-  void allocateParents(Allocation_ptr);
   plist_t parents;
   Mutex parentMutex;
 };

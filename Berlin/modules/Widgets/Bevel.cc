@@ -82,8 +82,8 @@ void Bevel::traverse(Traversal_ptr traversal)
 	  TransformImpl *tx = new TransformImpl;
 	  tx->_obj_is_ready(_boa());
 	  info.transformation = tx->_this();
-	  allocateChild(info);
-	  traversal->traverseChild(child, info.allocation, info.transformation);
+	  allocate(0, info);
+	  traversal->traverseChild(child, 0, info.allocation, info.transformation);
 	  tx->_dispose();
 	  allocation->_dispose();
 	}
@@ -97,7 +97,7 @@ void Bevel::extension(const Allocation::Info &info, Region_ptr region)
   else MonoGraphic::extension(info, region);
 }
 
-void Bevel::allocateChild(Allocation::Info &info)
+void Bevel::allocate(Tag, const Allocation::Info &info)
 {
   Requisition req;
   GraphicImpl::initRequisition(req);

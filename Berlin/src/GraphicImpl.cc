@@ -236,18 +236,22 @@ void GraphicImpl::body(Graphic_ptr) {}
 void GraphicImpl::append(Graphic_ptr) {}
 void GraphicImpl::prepend(Graphic_ptr) {}
 
-void GraphicImpl::addParent(Graphic_ptr parent)
+void GraphicImpl::addParent(Graphic_ptr parent, Tag tag)
 {
   MutexGuard guard(parentMutex);
-  parents.insert(Graphic::_duplicate(parent));
+  parents.push_back(edge_t(Graphic::_duplicate(parent), tag));
 }
 
-void GraphicImpl::removeParent(Graphic_ptr parent)
+void GraphicImpl::removeParent(Graphic_ptr parent, Tag tag)
 {
   MutexGuard guard(parentMutex);
-  parents.erase(Graphic::_duplicate(parent));
+  for (plist_t::iterator i = parents.begin(); i != parents.end(); i++)
+    if ((*i).second == tag && (*i).first->_is_equivalent(parent))
+      {
+	parents.erase(i);
+	break;
+      }
 }
-
 
 /*
  * these are default implementations of the layout, picking and drawing protocol
@@ -264,7 +268,23 @@ void GraphicImpl::traverse(Traversal_ptr traversal) { traversal->visit(Graphic_v
 void GraphicImpl::draw(DrawTraversal_ptr) {}
 void GraphicImpl::pick(PickTraversal_ptr) {}
 
-void GraphicImpl::allocate(Graphic_ptr g, Allocation_ptr a) { allocateParents(a);}
+void GraphicImpl::allocate(Tag, const Allocation::Info &) {}
+void GraphicImpl::allocations(Allocation_ptr allocation)
+{
+  MutexGuard guard(parentMutex);
+  CORBA::Long begin = allocation->size();
+  for (plist_t::iterator i = parents.begin(); i != parents.end(); i++)
+    {
+      (*i).first->allocations(allocation);      
+      CORBA::Long end = allocation->size();
+      for (CORBA::Long j = begin; j != end; j++)
+	{
+	  Allocation::Info_var info = allocation->get(j);
+	  (*i).first->allocate((*i).second, info);
+	}
+      begin = end;
+    }
+}
 
 /*
  * this is the method which causes DrawTraversals to get queued up to run over
@@ -279,7 +299,7 @@ void GraphicImpl::needRedraw()
 {
   AllocationImpl *allocation = new AllocationImpl;
   allocation->_obj_is_ready(_boa());
-  allocateParents(Allocation_var(allocation->_this()));
+  allocations(Allocation_var(allocation->_this()));
   RegionImpl *region = new RegionImpl;
   region->_obj_is_ready(_boa());
   CORBA::Long size = allocation->size();
@@ -306,7 +326,7 @@ void GraphicImpl::needRedrawRegion(Region_ptr region)
     {
       AllocationImpl *allocation = new AllocationImpl;
       allocation->_obj_is_ready(_boa());
-      allocateParents(Allocation_var(allocation->_this()));
+      allocations(Allocation_var(allocation->_this()));
       RegionImpl *dr = new RegionImpl;
       dr->_obj_is_ready(_boa());
       for (CORBA::Long i = 0; i < allocation->size(); i++)
@@ -325,7 +345,7 @@ void GraphicImpl::needResize()
 {
   MutexGuard guard(parentMutex);
   for (plist_t::iterator i = parents.begin(); i != parents.end(); i++)
-    (*i)->needResize();
+    (*i).first->needResize();
 }
 
 void GraphicImpl::initRequisition(Graphic::Requisition &r)
@@ -547,29 +567,4 @@ Vertex GraphicImpl::transformAllocate(RegionImpl &region, const Graphic::Requisi
       region.upper.y = Coord(region.lower.y + y_len);
     }
   return delta;
-}
-
-/*
- * this is called by the default implementation of allocate() in
- * Graphics. Allocate() is intended to fill out an "allocation", which is a set
- * of allocation::info objects, each of which describes some place (in device
- * space) where the current graphic is "allocated", i.e. where it appears, is
- * viewable, and (most importantly) is can cause damage to some sub-region of
- * the screen image. Once it retrieves this allocation, the graphic will have a
- * set of regions which it can directly operate on. It will usually defer such
- * operation to a drawTraversal by "damaging" an appropriate subsection of the
- * allocation regions and then waiting for a traversal to call it back with a
- * draw() request.
- *
- * Note: since each graphic is a shared object which may appear in multiple
- * places, possibly on multiple devices or within multiple containers,
- * allocate() is not a completely trivial operation. Indeed, it must reach up
- * through each parent recursively finding out where that parent is allocated
- * and cutting its own section out of the parental allocation. 
- */
-void GraphicImpl::allocateParents(Allocation_ptr allocation)
-{
-  MutexGuard guard(parentMutex);
-  for (plist_t::iterator i = parents.begin(); i != parents.end(); i++)
-    (*i)->allocate(Graphic_var(_this()), allocation);
 }

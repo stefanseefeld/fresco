@@ -32,14 +32,13 @@
 #include "Warsaw/Allocation.hh"
 #include "Warsaw/Graphic.hh"
 #include "Warsaw/Region.hh"
-#include "Prague/Sys/Profiler.hh"
 
 TraversalImpl::TraversalImpl(Graphic_ptr g, Region_ptr r, Transform_ptr t)
 {
   TransformImpl *transform = new TransformImpl;
   transform->_obj_is_ready(CORBA::BOA::getBOA());
   transform->copy(t);
-  push(g, r, transform);
+  push(g, 0, r, transform);
 }
 
 TraversalImpl::TraversalImpl(const TraversalImpl &t)
@@ -48,6 +47,7 @@ TraversalImpl::TraversalImpl(const TraversalImpl &t)
     {
       State state;
       state.graphic = Graphic::_duplicate((*i).graphic);
+      state.tag = (*i).tag;
       state.allocation = Region::_duplicate((*i).allocation);
       TransformImpl *transform = new TransformImpl;
       transform->_obj_is_ready(CORBA::BOA::getBOA());
@@ -87,7 +87,7 @@ CORBA::Boolean TraversalImpl::bounds(Vertex &lower, Vertex &upper, Vertex &origi
   return b;
 }
 
-void TraversalImpl::traverseChild(Graphic_ptr child, Region_ptr region, Transform_ptr t)
+void TraversalImpl::traverseChild(Graphic_ptr child, Tag tag, Region_ptr region, Transform_ptr t)
 {
   SectionLog section(Logger::traversal, "TraversalImpl::traverseChild");
   if (CORBA::is_nil(region)) region = Region_var(allocation());
@@ -96,7 +96,7 @@ void TraversalImpl::traverseChild(Graphic_ptr child, Region_ptr region, Transfor
   cumulative->copy(Transform_var(transformation()));
   if (!CORBA::is_nil(t)) cumulative->premultiply(t);
 #if 1
-  push(child, region, cumulative);
+  push(child, tag, region, cumulative);
   child->traverse(Traversal_var(_this()));
   pop();
 #else
@@ -108,7 +108,7 @@ void TraversalImpl::traverseChild(Graphic_ptr child, Region_ptr region, Transfor
   child->extension(info, Region_var(ext->_this()));
   if (intersectsRegion(Region_var(ext->_this())))
       {
-	push(child, region, cumulative);
+	push(child, tag, region, cumulative);
 	child->traverse(Traversal_var(_this()));
 	pop();
       }
@@ -116,11 +116,12 @@ void TraversalImpl::traverseChild(Graphic_ptr child, Region_ptr region, Transfor
 #endif
 }
 
-void TraversalImpl::push(Graphic_ptr g, Region_ptr r, TransformImpl *t)
+void TraversalImpl::push(Graphic_ptr g, Tag tag, Region_ptr r, TransformImpl *t)
 {
   SectionLog section(Logger::traversal, "TraversalImpl::push");
   State state;
   state.graphic = Graphic::_duplicate(g);
+  state.tag = tag;
   state.allocation = Region::_duplicate(r);
   state.transformation = t;
   stack.push_back(state);
@@ -132,4 +133,26 @@ void TraversalImpl::pop()
   State &state = *stack.rbegin();
   state.transformation->_dispose();
   stack.erase(stack.end() - 1);
+}
+
+void TraversalImpl::update()
+{
+  SectionLog section(Logger::traversal, "TraversalImpl::update");
+  if (stack.size() == 1) return;
+  stack_t::iterator parent = stack.begin();
+  RegionImpl *allocation = new RegionImpl((*parent).allocation, Transform_var(Transform::_nil()));
+  allocation->_obj_is_ready(_boa());
+  TransformImpl *transformation = new TransformImpl;
+  transformation->copy((*parent).transformation);
+  transformation->_obj_is_ready(_boa());
+  Allocation::Info info;
+  info.allocation = Region_var(allocation->_this());
+  info.transformation = Transform_var(transformation->_this());
+  for (stack_t::iterator child = parent + 1; child != stack.end(); parent++, child++)
+    {
+      (*parent).graphic->allocate((*child).tag, info);
+      (*child).allocation->copy(info.allocation);
+      (*child).transformation->copy((*parent).transformation);
+      (*child).transformation->premultiply(info.transformation);
+    }
 }

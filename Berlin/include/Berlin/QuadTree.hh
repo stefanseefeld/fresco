@@ -25,6 +25,7 @@
 #include <Berlin/Geometry.hh>
 #include <vector>
 #include <algorithm>
+#include <functional>
 
 /*
  * this defines a binary space partitioning (BSP) algorithm

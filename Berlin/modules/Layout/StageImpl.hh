@@ -36,7 +36,7 @@ class StageImpl;
 class StageHandleImpl : implements(StageHandle)
 {
  public:
-  StageHandleImpl(StageImpl *, Graphic_ptr, const Vertex &, const Vertex &, Stage::Index);
+  StageHandleImpl(StageImpl *, Graphic_ptr, Tag, const Vertex &, const Vertex &, Stage::Index);
   virtual Vertex position() { MutexGuard guard(mutex); return p;}
   virtual void position(const Vertex &);
   virtual Vertex size() { MutexGuard guard(mutex); return s;}
@@ -59,6 +59,7 @@ class StageHandleImpl : implements(StageHandle)
   void cacheBBox();
   StageImpl *parent;
   Graphic_var child;
+  Tag tag;
   Vertex p;
   Vertex s;
   Stage::Index l;
@@ -136,7 +137,7 @@ class StageImpl : implements(Stage), public GraphicImpl
 
   virtual void traverse(Traversal_ptr);
 
-  virtual void allocate(Graphic_ptr, Allocation_ptr);
+  virtual void allocate(Tag, const Allocation::Info &);
   virtual void needRedraw();
   virtual void needRedrawRegion(Region_ptr);
   virtual void needResize();
@@ -158,7 +159,8 @@ class StageImpl : implements(Stage), public GraphicImpl
   void resize(StageHandleImpl *, const Vertex &);
   void relayer(StageHandleImpl *, Stage::Index);
 private:
-  void allocateChild(StageHandleImpl *, Allocation::Info &);
+  Tag tag();
+  StageHandleImpl *tag2handle(Tag);
   void damage(StageHandleImpl *);
 
   StageSequence list;

@@ -67,6 +67,7 @@ public:
   virtual void request(Requisition &);
   virtual void traverse(Traversal_ptr);
   virtual void needResize();
+  virtual void allocate(Tag, const Allocation::Info &);
 
   virtual void replace(Graphic_ptr, const Grid::Index &i);
   virtual Grid::Index find(Traversal_ptr);
@@ -77,10 +78,18 @@ public:
   virtual void rangePosition(Region_ptr, const Grid::Range &, Vertex &);
   virtual Grid::Index upper();
 
- protected:
-  void allocateChild(Grid::Index, Allocation::Info &);
-    
  private:
+  Tag  index2tag(Grid::Index index)
+    {
+      return index.col << 16 + index.row;
+    }
+  Grid::Index tag2index(Tag tag)
+    {
+      Grid::Index index;
+      index.col = tag >> 16;
+      index.row = tag & 0xffff;
+      return index;
+    }
   void cacheRequest();
   void partialRequest(Axis axis, long lower, long, Graphic::Requirement &);
   void fullRequest(Axis, Axis);

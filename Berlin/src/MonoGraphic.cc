@@ -34,7 +34,7 @@ MonoGraphic::MonoGraphic() {}
 MonoGraphic::~MonoGraphic()
 {
   MutexGuard guard(childMutex);
-  if (!CORBA::is_nil(child)) child->removeParent(Graphic_var(_this()));
+  if (!CORBA::is_nil(child)) child->removeParent(Graphic_var(_this()), 0);
 }
 
 Graphic_ptr MonoGraphic::body()
@@ -46,9 +46,9 @@ Graphic_ptr MonoGraphic::body()
 void MonoGraphic::body(Graphic_ptr c)
 {
   MutexGuard guard(childMutex);
-  if (!CORBA::is_nil(child)) child->removeParent(Graphic_var(_this()));
+  if (!CORBA::is_nil(child)) child->removeParent(Graphic_var(_this()), 0);
   child = Graphic::_duplicate(c);
-  child->addParent(Graphic_var(_this()));
+  child->addParent(Graphic_var(_this()), 0);
 }
 
 void MonoGraphic::append(Graphic_ptr c)
@@ -91,7 +91,7 @@ void MonoGraphic::extension(const Allocation::Info &info, Region_ptr region)
       transform->_obj_is_ready(_boa());
       i.transformation = transform->_this();
       i.transformation->copy(info.transformation);
-      allocateChild(i);
+      allocate(0, i);
       child->extension(i, region);
       transform->_dispose();
       tmpregion->_dispose();
@@ -108,20 +108,5 @@ void MonoGraphic::traverse(Traversal_ptr traversal)
 {
   SectionLog section(Logger::traversal, "MonoGraphic::traverse");
   Graphic_var child = body();
-  if (!CORBA::is_nil(child)) traversal->traverseChild(child, Region::_nil(), Transform::_nil());
+  if (!CORBA::is_nil(child)) traversal->traverseChild(child, 0, Region::_nil(), Transform::_nil());
 }
-
-void MonoGraphic::allocate(Graphic_ptr child, Allocation_ptr allocation)
-{
-  SectionLog section(Logger::layout, "MonoGraphic::allocate");
-//   if (!Graphic_var(body())->_is_equivalent(child)) return;
-  GraphicImpl::allocate(child, allocation);
-  CORBA::Long size = allocation->size();
-  for (CORBA::Long i = 0; i != size; i++)
-    {
-      Allocation::Info_var info = allocation->get(i);
-      allocateChild(info);
-    }
-}
-
-void MonoGraphic::allocateChild(Allocation::Info &) {}

@@ -47,10 +47,7 @@ public:
   virtual void shape(Region_ptr);
 
   virtual void traverse(Traversal_ptr);
-
-  virtual void allocate(Graphic_ptr, Allocation_ptr);
 protected:
-  virtual void allocateChild(Allocation::Info &);
   Graphic_var child;
   Mutex childMutex;
 };

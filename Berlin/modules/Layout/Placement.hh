@@ -44,10 +44,11 @@ public:
 
   virtual void traverse(Traversal_ptr);
 
+  virtual void allocate(Tag, const Allocation::Info &);
+
   static void normalOrigin(RegionImpl *, Vertex &);
   static void normalTransform(RegionImpl *, TransformImpl *);
 private:
-  virtual void allocateChild(Allocation::Info &);
   LayoutManager *layout;
   RegionImpl *region;
 };

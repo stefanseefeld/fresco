@@ -47,8 +47,9 @@ void ScreenManager::damage(Region_ptr r)
 {
   SectionLog section(Logger::drawing, "ScreenManager::damage");
   MutexGuard guard(mutex);
-  RegionImpl *region = new RegionImpl(r, Transform::_nil());
+  RegionImpl *region = new RegionImpl(r, Transform_var(Transform::_nil()));
   region->_obj_is_ready(CORBA::BOA::getBOA());
+  cout << "insert " << region << endl;
   damages.push_back(region);
   Logger::log(Logger::drawing) << "ScreenManager::damage region ("
 			       << region->lower.x << ',' << region->lower.y << "),("
@@ -99,7 +100,9 @@ void ScreenManager::repair()
 	  pointer->backup();
 	  pointer->draw();
 	}
+      Logger::log(Logger::drawing) << "going to damage event manager..." << endl;
       emanager->damage(Region_var((*i)->_this()));
+      Logger::log(Logger::drawing) << "...done" << endl;
       (*i)->_dispose();
     }
 }
