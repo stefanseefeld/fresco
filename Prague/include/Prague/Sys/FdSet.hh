@@ -41,11 +41,21 @@ namespace Prague
       ~FdSet() { }
       FdSet &operator = (const FdSet &F) { my_fds = F.my_fds; my_m = F.my_m; return *this; }
       //. Add a fd to the set
-      void set(int fd) { FD_SET(fd, &my_fds); if (fd > my_m) my_m = fd; }
+      void set(int fd) { assert(fd >= 0); FD_SET(fd, &my_fds); if (fd > my_m) my_m = fd; }
       //. return whether the given fd is available for non-blocking i/o
-      bool isset(int fd) const { return FD_ISSET(fd, &my_fds); }
+      bool isset(int fd) const { assert(fd >= 0); return FD_ISSET(fd, &my_fds); }
       //. clear fd from the set
-      void clear(int fd) { FD_CLR(fd, &my_fds); if (fd == my_m) for (int i = 0; i < fd - 1; i++) if (isset(fd)) my_m = fd; }
+      void clear(int fd)
+      {
+          FD_CLR(fd, &my_fds);
+          if (fd == my_m)
+              for (int i = fd - 1; i >= 0; --i)
+                  if (isset(i))
+                  {
+                      my_m = i;
+                      break;
+                  }
+      }
       //. return max fd
       int max() const { return my_m; }
       operator fd_set *() { return &my_fds; }
