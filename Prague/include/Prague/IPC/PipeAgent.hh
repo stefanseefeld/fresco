@@ -36,7 +36,6 @@ public:
   PipeAgent(const string &, IONotifier *, EOFNotifier * = 0);
   virtual      ~PipeAgent();
   virtual void  start();
-  virtual void notifyStateChange(int);
 private:
   PipeAgent(const PipeAgent &);
   PipeAgent &operator = (const PipeAgent &);

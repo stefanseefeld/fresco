@@ -4,6 +4,6 @@
 int main(int, char **)
 {
   string line;
-  while (cin >> line)
-    cout << line << flush;
+  while (getline(cin, line) && line != "end")
+    cout << line << endl;
 }

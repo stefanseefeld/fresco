@@ -81,9 +81,3 @@ void PipeAgent::start()
   mask(out|err);
   Coprocess::start();
 };
-
-void PipeAgent::notifyStateChange(int value)
-{
-  if (state() == exited) cerr << "process exited with value " << value << endl;
-  else if (state() == signaled) cerr << "process killed with signal " << value << endl;
-}

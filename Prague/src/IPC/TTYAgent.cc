@@ -79,12 +79,6 @@ void TTYAgent::start()
   Coprocess::start();
 };
 
-void TTYAgent::notifyStateChange(int value)
-{
-  if (state() == exited) cerr << "process exited with value " << value << endl;
-  else if (state() == signaled) cerr << "process killed with signal " << value << endl;
-}
-
 void TTYAgent::setWindowSize(unsigned short columns, unsigned short rows)
 {
 #if defined(HAVE_IOCTL)

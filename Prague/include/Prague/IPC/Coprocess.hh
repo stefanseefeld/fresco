@@ -64,12 +64,12 @@ public:
   const string &command() const { return path;}
   pid_t         pid() const { MutexGuard guard(mutex); return id;}
   state_t       state() const { MutexGuard guard(mutex); return _state;}
+  int           value() const { MutexGuard guard(mutex); return _value;}
   virtual ipcbuf *ibuf() { return inbuf;}
   virtual ipcbuf *obuf() { return outbuf;}
   virtual ipcbuf *ebuf() { return errbuf;}
 protected:
   virtual bool processIO(int, iomask_t);
-  virtual void notifyStateChange(int) = 0;
 //   int          &terminateTimeOut()	 { return termTout; }
 //   int          &hangupTimeOut()	         { return hupTout; }
 //   int          &killTimeOut()		 { return killTout; }
@@ -92,6 +92,7 @@ protected:
   EOFNotifier *eofNotifier;
   pid_t        id;
   state_t      _state;
+  int          _value;
   ipcbuf      *inbuf;
   ipcbuf      *outbuf;
   ipcbuf      *errbuf;
@@ -116,9 +117,10 @@ private:
   
   void kill(int);
 private:
+  mutable Mutex  mutex;
   static plist_t processes;
   static Reaper  reaper;
-  static Mutex   mutex;
+  static Mutex   singletonMutex;
 //   Timeout tout;
 //   Timer timer;
 };

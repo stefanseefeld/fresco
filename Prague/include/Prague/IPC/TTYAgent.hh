@@ -33,7 +33,6 @@ public:
   TTYAgent(const string &cmd, IONotifier *, EOFNotifier * = 0);
   virtual ~TTYAgent();
   virtual void  start();
-  virtual void notifyStateChange(int);
   void setWindowSize(unsigned short, unsigned short);
 private:
   TTYAgent(const TTYAgent &);

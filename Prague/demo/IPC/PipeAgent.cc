@@ -24,7 +24,7 @@
 
 using namespace Prague;
 
-Agent *agent;
+Coprocess *agent;
 
 class Output : public Coprocess::IONotifier
 {
@@ -59,11 +59,18 @@ int main (int argc, char **argv)
   while (cin && agent->ibuf())
     {
       ostream os(agent->ibuf());
-      Thread::delay(500);
       string line;
       cout << "input :";
       getline(cin, line);
       os << line << endl;
+      Thread::delay(500);
+    }
+  if (!agent->ibuf())
+    {
+      if (agent->state() == Coprocess::exited)
+	cerr << "process exited with value " << agent->value() << endl;
+      else if (agent->state() == Coprocess::signaled)
+	cerr << "process killed with signal " << agent->value() << endl;
     }
   delete agent;
   delete eof;

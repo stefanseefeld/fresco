@@ -55,24 +55,17 @@ void Coprocess::Reaper::notify(int)
 	  if (WIFEXITED(status))
 	    {
 	      MutexGuard guard((*i)->mutex);
-	      (*i)->_state = exited;
 	      (*i)->id     = 0;
-	      status = WEXITSTATUS(status);
+	      (*i)->_state = exited;
+	      (*i)->_value = WEXITSTATUS(status);
 	    }
 	  else if (WIFSIGNALED(status))
 	    {
 	      MutexGuard guard((*i)->mutex);
+	      (*i)->id     = 0;
 	      (*i)->_state = signaled;
-	      (*i)->id     = 0;
-	      status = WTERMSIG(status);
+	      (*i)->_value = WTERMSIG(status);
 	    }
-	  else if (WIFSTOPPED(status))
-	    {
-	      MutexGuard guard((*i)->mutex);
-	      (*i)->id     = 0;
-	      status = WSTOPSIG(status);
-	    }
-	  (*i)->notifyStateChange(status);
 	  processes.erase(i);
 	  break;
 	}
