@@ -74,7 +74,7 @@ maintainer-clean: distclean
 	$(SHELL) -ec '$(CXX) $(DEPFLAGS) $(CPPFLAGS) $< | sed "s/$*\\.o[ :]*/$*\\.d $*\\.o : /g" > $@'
 %.o:	$(srcdir)/%.cc
 	@echo compiling $(@F)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(SO_CXXFLAGS) -c $< -o $@
+	$(CXX) -I../../include -I../../../include $(CPPFLAGS) $(CXXFLAGS) $(SO_CXXFLAGS) -c $< -o $@
 
 ifeq (,$(findstring $(MAKECMDGOALS), clean distclean maintainer-clean))
 -include $(DEP)

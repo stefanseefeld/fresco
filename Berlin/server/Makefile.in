@@ -33,7 +33,7 @@ JPROF_OBJ	:= $(patsubst %.cpp, %.o, $(JPROF_SRC))
 CPPFLAGS	+= -I$(top_srcdir)/contrib/jprof -DJPROF
 endif
 
-CPPFLAGS	+= -DRC_PREFIX='"$(prefix)"' -DVERSION='"$(VERSION)"'
+CPPFLAGS	+= -DRC_PREFIX='"$(prefix)"' -DVERSION='"$(VERSION)"' -DRC_SYSCONFDIR='"$(sysconfdir)"'
 LIBS		+= -L../lib -L../../lib -lBerlin -lFresco -lBabylon -lPrague
 
 TARGETS		:= ../bin/server ../bin/kits ../bin/devices
@@ -77,9 +77,9 @@ endif
 install:	all
 	$(INSTALL) -d -m 755 $(DESTDIR)$(bindir)
 	$(INSTALL) -m 755 $(TARGETS) $(DESTDIR)$(bindir)
-	$(INSTALL) -d -m 755 $(DESTDIR)$(datadir)/Berlin
 	$(INSTALL) -d -m 755 $(DESTDIR)$(sysconfdir)
 	$(INSTALL) -m 644 ../etc/berlinrc $(DESTDIR)$(sysconfdir)
+	$(INSTALL) -d -m 755 $(DESTDIR)$(datadir)/Fresco
 	$(INSTALL) -m 644 $(top_srcdir)/share/glyph.dat $(DESTDIR)$(datadir)/Fresco
 	$(INSTALL) -d -m 755 $(DESTDIR)$(datadir)/Fresco/PNG $(DESTDIR)$(datadir)/Fresco
 	@for image in $(patsubst $(top_srcdir)/share/PNG/%, %, $(wildcard $(top_srcdir)/share/PNG/*.png)); do \

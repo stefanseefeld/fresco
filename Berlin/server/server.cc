@@ -50,6 +50,12 @@ const std::string prefix = RC_PREFIX;
 const std::string prefix = "";
 #endif
 
+#ifdef RC_SYSCONFDIR
+const std::string sysconfdir = RC_SYSCONFDIR;
+#else
+const std::string sysconfdir = "";
+#endif
+
 #ifdef VERSION
 const std::string version = VERSION;
 #else
@@ -156,7 +162,7 @@ int main(int argc, char **argv) /*FOLD00*/
   // Parse commandline arguments
   // ---------------------------------------------------------------
   
-  GetOpt getopt(argv[0], "a berlin display server");
+  GetOpt getopt(argv[0], "a fresco display server");
   getopt.add('h', "help", GetOpt::novalue, "help message");
   getopt.add('v', "version", GetOpt::novalue, "version number");
   getopt.add('R', "export-ref",
@@ -242,9 +248,7 @@ int main(int argc, char **argv) /*FOLD00*/
   else
   {
       // Search for berlinrc in default places:
-      if (prefix.empty()) value = "/usr";
-      else value = prefix;
-      value += "/share/Berlin/config";
+      value = sysconfdir + "/berlinrc";
 
       bool is_configured = 0;
       try
