@@ -39,7 +39,7 @@
 #include <Prague/Sys/Signal.hh>
 #include <Warsaw/Unicode.hh>
 #include <Warsaw/Selection.hh>
-#include <Warsaw/Choice.hh>
+#include <Warsaw/Widget.hh>
 #include <unistd.h>
 #include <iostream>
 #include <vector>
@@ -96,7 +96,7 @@ private:
   Warsaw::ImageKit_var ik;
   Warsaw::GadgetKit_var gk;
   Warsaw::Graphic_var vbox;
-  Warsaw::Choice_var  choice;
+  Widget::Choice_var  choice;
   list_t demos;
   Mapper *mapper;
   Warsaw::Color background;

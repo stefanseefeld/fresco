@@ -20,8 +20,8 @@
  * MA 02139, USA.
  */
 
-#ifndef _Warsaw_FigureKit_idl
-#define _Warsaw_FigureKit_idl
+#ifndef _Warsaw_PrimitiveKit_idl
+#define _Warsaw_PrimitiveKit_idl
 
 #include <Warsaw/Types.idl>
 #include <Warsaw/Kit.idl>
@@ -37,6 +37,7 @@ module Warsaw
   interface PrimitiveKit : Kit
     {
       Graphic root(in Graphic g);
+      Graphic geometry(in Mesh m);
       Primitive::Box cube(in Vertex l, in Vertex u);
     };
 };

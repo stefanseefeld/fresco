@@ -24,6 +24,7 @@
 
 #include <Warsaw/config.hh>
 #include <Warsaw/Primitive.hh>
+#include <Warsaw/DrawTraversal.hh>
 #include <Berlin/ImplVar.hh>
 #include <Berlin/GraphicImpl.hh>
 

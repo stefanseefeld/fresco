@@ -38,6 +38,7 @@ public:
   virtual KitImpl *clone(const Warsaw::Kit::PropertySeq &p) { return new PrimitiveKitImpl(repo_id(), p);}
 
   Warsaw::Graphic_ptr root(Warsaw::Graphic_ptr);
+  Warsaw::Graphic_ptr geometry(const Warsaw::Mesh &);
   Primitive::Box_ptr cube(const Warsaw::Vertex &, const Warsaw::Vertex &);
 };
 

@@ -23,6 +23,7 @@
 #define _EditorImpl_hh
 
 #include <Warsaw/config.hh>
+#include <Warsaw/Widget.hh>
 #include <Warsaw/FigureKit.hh>
 #include <Warsaw/ToolKit.hh>
 #include <Berlin/RefCountBaseImpl.hh>
@@ -49,7 +50,7 @@ public:
 private:
   UnidrawKitImpl         *_unidraw;
   Unidraw::Tool_var       _current;
-  Warsaw::Choice_var      _choice;
+  Widget::Choice_var      _choice;
   tdict_t                 _tools;
   Impl_var<Observer>      _tool_setter;
 };

@@ -118,7 +118,7 @@ PrimitiveImpl::~PrimitiveImpl() {}
 void PrimitiveImpl::extension(const Allocation::Info &info, Region_ptr region)
 {
   Trace trace("PrimitiveImpl::extension");
-  if (_mesh->vertices.length() > 0)
+  if (_mesh->nodes.length() > 0)
     {
       Lease_var<RegionImpl> tmp(Provider<RegionImpl>::provide());
       tmp->copy(Region_var(_ext->_this()));
@@ -152,7 +152,7 @@ void PrimitiveImpl::draw(DrawTraversal_ptr traversal)
 {
   Trace trace("PrimitiveImpl::draw");
 #if 0
-  if (_mesh->vertices.length() > 0)
+  if (_mesh->nodes.length() > 0)
     {
       // bounding box culling, use extension(...) to add brush effect into extension.
       Allocation::Info info;

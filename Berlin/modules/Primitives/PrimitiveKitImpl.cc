@@ -25,7 +25,7 @@
 #include "Primitive/PrimitiveKitImpl.hh"
 // #include "Primitive/PrimitiveImpl.hh"
 // #include "Primitive/PolyPrimitive.hh"
-// #include "Primitive/Primitives.hh"
+#include "Primitive/Primitives.hh"
 // #include "Primitive/Transformer.hh"
 
 using namespace Warsaw;
@@ -42,12 +42,16 @@ Graphic_ptr PrimitiveKitImpl::root(Graphic_ptr child)
   return g->_this();
 }
 
-Primitive::Box_ptr PrimitiveKitImpl::cube(const Vertex &l, const Vertex &u)
+Graphic_ptr PrimitiveKitImpl::geometry(const Warsaw::Mesh &)
 {
-//   RectangleImpl *rect = new RectangleImpl(lower, upper);
-//   activate(rect);
-//   return rect->_this();
-  return Primitive::Box::_nil();
+  return Warsaw::Graphic::_nil();
+}
+
+Primitive::Box_ptr PrimitiveKitImpl::cube(const Vertex &lower, const Vertex &upper)
+{
+  BoxImpl *box = new BoxImpl(lower, upper);
+  activate(box);
+  return box->_this();
 }
 
 extern "C" KitImpl *load()

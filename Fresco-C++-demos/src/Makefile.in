@@ -51,7 +51,7 @@ PINYIN_SRC	:= pinyin_demo.cc TextConverter.cc
 DEMO_OBJ	:= $(patsubst %.cc, %.o, $(DEMO_SRC))
 PINYIN_OBJ	:= $(patsubst %.cc, %.o, $(PINYIN_SRC))
 
-TARGETS		:= $(bdir)/demo $(bdir)/canvas $(bdir)/ggiwrapper $(bdir)/pinyin_demo
+TARGETS		:= $(bdir)/demo $(bdir)/primitive $(bdir)/canvas $(bdir)/ggiwrapper $(bdir)/pinyin_demo
 
 all:	$(TARGETS)
 
@@ -60,6 +60,10 @@ $(bdir)/demo:	$(DEMO_OBJ)
 	$(CXX) $(LDFLAGS) -o $@ $(DEMO_OBJ) $(LIBS)
 
 $(bdir)/canvas:	canvas.o
+	@echo linking $(@F)
+	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
+
+$(bdir)/primitive:	primitive.o
 	@echo linking $(@F)
 	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
 

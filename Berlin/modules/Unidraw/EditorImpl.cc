@@ -21,7 +21,8 @@
  */
 #include <Prague/Sys/Tracer.hh>
 #include <Warsaw/config.hh>
-#include <Warsaw/Choice.hh>
+#include <Warsaw/Selection.hh>
+#include <Warsaw/Widget.hh>
 #include <Berlin/RefCountVar.hh>
 #include "Unidraw/EditorImpl.hh"
 #include "Unidraw/Viewer.hh"
@@ -81,5 +82,5 @@ Controller_ptr EditorImpl::create_viewer(Unidraw::Model_ptr model, Warsaw::Coord
 
 Controller_ptr EditorImpl::toolbar()
 {
-  return Warsaw::Choice::_duplicate(_choice);
+  return Widget::Choice::_duplicate(_choice);
 }

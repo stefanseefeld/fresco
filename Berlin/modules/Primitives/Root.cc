@@ -37,7 +37,7 @@ void Root::traverse(Traversal_ptr traversal) { traversal->visit(Graphic_var(_thi
 void Root::draw(DrawTraversal_ptr traversal)
 {
   DrawingKit_var drawing = traversal->drawing();
-  DrawingKit3D_var d3d = DrawingKit3D::_narrow(d3d);
+  DrawingKit3D_var d3d = DrawingKit3D::_narrow(drawing);
   if (!CORBA::is_nil(d3d))
     {
       cout << "success !" << endl;

@@ -100,8 +100,9 @@ module Warsaw
 
   struct Mesh
   {
-    Path vertices;
+    Vertices nodes;
     TriangleSeq triangles;    
+    Vertices normals;
   };
 
   //. this is a character in the unicode range U+0000 - U+FFFF. It is a

@@ -22,11 +22,12 @@
 
 #include <Warsaw/config.hh>
 #include <Warsaw/Subject.hh>
-#include <Warsaw/Choice.hh>
+#include <Warsaw/Widget.hh>
 #include <Berlin/ObserverImpl.hh>
 #include "FocusDemo.hh"
 
 using namespace Warsaw;
+using namespace Widget;
 
 class FocusDemo::Observer : public ObserverImpl
 {
