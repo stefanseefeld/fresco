@@ -113,9 +113,9 @@ objects:	$(OBJ)
 	chmod +x $@.tmp
 	mv $@.tmp $@
 
-doc:	../share/Fresco/doc/html ../bin/Fresco-config
+doc:	../share/doc/Fresco/html ../bin/Fresco-config
 
-../share/Fresco/doc/html:	$(SYN)
+../share/doc/Fresco/html:	$(SYN)
 	@echo formatting $(@F)
 	@$(SYNOPSIS) -c ../config/synopsis.py -Wc,formatter=HTML -o $@ $(SYN)
 	touch $@
@@ -149,13 +149,13 @@ install:	all
         $(top_srcdir)/config/Fresco-config.in > $(DESTDIR)$(bindir)/Fresco-config.tmp
 	chmod +x $(DESTDIR)$(bindir)/Fresco-config.tmp
 	mv $(DESTDIR)$(bindir)/Fresco-config.tmp $(DESTDIR)$(bindir)/Fresco-config
-	@if test -d ../share/Fresco/doc/html; then \
-	  mkdir -p $(DESTDIR)$(datadir)/Fresco/doc; \
-	  cp -r ../share/Fresco/doc/html $(DESTDIR)$(datadir)/Fresco/doc; \
-	fi;
+
+install-doc: doc
+	mkdir -p $(DESTDIR)$(datadir)/doc/Fresco
+	cp -r ../share/doc/Fresco/html $(DESTDIR)$(datadir)/doc/Fresco
 
 uninstall:
-	rm -fr $(DESTDIR)$(datadir)/Fresco/doc
+	rm -fr $(DESTDIR)$(datadir)/doc/Fresco
 	rm -f $(DESTDIR)$(bindir)/Fresco-config
 	rm -rf $(DESTDIR)$(includedir)/Fresco
 	rm -rf $(DESTDIR)$(datadir)/idl/Fresco

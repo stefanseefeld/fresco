@@ -33,7 +33,7 @@ class Config(Base):
 	    stylesheet_file = top_srcdir + '/config/manual.css'
 	    file_layout = 'Synopsis.Formatter.HTML.FileLayout.NestedFileLayout'
 	    tree_formatter = 'TreeFormatterJS.TreeFormatterJS'
-	    toc_out = '../share/Fresco/doc/html/Fresco.toc'
+	    toc_out = '../share/doc/Fresco/html/Fresco.toc'
 	
 	# Here we extend the base modules, so you can still use DUMP, ASCII etc
 	modules = Base.Formatter.modules

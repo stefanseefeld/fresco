@@ -42,6 +42,9 @@ doc:
 install:
 	$(MAKE) action="install"
 
+install-doc:
+	$(MAKE) action="install-doc"
+
 uninstall:
 	$(MAKE) action="uninstall"
 
