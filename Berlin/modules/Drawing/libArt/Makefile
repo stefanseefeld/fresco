@@ -32,9 +32,9 @@ hpath	= $(ipath)/Drawing/libArt
 # Compilation and linking flags.
 CPPFLAGS= -I$(ipath) -I$(ipath)/Warsaw $(LIBART_INCLUDES) $(ORBCPPFLAGS)
 LDFLAGS	= -shared -rdynamic -L$(lpath)
-LIBS	= -lPrague -lBerlin $(LIBART_LIBS)
+LIBS	= -lPrague -lBerlin $(LIBART_LIBS) -lfreetype
 
-SRC	= LibArtDrawingKit.cc LibArtUnifont.cc LibArtRaster.cc
+SRC	= LibArtDrawingKit.cc LibArtFTFont.cc LibArtUnifont.cc LibArtRaster.cc
 TARGET	= $(mpath)/libArtDrawing.so
 
 vpath %.d $(dpath)

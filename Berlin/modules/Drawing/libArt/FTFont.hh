@@ -25,10 +25,12 @@
 #include <Warsaw/config.hh>
 #include <Warsaw/Types.hh>
 #include <Warsaw/Graphic.hh>
+#include <Berlin/GGI.hh>
 #include <Prague/Sys/MMap.hh>
 #include <Drawing/libArt/LibArtFont.hh>
-#include <freetype2/freetype.h>
+#include <freetype/freetype.h>
 #include <Warsaw/Unicode.hh>
+#include <map>
 
 class LibArtFTFont : public LibArtFont
 //. this is a simple Freetype font, which doesn't support
@@ -58,43 +60,42 @@ protected:
   
   class atomizer {
   protected:
-    atom curr_atom;
-    map<string,atom> atom_map;
+    atom currAtom;
+    map<Unicode::String,atom> atomMap;
   public:
-    atom atomize(const string &u) {
-      map<string,atom>::iterator i;
-      i = atom_map.find(u);
-      if (i == atom_map.end()) {	
-	atom_map[u] = ++curr_atom;
-	return curr_atom;
+    atom atomize(Unicode::String &u) {
+      map<Unicode::String,atom>::iterator i;
+      i = atomMap.find(u);
+      if (i == atomMap.end()) {	
+	atomMap[u] = ++currAtom;
+	return currAtom;
       } else {
 	return i->second;
       }
     }
-  }
+  };
   
   atomizer _a;
-  atom atomize(const string &u) {return _a.atomize(u);}
+  atom atomize(Unicode::String &u) {return _a.atomize(u);}
   void setup_face(FT_Face &f);
   void setup_size(FT_Face &f);
   bool load_glyph(Unichar c, FT_Face &f);
     
   double xdpi, ydpi;  
-  typedef pair<atom,atom> famStyle;
-  typedef string filename;
-  typedef unsigned int size;
-  typedef pair<size,famStyle> faceSpec;
-  typedef pair<Unichar,faceSpec> cachespec;
-  typedef map<Unichar,ArtPixBuf *>::iterator cacheiter;
+  typedef pair<atom,atom> FamStyle;
+  typedef unsigned int PtSize;
+  typedef pair<PtSize,FamStyle> FaceSpec;
+  typedef pair<Unichar,FaceSpec> CacheSpec;
+  typedef map<CacheSpec,ArtPixBuf *>::iterator CacheIter;
   
-  map<Unichar,ArtPixBuf *> cache;
-  map<famStyle,FT_Face> facemap;
+  map<CacheSpec,ArtPixBuf *> myCache;
+  map<FamStyle,FT_Face> myFaceMap;
 
-  atom my_fam, my_style;
-  string my_famstr, my_stylestr;
-  size my_size;
-  FT_Library library;
-  FT_Face face;
+  atom myFam, myStyle;
+  Unicode::String myFamStr, myStyleStr;
+  PtSize mySize;
+  FT_Library myLibrary;
+  FT_Face myFace;
 };
 
 #endif

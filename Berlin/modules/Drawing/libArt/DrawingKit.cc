@@ -22,7 +22,7 @@
 
 #include <Warsaw/config.hh>
 #include <Drawing/libArt/LibArtDrawingKit.hh>
-#include <Drawing/libArt/LibArtUnifont.hh>
+#include <Drawing/libArt/LibArtFTFont.hh>
 #include <Warsaw/Transform.hh>
 #include <Berlin/Providers.hh>
 
@@ -50,7 +50,7 @@ LibArtDrawingKit::LibArtDrawingKit(KitFactory *f, const PropertySeq &p)
     drawable(GGI::drawable()), 
     xres(drawable->resolution(xaxis)),
     yres(drawable->resolution(yaxis)),
-    font(new LibArtUnifont),
+    font(new LibArtFTFont(drawable)),
     rasters(500)
   // textures(100), 
   // tx(0)

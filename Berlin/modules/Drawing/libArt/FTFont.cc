@@ -32,11 +32,14 @@
 #define TRUNC(x)  ((x) >> 6)
 #define MAX(X,Y) (X<Y?X:Y)
 
+using namespace Prague;
+
 LibArtFTFont::LibArtFTFont(GGI::Drawable *drawable) :
   xdpi(drawable->dpi(xaxis)),
-  ydpi(drawable->dpi(yaxis))
+  ydpi(drawable->dpi(yaxis)),
+  mySize(18)
 {
-  if (FT_Init_FreeType( &library )) {
+  if (FT_Init_FreeType( &myLibrary )) {
       cerr << "failed to open freetype library" << endl;
       exit(-1);    
   }
@@ -47,7 +50,7 @@ LibArtFTFont::LibArtFTFont(GGI::Drawable *drawable) :
       exit(-1);
     }
   string fname = string(env) + "/etc/fonts.txt";
-  ifstream fontdirlist(fname);
+  ifstream fontdirlist(fname.c_str());
   if (!fontdirlist) {
     Logger::log(Logger::text) << "cannot open " << fname << endl;
   } else {
@@ -60,113 +63,120 @@ LibArtFTFont::LibArtFTFont(GGI::Drawable *drawable) :
       for (Directory::iterator i = directory.begin();
 	   i != directory.end(); i++)
 	{
-	  FT_Face newface;
-	  string fontfile = i->longName();
+	  if ((*i)->name() == "." || (*i)->name() == "..") continue;	  
+	  string fontfile = (*i)->longName();
 	  if (FT_New_Face
-	      (library,
+	      (myLibrary,
 	       fontfile.c_str(),
 	       0,
-	       &newface)) {
+	       &myFace)) {
 	    Logger::log(Logger::text) << 
 	      "LibArtFTFont: can't open font " << 
 	      fontfile << endl;
 	    continue;
 	  }
-	  string fam(newface->family_name);
-	  string style(newface->style_name);
+	  myFamStr = Unicode::String(myFace->family_name);
+	  myStyleStr = Unicode::String(myFace->style_name);
+	  myFam = atomize(myFamStr);
+	  myStyle = atomize(myStyleStr);
 	  Logger::log(Logger::text) << "found FT-readable font " << 
-	    fam << " " << style << " in " << fontfile << endl;
-	  facemap[famStyle(atomize(fam),
-			   atomize(style))]
-	    = newface;	  
+	    myFamStr << " (" << myFam << ") " << myStyleStr << " (" << myStyle << ") in " << fontfile << endl;
+	  myFaceMap[FamStyle(myFam,myStyle)] = myFace;
 	}
     }
     fontdirlist.close();
+    Logger::log(Logger::text) << "completed scaning font directories" << endl;
   }
 }
 
 
 LibArtFTFont::~LibArtFTFont() {}
-unsigned long LibArtFTFont::size() { return my_size;}
+unsigned long LibArtFTFont::size() { return mySize;}
 unsigned long LibArtFTFont::weight() { return 100;}
-void LibArtFTFont::size(unsigned long sz) { my_size = sz;}
+void LibArtFTFont::size(unsigned long sz) { mySize = sz;}
 void LibArtFTFont::weight(unsigned long wt) {}
 
 Unistring *LibArtFTFont::family() { 
   return new Unistring
     (Unicode::toCORBA
-     (Unicode::String(my_famstr)));
+     (Unicode::String(myFamStr)));
 }
 
 Unistring *LibArtFTFont::subfamily() { 
   return 0;
 }
 
-void LibArtFTFont::subfamily(const Unistring *fname) { 
+void LibArtFTFont::subfamily(const Unistring &fname) { 
 }
 
-void LibArtFTFont::fullname(const Unistring *fname) { 
+void LibArtFTFont::fullname(const Unistring &fname) { 
 }
 
-void LibArtFTFont::family(const Unistring *fname) { 
-  my_famstr = Unicode::toPrague(fname);
-  my_fam = atomize(my_famstr);
+void LibArtFTFont::family(const Unistring &fname) { 
+  myFamStr = Unicode::toPrague(fname);
+  myFam = atomize(myFamStr);
 }
 
-void LibArtFTFont::style(const Unistring *sname) { 
-  my_stylestr = Unicode::toPrague(sname);
-  my_style = atomize(my_style);
+void LibArtFTFont::style(const Unistring &sname) { 
+  myStyleStr = Unicode::toPrague(sname);
+  myStyle = atomize(myStyleStr);
 }
 
 Unistring *LibArtFTFont::fullname() { 
-  return new Unistring
-    (Unicode::toCORBA	     
-     (Unicode::String
-      (my_famstr + " " + my_stylestr)));
-                 
+  Unicode::String str = myFamStr;
+  str += Unicode::Char(' ');
+  str += myStyleStr;
+  return new Unistring(Unicode::toCORBA(str));
 }
 
 Unistring *LibArtFTFont::style() { 
   return new Unistring
     (Unicode::toCORBA
-     (Unicode::String(my_stylestr)));
+     (Unicode::String(myStyleStr)));
 }
 
 void LibArtFTFont::setup_face(FT_Face &f) {
-  famStyle spec(my_fam,my_style);
-  if (facemap.find(spec) != facemap.end()) {
+  //cerr << "setting up face" << endl;
+  FamStyle spec(myFam,myStyle);
+  if (myFaceMap.find(spec) != myFaceMap.end()) {
     // found cached face
-    f = facemap[spec];
+    f = myFaceMap[spec];
   } else {
-    f = face;
+    f = myFace;
   }
 }
 
 void LibArtFTFont::setup_size(FT_Face &f) {
-  FT_Set_Char_Size
-    ( f,                // handle to face object           
-      my_size << 6,     // char_width in 1/64th of points  
-      my_size << 6,     // char_height in 1/64th of points 
-      xdpi,             // horizontal device resolution    
-      ydpi );           // vertical device resolution      
+  FT_Set_Pixel_Sizes(f,24,24);
+//   FT_Set_Char_Size
+//     ( f,                // handle to face object           
+//       mySize << 6,     // char_width in 1/64th of points  
+//       mySize << 6,     // char_height in 1/64th of points 
+//       (unsigned int)xdpi,             // horizontal device resolution    
+//       (unsigned int)ydpi );           // vertical device resolution      
+//   //cerr << "dpi: " << xdpi << " " << xdpi << endl;
 }
 
 bool LibArtFTFont::load_glyph(Unichar c, FT_Face &f) {
   int glyph_index = FT_Get_Char_Index
     (f,                // handle to face
-     (unsigned char)c,       // the char code (truncated!) 
-     1);                     // hinting   
-  if (FT_Load_Glyph
-      ( f,          // handle to face object 
-	glyph_index,   // glyph index           
-	load_flags ))  // load flags, see below 
-    return false;
+     (unsigned char)c       // the char code (truncated!) 
+     );                     
+  if (FT_Load_Glyph (       
+		     f,          // handle to face object 
+		     glyph_index,   // glyph index           
+		     0 ))  // default load flags 
+    {
+      return false;
+    }
   return true;
 }
   
 static bool render_glyph(ArtPixBuf **pb, 
 			 FT_GlyphSlot &glyph,
-			 double &pixwidth) {
+			 FT_Library &library) {
+
+  //cerr << "rendering glyph" << endl;
 
 #define MAX_BUFFER  300000
   static char   bit_buffer[ MAX_BUFFER ];
@@ -211,10 +221,8 @@ static bool render_glyph(ArtPixBuf **pb,
   // copy alpha values
   for (int row = 0; row < height; ++row) 
     for (int col = 0; col < width; ++col)
-      *(((pixels + (row * width) + col) * pixwidth) + 3) = 
-	*(bit + (row * pitch) + col);
-
-  pixwidth = width;  
+      *(pixels + (((row * width) + col) * pixwidth) + 3) = 
+	*(bit_buffer + (row * pitch) + col);
   return true;
 }
 
@@ -229,19 +237,27 @@ void LibArtFTFont::segments
   setup_size(newface);
 
   unsigned int len = u.length();
-  faceSpec fspec(my_size,spec);
+  //cerr << "rasterizing " << len << " glyphs " << endl;
+  FaceSpec fspec(mySize,FamStyle(myFam,myStyle));
   
   for (unsigned int i = 0; i < len; ++i) {
-    cacheSpec cspec(u[i],fspec)
-    cacheiter ci = cache.find(cspec);
-    if (ci == cache.end()) {
-      if (!load_glyph(u[i])) continue;
+    Unichar c = u[i];
+    CacheSpec cspec(c,fspec);
+    CacheIter ci = myCache.find(cspec);
+    if (ci == myCache.end()) {
+      //cerr << "loading glyph " << c << endl;
+      if (!load_glyph(c,newface)) continue;
+      //cerr << "loaded " << c << " OK " << endl;
       ArtPixBuf *pb;
-      double width;
-      if (!render_glyph(&pb,newface->glyph,width)) continue;      
-      cache.insert(pair(cspec,pb));
+      //cerr << "rendering glyph " << c << endl;
+      if (!render_glyph(&pb,newface->glyph,myLibrary)) continue;      
+      //cerr << "rendered " << c << " OK " << endl;
+      myCache.insert(pair<CacheSpec,ArtPixBuf *>(cspec,pb));
+    } else {
+      //cerr << "cache hit on " << c << myFamStr << " " << myStyleStr << endl;
     }
-    segs.push_back(pair<double,ArtPixBuf *>(width,cache[ch]));
+    ArtPixBuf *pb = myCache[cspec];
+    segs.push_back(pair<double,ArtPixBuf *>(pb->width,pb));
   }
 }
     
@@ -253,29 +269,35 @@ void LibArtFTFont::allocateText
   int width = 0;
   int height = 0;
   FT_Face newface;
+  FT_GlyphSlot glyph = newface->glyph;
   setup_face(newface);
   setup_size(newface);
   
   unsigned int len = u.length();
-  faceSpec fspec(my_size,spec);
+  //cerr << "measuring " << len << " unichars" << endl;
+  FaceSpec fspec(mySize,FamStyle(myFam,myStyle));
   
   for (unsigned int i = 0; i < len; ++i) {
-    cacheSpec cspec(u[i],fspec)
-    cacheiter ci = cache.find(cspec);
-    if (!load_glyph(u[i])) continue;       
-    int left  = FLOOR( glyph->metrics.horiBearingX );
-    int right = CEIL( glyph->metrics.horiBearingX + glyph->metrics.width );
+    CacheSpec cspec(u[i],fspec);
+    CacheIter ci = myCache.find(cspec);
+    if (!load_glyph(u[i],newface)) continue;       
+    //cerr << i << endl;
+    int left  = FLOOR(glyph->metrics.horiBearingX );
+    int right = CEIL(glyph->metrics.horiBearingX + glyph->metrics.width );
     width += TRUNC(right - left);
-    int top    = CEIL( glyph->metrics.horiBearingY );
-    int bottom = FLOOR( glyph->metrics.horiBearingY - glyph->metrics.height );
+    int top    = CEIL(glyph->metrics.horiBearingY );
+    int bottom = FLOOR(glyph->metrics.horiBearingY - glyph->metrics.height );    
     height = MAX(height,TRUNC( top - bottom ));
+    height = 2;
+    //    //cerr << "glyph left " << left << " right " << right << " width " << width << " top " << top << " bottom " << bottom << " height " << height << endl;    
   }
-  r.x.natural = r.x.minimum = r.x.maximum = width*10.;
+  r.x.natural = r.x.minimum = r.x.maximum = len*24*10.;
   r.x.defined = true;
   r.x.align = 0.;
-  r.y.natural = r.y.minimum = r.y.maximum = height*10.;
+  r.y.natural = r.y.minimum = r.y.maximum = 24*10.;
   r.y.defined = true;
   r.y.align = 0.;
+  //cerr << "allocated " << r.x.minimum << "x" << r.y.minimum << endl;
 }
 
 
