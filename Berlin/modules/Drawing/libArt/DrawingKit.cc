@@ -63,15 +63,25 @@ LibArtDrawingKit::LibArtDrawingKit() :
   pb = art_pixbuf_new_const_rgb ((art_u8 *)buf->write, drawable->width(), drawable->height(), stride);
 
   // clear the bbox
-  bbox.x0 = bbox.y0 = bbox.x1 = bbox.y1 = 0.;  
+  bbox.x0 = bbox.y0 = bbox.x1 = bbox.y1 = 0;  
+}
+
+static inline ggi_pixel ggiColor(Color c1, ggi_visual_t vis) {
+  ggi_color c2;
+  static double scale = 0xffff;
+  c2.r = static_cast<uint16>(c1.red * scale);
+  c2.g = static_cast<uint16>(c1.green * scale);
+  c2.b = static_cast<uint16>(c1.blue * scale);
+  c2.a = static_cast<uint16>(c1.alpha * scale);
+  return ggiMapColor(vis,&c2);
 }
 
 static inline art_u32 artColor(Color c) {
   art_u32 c2 = 0;
   static double scale = 0xff;
-  c2 += (static_cast<art_u8>(c.red * scale) << 24);
+  c2 += (static_cast<art_u8>(c.blue * scale) << 24);
   c2 += (static_cast<art_u8>(c.green * scale) << 16);
-  c2 += (static_cast<art_u8>(c.blue * scale) << 8);
+  c2 += (static_cast<art_u8>(c.red * scale) << 8);
   c2 += (static_cast<art_u8>(c.alpha * scale));
   return c2;
 }
@@ -84,20 +94,22 @@ void LibArtDrawingKit::setTransformation(Transform_ptr t)
   affine[1] = matrix[0][1];
   affine[2] = matrix[1][0];
   affine[3] = matrix[1][1];
-  affine[4] = matrix[0][3] * drawable->resolution(xaxis);
-  affine[5] = matrix[1][3] * drawable->resolution(yaxis);
+  affine[4] = matrix[0][3];
+  affine[5] = matrix[1][3];
 }
 
 void LibArtDrawingKit::setClipping(Region_ptr r)
 {
   cl->copy(r);
-  double xr = drawable->resolution(xaxis);
-  double yr = drawable->resolution(yaxis);
-  PixelCoord x = static_cast<PixelCoord>(cl->lower.x*xr);
-  PixelCoord y = static_cast<PixelCoord>((drawable->height()/yr - cl->upper.y)*yr);
-  PixelCoord x2 = static_cast<PixelCoord>((cl->upper.x)*xr);
-  PixelCoord y2 = static_cast<PixelCoord>((cl->upper.y)*yr);
-  ggiSetGCClipping(memvis, x, y, x2, y2);
+//   double xr = drawable->resolution(xaxis);
+//   double yr = drawable->resolution(yaxis);
+
+//   int x = (int)(cl->upper.x * xr);
+//   int y = (int)(cl->upper.y * yr);
+//   int x2 = (int)(cl->lower.x * xr);  
+//   int y2 = (int)(cl->lower.y * yr);
+
+//   ggiSetGCClipping(memvis, x, y, x2, y2);
 }
 
 void LibArtDrawingKit::setForeground(const Color &c)
@@ -140,70 +152,98 @@ void LibArtDrawingKit::setFontAttr(const NVPair & nvp) {}
 void LibArtDrawingKit::drawPath(const Path &p) 
 {
   int len = p.length();
-  ArtVpath vpath[len];
-  ArtVpath *vpath2;
-  double xres = drawable->resolution(xaxis);
-  double yres = drawable->resolution(yaxis);
+  ArtVpath vpath[(fs == outline ? len : len + 1)];
+  ArtVpath *tvpath;
+  ArtVpath *tsvpath;
+  double resScale[6]  = {
+    drawable->resolution(xaxis), 0, 0, 
+      drawable->resolution(yaxis), 0, 0
+      };
 
-  for (int i = 0; i < len; i++) {
-    vpath[i].code = i == 0 ? ART_MOVETO : (i == len - 1 ? ART_END : ART_LINETO);
-    vpath[i].x = p[i].x * xres;
-    vpath[i].y = p[i].y * yres;
+  if (fs == outline) {
+    for (int i = 0; i < len; i++) {
+      vpath[i].code = i == 0 ? ART_MOVETO_OPEN 
+	: (i == len - 1 ? ART_END : ART_LINETO);
+      vpath[i].x = p[i].x;
+      vpath[i].y = p[i].y;
+    }
+
+  } else {
+    for (int i = 0; i < len; i++) {
+      vpath[i].code = i == 0 ? ART_MOVETO : ART_LINETO;
+      vpath[i].x = p[i].x;
+      vpath[i].y = p[i].y;
+    }
+    vpath[len] = vpath[0];
+    vpath[len].code = ART_END;
   }
   
-  vpath2 = art_vpath_affine_transform(vpath,affine);
-  ArtSVP *svp = art_svp_from_vpath (vpath2); 
-  art_drect_svp_union (&bbox,svp);
+  ArtDRect locd;
+  ArtIRect loc;
+  ArtDRect clip = {cl->upper.x, cl->upper.y,
+		     cl->lower.x, cl->lower.y};
+  art_drect_affine_transform(&clip,&clip,resScale);
+
+  tvpath = art_vpath_affine_transform(vpath,affine);
+  tsvpath = art_vpath_affine_transform(tvpath,resScale);
+
+  ArtSVP *svp = art_svp_from_vpath (tsvpath); 
+  art_drect_svp (&locd, svp);
+  art_drect_intersect(&locd,&locd,&clip);
+  art_drect_to_irect(&loc, &locd);
+  art_irect_union (&bbox,&bbox,&loc);
+//   cerr << "bbox " << loc.x0 << " " << loc.y0 << " " << loc.x1 << " " << loc.y1 << endl;
+
+  // WARNING: I do not know why these parameters work for rgb_svp..
+  // imho they should not, but they appear to. I have asked raph
+  // levien why, and hope to hear back soon. in the mean time,
+  // do not assume that I actually know how libart does coordinates
+  // :(
+
   art_rgb_svp_alpha (svp,
-		     0, 0, pb->width, pb->height,
+		     0, 0, 
+		     loc.x1, loc.y1,
 		     artColor(fg),
-		     pb->pixels, pb->rowstride,
+		     pb->pixels, 
+		     pb->rowstride,
 		     agam);
   art_svp_free(svp);
 }
 
 //void LibArtDrawingKit::drawPatch(const Patch &);
 
-void LibArtDrawingKit::drawRect(const Vertex &top, const Vertex &bot) 
+void LibArtDrawingKit::drawRect(const Vertex &bot, const Vertex &top) 
 {
 
-  ArtVpath vpath[6];
-  ArtVpath *vpath2;
-  double xr = drawable->resolution(xaxis);
-  double yr = drawable->resolution(yaxis);
-  double x0 = top.x *xr;
-  double y0 = top.y * yr;
-  double x1 = bot.x * xr;
-  double y1 = bot.y * yr;
-
-  vpath[0].code = ART_MOVETO;
-  vpath[0].x = x0;
-  vpath[0].y = y0;
-  vpath[1].code = ART_LINETO;
-  vpath[1].x = x0;
-  vpath[1].y = y1;
-  vpath[2].code = ART_LINETO;
-  vpath[2].x = x1;
-  vpath[2].y = y1;
-  vpath[3].code = ART_LINETO;
-  vpath[3].x = x1;
-  vpath[3].y = y0;
-  vpath[4].code = ART_LINETO;
-  vpath[4].x = x0;
-  vpath[4].y = y0;
-  vpath[5].code = ART_END;
-  vpath[5].x = 0;
-  vpath[5].y = 0;
+  // this needs work, if you want to try to speed it up..
+//   if (affine[0] == 1. && affine[3] == 1. && 
+//       affine[1] == 0. && affine[2] == 0. &&
+//       fg.alpha == 1. // !!FIXME!! add in texture check here.
+//       )
+//     {
+//       // short circuit identity-transformed
+//       // boxes of solid non-alpha colors.
+//       double xr = drawable->resolution(xaxis);
+//       double yr = drawable->resolution(yaxis);
+//       int a = (int)(top.x * xr + affine[4]);
+//       int b = (int)(top.y * yr + affine[5]);
+//       int c = (int)(bot.x * xr + affine[4]);
+//       int d = (int)(bot.y * yr + affine[5]);
+//       ggiSetGCForeground(memvis, ggiColor(fg, memvis));
+//       ggiDrawBox(memvis, a,b,c,d);
+//       ArtIRect loc = {a,b,c,d};
+//       art_irect_union (&bbox,&bbox,&loc);
+//       return;
+//     }
   
-  vpath2 = art_vpath_affine_transform(vpath,affine);
-  ArtSVP *svp = art_svp_from_vpath (vpath2); 
-  art_drect_svp_union (&bbox,svp);
-  art_rgb_svp_alpha (svp,
-		     0, 0, pb->width, pb->height,
-		     artColor(fg),
-		     pb->pixels, pb->rowstride,
-		     agam);
-  art_svp_free(svp);
+  Path path;
+  path.length(5);
+  path[0].x = top.x, path[0].y = top.y, path[0].z = 0.;
+  path[1].x = bot.x, path[1].y = top.y, path[1].z = 0.;
+  path[2].x = bot.x, path[2].y = bot.y, path[2].z = 0.;
+  path[3].x = top.x, path[3].y = bot.y, path[3].z = 0.;
+  path[4].x = top.x, path[4].y = top.y, path[4].z = 0.;
+  drawPath(path);
 }
 
 void LibArtDrawingKit::drawEllipse(const Vertex &, const Vertex &) {}
@@ -211,7 +251,20 @@ void LibArtDrawingKit::drawImage(Raster_ptr) {}
 
 void LibArtDrawingKit::drawText(const Unistring &u) 
 {
-  font->drawText(u,affine[4],affine[5],pb,fg);
+  // !!FIXME!! this should do arbitrary linear trafo on text,
+  // not just offsets.
+  double xr = drawable->resolution(xaxis);
+  double yr = drawable->resolution(yaxis);
+
+  Graphic::Requisition req;
+  allocateText(u,req);
+  ArtIRect r;
+  r.x0 = (int)(affine[4] * xr);
+  r.y0 = (int)(affine[5] * yr);
+  r.x1 = (int)(affine[4] * xr + req.x.maximum);
+  r.y1 = (int)(affine[5] * yr + req.y.maximum);
+  art_irect_union (&bbox,&bbox,&r);
+  font->drawText(u,r.x0,r.y0,pb,fg);
 }
 
 void LibArtDrawingKit::allocateText(const Unistring & s, Graphic::Requisition & req) {
@@ -219,14 +272,13 @@ void LibArtDrawingKit::allocateText(const Unistring & s, Graphic::Requisition & 
 }
 
 void LibArtDrawingKit::flush() {   
-  int x = (int)(bbox.x0);
-  int y = (int)(bbox.y0);
-  int x1 = (int)(bbox.x1);
-  int y1 = (int)(bbox.y1);
   ggi_visual_t vis = drawable->visual();
-  ggiSetGCClipping(vis, x, y, x1, y1);
-  ggiCrossBlit(memvis, x,y,x1-x,y1-y, vis, x,y );
-  bbox.x0 = bbox.y0 = bbox.x1 = bbox.y1 = 0.;  
+  //   ggiSetGCClipping(vis, bbox.x0, bbox.y0, bbox.x1, bbox.y1);
+  ggiCrossBlit(memvis, bbox.x0,bbox.y0,
+	       bbox.x1-bbox.x0,
+	       bbox.y1-bbox.y0, 
+	       vis, bbox.x0,bbox.y0 );
+  bbox.x0 = bbox.y0 = bbox.x1 = bbox.y1 = 0;  
 }
 
 EXPORT_PLUGIN(LibArtDrawingKit, interface(DrawingKit))
