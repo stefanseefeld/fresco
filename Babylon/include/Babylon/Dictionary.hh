@@ -85,34 +85,27 @@ namespace Babylon {
 	    virtual bool must_mirror(const UCS4) const = 0;
 	    virtual EA_Width EA_width(const UCS4) const = 0;
 	    virtual Line_Break linebreak(const UCS4) const = 0;
+
+	    // Properties:
 	    virtual bool is_White_space(const UCS4) const = 0;
-	    virtual bool is_Non_break(const UCS4) const = 0;
 	    virtual bool is_Bidi_Control(const UCS4) const = 0;
 	    virtual bool is_Join_Control(const UCS4) const = 0;
-	    virtual bool is_Format_Control(const UCS4) const = 0;
-	    virtual bool is_Other_Format_Control(const UCS4) const = 0;
 	    virtual bool is_Dash(const UCS4) const = 0;
 	    virtual bool is_Hyphen(const UCS4) const = 0;
 	    virtual bool is_Quotation_Mark(const UCS4) const = 0;
 	    virtual bool is_Terminal_Punctuation(const UCS4) const = 0;
-	    virtual bool is_Math(const UCS4) const = 0;
-	    virtual bool is_Composite(const UCS4) const = 0;
+	    virtual bool is_Other_Math(const UCS4) const = 0;
 	    virtual bool is_Hex_Digit(const UCS4) const = 0;
-	    virtual bool is_Alphabetic(const UCS4) const = 0;
+	    virtual bool is_Other_Alphabetic(const UCS4) const = 0;
 	    virtual bool is_Ideographic(const UCS4) const = 0;
 	    virtual bool is_Diacritic(const UCS4) const = 0;
 	    virtual bool is_Extender(const UCS4) const = 0;
-	    virtual bool is_Identifier_Part_Not_Cf(const UCS4) const = 0;
-	    virtual bool is_Private_Use(const UCS4) const = 0;
 	    virtual bool is_Other_Uppercase(const UCS4) const = 0;
 	    virtual bool is_Other_Lowercase(const UCS4) const = 0;
-	    virtual bool is_Low_Surrogate(const UCS4) const = 0;
-	    virtual bool is_High_Surrogate(const UCS4) const = 0;
-	    virtual bool is_Private_Use_High_Surrogate(const UCS4) const = 0;
 	    virtual bool is_Noncharacter_Code_Point(const UCS4) const = 0;
 
-	    virtual UCS4 firstLetter() = 0;
-	    virtual UCS4 lastLetter() = 0;
+	    virtual UCS4 first_letter() const = 0;
+	    virtual UCS4 last_letter() const = 0;
 	protected:
 	
 	private:
@@ -194,17 +187,12 @@ namespace Babylon {
 	Line_Break linebreak(const UCS4 uc)
 	    throw (Block_Error);
 
+	// Properties:
 	bool is_White_space(const UCS4 uc) 
-	    throw (Block_Error);
-	bool is_Non_break(const UCS4 uc) 
-	    throw (Block_Error);
-	bool is_Format_Control(const UCS4 uc) 
 	    throw (Block_Error);
 	bool is_Bidi_Control(const UCS4 uc) 
 	    throw (Block_Error);
 	bool is_Join_Control(const UCS4 uc) 
-	    throw (Block_Error);
-	bool is_Other_Format_Control(const UCS4 uc) 
 	    throw (Block_Error);
 	bool is_Dash(const UCS4 uc) 
 	    throw (Block_Error);
@@ -214,13 +202,11 @@ namespace Babylon {
 	    throw (Block_Error);
 	bool is_Terminal_Punctuation(const UCS4 uc) 
 	    throw (Block_Error);
-	bool is_Math(const UCS4 uc) 
+	bool is_Other_Math(const UCS4 uc) 
 	    throw (Block_Error);
-        bool is_Composite(const UCS4 uc) 
-            throw (Block_Error);
         bool is_Hex_Digit(const UCS4 uc) 
             throw (Block_Error);
-        bool is_Alphabetic(const UCS4 uc) 
+        bool is_Other_Alphabetic(const UCS4 uc) 
             throw (Block_Error);
         bool is_Ideographic(const UCS4 uc) 
             throw (Block_Error);
@@ -228,19 +214,9 @@ namespace Babylon {
             throw (Block_Error);
         bool is_Extender(const UCS4 uc) 
             throw (Block_Error);
-        bool is_Identifier_Part_Not_Cf(const UCS4 uc) 
-            throw (Block_Error);
-        bool is_Private_Use(const UCS4 uc) 
-            throw (Block_Error);
         bool is_Other_Uppercase(const UCS4 uc) 
             throw (Block_Error);
         bool is_Other_Lowercase(const UCS4 uc) 
-            throw (Block_Error);
-        bool is_Low_Surrogate(const UCS4)
-            throw (Block_Error);
-        bool is_High_Surrogate(const UCS4)
-            throw (Block_Error);
-        bool is_Private_Use_High_Surrogate(const UCS4)
             throw (Block_Error);
         bool is_Noncharacter_Code_Point(const UCS4)
 	    throw (Block_Error);

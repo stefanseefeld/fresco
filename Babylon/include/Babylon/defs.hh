@@ -168,7 +168,7 @@ namespace Babylon {
     
     // NORMATIVE:
     enum char_decomp_enum {
-	DECOMP_NO_DECOMP=0, // THIS IS IMPLEMENTATION DEPENDANT!
+	DECOMP_CANONICAL=0, // This is the only NORMATIVE property here.
 	DECOMP_FONT,        // A font variant
 	DECOMP_NOBREAK,     // A no-break version of a space or hyphen
 	DECOMP_INITIAL,     // An initial presentation form

@@ -549,39 +549,6 @@ namespace Babylon {
 	    return Dictionary::instance()->bidir_props(m_value) == BIDIR_ON;
 	}
 
-	//. Returns true, if this character has the decimal digit property set
-	//. and false otherwise. 
-	//. Throws : Block_Error
-	//.          if the block containing the character
-	//.          could not get loaded.
-	//.          THIS SHOULD NEVER HAPPEN!
-	bool is_Decimal_Digit()
-	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Decimal_Digit(m_value);
-	}
-
-	//. Returns true, if this character has the numeric property set
-	//. and false otherwise. 
-	//. Throws : Block_Error
-	//.          if the block containing the character
-	//.          could not get loaded.
-	//.          THIS SHOULD NEVER HAPPEN!
-	bool is_Numeric()
-	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Numeric(m_value);
-	}
-
-	//. Returns true, if this character has the digit property set
-	//. and false otherwise. 
-	//. Throws : Block_Error
-	//.          if the block containing the character
-	//.          could not get loaded.
-	//.          THIS SHOULD NEVER HAPPEN!
-	bool is_Digit()
-	    throw (Block_Error) {
-	    return Dictionary::instance()->is_Digit(m_value);
-	}
-
 	//. Returns true, if this character is a virama and false
 	//. otherwise. 
 	//. Throws : Block_Error
@@ -611,6 +578,61 @@ namespace Babylon {
 	    return (m_value & 0xFFFD == 0);
 	}
 
+	// Derived Properties:
+	bool is_Math()
+	    throw (Block_Error) {
+	    return (Dictionary::instance()->category(m_value) == CAT_Sm ||
+		    Dictionary::instance()->is_Other_Math(m_value));
+	}
+
+	bool is_Alphabetic() const
+	    throw (Block_Error);
+
+	bool is_Lowercase() const
+	    throw (Block_Error) {
+	    return (Dictionary::instance()->category(m_value) == CAT_Ll ||
+		    Dictionary::instance()->is_Other_Lowercase(m_value));
+	}
+
+	bool is_Uppercase() const
+	    throw (Block_Error) {
+	    return (Dictionary::instance()->category(m_value) == CAT_Lu ||
+		    Dictionary::instance()->is_Other_Uppercase(m_value));
+	}
+
+	// This does not really belong into the Derived Properties:
+	bool is_Titlecase() const
+	    throw (Block_Error) {
+	    return (Dictionary::instance()->category(m_value) == CAT_Lt);
+	}
+
+	bool is_ID_Start() const throw (Block_Error);
+	bool is_ID_Continue() const throw (Block_Error);
+
+	// FIXME: Closure forms not added yet.
+	bool is_XID_Start() const throw (Block_Error) {
+	    return is_ID_Start();
+	}
+
+	bool is_XID_Continue() const throw (Block_Error) {
+	    return is_ID_Continue();
+	}
+
+	bool is_Decimal() const throw (Block_Error) {
+	    return (Dictionary::instance()->is_Decimal_Digit(m_value) &&
+		    Dictionary::instance()->is_Digit(m_value) &&
+		    Dictionary::instance()->is_Numeric(m_value));
+	}
+
+	bool is_Digit() const throw (Block_Error) {
+	    return (Dictionary::instance()->is_Digit(m_value) &&
+		    Dictionary::instance()->is_Numeric(m_value));
+	}
+
+	bool is_Numeric() const throw (Block_Error) {
+	    return Dictionary::instance()->is_Numeric(m_value);
+	}
+	
 	// ------------------------------------------------------------
 	// TRANSFORMATIONS:
 	// ------------------------------------------------------------
