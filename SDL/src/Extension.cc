@@ -209,7 +209,7 @@ SDL::GLContext::GLContext()
 {
   Prague::Trace trace("SDL::GLContext::attach()");
 
-  SDL::Drawable * _drawable =
+  _drawable =
     dynamic_cast<SDL::Drawable *>(::Console::instance()->drawable());
 
   Warsaw::PixelCoord w(_drawable->width());
