@@ -132,7 +132,7 @@ void GLDrawingKit::setSurfaceFillstyle(DrawingKit::Fillstyle style)
 
 void GLDrawingKit::setTexture(Raster_ptr t)
 {
-  tx = CORBA::is_nil(t) ? 0 : textures.lookup(t);
+  tx = CORBA::is_nil(t) ? 0 : textures.lookup(Raster::_duplicate(t));
   if (tx) glBindTexture(GL_TEXTURE_2D, tx->texture);
 }
 
@@ -202,7 +202,6 @@ void GLDrawingKit::drawEllipse(const Vertex &lower, const Vertex &upper)
   glPopMatrix();
 }
 
-
 void GLDrawingKit::drawImage(Raster_ptr raster)
 {
   GLImage *glimage = images.lookup(Raster::_duplicate(raster));
@@ -231,17 +230,17 @@ void GLDrawingKit::drawImage(Raster_ptr raster)
 
 CORBA::ULong GLDrawingKit::fontSize() { return 16; }
 CORBA::ULong GLDrawingKit::fontWeight() { return 100;}
-Unistring* GLDrawingKit::fontFamily()
-{ 
-  static Unistring name = Unicode::toCORBA(Unicode::String("GNU Unifont")); 
-  return &name; 
+Unistring *GLDrawingKit::fontFamily()
+{
+  Unistring *name = new Unistring(Unicode::toCORBA(Unicode::String("GNU Unifont")));
+  return name;
 }
 Unistring* GLDrawingKit::fontSubFamily() { return 0; }
 Unistring* GLDrawingKit::fontFullName() { return 0; }
 Unistring* GLDrawingKit::fontStyle() 
 {
-  static Unistring name = Unicode::toCORBA(Unicode::String("monospace")); 
-  return &name; 
+  Unistring *name = new Unistring(Unicode::toCORBA(Unicode::String("monospace")));
+  return name; 
 }
 
 FontMetrics GLDrawingKit::metrics() 
