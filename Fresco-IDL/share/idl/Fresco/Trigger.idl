@@ -26,15 +26,15 @@
 
 interface Command;
 
-interface Trigger : Controller
 //. A trigger is a controller that can execute a command when clicked
 //. (pressed and subsequently released with the pointer over
 //. the button's allocated area for example). Triggers manipulate a telltale
 //. that represents the current state of the trigger and
 //. determines the trigger's appearance.
+interface Trigger : Controller
 {
-  attribute Command action;
   //. The trigger will execute its command (if not nil) when clicked.
+  attribute Command action;
 };
 
 #endif /* _Trigger_idl */

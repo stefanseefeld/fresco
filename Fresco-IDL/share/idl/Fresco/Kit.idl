@@ -24,9 +24,9 @@
 
 interface ServerContext;
 
-interface Kit
 //. ths kit interface is the base type for most of the objects
 //. you will allocate in a berlin server.
+interface Kit
 {
   struct Property
   {
@@ -35,16 +35,16 @@ interface Kit
   };
   typedef sequence<Property> PropertySeq;
 
+  //. query for properties
   readonly attribute PropertySeq properties;
   boolean _supports(in PropertySeq p);
-  //. query for properties
-  void bind(in ServerContext sc);
   //. initializer method which allows a kit to hook up resources it
   //. might need from the same context
-  void remove();
+  void bind(in ServerContext sc);
   //. dispose this object. Since Kit's might be shared, this will
   //. probably result in a ref counter to be decremented so that the
   //. kit will be deleted only if the counter drops to zero
+  void remove();
 };
 
 #endif

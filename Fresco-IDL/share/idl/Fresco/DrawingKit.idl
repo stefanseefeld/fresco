@@ -32,16 +32,16 @@ interface Raster;
 
 interface DrawingKit : Kit
 {
-  struct FontMetrics
   //.all values are in 1/64th of a pixel
+  struct FontMetrics
   {
     long ascender;      /* ascender in 26.6 frac. pixels          */
     long descender;     /* descender in 26.6 frac. pixels         */
     long height;        /* text height in 26.6 frac. pixels       */
     long max_advance;   /* max horizontal advance, in 26.6 pixels */
   };
-  struct GlyphMetrics
   //.all values are in 1/64th of a pixel
+  struct GlyphMetrics
   {
     long width;         /* glyph width  */
     long height;        /* glyph height */

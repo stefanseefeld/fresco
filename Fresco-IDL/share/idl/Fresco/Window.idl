@@ -26,10 +26,10 @@
 
 interface Command;
 
-interface Window : Controller
 //. a Window is a top level controller, i.e. one which
 //. is directly contained in the Desktop. It contains
 //. methods to manipulate its position in the Desktop.
+interface Window : Controller
 {
   const short left = 1;
   const short right = 2;

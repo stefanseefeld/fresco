@@ -27,10 +27,10 @@
 
 interface Figure : Graphic
 {
-  typedef ::Path Vertices;
   //. The Vertices type defines a sequence of vertex structures
   //. for figures with an arbitrary number of vertices,
   //. such as polygons and B-splines.
+  typedef ::Path Vertices;
   
   typedef short Mode;
   const Mode fill = 1;

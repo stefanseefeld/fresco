@@ -26,25 +26,25 @@
 
 module Input
 {
-  typedef unsigned long Device;
   //. the device id. Each logical device has a unique id attached to it
   //. which is used by events, focus etc.
-  typedef unsigned long Bitset;
+  typedef unsigned long Device;
   //. a set of flags
-  struct Toggle
+  typedef unsigned long Bitset;
   //. the generalization of keys and mouse buttons
+  struct Toggle
   {
     enum type {press, hold, release} actuation;
     unsigned long number;
   };
-  typedef Vertex        Position;
   //. positional events have one...
-  typedef double        Value;
+  typedef Vertex        Position;
   //. also possible: simple value input
-  enum Discriminator { telltale, key, button, positional, valuation};
+  typedef double        Value;
   //. the actual attributes; the concrete type is discriminated by these
-  union Payload switch (Discriminator)
+  enum Discriminator { telltale, key, button, positional, valuation};
   //. the data associated with these attributes
+  union Payload switch (Discriminator)
   {
   case telltale: Bitset state;
   case key:
@@ -53,16 +53,16 @@ module Input
   case valuation: Value val;
   };
 
-  struct Item
   //. each item contains a device id and an attribute
+  struct Item
   {
     Device dev;
     Payload attr;
   };
-  typedef sequence<Input::Item> Event;
   //. an event is simply a list of items
-  interface Filter
+  typedef sequence<Input::Item> Event;
   //. An event filter controls the routing of events
+  interface Filter
   {
     boolean handle(in Event e);
   };

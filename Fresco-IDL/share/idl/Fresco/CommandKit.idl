@@ -34,12 +34,12 @@ interface TextBuffer;
 interface StreamBuffer;
 interface Command;
 
-interface CommandKit : Kit
 //. the command kit is a collection of strategy objects. they form the
 //. basis of any control protocol between widgets and subjects. The
 //. kit also encapsulates the constructors for command dispatchers
 //. (a.k.a. reactors), which you can think of as threading strategies
 //. if that suits you.
+interface CommandKit : Kit
 {
   Command log(in string t);
   MacroCommand composite();

@@ -26,29 +26,29 @@ interface Region;
 interface Transform;
 interface Screen;
 
-interface Allocation
 //. Allocation is used in the process of retreiving
 //. cumulative geometry information for a given graphic.
 //. This information is used to determine what regions to
 //. damage in order to redraw the graphic.
+interface Allocation
 {
+  //. Info holds the region and transformation for one
+  //. appearance of the graphic.
   struct Info
-    //. Info holds the region and transformation for one
-    //. appearance of the graphic.
   {
     Region allocation;
     Transform transformation;
     Screen root;
   };
-  void add(in Region r, in Screen s);
   //. add a new entry. This is typically called by the root
   //. node of the scene graph (which is a screen). Since we
   //. want to be able to draw on multiple screens at a time,
   //. the Screen parameter has to be given
-  long size();
+  void add(in Region r, in Screen s);
   //. the number of entries in the Allocation list.
-  Info get(in long l);
+  long size();
   //. used to access the l'th entry
+  Info get(in long l);
 };
 
 #endif /* _Allocation_idl */

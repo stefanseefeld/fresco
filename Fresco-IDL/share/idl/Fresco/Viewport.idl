@@ -27,6 +27,7 @@
 
 interface BoundedRange;
 
+//. A viewport allows adjustment of the view of a graphic.
 interface Viewport : Graphic, Observer
 {
   BoundedRange adjustment(in Axis a);

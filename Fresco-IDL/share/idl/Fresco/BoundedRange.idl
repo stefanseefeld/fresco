@@ -25,6 +25,9 @@
 #include <Warsaw/Subject.idl>
 #include <Warsaw/Types.idl>
 
+//.a BoundedRange describes a 'range within a range'
+//.such as a viewport (a 'window') manipulated by a
+//.scrollbar
 interface BoundedRange : Subject
 {
   struct Settings

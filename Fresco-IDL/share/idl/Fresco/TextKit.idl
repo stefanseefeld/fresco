@@ -30,14 +30,14 @@
 interface TextBuffer;
 interface StreamBuffer;
 
-interface TextKit : Kit
 //. TextKit produces text chunks (flyweights) as well as decorators which set the
 //. current font state as a traversal passes through them.
+interface TextKit : Kit
 {
   Graphic chunk(in Unistring u);    
   Graphic glyph(in Unichar u);    
-  Graphic strut();
   //. placeholder for an empty line
+  Graphic strut();
   Graphic simpleViewer(in TextBuffer buf);
   Graphic terminal(in StreamBuffer buf);
 

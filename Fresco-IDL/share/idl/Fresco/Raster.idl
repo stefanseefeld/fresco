@@ -23,10 +23,10 @@
 
 #include <Warsaw/Types.idl>
 
-interface Raster
 //. A raster is a two-dimensional pixel array
 //. Raster is based on the W3C PNG specs, see
 //. <http://www.w3.org/TR/REC-png> for details
+interface Raster
 {
   struct Info
     //. the image header (IHDR chunk)
@@ -43,24 +43,24 @@ interface Raster
   struct Index { unsigned long x, y;};
   typedef sequence<Color> ColorSeq;
 
-  Info header();
   //. access the header information (the PNG IHDR chunk)
+  Info header();
 
-  void clear();
   //. clear the Raster
+  void clear();
 
-  void loadData(in Data d);
-  void storeData(out Data d);
   //. these methods are suitable to transfer the Raster.
   //. the used format follows the PNG specs
+  void loadData(in Data d);
+  void storeData(out Data d);
 
+  //. access and modify individual pixel values
   void loadPixel(in Index i, in Color c);
   void storePixel(in Index i, out Color c);
-  //. access and modify individual pixel values
 
-  void loadPixels(in Index lower, in Index upper, in ColorSeq s);
-  void storePixels(in Index lower, in Index upper, out ColorSeq s);
   //. access and modify ranges of pixels.
   //. the length of the ColorSeq in loadPixels must at least correspond 
   //. to the given width times the given height
+  void loadPixels(in Index lower, in Index upper, in ColorSeq s);
+  void storePixels(in Index lower, in Index upper, out ColorSeq s);
 };

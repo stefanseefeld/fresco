@@ -35,9 +35,9 @@ interface Command;
 interface TextBuffer;
 interface StreamBuffer;
 
-interface ToolKit : Kit
 //. this kit provides common objects for very basic interaction tasks
 //. and Telltale Views such as bevels and indicators
+interface ToolKit : Kit
 {
   enum FrameType { none, inset, outset, convex, concav, colored};
   enum Direction { left, right, up, down};

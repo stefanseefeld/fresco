@@ -31,18 +31,18 @@ exception SecurityException {};
 exception SingletonFailureException {};
 exception CreationFailureException {};
 
-interface ServerContext
 //. the ServerContext is an object you pick up from the berlin
 //. server's root ContextManager, and which you use to create all
 //. generic interfaces (kits, plugins, etc).
+interface ServerContext
 {
+  //. this is the entry point to generic object creation on a server.
   Kit resolve(in string type, in Kit::PropertySeq attr)
     raises (SecurityException, CreationFailureException);
-  //. this is the entry point to generic object creation on a server.
 
+  //. access to singletons (like the fontManager) this way
   void setSingleton(in string name, in Object singleton) 
     raises (SecurityException, SingletonFailureException);
-  //. access to singletons (like the fontManager) this way
 
   void delSingleton(in string name)
     raises (SecurityException, SingletonFailureException);

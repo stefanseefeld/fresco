@@ -25,12 +25,13 @@
 
 interface Command;
 
-interface Command
 //. commands are anonymous encapsulated actions. 
+interface Command
 {
   void execute(in any a);
 };
 
+//. a composite command
 interface MacroCommand : Command
 {
   void append(in Command c);

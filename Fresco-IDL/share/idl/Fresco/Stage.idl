@@ -26,6 +26,8 @@
 
 interface StageHandle;
 
+//. A stage allows its children to be placed at any position and
+//. layering.
 interface Stage : Graphic
 {
   typedef long Index;

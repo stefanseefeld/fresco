@@ -24,13 +24,13 @@
 
 #include <Warsaw/Types.idl>
 
-interface ClientContext
 //. a Client Context object is an interface any client connecting to a
 //. berlin server needs to present. It is used in managing the
 //. resources the client allocates and in authenticating the client's
 //. requests. The default security mechanism is obviously rediculously
 //. simplistic but we don't really have any security folks around to
 //. help us with this at the moment. You're welcome to improve on it.
+interface ClientContext
 {
   readonly attribute Unistring userName;
 
