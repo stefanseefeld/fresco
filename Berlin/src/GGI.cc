@@ -163,10 +163,10 @@ Input::Event *GGIConsole::next_event()
 
   int input = fileno(stdin);
   Prague::FdSet rfdset;
-  rfdset.set(wakeupPipe[0]);
-  if (autoplay) rfdset.set(input);
+  rfdset.set(_wakeupPipe[0]);
+  if (_autoplay) rfdset.set(input);
   int nfds = -1;
-  do nfds = ggiEventSelect(visual, &mask, rfdset.max() + 1, rfdset, 0, 0, 0);
+  do nfds = ggiEventSelect(_visual, &mask, rfdset.max() + 1, rfdset, 0, 0, 0);
   while (nfds == -1 && errno == EINTR);
   if (nfds == 0)
     {
