@@ -232,22 +232,24 @@ inline void SDLDrawable::put_pixel(Warsaw::PixelCoord x, Warsaw::PixelCoord y, P
   if (x >= _width || y >= _height || x < 0 || y < 0) return;
   if (_need_locking) { SDL_LockSurface(_surface); }
 
-  Uint8 bpp = _surface->format->BytesPerPixel;
+  Uint8* p = (Uint8 *)_surface->pixels + y * _surface->pitch + x * _depth;
+
   switch( _depth ) {
-  case 1: ((Uint8 *)(_surface->pixels))[ y * _surface->pitch + x * bpp ] = c; break;
-  case 2: ((Uint16 *)(_surface->pixels))[ y * _surface->pitch + x * bpp ] = c; break;
+  case 1: *p = c; break;
+  case 2: *(Uint16 *)p = c; break;
   case 3: {
-    Uint8 *pixbuf = (Uint8 *)(_surface->pixels) + y * _surface->pitch + x * bpp;
-    Uint8 color[3];
-    color[0] = (c >> _surface->format->Rshift)&0xFF;
-    color[1] = (c >> _surface->format->Gshift)&0xFF;
-    color[2] = (c >> _surface->format->Bshift)&0xFF;
-    *((pixbuf) + _surface->format->Rshift/8) = color[0];
-    *((pixbuf) + _surface->format->Gshift/8) = color[1];
-    *((pixbuf) + _surface->format->Bshift/8) = color[2];
+    if(SDL_BYTEORDER == SDL_BIG_ENDIAN) {
+      p[0] = (c >> 16) & 0xff;
+      p[1] = (c >> 8) & 0xff;
+      p[2] = c & 0xff;
+    } else {
+      p[0] = c & 0xff;
+      p[1] = (c >> 8) & 0xff;
+      p[2] = (c >> 16) & 0xff;
+    }
     break;
   }
-  case 4: ((Uint32 *)(_surface->pixels))[ y * _surface->pitch + x * bpp ] = c; break;
+  case 4: *(Uint32 *)p = c; break;
   }
 
   if (_need_locking) { SDL_UnlockSurface(_surface); }
