@@ -32,7 +32,7 @@ gpath	= gdb
 ppath	= prf
 rpath	= $(lpath)
 
-ifneq (,$(findstring $(MAKECMDGOALS), clean distclean))
+ifeq (,$(findstring $(MAKECMDGOALS), clean distclean))
 include $(cpath)/local.mk
 include $(cpath)/Server/local.mk
 endif
