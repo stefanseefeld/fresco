@@ -28,6 +28,8 @@
 #include <Fresco/Types.hh>
 #include <Fresco/Graphic.hh>
 #include <Fresco/Unicode.hh>
+#include <Fresco/Transform.hh>
+#include <Berlin/Console/GLContext.hh>
 #include "Font.hh"
 #include <GL/gl.h>
 #include <vector>
@@ -38,11 +40,11 @@
 namespace openGL
 {
 
-class FTFont : public Font
+class FTFont
 //. This is a Freetype font.
 {
 public:
-  FTFont();
+  FTFont(GLContext *my_glcontext);
   virtual ~FTFont();
   virtual CORBA::ULong size();
   virtual CORBA::ULong weight();
@@ -53,19 +55,24 @@ public:
   virtual Fresco::DrawingKit::FontMetrics metrics();
   virtual Fresco::DrawingKit::GlyphMetrics metrics(Fresco::Unichar);
 
+  virtual void set_transform(const Fresco::Transform_var);
   virtual void size(CORBA::ULong);
 
   void draw_char(Fresco::Unichar);
   void allocate_char(Fresco::Unichar, Fresco::Graphic::Requisition &);
 private:
-  FT_Library my_library;
+  class DrawChar;
+  friend class DrawChar;
   FT_Face    my_face;
+  Fresco::Transform_var _tr;
+  CORBA::ULong my_size;
+  FT_Library my_library;
   Fresco::Unistring _family;
   Fresco::Unistring _subfamily;
   Fresco::Unistring _fullname;
   Fresco::Unistring _style;
 
-  CORBA::ULong my_size;
+  GLContext *my_glcontext;
 };
 
 }

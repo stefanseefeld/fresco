@@ -41,21 +41,24 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <math.h>
 
 using namespace Prague;
 using namespace Fresco;
 
-openGL::FTFont::FTFont()
+openGL::FTFont::FTFont(GLContext *glcontext)
   : _family(Unicode::to_CORBA(Babylon::String("GNU Unifont"))),
     _subfamily(),
     _fullname(),
-    _style(Unicode::to_CORBA(Babylon::String("monospace")))
+    _style(Unicode::to_CORBA(Babylon::String("monospace"))),
+    my_size(14),
+    my_glcontext(glcontext)
 {
   Prague::Path path = RCManager::get_path("unifontpath");
   std::string font_file = path.lookup_file("unifont.bdf");
   FT_Init_FreeType(&my_library);
   FT_New_Face(my_library, font_file.c_str(), 0, &my_face);
-  FT_Set_Pixel_Sizes(my_face, 0, 14);
+  FT_Set_Char_Size(my_face, 0, my_size*64, 72, 72);
 }
 
 openGL::FTFont::~FTFont() {
@@ -91,7 +94,8 @@ DrawingKit::GlyphMetrics openGL::FTFont::metrics(Unichar uc)
 {
   DrawingKit::GlyphMetrics gm;
 
-  FT_Load_Glyph(my_face, FT_Get_Char_Index(my_face, (FT_ULong)uc), FT_LOAD_DEFAULT);
+  FT_Load_Glyph(my_face, FT_Get_Char_Index(my_face, (FT_ULong)uc),
+		FT_LOAD_DEFAULT);
 
   double scale = 1.;
   gm.width = static_cast<CORBA::Long>(my_face->glyph->metrics.width / scale);
@@ -130,120 +134,168 @@ static inline unsigned int next_pow2(unsigned int n)
   else return 1 << (highest_bit_set(n) + 1);
 }
 
+void openGL::FTFont::set_transform(const Fresco::Transform_var tr)
+{
+  _tr = tr;
+}
+
+// magnitude of a - b.
+inline float delta_magnitude(const Fresco::Vertex &a, const Fresco::Vertex &b)
+{
+  return sqrt((a.x-b.x)*(a.x-b.x) + (a.y-b.y)*(a.y-b.y) + (a.z-b.z)*(a.z-b.z));
+}
+
+class openGL::FTFont::DrawChar : public virtual GLContext::Callback {
+public:
+  DrawChar::DrawChar(Unichar uc, FTFont *that)
+  {
+    ::Console::Drawable *drawable = ::Console::instance()->drawable();
+
+    GraphicImpl::init_requisition(r);
+    that->allocate_char(uc, r);
+    
+    Fresco::Vertex  o = {0, 0, 0};
+    Fresco::Vertex e1 = {1, 0, 0};
+    Fresco::Vertex e2 = {0, 1, 0};
+    
+    that->_tr->transform_vertex(o);
+    that->_tr->transform_vertex(e1);
+    that->_tr->transform_vertex(e2);
+    
+    x_zoom = 1./(drawable->resolution(Fresco::xaxis)*delta_magnitude(e1, o));
+    y_zoom = 1./(drawable->resolution(Fresco::xaxis)*delta_magnitude(e2, o));
+
+    // the other option is better looking but *SLOW*
+#if 1
+    FT_Matrix matrix = {delta_magnitude(e1, o)*0x10000, 0,
+                        0, delta_magnitude(e2, o)*0x10000};
+
+    FT_Set_Transform(that->my_face, &matrix, 0);
+#else
+
+    FT_Set_Char_Size(that->my_face, 0, that->my_size*64,
+		     72*delta_magnitude(e1, o),
+		     72*delta_magnitude(e2, o));
+#endif
+
+    FT_Load_Char(that->my_face, uc, FT_LOAD_DEFAULT);
+
+    FT_Vector origin;
+    origin.x = 0;//(o.x - floorf(o.x)) * 0x10000;
+    origin.y = 0;//(o.y - floorf(o.y)) * 0x10000;
+    
+    FT_Get_Glyph(that->my_face->glyph, &glyph);
+    
+    FT_Glyph_To_Bitmap(&glyph, ft_render_mode_normal, &origin, 1);
+    glyph_bitmap = (FT_BitmapGlyph)glyph;
+    
+    FT_Set_Transform(that->my_face, 0, 0);
+  }    
+  void operator()()
+  {
+    unsigned char *buffer = glyph_bitmap->bitmap.buffer;
+    int width = glyph_bitmap->bitmap.width;
+    int height = glyph_bitmap->bitmap.rows;
+  
+    // XXX: We should be breaking oversized characters into pieces of
+    // textures and drawing them all.
+    GLint maxsize, w, h; 
+    glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxsize);
+    w = next_pow2(width);
+    h = next_pow2(height);
+    
+    while (w*h < 64)
+      if (w < h) { w = next_pow2(w+1); } else { h = next_pow2(h+1); }
+    
+    if (w > maxsize || h > maxsize) {
+      std::cerr << "Character too large to render." << std::endl;
+      delete this; return;
+    }
+    
+    std::vector<unsigned char> pixels(w*h, 0);
+    
+    GLint internal_format;
+    GLenum format, type;  
+    
+    switch (glyph_bitmap->bitmap.pixel_mode)
+      {
+      case FT_PIXEL_MODE_NONE:
+	// should never happen
+        std::cout << "WTF;FT_PIXEL_MODE_NONE" << std::endl;
+        break;
+      case FT_PIXEL_MODE_MONO: // MSB 1 bpp
+        internal_format = GL_ALPHA;
+        format = GL_ALPHA;
+        type = GL_UNSIGNED_BYTE;
+	{
+	  ::Console::Drawable *drawable = ::Console::instance()->drawable();
+	  x_zoom = 1./drawable->resolution(Fresco::xaxis);
+	  y_zoom = 1./drawable->resolution(Fresco::yaxis);
+	}
+        for (int i = 0; i < height; i++)
+          for (int j = 0; j < width; j++)
+            pixels[i*w + j] = (buffer[i*(width/8)+(j/8)] &
+			       (0x80 >> j%8)) ? 0xFF : 0;
+        break;
+      case FT_PIXEL_MODE_GRAY: // 8 bpp count of grey levels in num_bytes
+        internal_format = GL_ALPHA;
+        format = GL_ALPHA;
+        type = GL_UNSIGNED_BYTE;
+        for (int i = 0; i < height; i++)
+          for (int j = 0; j < width; j++)
+            pixels[i*w+j] = buffer[i*width+j];
+        break;
+      case FT_PIXEL_MODE_GRAY2: // 2bpp (no known fonts)
+        std::cout << "NYI;FT_PIXEL_MODE_GRAY2" << std::endl;
+        break;
+      case FT_PIXEL_MODE_GRAY4: // 4bpp (no known fonts)
+        std::cout << "NYI;FT_PIXEL_MODE_GRAY4" << std::endl;
+        break;
+      case FT_PIXEL_MODE_LCD: // 8bpp RGB or BGR, width=3*glyph_width
+        std::cout << "NYI;FT_PIXEL_MODE_LCD" << std::endl;
+        break;
+      case FT_PIXEL_MODE_LCD_V: // 8bpp RGB or BGR, height=3*glyph_rows
+        std::cout << "NYI;FT_PIXEL_MODE_LCD_V" << std::endl;
+        break;
+      default:
+        std::cout << "Unknown: " << glyph_bitmap->bitmap.pixel_mode << std::endl;
+        break;
+      }
+    
+    GLuint texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    
+    glTexImage2D(GL_TEXTURE_2D, 0, internal_format, w, h, 0, format, type, &pixels[0]);
+    
+    glEnable(GL_TEXTURE_2D);
+    glBegin(GL_QUADS);
+    float top = -height * r.y.align;
+    glTexCoord2f(0, 1); glVertex3f(0.0, (top+h)*y_zoom, 0.0);
+    glTexCoord2f(1, 1); glVertex3f(w*x_zoom, (top+h)*y_zoom, 0.0);
+    glTexCoord2f(1, 0); glVertex3f(w*x_zoom, top*y_zoom, 0.0);
+    glTexCoord2f(0, 0); glVertex3f(0.0, top*y_zoom, 0.0);
+    glEnd();
+    glDisable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glDeleteTextures(1, &texture);
+
+    delete this;
+  }
+private:
+  Fresco::Graphic::Requisition r;
+  FT_Glyph glyph;
+  FT_BitmapGlyph glyph_bitmap;
+  float x_zoom, y_zoom;
+};
+
 void openGL::FTFont::draw_char(Unichar uc) 
 {
-  Fresco::Graphic::Requisition r;
-  GraphicImpl::init_requisition(r);
-  allocate_char(uc, r);
-
-  //std::cerr << "loading: " << (FT_ULong)uc << " (";
-  //std::cerr << FT_Get_Char_Index(my_face, (FT_ULong)uc) << ")";
-  if (FT_Load_Glyph(my_face, FT_Get_Char_Index(my_face, (FT_ULong)uc), FT_LOAD_DEFAULT)) { return; }
-  //assert(!FT_Load_Glyph(my_face, FT_Get_Char_Index(my_face, (FT_ULong)uc), FT_LOAD_DEFAULT));
-  //std::cerr << std::endl;
-
-  FT_Vector origin; origin.x = 0; origin.y = 0;
-
-  FT_Glyph glyph;
-  FT_Get_Glyph(my_face->glyph, &glyph);
-
-  FT_Glyph_To_Bitmap(&glyph, ft_render_mode_normal, &origin, 1);
-  FT_BitmapGlyph glyph_bitmap = (FT_BitmapGlyph)glyph;
-
-  unsigned char *buffer = glyph_bitmap->bitmap.buffer;
-  int width = glyph_bitmap->bitmap.width;
-  int height = glyph_bitmap->bitmap.rows;
-
-  int x_zoom = 10;
-  int y_zoom = 10;
-
-  // XXX: every return in the following block. Instead we should be
-  // breaking oversized characters into pieces of textures and drawing
-  // them all. Max texture size on a Voodoo is just 256 texels on a side.
-  GLint maxsize, w, h; 
-  glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxsize);
-  w = next_pow2(width);
-  h = next_pow2(height);
-
-  while (w*h < 64)
-    if (w < h) { w = next_pow2(w+1); } else { h = next_pow2(h+1); }
-
-  if (w > maxsize || h > maxsize) {
-    std::cerr << "Character too large to render." << std::endl;
-    return;
-  }
-
-  std::vector<unsigned char> pixels(w*h, 0);
-
-  GLint internal_format;
-  GLenum format, type;  
-
-  switch (glyph_bitmap->bitmap.pixel_mode)
-    {
-    case FT_PIXEL_MODE_NONE:
-      std::cout << "WTF;FT_PIXEL_MODE_NONE" << std::endl; // should never happen
-      break;
-    case FT_PIXEL_MODE_MONO: // MSB 1 bpp
-      internal_format = GL_ALPHA;
-      format = GL_ALPHA;
-      type = GL_UNSIGNED_BYTE;
-      //x_zoom = 10; y_zoom = 10;
-      for (int i = 0; i < height; i++) {
-	for (int j = 0; j < width; j++) {
-	  pixels[i*w + j] = (buffer[i*(width/8)+(j/8)] & (0x80 >> j%8)) ? 0xFF : 0;
-	}
-      }
-      break;
-    case FT_PIXEL_MODE_GRAY: // 8 bpp count of grey levels in num_bytes
-      //x_zoom = 1; y_zoom = 1;
-      internal_format = GL_ALPHA;
-      format = GL_ALPHA;
-      type = GL_UNSIGNED_BYTE;
-      for (int i = 0; i < height; i++) {
-	for (int j = 0; j < width; j++) {
-	  pixels[i*w+j] = buffer[i*width+j];
-	}
-      }
-      break;
-    case FT_PIXEL_MODE_GRAY2: // 2bpp (no known fonts)
-      std::cout << "NYI;FT_PIXEL_MODE_GRAY2" << std::endl;
-      break;
-    case FT_PIXEL_MODE_GRAY4: // 4bpp (no known fonts)
-      std::cout << "NYI;FT_PIXEL_MODE_GRAY4" << std::endl;
-      break;
-    case FT_PIXEL_MODE_LCD: // 8bpp RGB or BGR, width=3*glyph_width
-      std::cout << "NYI;FT_PIXEL_MODE_LCD" << std::endl;
-      break;
-    case FT_PIXEL_MODE_LCD_V: // 8bpp RGB or BGR, height=3*glyph_rows
-      std::cout << "NYI;FT_PIXEL_MODE_LCD_V" << std::endl;
-      break;
-    default:
-      std::cout << "Unknown: " << glyph_bitmap->bitmap.pixel_mode << std::endl;
-      break;
-    }
-
-  GLuint texture;
-  glGenTextures(1, &texture);
-  glBindTexture(GL_TEXTURE_2D, texture);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-  glTexImage2D(GL_TEXTURE_2D, 0, internal_format, w, h, 0, format, type, &pixels[0]);
-  gluBuild2DMipmaps(GL_TEXTURE_2D, internal_format, w, h, format, type, &pixels[0]);
-  
-  glEnable(GL_TEXTURE_2D);
-  glBegin(GL_QUADS);
-  float top = -height * r.y.align;
-  glTexCoord2f(0, 1); glVertex3f(0.0, (top+h)*y_zoom, 0.0);
-  glTexCoord2f(1, 1); glVertex3f(w*x_zoom, (top+h)*y_zoom, 0.0);
-  glTexCoord2f(1, 0); glVertex3f(w*x_zoom, top*y_zoom, 0.0);
-  glTexCoord2f(0, 0); glVertex3f(0.0, top*y_zoom, 0.0);
-  glEnd();
-  glDisable(GL_TEXTURE_2D);
-  glBindTexture(GL_TEXTURE_2D, 0);
-  glDeleteTextures(1, &texture);
+  my_glcontext->add_to_queue(new DrawChar(uc, this));
 }
 
 void openGL::FTFont::allocate_char(Unichar uc, Graphic::Requisition &r)
@@ -263,7 +315,6 @@ void openGL::FTFont::allocate_char(Unichar uc, Graphic::Requisition &r)
 void openGL::FTFont::size(CORBA::ULong s)
 {
   my_size = s;
-  FT_Set_Pixel_Sizes(my_face, 0, my_size);
 }
 
 CORBA::ULong openGL::FTFont::size()

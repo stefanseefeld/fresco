@@ -25,36 +25,55 @@
 #include <Fresco/config.hh>
 #include <Fresco/Raster.hh>
 #include <Fresco/Transform.hh>
+#include <Berlin/Console/GLContext.hh>
 #include <vector>
 #include <GL/gl.h>
 
 namespace openGL
 {
 
-struct Raster
+class Texture
 {
-  Raster(Fresco::Raster_var r) : remote(Fresco::Raster::_duplicate(r)) {}
+public:
+  Texture(Fresco::Raster_var);
+  ~Texture();
+  void activate(GLContext *);
   Fresco::Raster_var remote;
   Fresco::PixelCoord width;
   Fresco::PixelCoord height;
+  Fresco::PixelCoord texgen_w;
+  Fresco::PixelCoord texgen_h;
   GLuint texture;
-};
-
-struct Texture : Raster
-{
-  Texture(Fresco::Raster_var);
-  ~Texture();
 private:
-  GLuint bind(GLint components, GLenum format, unsigned char *data);
+  class Activate;
+  class Bind;
+  class Delete;
+  bool is_bound;
+  GLContext *my_glcontext;
+  std::vector<unsigned char> data;
 };
 
-struct Image : Raster
+
+class Image
 {
-  Image(Fresco::Raster_var);
+public:
+  Image(Fresco::Raster_var r);
   ~Image();
+  void activate(GLContext *);
   GLfloat s, t;
+  Fresco::Raster_var remote;
+  Fresco::PixelCoord width;
+  Fresco::PixelCoord height;
+  Fresco::PixelCoord texgen_w;
+  Fresco::PixelCoord texgen_h;
+  GLuint texture;
 private:
-  GLuint bind(GLint components, GLenum format, unsigned char *data);
+  class Activate;
+  class Bind;
+  class Delete;
+  bool is_bound;
+  GLContext *my_glcontext;
+  std::vector<unsigned char> data;
 };
 
 }

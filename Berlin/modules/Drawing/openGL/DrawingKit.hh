@@ -33,11 +33,13 @@
 #include <Berlin/RegionImpl.hh>
 #include <Berlin/Console/GLContext.hh>
 #include <Berlin/DrawingKitBase.hh>
-#include "Font.hh"
+#include "FTFont.hh"
 #include "Raster.hh"
 #include <string>
 #include <vector>
 #include <bitset>
+
+#include <GL/glu.h>
 
 namespace openGL
 {
@@ -45,6 +47,9 @@ namespace openGL
 class DrawingKit : public virtual POA_Fresco::DrawingKit3D,
 		   public DrawingKitBase, public KitImpl
 {
+  friend class Texture;
+  friend class Image;
+
   class Light
   {
   public:
@@ -154,16 +159,32 @@ public:
   virtual void start_traversal(Fresco::Traversal_ptr) { }
   virtual void finish_traversal() { }
 
-  virtual void flush() { _glcontext->flush(); }
+  virtual void flush() { my_glcontext->flush(); }
 
 //   void clear(Coord, Coord, Coord, Coord);
 //   Coord width() { return drawable->width();}
 //   Coord height() { return drawable->height();}
- private:
+private:
+  class ResetTrafo;
+  class SetTrafo;
+  class SetColor;
+  class SetClipping;
+  class SetPointSize;
+  class SetLineWidth;
+  class SetTexture;
+  class SetOutline;
+
+  class DrawPath;
+  class DrawMesh;
+
+  class PointLight;
+  class SpotLight;
+  class DirectionalLight;
+
   void init();
   std::stack<DrawState>                    _states;
   Console::Drawable                       *_drawable;
-  GLContext                               *_glcontext;
+  GLContext                               *my_glcontext;
   Prague::Mutex                            _mutex;
   Fresco::Transform_var                    _tr;
   Fresco::Region_var                       _cl;
@@ -173,8 +194,8 @@ public:
   Fresco::Coord                            _lw;
   Fresco::DrawingKit::Endstyle             _es;
   Fresco::DrawingKit::Fillstyle            _fs;
-  Raster                                  *_tx;
-  Font                                    *_font;
+  Texture                                 *_tx;
+  FTFont                                  *_font;
   Light                                   *_light;
   ObjectCache<Fresco::Raster_var, Texture> _textures;
   ObjectCache<Fresco::Raster_var, Image>   _images;

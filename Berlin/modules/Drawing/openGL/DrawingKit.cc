@@ -98,10 +98,17 @@ void openGL::DrawingKit::init()
 {
   Console *console = Console::instance();
   _drawable = console->drawable();
-  _glcontext = console->get_extension<GLContext>("GLContext");
+  my_glcontext = console->get_extension<GLContext>("GLContext");
 
-  _font = new FTFont();
+  _font = new FTFont(my_glcontext);
   _light = new Light();
+
+  // XXX we should have our own initializer, but it turns out that
+  // the Console's mouse pointer doesn't work without executing this
+  // code. The two need to be decoupled. Using window_pos extension
+  // for the mouse pointer will do that, but I don't yet know if I
+  // want to make OpenGL 1.4 support manditory.
+#if 0
   glViewport(0, 0, _drawable->width(), _drawable->height());
   glMatrixMode(GL_PROJECTION); 
   glLoadIdentity();
@@ -119,38 +126,81 @@ void openGL::DrawingKit::init()
   glEnable(GL_SCISSOR_TEST);
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+#endif
 }
 
 openGL::DrawingKit::~DrawingKit()
 {
   delete _font;
-  delete _glcontext;
+  delete my_glcontext;
 }
+
+class openGL::DrawingKit::ResetTrafo : public virtual GLContext::Callback {
+public:
+  void operator()() {
+    glLoadIdentity();
+    delete this;
+  }
+};
+
+
+class openGL::DrawingKit::SetTrafo : public virtual GLContext::Callback {
+public:
+  SetTrafo::SetTrafo(const Transform::Matrix &matrix)
+  {
+    // XXX There exists a GL extension to load transposed matrices.
+    // But, we must take a copy anyways.
+    for (int i = 0; i < 4; i++)
+      for (int j = 0; j < 4; j++)
+        glmatrix[i*4+j] = matrix[j][i];
+  }
+  void operator()() {
+    glLoadMatrixd(glmatrix);
+    delete this;
+  }
+private:
+  GLdouble glmatrix[16];
+};
 
 void openGL::DrawingKit::set_transformation(Transform_ptr t)
 {
-  static GLdouble identity[16] = {1., 0., 0., 0.,
-				  0., 1., 0., 0.,
-				  0., 0., 1., 0.,
-				  0., 0., 0., 1.};
-  if (CORBA::is_nil(t)) glLoadMatrixd(identity);
+  if (CORBA::is_nil(t))
+    {
+      _tr->load_identity();
+      my_glcontext->add_to_queue(new ResetTrafo());
+    }
   else
     {
       _tr = Transform::_duplicate(t);
-      Transform::Matrix matrix;
-      _tr->store_matrix(matrix);
-      GLdouble glmatrix[16] = {matrix[0][0], matrix[1][0], matrix[2][0], matrix[3][0],
-			       matrix[0][1], matrix[1][1], matrix[2][1], matrix[3][1],
-			       matrix[0][2], matrix[1][2], matrix[2][2], matrix[3][2],
-			       matrix[0][3], matrix[1][3], matrix[2][3], matrix[3][3]};
-      glLoadMatrixd(glmatrix);
+
+      if (_tr->identity())
+        my_glcontext->add_to_queue(new ResetTrafo());
+      else {
+        Transform::Matrix matrix;
+        _tr->store_matrix(matrix);
+        my_glcontext->add_to_queue(new SetTrafo(matrix));
+      }
     }
 }
+
+class openGL::DrawingKit::SetClipping : public virtual GLContext::Callback {
+public:
+  SetClipping::SetClipping(Fresco::PixelCoord x, Fresco::PixelCoord y,
+                           Fresco::PixelCoord w, Fresco::PixelCoord h)
+    : my_x(x), my_y(y), my_width(w), my_height(h) {}
+  void operator()() {
+    glScissor(my_x, my_y, my_width, my_height);
+    delete this;
+  }
+private:
+  Fresco::PixelCoord my_x, my_y;
+  Fresco::PixelCoord my_width, my_height;
+};
 
 void openGL::DrawingKit::set_clipping(Region_ptr r)
 {
   _cl = Region::_duplicate(r);
-  if (CORBA::is_nil(_cl)) glScissor(0, 0, _drawable->width(), _drawable->height());
+  if (CORBA::is_nil(_cl)) my_glcontext->add_to_queue(new SetClipping(0, 0, _drawable->width(), _drawable->height()));
   else
     {
       Vertex lower, upper;
@@ -159,174 +209,233 @@ void openGL::DrawingKit::set_clipping(Region_ptr r)
       PixelCoord y = static_cast<PixelCoord>((_drawable->height()/_drawable->resolution(yaxis) - upper.y)*_drawable->resolution(yaxis) + 0.5);
       PixelCoord w = static_cast<PixelCoord>((upper.x - lower.x)*_drawable->resolution(xaxis) + 0.5);
       PixelCoord h = static_cast<PixelCoord>((upper.y - lower.y)*_drawable->resolution(yaxis) + 0.5);
-      glScissor(x, y, w, h);
-#if 0 // uncomment this if you want to debug the repairing of regions
-      glColor4d(1., 0., 0., 1.);
-      glRectf(0, 0, 10000., 10000.);
-      glFlush();
-      _glcontext->flush();
-      sleep(1);
-#endif
+      my_glcontext->add_to_queue(new SetClipping(x, y, w, h));
     }
 }
+
+class openGL::DrawingKit::SetColor : public virtual GLContext::Callback {
+public:
+  SetColor::SetColor(const double red, const double green, const double blue,
+                     const double alpha)
+    : my_red(red), my_green(green), my_blue(blue), my_alpha(alpha) {}
+  void operator()() {
+    glColor4d(my_red, my_green, my_blue, my_alpha);
+    delete this;
+  }
+private:
+  GLdouble my_red, my_blue, my_green, my_alpha;
+};
 
 void openGL::DrawingKit::set_foreground(const Color &c)
 {
   _fg = c;
-  glColor4d(_lt.red * _fg.red, _lt.green * _fg.green, _lt.blue * _fg.blue, _fg.alpha);
+  my_glcontext->add_to_queue(new SetColor(_lt.red * _fg.red, _lt.green * _fg.green, _lt.blue * _fg.blue, _fg.alpha));
 }
 
 void openGL::DrawingKit::set_lighting(const Color &c)
 {
   _lt = c;
-  glColor4d(_lt.red * _fg.red, _lt.green * _fg.green, _lt.blue * _fg.blue, _fg.alpha);
+  my_glcontext->add_to_queue(new SetColor(_lt.red * _fg.red, _lt.green * _fg.green, _lt.blue * _fg.blue, _fg.alpha));
 }
+
+class openGL::DrawingKit::SetPointSize : public virtual GLContext::Callback {
+public:
+  SetPointSize::SetPointSize(const Coord s)
+    : my_size(s) {}
+  void operator()() {
+    // XXX FIXME !: glPointSize uses pixel units !
+    glPointSize(my_size);
+    delete this;
+  }
+private:
+  Coord my_size;
+};
 
 void openGL::DrawingKit::set_point_size(Coord s)
 {
   _ps = s;
-  // FIXME !: glPointSize uses pixel units !
-  glPointSize(_ps);
+  my_glcontext->add_to_queue(new SetPointSize(_ps));
 }
+
+class openGL::DrawingKit::SetLineWidth : public virtual GLContext::Callback {
+public:
+  SetLineWidth::SetLineWidth(const Coord s)
+    : my_size(s) {}
+  void operator()() {
+    // XXX FIXME !: glLineWidth uses pixel units !
+    glLineWidth(my_size);
+    delete this;
+  }
+private:
+  Coord my_size;
+};
 
 void openGL::DrawingKit::set_line_width(Coord w)
 {
   _lw = w;
-  // FIXME !: glLineWidth uses pixel units !
-  glLineWidth(_lw);
+  my_glcontext->add_to_queue(new SetLineWidth(_lw));
 }
 
 void openGL::DrawingKit::set_line_endstyle(Fresco::DrawingKit::Endstyle style)
 {
   _es = style;
+  // XXX NYI (btw, this is a very very hard thing to do.)
 }
+
+class openGL::DrawingKit::SetTexture : public virtual GLContext::Callback {
+public:
+  SetTexture::SetTexture(const bool on)
+    : my_on(on) {}
+  void operator()() {
+    if (my_on) glEnable(GL_TEXTURE_2D);
+    else glDisable(GL_TEXTURE_2D);
+    delete this;
+  }
+private:
+  bool my_on;
+};
+
+class openGL::DrawingKit::SetOutline : public virtual GLContext::Callback {
+public:
+  SetOutline::SetOutline(const bool on)
+    : my_on(on) {}
+  void operator()() {
+    if (my_on) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    else glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    delete this;
+  }
+private:
+  bool my_on;
+};
 
 void openGL::DrawingKit::set_surface_fillstyle(Fresco::DrawingKit::Fillstyle style)
 {
-  if (_fs == Fresco::DrawingKit::textured) glDisable(GL_TEXTURE_2D);
+  Fresco::DrawingKit::Fillstyle old_fs = _fs;
   _fs = style;
-  if (_fs == Fresco::DrawingKit::textured) glEnable(GL_TEXTURE_2D);
+
+  if ((_fs==Fresco::DrawingKit::textured)
+      != (old_fs==Fresco::DrawingKit::textured))
+    my_glcontext->add_to_queue(new SetTexture(_fs==Fresco::DrawingKit::textured));
+
+  if ((_fs==Fresco::DrawingKit::outlined)
+      != (old_fs==Fresco::DrawingKit::outlined))
+    my_glcontext->add_to_queue(new SetOutline(_fs==Fresco::DrawingKit::outlined));
 }
 
 void openGL::DrawingKit::set_texture(Raster_ptr t)
 {
   _tx = CORBA::is_nil(t) ? 0 : _textures.lookup(Fresco::Raster::_duplicate(t));
-  if (_tx) {
-    glBindTexture(GL_TEXTURE_2D, _tx->texture);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  }
+  if (_tx) _tx->activate(my_glcontext);
 }
 
-// void openGL::DrawingKit::clear(Coord l, Coord t, Coord r, Coord b)
-// {
-//   glColor4d(0., 0., 0., 1.);
-//   glRectf(l, t, r, b);
-// }
+class openGL::DrawingKit::DrawPath : public virtual GLContext::Callback {
+public:
+  DrawPath::DrawPath(const Fresco::Path &path)
+    : my_path(path)
+  {}
+  void operator()() {
+    glEnable(GL_TEXTURE_GEN_S);
+    glEnable(GL_TEXTURE_GEN_T);
+    if (my_path.shape == convex) {
+      glBegin(GL_POLYGON);
+      for (CORBA::ULong i = 0; i < my_path.nodes.length(); i++)
+        glVertex3f(my_path.nodes[i].x, my_path.nodes[i].y, 0);
+      glEnd();
+    } else {
+      GLUtesselator *tesselator = gluNewTess();
+      gluTessProperty(tesselator, GLU_TESS_WINDING_RULE,
+                      GLU_TESS_WINDING_NONZERO);
+      gluTessCallback(tesselator, GLU_TESS_VERTEX,
+                      (GLvoid (*) ( )) &glVertex3dv);
+      gluTessCallback(tesselator, GLU_TESS_BEGIN,
+                      (GLvoid (*) ( )) &glBegin);
+      gluTessCallback(tesselator, GLU_TESS_END,
+                      (GLvoid (*) ( )) &glEnd);
+      // XXX need glu tess combine callback for truly complex stuff.
+      gluTessBeginPolygon(tesselator, NULL);
+      gluTessBeginContour(tesselator);
+      for (CORBA::ULong i = 0; i < my_path.nodes.length(); i++)
+      {
+        gluTessVertex(tesselator, (GLdouble *)&my_path.nodes[i], (void *)&my_path.nodes[i]);
+      }
+      gluTessEndContour(tesselator);
+      gluTessEndPolygon(tesselator);
+      gluDeleteTess(tesselator);
+    }
+    glDisable(GL_TEXTURE_GEN_S);
+    glDisable(GL_TEXTURE_GEN_T);
+    delete this;
+  }
+private:
+  Fresco::Path my_path; 
+};
+
 
 void openGL::DrawingKit::draw_path(const Fresco::Path &path)
 {
-  if (path.shape != convex)
-    {
-      std::cerr << "openGL::DrawingKit::draw_path : sorry, non-convex paths not yet supported" << std::endl;
-      return;
-    }
-  if (_fs == Fresco::DrawingKit::solid)
-    {
-      glBegin(GL_POLYGON);
-//       glBegin(GL_LINE_LOOP);
-      for (CORBA::ULong i = 0; i < path.nodes.length(); i++) glVertex3f(path.nodes[i].x, path.nodes[i].y, path.nodes[i].z);
-      glEnd();
-    }
-  else if (_fs == Fresco::DrawingKit::textured)
-    {
-//       glBegin(GL_TRIANGLE_FAN);
-      glBegin(GL_LINE_LOOP);
-      for (CORBA::ULong i = 0; i < path.nodes.length(); i++)
-	{
-	  glTexCoord2f(path.nodes[i].x * _tx->width * 10., path.nodes[i].y * _tx->height * 10.); 
-	  glVertex3f(path.nodes[i].x, path.nodes[i].y, path.nodes[i].z);
-	}
-      glEnd();
-    }
-  else
-    {
-//       glBegin(GL_TRIANGLE_FAN);
-      glBegin(GL_LINE_LOOP);
-      // line strips (no final connecting line)      
-      for (CORBA::ULong i = 0; i < path.nodes.length(); i++) glVertex3f(path.nodes[i].x, path.nodes[i].y, path.nodes[i].z);
-      glEnd();
-    }
+  // XXX We should be doing the gluTesselation here.
+  my_glcontext->add_to_queue(new DrawPath(path));
 }
 
 void openGL::DrawingKit::draw_rectangle(const Vertex &lower, const Vertex &upper)
 {
-  if (_fs == Fresco::DrawingKit::solid) glRectf(lower.x, lower.y, upper.x, upper.y);
-  else if (_fs == Fresco::DrawingKit::textured)
-    {
-      double w = (upper.x - lower.x)/(_tx->width * 10.);
-      double h = (upper.y - lower.y)/(_tx->height * 10.);
-      glBegin(GL_POLYGON);
-      glTexCoord2f(0., 0.); glVertex2d(lower.x, lower.y);
-      glTexCoord2f(w, 0.);  glVertex2d(upper.x, lower.y);
-      glTexCoord2f(w, h);   glVertex2d(upper.x, upper.y);
-      glTexCoord2f(0., h);  glVertex2d(lower.x, upper.y);
-      glEnd();
-    }
-  else
-    {
-      glBegin(GL_LINE_LOOP);
-      glVertex2d(lower.x, lower.y);
-      glVertex2d(upper.x, lower.y);
-      glVertex2d(upper.x, upper.y);
-      glVertex2d(lower.x, upper.y);
-      glEnd();
-    }
+  Fresco::Path path;
+  path.shape = convex;
+  path.nodes.length(4);
+#if 1 /* CCW */
+  path.nodes[0].x = path.nodes[3].x = lower.x;
+  path.nodes[1].x = path.nodes[2].x = upper.x;
+  path.nodes[0].y = path.nodes[1].y = lower.y;
+  path.nodes[2].y = path.nodes[3].y = upper.y;
+#else /* CW */
+  path.nodes[0].x = path.nodes[1].x = lower.x;
+  path.nodes[3].x = path.nodes[2].x = upper.x;
+  path.nodes[0].y = path.nodes[3].y = lower.y;
+  path.nodes[2].y = path.nodes[1].y = upper.y;
+#endif
+  my_glcontext->add_to_queue(new DrawPath(path));
 }
 
 void openGL::DrawingKit::draw_quadric(const Fresco::DrawingKit::Quadric, Fresco::Coord, Fresco::Coord)
 {
 }
 
+// XXX TODO what?
 void openGL::DrawingKit::draw_ellipse(const Vertex &lower, const Vertex &upper)
 {
+#if 0
   glPushMatrix();
   glScaled(upper.x - lower.x, upper.y - lower.y, upper.z - lower.z);
   glTranslated(lower.x, lower.y, lower.z);
   Quadric quadric(_fs, Quadric::out);
   quadric.disk(0., 1., 360, 100);
   glPopMatrix();
+#endif
 }
 
 void openGL::DrawingKit::draw_image(Raster_ptr raster)
 {
   Profiler prf("openGL::DrawingKit::draw_image");
   Image *image = _images.lookup(Fresco::Raster::_duplicate(raster));
-  GLint tbackup = -1;
-  if (_fs == Fresco::DrawingKit::textured) glGetIntegerv(GL_TEXTURE_BINDING_2D, &tbackup);
-  else glEnable(GL_TEXTURE_2D);
-  GLfloat color_cache[4];
-  glGetFloatv(GL_CURRENT_COLOR, color_cache);
-  glBindTexture(GL_TEXTURE_2D, image->texture);
-  glColor4f(_lt.red, _lt.green, _lt.blue, color_cache[3]); // use the current lighting
-  glBegin(GL_POLYGON);
   Fresco::Path path;
   path.nodes.length(4);
   path.shape = convex;
-  Coord width = image->width*10.;
-  Coord height = image->height*10.;
+  Coord width = image->width/_drawable->resolution(xaxis);
+  Coord height = image->height/_drawable->resolution(yaxis);
   path.nodes[0].x = path.nodes[0].y = path.nodes[0].z = 0.;
   path.nodes[1].x = width, path.nodes[1].y = path.nodes[1].z = 0.;
   path.nodes[2].x = width, path.nodes[2].y = height, path.nodes[2].z = 0.;
   path.nodes[3].x = 0, path.nodes[3].y = height, path.nodes[3].z = 0.;
-  glTexCoord2f(0., 0.);               glVertex3f(path.nodes[3].x, path.nodes[3].y, path.nodes[3].z);
-  glTexCoord2f(image->s, 0.);         glVertex3f(path.nodes[2].x, path.nodes[2].y, path.nodes[2].z);
-  glTexCoord2f(image->s, image->t);   glVertex3f(path.nodes[1].x, path.nodes[1].y, path.nodes[1].z);
-  glTexCoord2f(0., image->t);         glVertex3f(path.nodes[0].x, path.nodes[0].y, path.nodes[0].z);
-  glEnd();
-  glColor4fv(color_cache);  
-  if (_fs != Fresco::DrawingKit::textured) glDisable(GL_TEXTURE_2D);
-  else glBindTexture(GL_TEXTURE_2D, tbackup);
+
+  my_glcontext->add_to_queue(new SetColor(_lt.red, _lt.green, _lt.blue, 1));
+  my_glcontext->add_to_queue(new SetTexture(true));
+  my_glcontext->add_to_queue(new SetOutline(false));
+  image->activate(my_glcontext);
+  my_glcontext->add_to_queue(new DrawPath(path));
+  if (_tx) _tx->activate(my_glcontext);
+  my_glcontext->add_to_queue(new SetTexture(_fs==Fresco::DrawingKit::textured));
+  my_glcontext->add_to_queue(new SetOutline(_fs==Fresco::DrawingKit::outlined));
+  my_glcontext->add_to_queue(new SetColor(_lt.red * _fg.red, _lt.green * _fg.green, _lt.blue * _fg.blue, _fg.alpha));
 }
 
 void openGL::DrawingKit::set_font_size(CORBA::ULong s) { _font->size(s); }
@@ -337,142 +446,235 @@ void openGL::DrawingKit::set_font_fullname(const Unistring &fn) {}
 void openGL::DrawingKit::set_font_style(const Unistring &s) {}
 void openGL::DrawingKit::set_font_attribute(const NVPair & nvp) {}
 
-void openGL::DrawingKit::directional_light(const Color &color,
-				     CORBA::Float intensity,
-				     const Vertex &direction)
+class openGL::DrawingKit::DirectionalLight : public virtual GLContext::Callback
 {
-  int id = _light->push();
-  if (id < GL_LIGHT0) return;
+public:
+  DirectionalLight::DirectionalLight(const Fresco::Color color,
+                                     CORBA::Float intensity,
+                                     const Fresco::Vertex direction,
+                                     Light *light)
+    : my_color(color), my_intensity(intensity), my_direction(direction),
+      my_light(light)
+  {}
+  void operator()() {
+    int id = my_light->push();
+    if (id < GL_LIGHT0) { delete this; return; }
 
-  // RGBA intensities of source are the product of the color and
-  // intensity, with 1.0 alpha
-  GLfloat black[] = {0., 0., 0., 1.};
-  GLfloat light[] = {color.red * intensity, color.green * intensity, color.blue * intensity, 1.};
-  glLightfv(static_cast<GLenum>(id), GL_AMBIENT, black);
-  glLightfv(static_cast<GLenum>(id), GL_DIFFUSE,  light);
-  glLightfv(static_cast<GLenum>(id), GL_SPECULAR, light);
+    // RGBA intensities of source are the product of the color and
+    // intensity, with 1.0 alpha
+    GLfloat black[] = {0., 0., 0., 1.};
+    GLfloat light[] = {my_color.red * my_intensity, my_color.green * my_intensity, my_color.blue * my_intensity, 1.};
+    glLightfv(static_cast<GLenum>(id), GL_AMBIENT, black);
+    glLightfv(static_cast<GLenum>(id), GL_DIFFUSE,  light);
+    glLightfv(static_cast<GLenum>(id), GL_SPECULAR, light);
 
-  // "Position" is the direction vector negated with a 0.0 w
-  // component. Yet another GL peccadillo.
-  GLfloat dir[] = {-direction.x, -direction.y, -direction.z, 0.};
-  glLightfv(static_cast<GLenum>(id), GL_POSITION, dir);
+    // "Position" is the direction vector negated with a 0.0 w
+    // component. Yet another GL peccadillo.
+    GLfloat dir[] = {-my_direction.x, -my_direction.y, -my_direction.z, 0.};
+    glLightfv(static_cast<GLenum>(id), GL_POSITION, dir);
 
-  // Make sure no spotlight stuff is on
-  glLightf(static_cast<GLenum>(id), GL_SPOT_EXPONENT, 0.0);
-  glLightf(static_cast<GLenum>(id), GL_SPOT_CUTOFF, 180.0);
+    // Make sure no spotlight stuff is on
+    glLightf(static_cast<GLenum>(id), GL_SPOT_EXPONENT, 0.0);
+    glLightf(static_cast<GLenum>(id), GL_SPOT_CUTOFF, 180.0);
 
-  // Attenuation does not matter for directional sources.
+    // Attenuation does not matter for directional sources.
+  }
+private:
+  const Fresco::Color my_color;
+  CORBA::Float my_intensity;
+  const Fresco::Vertex my_direction;
+  Light *my_light;
+};
+
+void openGL::DrawingKit::directional_light(const Color &color,
+                                     CORBA::Float intensity,
+                                     const Vertex &direction)
+{
+  my_glcontext->add_to_queue(new DirectionalLight(color, intensity, direction,
+                                                  _light));
 }
+
+
+class openGL::DrawingKit::PointLight : public virtual GLContext::Callback
+{
+public:
+  PointLight::PointLight(const Fresco::Color color, CORBA::Float intensity,
+                         const Fresco::Vertex position, Light *light)
+    : my_color(color), my_intensity(intensity), my_position(position),
+      my_light(light)
+  {}
+  void operator()() {
+    int id = my_light->push();
+    if (id < GL_LIGHT0) { delete this; return;}
+
+    // RGBA intensities of source are the product of the color and
+    // intensity, with 1.0 alpha
+    GLfloat black[] = {0., 0., 0., 1.};
+    GLfloat light[] = {my_color.red * my_intensity, my_color.green * my_intensity, my_color.blue * my_intensity, 1.};
+    glLightfv(static_cast<GLenum>(id), GL_AMBIENT, black);
+    glLightfv(static_cast<GLenum>(id), GL_DIFFUSE,  light);
+    glLightfv(static_cast<GLenum>(id), GL_SPECULAR, light);
+
+    // Set position
+    GLfloat dir[] = {my_position.x, my_position.y, my_position.z, 1.0};
+    glLightfv(static_cast<GLenum>(id), GL_POSITION, dir);
+
+    // Make sure no spotlight stuff is on
+    glLightf(static_cast<GLenum>(id), GL_SPOT_EXPONENT, 0.0);
+    glLightf(static_cast<GLenum>(id), GL_SPOT_CUTOFF, 180.0);
+
+    // Attenuation is accessed from the state
+    //   const SbVec3f &atten = SoLightAttenuationElement::get(action->getState());
+    //   glLightf(static_cast<GLenum>(id), GL_CONSTANT_ATTENUATION,  atten[2]);
+    //   glLightf(static_cast<GLenum>(id), GL_LINEAR_ATTENUATION,    atten[1]);
+    //   glLightf(static_cast<GLenum>(id), GL_QUADRATIC_ATTENUATION, atten[0]);
+  }
+private:
+  const Fresco::Color my_color;
+  CORBA::Float my_intensity;
+  const Fresco::Vertex my_position;
+  Light *my_light;
+};
+
 
 void openGL::DrawingKit::point_light(const Fresco::Color &color,
-			       CORBA::Float intensity,
-			       const Fresco::Vertex &position)
+                               CORBA::Float intensity,
+                               const Fresco::Vertex &position)
 {
-  int id = _light->push();
-  if (id < GL_LIGHT0) return;
+  my_glcontext->add_to_queue(new PointLight(color, intensity, position,
+                                            _light));
+}
 
-  // RGBA intensities of source are the product of the color and
-  // intensity, with 1.0 alpha
-  GLfloat black[] = {0., 0., 0., 1.};
-  GLfloat light[] = {color.red * intensity, color.green * intensity, color.blue * intensity, 1.};
-  glLightfv(static_cast<GLenum>(id), GL_AMBIENT, black);
-  glLightfv(static_cast<GLenum>(id), GL_DIFFUSE,  light);
-  glLightfv(static_cast<GLenum>(id), GL_SPECULAR, light);
 
-  // Set position
-  GLfloat dir[] = {position.x, position.y, position.z, 1.0};
-  glLightfv(static_cast<GLenum>(id), GL_POSITION, dir);
+class openGL::DrawingKit::SpotLight : public virtual GLContext::Callback
+{
+public:
+  SpotLight::SpotLight(const Color color, CORBA::Float intensity,
+                       const Vertex position, const Vertex direction,
+                       CORBA::Float dropoffrate, CORBA::Float cutoffangle,
+                       Light *light)
+    : my_color(color), my_intensity(intensity), my_position(position),
+      my_direction(direction), my_dropoffrate(dropoffrate),
+      my_cutoffangle(cutoffangle), my_light(light)
+  {}
+  void operator()()
+  {
+    int id = my_light->push();
+    if (id < GL_LIGHT0) { delete this; return; }
 
-  // Make sure no spotlight stuff is on
-  glLightf(static_cast<GLenum>(id), GL_SPOT_EXPONENT, 0.0);
-  glLightf(static_cast<GLenum>(id), GL_SPOT_CUTOFF, 180.0);
+    // RGBA intensities of source are the product of the color and
+    // intensity, with 1.0 alpha
+    GLfloat black[] = {0., 0., 0., 1.};
+    GLfloat light[] = {my_color.red * my_intensity, my_color.green * my_intensity, my_color.blue * my_intensity, 1.};
+    glLightfv(static_cast<GLenum>(id), GL_AMBIENT, black);
+    glLightfv(static_cast<GLenum>(id), GL_DIFFUSE,  light);
+    glLightfv(static_cast<GLenum>(id), GL_SPECULAR, light);
 
-  // Attenuation is accessed from the state
+    // Set position
+    GLfloat pos[] = {my_position.x, my_position.y, my_position.z, 1.0};
+    glLightfv(static_cast<GLenum>(id), GL_POSITION, pos);
+    
+    // Set up spotlight stuff. Note that the GL angle must be specified
+    // in degrees, though the field is in radians
+    GLfloat dir[] = {my_direction.x, my_direction.y, my_direction.z, 1.0};
+    glLightfv(static_cast<GLenum>(id), GL_SPOT_DIRECTION, dir);
+    
+    if (my_dropoffrate <= 0.0)
+      glLightf(static_cast<GLenum>(id), GL_SPOT_EXPONENT, .01);
+    else 
+      glLightf(static_cast<GLenum>(id), GL_SPOT_EXPONENT,
+               my_dropoffrate * 128.0);
+    glLightf(static_cast<GLenum>(id), GL_SPOT_CUTOFF,
+             my_cutoffangle*(180.0/M_PI));
+    
+    // Attenuation is accessed from the state
   //   const SbVec3f &atten = SoLightAttenuationElement::get(action->getState());
   //   glLightf(static_cast<GLenum>(id), GL_CONSTANT_ATTENUATION,  atten[2]);
   //   glLightf(static_cast<GLenum>(id), GL_LINEAR_ATTENUATION,    atten[1]);
   //   glLightf(static_cast<GLenum>(id), GL_QUADRATIC_ATTENUATION, atten[0]);
-}
+  }
+private:
+  Color my_color;
+  CORBA::Float my_intensity;
+  Vertex my_position;
+  Vertex my_direction;
+  CORBA::Float my_dropoffrate;
+  CORBA::Float my_cutoffangle;
+  Light *my_light;
+};
 
 void openGL::DrawingKit::spot_light(const Color &color,
-			      CORBA::Float intensity,
-			      const Vertex &position,
-			      const Vertex &direction,
-			      CORBA::Float dropoffrate,
-			      CORBA::Float cutoffangle)
+                              CORBA::Float intensity,
+                              const Vertex &position,
+                              const Vertex &direction,
+                              CORBA::Float dropoffrate,
+                              CORBA::Float cutoffangle)
 {
-  int id = _light->push();
-  if (id < GL_LIGHT0) return;
+  my_glcontext->add_to_queue(new SpotLight(color, intensity, position,
+                                           direction, dropoffrate,
+                                           cutoffangle, _light));
+};
 
-  // RGBA intensities of source are the product of the color and
-  // intensity, with 1.0 alpha
-  GLfloat black[] = {0., 0., 0., 1.};
-  GLfloat light[] = {color.red * intensity, color.green * intensity, color.blue * intensity, 1.};
-  glLightfv(static_cast<GLenum>(id), GL_AMBIENT, black);
-  glLightfv(static_cast<GLenum>(id), GL_DIFFUSE,  light);
-  glLightfv(static_cast<GLenum>(id), GL_SPECULAR, light);
 
-  // Set position
-  GLfloat pos[] = {position.x, position.y, position.z, 1.0};
-  glLightfv(static_cast<GLenum>(id), GL_POSITION, pos);
-
-  // Set up spotlight stuff. Note that the GL angle must be specified
-  // in degrees, though the field is in radians
-  GLfloat dir[] = {direction.x, direction.y, direction.z, 1.0};
-  glLightfv(static_cast<GLenum>(id), GL_SPOT_DIRECTION, dir);
-
-  if (dropoffrate <= 0.0)
-    glLightf(static_cast<GLenum>(id), GL_SPOT_EXPONENT, .01);
-  else 
-    glLightf(static_cast<GLenum>(id), GL_SPOT_EXPONENT,  dropoffrate * 128.0);
-  glLightf(static_cast<GLenum>(id), GL_SPOT_CUTOFF, cutoffangle*(180.0/M_PI));
-
-  // Attenuation is accessed from the state
-  //   const SbVec3f &atten = SoLightAttenuationElement::get(action->getState());
-  //   glLightf(static_cast<GLenum>(id), GL_CONSTANT_ATTENUATION,  atten[2]);
-  //   glLightf(static_cast<GLenum>(id), GL_LINEAR_ATTENUATION,    atten[1]);
-  //   glLightf(static_cast<GLenum>(id), GL_QUADRATIC_ATTENUATION, atten[0]);
-}
 
 void openGL::DrawingKit::allocate_text(const Unistring &s, Graphic::Requisition &req) {}
 void openGL::DrawingKit::draw_text(const Unistring &us) {}
 void openGL::DrawingKit::allocate_char(Unichar c, Graphic::Requisition &req) { _font->allocate_char(c, req);}
-void openGL::DrawingKit::draw_char(Unichar c) { _font->draw_char(c);}
+void openGL::DrawingKit::draw_char(Unichar c)
+{
+  _font->set_transform(_tr);
+  _font->draw_char(c);
+}
+
+
+class openGL::DrawingKit::DrawMesh : public virtual GLContext::Callback {
+public:
+  DrawMesh::DrawMesh(const Fresco::Mesh &mesh)
+    : my_mesh(mesh)
+  {} // XXX we need to painters' algorithm sort here.
+  void operator()() {
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    glEnable(GL_COLOR_MATERIAL);
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL);
+    glEnable(GL_TEXTURE_GEN_S);
+    glEnable(GL_TEXTURE_GEN_T);
+
+    bool normals = my_mesh.normals.length() == my_mesh.triangles.length();
+    glBegin(GL_TRIANGLES);
+    for (CORBA::ULong i = 0; i < my_mesh.triangles.length(); ++i)
+      {
+        if (normals)
+          {
+            const Vertex &n = my_mesh.normals[i];
+            glNormal3f(n.x, n.y, n.z);
+          }
+        const Vertex &a = my_mesh.nodes[my_mesh.triangles[i].a];
+        const Vertex &b = my_mesh.nodes[my_mesh.triangles[i].b];
+        const Vertex &c = my_mesh.nodes[my_mesh.triangles[i].c];
+        glVertex3f(a.x, a.y, a.z);
+        glVertex3f(b.x, b.y, b.z);
+        glVertex3f(c.x, c.y, c.z);
+      }
+    glEnd();
+    glDisable(GL_TEXTURE_GEN_S);
+    glDisable(GL_TEXTURE_GEN_T);
+    glDisable(GL_LIGHTING);
+    glDisable(GL_LIGHT0);
+    glDisable(GL_COLOR_MATERIAL);
+    glDisable(GL_DEPTH_TEST);
+    glClear(GL_DEPTH_BUFFER_BIT);
+    delete this;
+  }
+private:
+  Fresco::Mesh my_mesh; 
+};
+
 
 void openGL::DrawingKit::draw_mesh(const Fresco::Mesh &mesh)
 {
-  glEnable(GL_LIGHTING);
-  glEnable(GL_LIGHT0);
-//   GLfloat light_position[] = { 5., 5., 10., 0.};
-//   glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-  glEnable(GL_COLOR_MATERIAL);
-  //glEnable(GL_CULL_FACE);
-  glEnable(GL_DEPTH_TEST);
-  glDepthFunc(GL_LEQUAL);
-
-  bool normals = mesh.normals.length() == mesh.triangles.length();
-  glBegin(GL_TRIANGLES);
-  for (CORBA::ULong i = 0; i < mesh.triangles.length(); ++i)
-    {
-      if (normals)
-	{
-	  const Vertex &n = mesh.normals[i];
-	  glNormal3f(n.x, n.y, n.z);
-	}
-      const Vertex &a = mesh.nodes[mesh.triangles[i].a];
-      const Vertex &b = mesh.nodes[mesh.triangles[i].b];
-      const Vertex &c = mesh.nodes[mesh.triangles[i].c];
-      glVertex3f(a.x, a.y, a.z);
-      glVertex3f(b.x, b.y, b.z);
-      glVertex3f(c.x, c.y, c.z);
-    }
-  glEnd();
-  glDisable(GL_LIGHTING);
-  glDisable(GL_LIGHT0);
-  glDisable(GL_COLOR_MATERIAL);
-  glDisable(GL_DEPTH_TEST);
-  glClear(GL_DEPTH_BUFFER_BIT);
-  //glDisable(GL_CULL_FACE);
+  my_glcontext->add_to_queue(new DrawMesh(mesh));
 }
 
 void openGL::DrawingKit::copy_drawable(Drawable_ptr d, PixelCoord x, PixelCoord y, PixelCoord w, PixelCoord h) {}
