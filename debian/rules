@@ -6,6 +6,14 @@
 # This is the debhelper compatability version to use.
 export DH_COMPAT=3
 
+CFLAGS = -O2
+CXXFLAGS = -O2
+ifneq (,$(findstring debug,$(DEB_BUILD_OPTIONS)))
+CFLAGS += -g
+CXXFLAGS += -g
+endif
+export CFLAGS CXXFLAGS
+
 configure: configure-stamp
 configure-stamp:
 	dh_testdir
@@ -15,7 +23,6 @@ configure-stamp:
 		../configure \
 			--prefix=/usr \
 			--disable-py-clients \
-			--enable-optimize \
 			--disable-docs \
 	)
 
@@ -43,22 +50,28 @@ install: build
 	dh_installdirs
 
 	install -m755 $(CURDIR)/debian/Berlin \
-		$(CURDIR)/debian/berlin/usr/bin/
+		$(CURDIR)/debian/berlin-server/usr/bin/
 	install -m755 $(CURDIR)/build/bin/devices $(CURDIR)/build/bin/kits \
 		$(CURDIR)/build/bin/server \
-		$(CURDIR)/debian/berlin/usr/lib/Berlin/bin/
+		$(CURDIR)/debian/berlin-server/usr/lib/Berlin/bin/
 	install -m644 $(CURDIR)/debian/berlinrc \
-		$(CURDIR)/debian/berlin/usr/lib/Berlin/etc/
+		$(CURDIR)/debian/berlin-server/usr/lib/Berlin/etc/
 	install -m644 $(CURDIR)/etc/glyph.dat $(CURDIR)/etc/pinyin.db \
-		$(CURDIR)/debian/berlin/usr/lib/Berlin/etc/
+		$(CURDIR)/debian/berlin-server/usr/lib/Berlin/etc/
 	install -m644 $(CURDIR)/etc/PNG/*.png \
-		$(CURDIR)/debian/berlin/usr/lib/Berlin/etc/PNG/
+		$(CURDIR)/debian/berlin-server/usr/lib/Berlin/etc/PNG/
+	ln -s ../../../X11R6/lib/X11/fonts/Type1/c0648bt_.pfb \
+		$(CURDIR)/debian/berlin-server/usr/lib/Berlin/fonts/
 	install -m644 $(CURDIR)/debian/Berlin.1 \
-		$(CURDIR)/debian/berlin/usr/share/man/man1/
+		$(CURDIR)/debian/berlin-server/usr/share/man/man1/
 
+	install -m755 $(CURDIR)/debian/Berlin-demo \
+		$(CURDIR)/debian/berlin-demos-c++/usr/bin/
 	install -m755 $(CURDIR)/build/bin/demo $(CURDIR)/build/bin/canvas \
 		$(CURDIR)/build/bin/ggiwrapper $(CURDIR)/build/bin/pinyin_demo \
-		$(CURDIR)/debian/berlin-clients/usr/lib/Berlin/bin/
+		$(CURDIR)/debian/berlin-demos-c++/usr/lib/Berlin/bin/
+	install -m644 $(CURDIR)/debian/Berlin-demo.1 \
+		$(CURDIR)/debian/berlin-demos-c++/usr/share/man/man1/
 
 	install -m644 $(CURDIR)/build/lib/libBabylon.so \
 		$(CURDIR)/debian/libbabylon/usr/lib/
@@ -72,15 +85,15 @@ install: build
 		$(CURDIR)/debian/libwarsaw/usr/lib/
 
 	install -m644 $(CURDIR)/build/modules/libCommand.so \
-		$(CURDIR)/debian/berlin-kit-command/usr/lib/Berlin/modules/
+		$(CURDIR)/debian/berlin-server/usr/lib/Berlin/modules/
 	install -m644 $(CURDIR)/build/modules/libDesktop.so \
-		$(CURDIR)/debian/berlin-kit-desktop/usr/lib/Berlin/modules/
+		$(CURDIR)/debian/berlin-server/usr/lib/Berlin/modules/
 	install -m644 $(CURDIR)/build/modules/libArtDrawing.so \
 		$(CURDIR)/debian/berlin-kit-drawing-libart/usr/lib/Berlin/modules/
 	install -m644 $(CURDIR)/build/modules/libPSDrawing.so \
 		$(CURDIR)/debian/berlin-kit-drawing-postscript/usr/lib/Berlin/modules/
 	install -m644 $(CURDIR)/build/modules/libFigure.so \
-		$(CURDIR)/debian/berlin-kit-figure/usr/lib/Berlin/modules/
+		$(CURDIR)/debian/berlin-server/usr/lib/Berlin/modules/
 	install -m644 $(CURDIR)/build/modules/libGGI.so \
 		$(CURDIR)/debian/berlin-kit-ggi/usr/lib/Berlin/modules/
 	install -m644 $(CURDIR)/build/modules/libGadget.so \
@@ -88,13 +101,13 @@ install: build
 	install -m644 $(CURDIR)/build/modules/libImage.so \
 		$(CURDIR)/debian/berlin-kit-image/usr/lib/Berlin/modules/
 	install -m644 $(CURDIR)/build/modules/libLayout.so \
-		$(CURDIR)/debian/berlin-kit-layout/usr/lib/Berlin/modules/
+		$(CURDIR)/debian/berlin-server/usr/lib/Berlin/modules/
 	install -m644 $(CURDIR)/build/modules/libPrimitive.so \
 		$(CURDIR)/debian/berlin-kit-primitive/usr/lib/Berlin/modules/
 	install -m644 $(CURDIR)/build/modules/libText.so \
-		$(CURDIR)/debian/berlin-kit-text/usr/lib/Berlin/modules/
+		$(CURDIR)/debian/berlin-server/usr/lib/Berlin/modules/
 	install -m644 $(CURDIR)/build/modules/libTool.so \
-		$(CURDIR)/debian/berlin-kit-tool/usr/lib/Berlin/modules/
+		$(CURDIR)/debian/berlin-server/usr/lib/Berlin/modules/
 	install -m644 $(CURDIR)/build/modules/libUnidraw.so \
 		$(CURDIR)/debian/berlin-kit-unidraw/usr/lib/Berlin/modules/
 	install -m644 $(CURDIR)/build/modules/libMotif.so \

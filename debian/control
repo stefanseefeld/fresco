@@ -5,10 +5,12 @@ Maintainer: Bastian Blank <waldi@debian.org>
 Build-Depends: debhelper (>> 3.0.0), libart-dev, libfreetype6-dev, libggi2-dev, omniorb-dev (>> 1:3.0.0), zlib1g-dev, libpng-dev
 Standards-Version: 3.5.2
 
-Package: berlin
+Package: berlin-server
 Architecture: any
-Depends: libbabylon (= ${Source-Version}), libberlin (= ${Source-Version}), libwarsaw (= ${Source-Version}), libprague (= ${Source-Version}), berlin-kit-command (= ${Source-Version}), berlin-kit-desktop (= ${Source-Version}), berlin-kit-drawing-libart (= ${Source-Version}), berlin-kit-figure (= ${Source-Version}), berlin-kit-gadget (= ${Source-Version}), berlin-kit-image (= ${Source-Version}), berlin-kit-layout (= ${Source-Version}), berlin-kit-primitive (= ${Source-Version}), berlin-kit-text (= ${Source-Version}), berlin-kit-tool (= ${Source-Version}), berlin-kit-widget-motif (= ${Source-Version}), ${shlibs:Depends}
-Recommends: berlin-clients
+Depends: libbabylon (= ${Source-Version}), libberlin (= ${Source-Version}), libwarsaw (= ${Source-Version}), libprague (= ${Source-Version}), berlin-kit-drawing-libart (= ${Source-Version}), berlin-kit-gadget (= ${Source-Version}), berlin-kit-ggi (= ${Source-Version}), berlin-kit-image (= ${Source-Version}), berlin-kit-primitive (= ${Source-Version}), berlin-kit-widget-motif (= ${Source-Version}), ${shlibs:Depends}, xfonts-scalable
+Recommends: berlin-demos-c++
+Replaces: berlin, berlin-kit-command, berlin-kit-desktop, berlin-kit-figure, berlin-kit-layout, berlin-kit-text, berlin-kit-tool
+Conflicts: berlin, berlin-kit-command, berlin-kit-desktop, berlin-kit-figure, berlin-kit-layout, berlin-kit-text, berlin-kit-tool
 Description: The Berlin display server
  Berlin is a windowing system derived from Fresco, a powerful structured
  graphics toolkit originally based on InterViews. Berlin extends Fresco
@@ -18,10 +20,12 @@ Description: The Berlin display server
  3D-aware. It's CORBA-based architecture allow clients in any language
  with corba bindings.
 
-Package: berlin-clients
+Package: berlin-demos-c++
 Architecture: any
 Depends: libbabylon (= ${Source-Version}), libberlin (= ${Source-Version}), libwarsaw (= ${Source-Version}), libprague (= ${Source-Version}), ${shlibs:Depends}
-Recommends: berlin
+Recommends: berlin-server
+Replaces: berlin-clients
+Conflicts: berlin-clients
 Description: Demo clients for the Berlin display server
  Simple demo applications for the Berlin display server written in C++.
 
@@ -66,7 +70,7 @@ Description: OS wrapper library for the Berlin display server
  threading, IPC and so on.
 
 Package: libprague-dev
-Section: libs
+Section: devel
 Architecture: all
 Depends: libprague (= ${Source-Version})
 Description: OS wrapper library for the Berlin display server (development files)
@@ -76,7 +80,7 @@ Description: OS wrapper library for the Berlin display server (development files
 Package: libwarsaw
 Section: libs
 Architecture: any
-Depends: warsaw-idl (= ${Source-Version}), ${shlibs:Depends}
+Depends: ${shlibs:Depends}
 Description: Communication library for the Berlin display server
  This is the clientside implementation of Berlin's CORBA interfaces in C++.
 
@@ -95,30 +99,10 @@ Description: Communication library for the Berlin display server (CORBA IDL)
  These IDL-files define the Berlin display server's interfaces. They are
  its equivalent to the X-protocol.
 
-Package: berlin-kit-command
-Section: libs
-Architecture: any
-Depends: libberlin (= ${Source-Version}), libprague (= ${Source-Version}), libwarsaw (= ${Source-Version}), ${shlibs:Depends}
-Description: CommandKit for the Berlin display server
- The CommandKit implements simple models that are observed by the more
- complex Kits. As all Kits it gets loaded into the server at runtime.
- .
- All Berlin clients need this Kit.
-
-Package: berlin-kit-desktop
-Section: libs
-Architecture: any
-Depends: libberlin (= ${Source-Version}), libprague (= ${Source-Version}), libwarsaw (= ${Source-Version}), ${shlibs:Depends}
-Description: DesktopKit for the Berlin display server
- This is the 'windowmanager' of the Berlin display server. As all Kits
- it gets loaded into the server at runtime.
- .
- All Berlin clients need this Kit.
-
 Package: berlin-kit-drawing-libart
 Section: libs
 Architecture: any
-Depends: libberlin (= ${Source-Version}), libprague (= ${Source-Version}), libwarsaw (= ${Source-Version}), ${shlibs:Depends}
+Depends: berlin-server (= ${Source-Version}), libberlin (= ${Source-Version}), libprague (= ${Source-Version}), libwarsaw (= ${Source-Version}), ${shlibs:Depends}
 Description: libart based DrawingKit for the Berlin display server
  DrawingKits are highlevel graphic drivers for the Berlin display server.
  They turn the vector-based graphics stored in the server into a format
@@ -134,7 +118,7 @@ Description: libart based DrawingKit for the Berlin display server
 Package: berlin-kit-drawing-postscript
 Section: libs
 Architecture: any
-Depends: libberlin (= ${Source-Version}), libprague (= ${Source-Version}), libwarsaw (= ${Source-Version}), ${shlibs:Depends}
+Depends: berlin-server (= ${Source-Version}), libberlin (= ${Source-Version}), libprague (= ${Source-Version}), libwarsaw (= ${Source-Version}), ${shlibs:Depends}
 Suggests: gs, gv
 Description: Postscript DrawingKit for the Berlin display server
  DrawingKits are highlevel graphic drivers for the Berlin display server.
@@ -148,21 +132,10 @@ Description: Postscript DrawingKit for the Berlin display server
  You need this DrawingKit to print to postscript printers (or other
  postscript interpreters like ghostscript).
 
-Package: berlin-kit-figure
-Section: libs
-Architecture: any
-Depends: libberlin (= ${Source-Version}), libprague (= ${Source-Version}), libwarsaw (= ${Source-Version}), ${shlibs:Depends}
-Description: FigureKit for the Berlin display server
- The FigureKit is used to produce simple 2D-graphic objects like lines,
- circles and so on. As all Kits it gets loaded into the server at
- runtime.
- .
- All Berlin clients need this Kit.
-
 Package: berlin-kit-gadget
 Section: libs
 Architecture: any
-Depends: libberlin (= ${Source-Version}), libprague (= ${Source-Version}), libwarsaw (= ${Source-Version}), ${shlibs:Depends}
+Depends: berlin-server (= ${Source-Version}), libberlin (= ${Source-Version}), libprague (= ${Source-Version}), libwarsaw (= ${Source-Version}), ${shlibs:Depends}
 Description: GadgetKit for the Berlin display server
  The GadgetKit contains simple graphics to manipulate others. Examples
  are rotators, zoomer and such. As all Kits it gets loaded into the
@@ -173,7 +146,7 @@ Description: GadgetKit for the Berlin display server
 Package: berlin-kit-ggi
 Section: libs
 Architecture: any
-Depends: libberlin (= ${Source-Version}), libprague (= ${Source-Version}), libwarsaw (= ${Source-Version}), ${shlibs:Depends}
+Depends: berlin-server (= ${Source-Version}), libberlin (= ${Source-Version}), libprague (= ${Source-Version}), libwarsaw (= ${Source-Version}), ${shlibs:Depends}
 Description: GGIKit for the Berlin display server
  This Kit allows to access the underlying GGI-library. As all Kits it
  gets loaded into the server at runtime.
@@ -183,27 +156,17 @@ Description: GGIKit for the Berlin display server
 Package: berlin-kit-image
 Section: libs
 Architecture: any
-Depends: libberlin (= ${Source-Version}), libprague (= ${Source-Version}), libwarsaw (= ${Source-Version}), ${shlibs:Depends}
+Depends: berlin-server (= ${Source-Version}), libberlin (= ${Source-Version}), libprague (= ${Source-Version}), libwarsaw (= ${Source-Version}), ${shlibs:Depends}
 Description: ImageKit for the Berlin display server
  The ImageKit allows to display and manipulate rasterimages. As all
  Kits it gets loaded into the server at runtime.
  .
  Most Berlin clients will need this Kit.
 
-Package: berlin-kit-layout
-Section: libs
-Architecture: any
-Depends: libberlin (= ${Source-Version}), libprague (= ${Source-Version}), libwarsaw (= ${Source-Version}), ${shlibs:Depends}
-Description: LayoutKit for the Berlin display server
- Layout objects are generated by this Kit. As all
- Kits it gets loaded into the server at runtime.
- .
- All Berlin clients will need this Kit.
-
 Package: berlin-kit-primitive
 Section: libs
 Architecture: any
-Depends: libberlin (= ${Source-Version}), libprague (= ${Source-Version}), libwarsaw (= ${Source-Version}), ${shlibs:Depends}
+Depends: berlin-server (= ${Source-Version}), libberlin (= ${Source-Version}), libprague (= ${Source-Version}), libwarsaw (= ${Source-Version}), ${shlibs:Depends}
 Description: PrimitiveKit for the Berlin display server
  This Kit is the 3D equivalent of the FigureKit: It allows for the
  creation of simple 3D objects like cubes, spheres and others. This
@@ -213,31 +176,10 @@ Description: PrimitiveKit for the Berlin display server
  All Berlin clients that need 3D objects need this Kit to function
  properly.
 
-Package: berlin-kit-text
-Section: libs
-Architecture: any
-Depends: libberlin (= ${Source-Version}), libprague (= ${Source-Version}), libwarsaw (= ${Source-Version}), ${shlibs:Depends}
-Description: TextKit for the Berlin display server
- All textflow objects like textframes and labels get generated by this Kit.
- As all Kits it gets loaded into the server at runtime.
- .
- All Berlin clients need this Kit.
-
-Package: berlin-kit-tool
-Section: libs
-Architecture: any
-Depends: libberlin (= ${Source-Version}), libprague (= ${Source-Version}), libwarsaw (= ${Source-Version}), ${shlibs:Depends}
-Description: ToolKit for the Berlin display server
- The ToolKit creates objects like frames, TextInput and others. It is
- nothing like a ToolKit in X though. As all Kits it gets loaded into the
- server at runtime.
- .
- All Berlin clients need this Kit.
-
 Package: berlin-kit-unidraw
 Section: libs
 Architecture: any
-Depends: libberlin (= ${Source-Version}), libprague (= ${Source-Version}), libwarsaw (= ${Source-Version}), ${shlibs:Depends}
+Depends: berlin-server (= ${Source-Version}), libberlin (= ${Source-Version}), libprague (= ${Source-Version}), libwarsaw (= ${Source-Version}), ${shlibs:Depends}
 Description: UnidrawKit for the Berlin display server
  This Kit contains a framework for writting vectorbased graphic programs.
  As all Kits it gets loaded into the server at runtime.
@@ -247,7 +189,7 @@ Description: UnidrawKit for the Berlin display server
 Package: berlin-kit-widget-motif
 Section: libs
 Architecture: any
-Depends: libberlin (= ${Source-Version}), libprague (= ${Source-Version}), libwarsaw (= ${Source-Version}), ${shlibs:Depends}
+Depends: berlin-server (= ${Source-Version}), libberlin (= ${Source-Version}), libprague (= ${Source-Version}), libwarsaw (= ${Source-Version}), ${shlibs:Depends}
 Description: Motif style WidgetKit for the Berlin display server
  A WidgetKit is used to create widgets like buttons, scrollbars and others.
  The look and feel of those widgets is configurable by exchanging the

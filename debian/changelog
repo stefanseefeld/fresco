@@ -1,3 +1,31 @@
+berlin (0.0.20011029-1) unstable; urgency=low
+
+  * rename berlin to berlin-server
+  * rename berlin-clients to berlin-demos-c++
+  * berlin-server:
+    - merge berlin-kit-command, berlin-kit-desktop, berlin-kit-figure,
+      berlin-kit-layout, berlin-kit-text, berlin-kit-tool
+    - depend on xfonts-scalable
+    - change fontdir in berlinrc to /usr/lib/Berlin/fonts and add
+      a link to a working font in it
+  * berlin-kit-*:
+    - depend on berlin-server
+  * change optimization
+
+ -- Bastian Blank <waldi@debian.org>  Sat,  3 Nov 2001 00:25:53 +0100
+
+berlin (0.0.20010828-2) unstable; urgency=low
+
+  * change section of libprague-dev from libs to devel.
+  * remove depency to warsaw-idl from libwarsaw.
+  * berlin:
+    - fix bashism in script Berlin. (closes: #111166, #111188)
+  * berlin-clients:
+    - add script for demo called Berlin-demo.
+    - add manpage for script Berlin-demo.
+
+ -- Bastian Blank <waldi@debian.org>  Tue,  4 Sep 2001 13:33:32 +0200
+
 berlin (0.0.20010828-1) unstable; urgency=low
 
   * CVS update.
