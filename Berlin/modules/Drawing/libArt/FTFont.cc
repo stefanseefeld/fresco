@@ -264,7 +264,7 @@ void libArt::FTFont::allocate_char(Unichar ch, Graphic::Requisition &r)
   DrawingKit::GlyphMetrics gm = metrics(ch);
   r.x.natural = r.x.minimum = r.x.maximum = gm.horiAdvance / (_xres * 64.0);
   r.x.defined = true;
-  r.x.align = gm.width == 0 ? 0. : ((double)gm.horiBearingX)/((double)gm.width);;
+  r.x.align = gm.width == 0 ? 0. : ((double)gm.horiBearingX)/((double)gm.horiAdvance);
   r.y.natural = r.y.minimum = r.y.maximum = gm.height / (_yres * 64.0);
   r.y.defined = true;
   r.y.align = gm.height == 0 ? 0. : ((double)gm.horiBearingY)/((double)gm.height); 
