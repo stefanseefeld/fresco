@@ -93,15 +93,13 @@ CORBA::Boolean RegionImpl::containsPlane(const Vertex &v, Axis a)
 
 CORBA::Boolean RegionImpl::intersects(Region_ptr r)
 {
-  bool b = false;
   if (valid)
     {
       Vertex l, u;
       r->bounds(l, u);
-      b  = (lower.x <= u.x && upper.x >= u.x) || (lower.x <= l.x && upper.x >= l.x) || ((lower.x <= l.x) == (upper.x >= u.x));
-      b &= (lower.y <= u.y && upper.y >= u.y) || (lower.y <= l.y && upper.y >= l.y) || ((lower.y <= l.y) == (upper.y >= u.y));
+      return lower.x <= u.x && upper.x >= l.x && lower.y <= u.y && upper.y >= l.y;
     }
-  return b;
+  return false;
 }
 
 void RegionImpl::copy(Region_ptr r)

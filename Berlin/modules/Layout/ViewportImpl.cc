@@ -225,14 +225,29 @@ void ViewportImpl::Adjustment::scrollTo(Coord vv)
   adjust(delta);
 }
 
-ViewportImpl::ViewportImpl(Graphic_ptr g)
+ViewportImpl::ViewportImpl()
 {
-  body(g);
   xadjustment = new Adjustment;
   xadjustment->_obj_is_ready(CORBA::BOA::getBOA());
-  xadjustment->block(true);
   yadjustment = new Adjustment;
   yadjustment->_obj_is_ready(CORBA::BOA::getBOA());
+}
+
+ViewportImpl::~ViewportImpl()
+{
+  xadjustment->_dispose();
+  yadjustment->_dispose();
+}
+
+void ViewportImpl::attachAdjustments()
+{
+  xadjustment->attach(_this());
+  yadjustment->attach(_this());
+}
+
+void ViewportImpl::body(Graphic_ptr g)
+{
+  xadjustment->block(true);
   yadjustment->block(true);
   GraphicImpl::defaultRequisition(requisition);
   lo[xaxis] = lo[yaxis] = Coord(0);
@@ -266,18 +281,6 @@ ViewportImpl::ViewportImpl(Graphic_ptr g)
     }
   xadjustment->block(false);
   yadjustment->block(false);
-}
-
-ViewportImpl::~ViewportImpl()
-{
-  xadjustment->_dispose();
-  yadjustment->_dispose();
-}
-
-void ViewportImpl::init()
-{
-  xadjustment->attach(_this());
-  yadjustment->attach(_this());
 }
 
 Transform_ptr ViewportImpl::transformation() { return Transform::_nil();}

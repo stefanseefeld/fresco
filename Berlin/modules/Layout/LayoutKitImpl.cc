@@ -118,9 +118,10 @@ Graphic_ptr LayoutKitImpl::clipper(Graphic_ptr g)
 
 Viewport_ptr LayoutKitImpl::scrollable(Graphic_ptr g)
 {
-  ViewportImpl *vp = new ViewportImpl(g);
+  ViewportImpl *vp = new ViewportImpl;
   vp->_obj_is_ready(_boa());
-  vp->init();
+  vp->attachAdjustments();
+  vp->body(g);
   return vp->_this();
 }
 

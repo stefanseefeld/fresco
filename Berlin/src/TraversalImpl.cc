@@ -1,10 +1,8 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- *
  * Copyright (C) 1999 Stefan Seefeld <seefelds@magellan.umontreal.ca> 
  * Copyright (C) 1999 Graydon Hoare <graydon@pobox.com> 
- *
  * http://www.berlin-consortium.org
  *
  * this code is based on code from Fresco.
@@ -107,8 +105,6 @@ void TraversalImpl::push(Graphic_ptr g, Region_ptr r, TransformImpl *t)
 void TraversalImpl::pop()
 {
   State &state = *stack.rbegin();
-  CORBA::release(state.graphic);
-  CORBA::release(state.allocation);
   state.transformation->_dispose();
   stack.erase(stack.end() - 1);
 }

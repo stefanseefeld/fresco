@@ -87,15 +87,15 @@ Pointer::Pointer(ggi_visual_t visual)
 	  for (unsigned short d = 0; d != depth; d++)
 	      mask[y*depth*size[0] + depth*x + d] = pointerImg[y*size[0] +x] > 0 ? ~0 : 0;
 
-  backup = new unsigned char[size[0]*size[1]*depth];
-  save();
+  cache = new unsigned char[size[0]*size[1]*depth];
+  backup();
 }
 
 Pointer::~Pointer()
 {
   delete [] image;
   delete [] mask;
-  delete [] backup;
+  delete [] cache;
 }
 
 void Pointer::move(PixelCoord x, PixelCoord y)
@@ -103,29 +103,29 @@ void Pointer::move(PixelCoord x, PixelCoord y)
   restore();
   position[0] = max(x, origin[0]);
   position[1] = max(y, origin[1]);
-  save();
-  write();
+  backup();
+  draw();
 };
 
 #define PIXPOS  (((position[1] + y) - origin[1])*(stride/depth) + (position[0]-origin[0]) + size[0])
 
-void Pointer::save()
+void Pointer::backup()
 {
   unsigned char *from = static_cast<unsigned char *>(dbuf->read) + (position[1]-origin[1])*stride + (position[0]-origin[0])*depth;
-  unsigned char *to = backup;
+  unsigned char *to = cache;
   for (PixelCoord y = 0; (y != size[1]) && (PIXPOS < maxCoord); y++, from += stride, to += depth*size[0])
     Memory::copy(from, to, depth*size[0]);
 }
 
 void Pointer::restore()
 {
-  unsigned char *from = backup;
+  unsigned char *from = cache;
   unsigned char *to = static_cast<unsigned char *>(dbuf->write) + (position[1]-origin[1])*stride + (position[0]-origin[0])*depth;
   for (PixelCoord y = 0; (y != size[1]) && (PIXPOS < maxCoord); y++, from += depth*size[0], to += stride)
     Memory::copy(from, to, depth*size[0]);
 }
 
-void Pointer::write()
+void Pointer::draw()
 {
   unsigned char *from = image;
   unsigned char *bits = mask;

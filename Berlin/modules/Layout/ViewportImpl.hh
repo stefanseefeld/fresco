@@ -29,13 +29,14 @@
 
 class RegionImpl;
 
-class ViewportImpl : implements(Viewport), implements(Observer), public MonoGraphic
+class ViewportImpl : implements(Viewport), public MonoGraphic
 {
   class Adjustment;
  public:
-  ViewportImpl(Graphic_ptr);
+  ViewportImpl();
   ~ViewportImpl();
-  void init();
+  void attachAdjustments();
+  virtual void body(Graphic_ptr);
 
   virtual Transform_ptr transformation();
   virtual void request(Requisition &);

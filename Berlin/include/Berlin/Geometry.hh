@@ -190,9 +190,7 @@ inline bool Rectangle<T>::contains(const Rectangle<T> &c) const
 template <class T>
 inline bool Rectangle<T>::intersects(const Rectangle<T> &i) const
 {
-  bool x = (l <= i.r && r >= i.r) || (l <= i.l && r >= i.l) || ((l <= i.r) == (r >= i.l));
-  bool y = (t <= i.b && b >= i.b) || (t <= i.t && b >= i.t) || ((t <= i.b) == (b >= i.t));
-  return x && y;
+  return l <= i.r && r >= i.l && t < i.b && b > i.t;
 }
 
 template <class T>

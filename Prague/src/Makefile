@@ -85,6 +85,7 @@ distclean:	clean
 
 $(TARGET):	$(OBJ)
 		$(CXX) $(LDFLAGS) -o $@ $(OBJ) $(LIBS)
+		strip --strip-unneeded $@
 
 Makefile:	$(cpath)/Makefile.in $(cpath)/config.status
 		cd $(cpath); ./config.status

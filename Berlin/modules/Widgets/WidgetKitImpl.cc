@@ -91,7 +91,7 @@ TextBuffer_ptr WidgetKitImpl::text()
 
 Graphic_ptr WidgetKitImpl::inset(Graphic_ptr g, const Color &c)
 {
-  Frame *frame = new Frame(c, Frame::inset, 2);
+  Frame *frame = new Frame(2, c, Frame::concav);
   frame->_obj_is_ready(_boa());
   frame->body(g);
   return frame->_this();
@@ -99,10 +99,20 @@ Graphic_ptr WidgetKitImpl::inset(Graphic_ptr g, const Color &c)
 
 Graphic_ptr WidgetKitImpl::outset(Graphic_ptr g, const Color &c)
 {
-  Frame *frame = new Frame(c, Frame::outset, 5);
+  Frame *frame = new Frame(2, c, Frame::convex);
   frame->_obj_is_ready(_boa());
   frame->body(g);
   return frame->_this();
+}
+
+Graphic_ptr WidgetKitImpl::pushButtonFrame(Graphic_ptr g, const Color &c, Telltale_ptr t)
+{
+//   DynamicFrame *frame = new DynamicFrame(2, c, Frame::convex, Frame::concav, Telltale::toggle);
+//   frame->_obj_is_ready(_boa());
+//   frame->body(g);
+//   frame->attach(t);
+//   return frame->_this();
+  return Graphic::_nil();
 }
 
 EXPORT_PLUGIN(WidgetKitImpl,interface(WidgetKit))

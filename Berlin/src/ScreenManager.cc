@@ -97,6 +97,11 @@ void ScreenManager::repair()
 	    traversal->_obj_is_ready(CORBA::BOA::getBOA());
 	    screen->traverse(traversal->_this());
 	    traversal->_dispose();
+	    if (pointer->intersects((*i)->lower.x, (*i)->upper.x, (*i)->lower.y, (*i)->upper.y))
+	      {
+		pointer->backup();
+		pointer->draw();
+	      }
 	    (*i)->_dispose();
 	}
     
