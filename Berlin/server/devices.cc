@@ -49,7 +49,7 @@ int main(int argc, char **argv)
   size_t argo = getopt.parse(argc, argv);
   argc -= argo;
   argv += argo;
-  if (getopt.is_set("version")) { cout << "version is " << version << endl; return 0;}
+  if (getopt.is_set("version")) { std::cout << "version is " << version << std::endl; return 0;}
   if (getopt.is_set("help")) { getopt.usage(); return 0;}
   Console::open(argc, argv, PortableServer::POA::_nil());
   Console::instance()->device_info(std::cout);
