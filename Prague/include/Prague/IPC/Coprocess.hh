@@ -78,6 +78,7 @@ protected:
 private:
   Coprocess(const Coprocess &);
   Coprocess &operator = (const Coprocess &);
+  bool terminated;
   void kill(int);
   mutable Mutex  mutex;
   struct

@@ -37,6 +37,7 @@ public:
 private:
   TTYAgent(const TTYAgent &);
   TTYAgent &operator = (const TTYAgent &);
+  bool _running;
 };
 
 };

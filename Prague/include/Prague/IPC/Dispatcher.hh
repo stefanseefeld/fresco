@@ -52,7 +52,7 @@ class Dispatcher
   //. (determined by the mask) on the agent
   {
     Handler(const task &tt) : t(tt) {}
-    void process() { dispatcher->process(t);};
+    void process() { dispatcher->process(t);}
     task t;
   };
   friend struct Handler;

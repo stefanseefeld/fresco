@@ -23,6 +23,7 @@
 #define _Agent_hh
 
 #include <Prague/IPC/ipcbuf.hh>
+#include <Prague/Sys/Thread.hh>
 
 namespace Prague
 {
@@ -50,6 +51,19 @@ protected:
 private:
   Agent(const Agent &);
   Agent &operator = (const Agent &);
+  // For dispatcher use (Ilya)
+  int task_count;
+  Prague::Mutex task_mutex;
+  Prague::Condition *destruct_ok;
+  bool new_task() {
+	  MutexGuard guard(task_mutex);
+	  if (destruct_ok)
+		  return false; /* Agent is being destroyed */
+	  task_count ++;
+	  return true;
+  }
+  void task_finished();
+
   short iomask;
   bool  running : 1;
 };
