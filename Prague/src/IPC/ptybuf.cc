@@ -52,7 +52,7 @@ ptybuf::ptybuf()
 
 ptybuf::~ptybuf()
 {
-  if ( tty =! -1 )
+  if ( tty != -1 )
     close ( tty );
 }
 
@@ -84,7 +84,6 @@ void ptybuf::setup  ()
 {
   int ttyfd;
   int ptyfd;
-  char * name;
 
 #if defined(HAVE_OPENPTY) || defined(BSD4_4)
   /* openpty(3) exists in OSF/1 and some other os'es */
@@ -101,14 +100,13 @@ void ptybuf::setup  ()
   fd ( ptyfd );
   tty = ttyfd;
   ptydev = ttyname ( ptyfd );
-#else /* HAVE_OPENPTY */
-  #ifdef HAVE__GETPTY
+#elif defined(HAVE__GETPTY)
   /*
    * _getpty(3) exists in SGI Irix 4.x, 5.x & 6.x -- it generates more
    * pty's automagically when needed
    */
 
-  name = _getpty ( &ptyfd, O_RDWR, 0622, 0 );
+  char *name = _getpty ( &ptyfd, O_RDWR, 0622, 0 );
   if ( ! name )
   {
     perror ( "_getpty" );
@@ -128,14 +126,14 @@ void ptybuf::setup  ()
   fd ( ptyfd );
   tty = ttyfd;
   ptydev = name;
-  #else /* HAVE__GETPTY */
-    #ifdef HAVE_DEV_PTMX
+#elif defined(HAVE_DEV_PTMX)
   /*
    * This code is used e.g. on Solaris 2.x.  (Note that Solaris 2.3
    * also has bsd-style ptys, but they simply do not work.)
    */
   int ptm;
   mysig_t old_signal;
+  char *name;
 
   ptyfd = open ( "/dev/ptmx", O_RDWR | O_NOCTTY );
 
@@ -174,8 +172,7 @@ void ptybuf::setup  ()
   fd ( ptyfd );
   tty = ttyfd;
   ptydev = ptsname ( ptm );
-    #else /* HAVE_DEV_PTMX */
-      #ifdef HAVE_DEV_PTS_AND_PTC
+#elif defined(HAVE_DEV_PTS_AND_PTC)
   /* AIX-style pty code. */
 
   ptyfd = open ( "/dev/ptc", O_RDWR | O_NOCTTY );
@@ -186,7 +183,7 @@ void ptybuf::setup  ()
     return;
   }
 
-  name = ttyname ( ptyfd );
+  char *name = ttyname ( ptyfd );
 
   ttyfd = open ( name, O_RDWR | O_NOCTTY );
 
@@ -200,7 +197,7 @@ void ptybuf::setup  ()
   fd ( ptyfd );
   tty = ttyfd;
   ptydev = name;
-      #else /* HAVE_DEV_PTS_AND_PTC */
+#else
   /* BSD-style pty code. */
   char buf1[64];
   char buf2[64];
@@ -243,9 +240,6 @@ void ptybuf::setup  ()
     tty = ttyfd;
     ptydev = buf1;
   }
-      #endif /* HAVE_DEV_PTS_AND_PTC */
-    #endif /* HAVE_DEV_PTMX */
-  #endif /* HAVE__GETPTY */
-#endif /* HAVE_OPENPTY */
+#endif
 }
 
