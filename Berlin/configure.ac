@@ -187,7 +187,7 @@ dnl Print a summary of what's going to be built
 dnl ------------------------------------------------------------------
 AC_MSG_PART(Summary)
 AC_MSG_RESULT([Build libBerlin:          $enable_berlin])
-AC_MSG_RESULT([Kits to build:            $tested_drawing_kits $enable_kits])
+AC_MSG_RESULT([Build Kits:               $tested_drawing_kits $enable_kits])
 
 dnl ------------------------------------------------------------------
 dnl Output substitution

@@ -36,12 +36,14 @@ endef
 .PHONY: config clean distclean dist
 .FORCE:
 
-world:	local.mk
+world:	clients-python.mk local.mk
 
 config: .FORCE configure
 	@$(makeconf)
 
-local.mk: configure local.mk.in
+clients-python.mk: clients-python.mk.in
+local.mk:          local.mk.in
+clients-python.mk local.mk: configure
 	@$(makeconf)
 
 configure: configure.in aclocal.m4
@@ -53,7 +55,7 @@ aclocal.m4: $(cpath)/macros/*.m4
 	@aclocal -I $(cpath)/macros
 
 clean:	
-	rm -f *~ local.mk config.log config.status
+	rm -f *~ clients-python.mk local.mk config.log config.status
 
 distclean:	clean
 	rm -f configure config.cache config.param

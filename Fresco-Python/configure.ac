@@ -62,8 +62,6 @@ dnl ------------------------------------------------------------------
 
 dnl Decide whether we are ready to build
 PYTHON=
-echo blabla $berlin_cv_sys_omniidl_py
-echo blabla $BUILD_PYTHON
 if test ".$berlin_cv_sys_omniidl_py" = .yes ; then
 	PYTHON="clients/python"
 fi
