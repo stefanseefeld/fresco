@@ -56,7 +56,8 @@ INT	= $(DYNINT) $(STATINT) $(LCINT)
 DEP	= $(patsubst %.idl, $(dpath)/%.d, $(INT))
 
 DYNSRC	= $(patsubst %.idl, %DynSK.cc, $(DYNINT))
-STATSRC	= $(patsubst %.idl, %SK.cc, $(DYNINT)) $(patsubst %.idl, %SK.cc, $(STATINT))
+DYNSTATSRC = $(patsubst %.idl, %SK.cc, $(DYNINT)) 
+STATSRC	= $(patsubst %.idl, %SK.cc, $(STATINT))
 LCSRC	= $(patsubst %.idl, %SK.cc, $(LCINT))
 
 UTIL	= Warsaw.cc Unicode.cc
@@ -102,6 +103,8 @@ $(LCHDR): %.hh:	%.idl
 		$(IDL) $(IDLFLAGS) $(LCIDLFLAGS) $<
 $(STATSRC): %SK.cc:		%.idl
 		$(IDL) $(IDLFLAGS) $<
+$(DYNSTATSRC): %SK.cc: 	%.idl
+		$(IDL) $(IDLFLAGS) $(DYNIDLFLAGS) $<
 $(DYNSRC): %DynSK.cc:	%.idl
 		$(IDL) $(IDLFLAGS) $(DYNIDLFLAGS) $<
 $(LCSRC): %SK.cc:	%.idl
