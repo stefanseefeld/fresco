@@ -58,6 +58,16 @@ public:
 
   void clear();
 
+  Warsaw::Region_ptr _this ()
+  {
+    if (!_this_valid)
+      {
+	__this = POA_Warsaw::Region::_this();
+	_this_valid = true;
+      }
+    return Warsaw::Region::_duplicate (__this);
+  }
+
 public:
   void normalize(Warsaw::Vertex &);
   void normalize(Warsaw::Transform_ptr);
@@ -69,6 +79,10 @@ public:
   static void merge_max(Warsaw::Vertex &, const Warsaw::Vertex &);
   static Warsaw::Coord span_align(Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
   static Warsaw::Coord span_origin(Warsaw::Coord, Warsaw::Coord, Warsaw::Coord);
+
+private:
+  bool _this_valid;
+  Warsaw::Region_var __this;
 };
 
 inline Warsaw::Coord RegionImpl::span_origin(Warsaw::Coord lower, Warsaw::Coord upper, Warsaw::Coord align)
