@@ -481,8 +481,8 @@ void GraphicImpl::require_lead_trail(Warsaw::Graphic::Requirement &r,
     }
   else
     {
-      r.minimum = r.natural * Math::max(min_lead / natural_lead, min_trail / natural_trail);
-      r.maximum = r.natural * Math::min(max_lead / natural_lead, max_trail / natural_trail);
+      r.minimum = min_lead + min_trail;
+      r.maximum = max_lead + max_trail;
       if (r.natural == zero)
 	r.align = zero;
       else
