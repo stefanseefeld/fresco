@@ -36,9 +36,9 @@ class Path
 public:
   struct predicate { virtual bool operator()(const string &name) const = 0;};
   //. construct an empty path
-  Path() : paths(0) {}
-  //. construct a path out of 'path', typically an environment variable; use c as separator
-  Path(const string &path, char c = ':');
+  Path() {}
+  //. construct a list of directories, using the given separator to tokenize the string
+  Path(const string &path, char separator = ':');
   ~Path();
   //. append a directory
   void append(const string &directory) { _directories.push_back(directory);}

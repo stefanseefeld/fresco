@@ -28,6 +28,8 @@
 #include <cerrno>
 #include <cstdio>
 
+using namespace Prague;
+
 MMap::MMap(int fd, int l, int prot, int share, void *addr, off_t offset)
   : base(MAP_FAILED), length(0)
 {

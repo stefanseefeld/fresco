@@ -25,7 +25,7 @@
 
 using namespace Prague;
 
-Path::Path(const string &list, char c)
+Path::Path(const string &list, char separator)
 {
   if (list.empty()) return;
   string::size_type b = 0;

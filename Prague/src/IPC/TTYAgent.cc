@@ -83,7 +83,7 @@ void TTYAgent::start()
   Coprocess::start();
 };
 
-void TTYAgent::setWindowSize(unsigned short columns, unsigned short rows)
+void TTYAgent::set_window_size(unsigned short columns, unsigned short rows)
 {
 #if defined(HAVE_IOCTL)
   struct winsize ws;

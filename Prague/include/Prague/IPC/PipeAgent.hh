@@ -27,21 +27,19 @@
 namespace Prague
 {
 
-char *sigName(int);
-char *statusName(int);
-
+//. a PipeAgent uses a pipe to communicate with the coprocess
 class PipeAgent : public Coprocess
 {
 public:
   PipeAgent(const string &, IONotifier *, EOFNotifier * = 0);
   virtual      ~PipeAgent();
+  //. spawns a child process after creating a pipe, then redirects i/o to it
   virtual void  start();
 private:
   PipeAgent(const PipeAgent &);
   PipeAgent &operator = (const PipeAgent &);
-  Mutex mutex;
 };
 
 };
 
-#endif /* _Prague_PipeAgent_hh */
+#endif

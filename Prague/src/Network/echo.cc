@@ -42,7 +42,7 @@ void echo::echobuf::serve_clients(int portno)
       // act as a server now
       listen(sockbuf::somaxconn);
       // commit suicide when we receive SIGTERM
-      Fork::suicideOnSignal(Signal::terminate);
+      Fork::suicide_on_signal(Signal::terminate);
       for (;;)
 	{
 	  sockinetbuf *socket = accept();

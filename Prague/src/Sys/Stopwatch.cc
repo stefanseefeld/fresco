@@ -31,7 +31,7 @@ using namespace Prague;
 clock_t Stopwatch::_ticks = 0;
 
 Stopwatch::Stopwatch()
-  : s(undef)
+  : _state(undef)
 {
   if (!_ticks) _ticks = CLK_TCK;
   start();
@@ -39,7 +39,7 @@ Stopwatch::Stopwatch()
 
 void Stopwatch::start()
 {
-  s = running;
+  _state = running;
   struct tms cpt;
   _real.begin = times(&cpt);
   _cpu.begin  = cpt.tms_utime;
@@ -49,7 +49,7 @@ void Stopwatch::start()
 
 void Stopwatch::stop()
 {
-  s = stopped;
+  _state = stopped;
   struct tms cpt;
   _real.end = times(&cpt);
   _cpu.end  = cpt.tms_utime;
@@ -59,21 +59,21 @@ void Stopwatch::stop()
 
 double Stopwatch::real_time()
 {
-  if (s == undef) cerr << "Stopwatch::realTime: no starting point set" << endl;
-  else if (s == running) stop();
-  return (double) (_real.end - _real.begin)/ticks;
+  if (_state == undef) cerr << "Stopwatch::realTime: no starting point set" << endl;
+  else if (_state == running) stop();
+  return (double) (_real.end - _real.begin)/_ticks;
 };
 
 double Stopwatch::cpu_time()
 {
-  if (s == undef) cerr << "Stopwatch::cpuTime: no starting point set" << endl;
-  else if (s == running) stop();
-  return (double) (_cpu.end - _cpu.begin)/ticks;
+  if (_state == undef) cerr << "Stopwatch::cpuTime: no starting point set" << endl;
+  else if (_state == running) stop();
+  return (double) (_cpu.end - _cpu.begin)/_ticks;
 };
 
 double Stopwatch::sys_time()
 {
-  if (s == undef) cerr << "Stopwatch::sysTime: no starting point set" << endl;
-  else if (s == running) stop();
-  return (double) (_sys.end - _sys.begin)/ticks;
+  if (_state == undef) cerr << "Stopwatch::sysTime: no starting point set" << endl;
+  else if (_state == running) stop();
+  return (double) (_sys.end - _sys.begin)/_ticks;
 };
