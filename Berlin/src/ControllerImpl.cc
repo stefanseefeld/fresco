@@ -434,10 +434,13 @@ void ControllerImpl::move(PickTraversal_ptr, const Input::Event &)
 {
 }
 
-void ControllerImpl::press(PickTraversal_ptr traversal, const Input::Event & e)
+void ControllerImpl::press(PickTraversal_ptr traversal, const Input::Event &)
 {
   grab(traversal);
-  request_focus(Controller_var(_this()), e[0].dev);
+  // FIXME: This needs to be configurable! Hardcoding in the keyboard is bad.
+  request_focus(Controller_var(_this()), e[0].dev); // request focus for the
+                                                    // keyboard
+                                                    // (click to focus)
   set(Warsaw::Controller::pressed);
 }
 
