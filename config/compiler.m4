@@ -59,6 +59,12 @@ AC_DEFUN(FRESCO_PROG_CC_CXX, [
 	changequote([, ])
 
 	if test ".$ac_cv_prog_gcc" = ".yes" ; then
+		AC_MSG_CHECKING([Checking GCC version >= 3.0])
+		if test `$CXX -dumpversion | cut -d. -f1` -lt 3 ; then
+			AC_MSG_ERROR([GCC is too old])
+		else
+			AC_MSG_RESULT([ok])
+		fi
 		for flag in "-pipe" ; do
 			case "$CFLAGS" in
 				( *${flag}* ) ;;
