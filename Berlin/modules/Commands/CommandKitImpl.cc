@@ -23,7 +23,12 @@
 
 #include <Warsaw/config.hh>
 #include <Warsaw/Controller.hh>
+#include <Warsaw/Server.hh>
+#include <Warsaw/DrawingKit.hh>
+#include <Warsaw/resolve.hh>
 #include <Berlin/ImplVar.hh>
+#include <Berlin/GraphicImpl.hh>
+#include <Berlin/DrawTraversalImpl.hh>
 #include <Berlin/CommandImpl.hh>
 #include "Command/CommandKitImpl.hh"
 #include "Command/TelltaleImpl.hh"
@@ -63,6 +68,49 @@ public:
   std::string   _text;
 };
 
+class PrintCommand : public CommandImpl
+{
+public:
+  PrintCommand(Graphic_ptr graphic, ServerContext_ptr server)
+    : _graphic(Graphic::_duplicate(graphic)),
+      _server(ServerContext::_duplicate(server))
+  {}
+  virtual void execute(const CORBA::Any &)
+  {
+    Warsaw::Kit::PropertySeq props;
+    props.length(1);
+    props[0].name = CORBA::string_dup("implementation");
+    props[0].value = CORBA::string_dup("PSDrawingKit");
+    RefCount_var<DrawingKit> print = resolve_kit<DrawingKit>(_server, "IDL:Warsaw/DrawingKit:1.0", props);
+    Warsaw::Graphic::Requisition r;
+    GraphicImpl::init_requisition(r);
+    _graphic->request(r);
+    Lease_var<RegionImpl> allocation(Provider<RegionImpl>::provide());
+    allocation->valid = true;
+    allocation->lower.x = allocation->lower.y = allocation->lower.z = 0; 
+    allocation->upper.x = r.x.natural;
+    allocation->upper.y = r.y.natural;
+    allocation->upper.z = 0; 
+
+    print->start_traversal();
+    DrawTraversalImpl *traversal = new DrawTraversalImpl(_graphic,
+							 allocation->_this(),
+							 Transform::_nil(),
+							 print);
+    traversal->init();
+    try { _graphic->traverse(Traversal_var(traversal->_this()));}
+    catch (const CORBA::OBJECT_NOT_EXIST &) { std::cerr << "PrintCommand: warning: corrupt scene graph!" << std::endl;}
+    catch (const CORBA::BAD_PARAM &) { std::cerr << "PrintCommand: caught bad parameter" << std::endl;}
+    traversal->finish();
+    delete traversal;
+    print->finish_traversal();
+    cout << "still here" << endl;
+  }
+ private:
+  Graphic_var       _graphic;
+  ServerContext_var _server;
+};
+
 class MacroCommandImpl : public virtual POA_Warsaw::MacroCommand,
 			 public CommandImpl
 {
@@ -95,6 +143,11 @@ CommandKitImpl::CommandKitImpl(const std::string &id, const Warsaw::Kit::Propert
 
 CommandKitImpl::~CommandKitImpl() {}
 
+void CommandKitImpl::bind(ServerContext_ptr server)
+{
+  _server = ServerContext::_duplicate(server);
+}
+
 Command_ptr CommandKitImpl::debugger(Warsaw::Command_ptr c, const char *text)
 {
   // FIXME: Shouldn't this be std::cerr? -- tobias
@@ -107,6 +160,13 @@ Command_ptr CommandKitImpl::log(const char *text)
 {
   // FIXME: Shouldn't this be std::cerr? -- tobias
   LogCommand *command = new LogCommand(std::cout, text);
+  activate(command);
+  return command->_this();
+}
+
+Command_ptr CommandKitImpl::print(Graphic_ptr graphic)
+{
+  PrintCommand *command = new PrintCommand(graphic, _server);
   activate(command);
   return command->_this();
 }

@@ -36,6 +36,7 @@ module Warsaw
   interface TextBuffer;
   interface StreamBuffer;
   interface Command;
+  interface Graphic;
   
   //. The CommandKit is a collection of strategy objects. They form the
   //. basis of any control protocol between widgets and subjects. The
@@ -51,6 +52,7 @@ module Warsaw
       //. This Command just dumps the given text to stdout whenever this Command
       //. gets executed. 
       Command log(in string t);
+      Command print(in Graphic g);
       //. Create a MacroCommand.
       MacroCommand composite();
 

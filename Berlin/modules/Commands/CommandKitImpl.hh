@@ -25,6 +25,7 @@
 
 #include <Warsaw/config.hh>
 #include <Warsaw/CommandKit.hh>
+#include <Warsaw/Graphic.hh>
 #include <Berlin/KitImpl.hh>
 #include <vector>
 
@@ -38,9 +39,11 @@ class CommandKitImpl : public virtual POA_Warsaw::CommandKit,
   CommandKitImpl(const std::string &, const Warsaw::Kit::PropertySeq &);
   virtual ~CommandKitImpl();
   virtual KitImpl *clone(const Warsaw::Kit::PropertySeq &p) { return new CommandKitImpl(repo_id(), p);}
+  virtual void bind(Warsaw::ServerContext_ptr);
 
   virtual Warsaw::Command_ptr debugger(Warsaw::Command_ptr, const char *);
   virtual Warsaw::Command_ptr log(const char *);
+  virtual Warsaw::Command_ptr print(Warsaw::Graphic_ptr);
   virtual Warsaw::MacroCommand_ptr composite();
   virtual Warsaw::TelltaleConstraint_ptr exclusive(Warsaw::Telltale::Mask);
   virtual Warsaw::TelltaleConstraint_ptr selection_required();
@@ -52,6 +55,7 @@ class CommandKitImpl : public virtual POA_Warsaw::CommandKit,
   virtual Warsaw::TextBuffer_ptr   text();
   virtual Warsaw::StreamBuffer_ptr stream(CORBA::Long);
  private:
+  Warsaw::ServerContext_var _server;
 };
 
 #endif
