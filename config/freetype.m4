@@ -35,13 +35,19 @@ AC_DEFUN([BERLIN_FREETYPE_CHECK],[
 	AC_REGISTER_PARAM(freetype_prefix)
 
 	dnl Check for Freetype includes.
-	if test x$freetype_prefix != x ; then
+	if test ".$freetype_prefix" != . ; then
 		FREETYPE_INCLUDES=-I$freetype_prefix/include
 	fi
 	save_CPPFLAGS="$CPPFLAGS"
 	CPPFLAGS="$FREETYPE_INCLUDES $CPPFLAGS"
 	AC_CHECK_HEADER(freetype/freetype.h,,no_freetype=yes)
 	CPPFLAGS="$save_CPPFLAGS"
+
+	if test ".$no_freetype" = yes; then
+		if test ".$1" = .mandatory; then
+			AC_MSG_ERROR(Could not find freetype.h!)
+		fi
+	fi
 	
 	dnl Check for Freetype libs
 	if test x$no_freetype = x ; then
@@ -88,6 +94,10 @@ main (int argc, char* argv[])
  	
 	if test x$ac_cv_lib_freetype = xyes ; then
 	        FREETYPE_LIBS=$freetype_libs
+        else
+		if test ".$1" = .mandatory ; then
+			AC_MSG_ERROR(Could not find freetype library!)
+		fi
 	fi
  	
 	AC_SUBST(FREETYPE_LIBS)
