@@ -114,7 +114,7 @@ install:	all
 	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(includedir)/Prague/Filter
 	$(SHTOOL) mkdir -f -p -m 755 $(DESTDIR)$(includedir)/Prague/Network
 	$(SHTOOL) install -C -m 644 ../include/Prague/acconfig.hh $(DESTDIR)$(includedir)/Prague
-	$(SHTOOL) install -C -m 644 ../include/Prague/config.hh $(DESTDIR)$(includedir)/Prague
+	$(SHTOOL) install -C -m 644 $(hdir)/config.hh $(DESTDIR)$(includedir)/Prague
 	for header in $(SysH); do \
 	  $(SHTOOL) install -C -m 644 $(hdir)/Sys/$$header $(DESTDIR)$(includedir)/Prague/Sys; \
 	done
