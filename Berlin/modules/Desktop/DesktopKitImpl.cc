@@ -200,7 +200,7 @@ Window_ptr DesktopKitImpl::transient(Controller_ptr g)
   req.x.align = 0.;
 
   RefCount_var<Graphic> printgraphic = _layout->glue_requisition(req);
-  Command_var print = _command->print(g);
+  Command_var print = _command->print(_tool->rgb(_layout->align(g, 0., 0.), 0.7, 0.7, 0.7));
   Trigger_var tbprint = _widget->button(printgraphic, print);
 
   req.x.minimum = 200.;
