@@ -61,15 +61,17 @@ nsref.ior: get-nameservice-ior
 warsaw-modules: Warsaw/build-stamp
 Warsaw/build-stamp: Warsaw.idl
 	rm -rf Warsaw impls
+	@echo Building skeletons
 	idl2perl -combine -out Warsaw Warsaw.idl
 	mv Warsaw/Warsaw.pm Warsaw/Warsaw.pm.back
 	echo 'use Warsaw::_file_;' > Warsaw/Warsaw.pm
 	cat Warsaw/Warsaw.pm.back >> Warsaw/Warsaw.pm
+	@echo Building implementation templates
 	idl2perl -out impls -impl Warsaw.idl
 	touch Warsaw/build-stamp
 
-Warsaw.idl: gen-warsaw-idl.pl $(wildcard $(top)/include/Warsaw/*.idl)
-	./gen-warsaw-idl.pl $(top)/include/Warsaw/*.idl
+Warsaw.idl: gen-warsaw-idl.pl $(wildcard $(top)/idl/Warsaw/*.idl)
+	./gen-warsaw-idl.pl $(top)/idl/Warsaw/*.idl
 
 ldlibpath = LD_LIBRARY_PATH=$(lpath)
 
