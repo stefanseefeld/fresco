@@ -730,10 +730,10 @@ bool Dictionary::is_Titlecase(const UCS4 uc) const throw (Block_Error)
 
 bool Dictionary::is_Private_Use(const UCS4 uc) const throw (Block_Error)
 {
-    return ((  0xDB80 <= uc && uc >=   0xDBFF) ||
-        (  0xE000 <= uc && uc >=   0xF8FF) ||
-        ( 0xF0000 <= uc && uc >=  0xFFFFF) ||
-        (0x100000 <= uc && uc >= 0x10FFFF));
+    return ((  0xDB80 <= uc && uc <=   0xDBFF) ||
+            (  0xE000 <= uc && uc <=   0xF8FF) ||
+            ( 0xF0000 <= uc && uc <=  0xFFFFF) ||
+            (0x100000 <= uc && uc <= 0x10FFFF));
 }
 
 // Other functions:
