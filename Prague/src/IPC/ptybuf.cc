@@ -30,7 +30,7 @@
 
 #if defined(__linux__) || defined(__FreeBSD__) // XXX: should use configure
 #  define __bsd44__
-#elif defined(__irix__)
+#elif defined(__sgi__)
 #  define __svr4__
 #endif
 
