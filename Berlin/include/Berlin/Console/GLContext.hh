@@ -26,10 +26,14 @@
 #include <Berlin/config.hh>
 #include <Berlin/Console.hh>
 
-class GLContext : virtual public Console::Extension
+class GLContext : public virtual Console::Extension
 {
-  //. I really don't know what to put here. Yet it works...:-)
 public:
+  class Callback {
+  public:
+    virtual void operator()() = 0;
+  };
+  virtual void add_to_queue(Callback *) = 0;
   virtual void flush() = 0;
 };
 
