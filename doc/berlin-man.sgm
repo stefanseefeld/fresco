@@ -5,6 +5,10 @@
 <!entity berlin-intro   system "berlin-intro.sgm">
 <!entity berlin-user   system "berlin-user.sgm">
 <!entity berlin-prog   system "berlin-prog.sgm">
+<!entity berlin-prog-thread system "berlin-prog-thread.sgm">
+<!entity berlin-prog-opengl system "berlin-prog-opengl.sgm">
+<!entity berlin-prog-text system "berlin-prog-text.sgm">
+<!entity berlin-prog-corba system "berlin-prog-corba.sgm">
 
 ]>
 

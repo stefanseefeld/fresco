@@ -273,14 +273,46 @@
     </sect1>
 
     <sect1>
-      <title>Subject/Observer</title>
-      <para></para>
+      <title>Subject/Observer</title> 
+
+      <para>The Subject/Observer software pattern is extremely common
+      in GUI systems. It is called Subject/Observer in Java, but if
+      you have used anything employing the Model/View framework
+      before, you will know how this works. Basically a selected
+      portion of objects inherit the interface of subjects, which can
+      be observed by any object inheriting the interface of an
+      observer. These are not necessarily disjoint types of objects,
+      they're just convenient interfaces. The Functionality is very
+      simple: observers have a list of things they are observing, and
+      subjects have a list of observers which are observing
+      them. Whenever a subject changes state in any externally visible
+      way, it calls <function>this->notify_observers()</function>,
+      which iterates over all the observers observing the subject and
+      for each of them, calls
+      <function>observer->update(this)</function>. This informs the
+      observers that the subject has changed, in some way that they
+      <emphasis>might</emphasis> be interested in. It is at the
+      discretion of an observer what it chooses to do with the update
+      notification. Usually it will verify its view of the subject,
+      possibly extracting information from the subject about its
+      current state. The Subject/Observer pattern merely standardizes
+      the mechanism by which this information is conveyed.
+</para>
+
+      <para>It is not necessary for the <function>update</function>
+      method to be implemented entirely in synchronous terms. In fact,
+      it would be unduly burdening the subject's thread if it had to
+      wait for each of the observers to finish updating themselves in
+      order to proceed. Thus, it is advantageous in certain situations
+      to implement <function>update</function> in terms of sending a
+      <className>subjectChangedMessage</classname> to the observer's
+      thread, if the observer happens to be in a separate
+      thread. Threads are discussed in more detail shortly</para>
     </sect1>
 
-    <sect1>
-      <title>Threads</title>
-      <para></para>
-    </sect1>
+
+  <!-- include the fabulously well-written threading document  :) -->
+  &berlin-prog-thread;
 
       <sect1>
 	<title>Factories</title>
@@ -339,6 +371,8 @@
       to use asymetric security systems like public key cryptography.
       </para>
     </sect1>
+
+    &berlin-prog-opengl;
 
   </chapter>
 
