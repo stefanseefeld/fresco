@@ -305,6 +305,14 @@ program is executed as a child of the server, it inherits the
 environment variable and will not attempt to use the nameserver or
 filesystem.
 
+Another common problem is that there are NO FONTS: Currently Fresco uses
+the last font freetype can handle which does not necessarily need to
+contain all the ASCII characters. To get around this problem try specifying
+which default font the server is to use by setting the environment variable
+'BERLIN_FONT_CHOOSER' to the empty string and reruning the server. On
+startup, it should present you with a list of fonts to choose from on the
+console from where you started up the server.
+
 If you're running two servers together, one with the id "FrescoServer"
 (as per default) and the other with the id "nested", then to start a
 client in nested from the Terminal Demo in FrescoServer, run 
