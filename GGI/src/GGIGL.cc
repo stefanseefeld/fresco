@@ -47,6 +47,9 @@ public:
     glFlush();
     _drawable->flush();
   }
+  virtual void add_to_queue(::GLContext::Callback *_cb) {
+    (*_cb)();
+  }
 private:
   GGI::Drawable   *_drawable;
   GGIMesaContext _context;  
