@@ -45,7 +45,6 @@ public:
   bool request_focus(Fresco::Controller_ptr, Fresco::Input::Device);
   //. This method is polled by the ScreenManager. It queries the Console
   //. for new events and distributes them to the matching focus.
-  bool has_event();
   void next_event();
   void restore(Fresco::Region_ptr);
   void damage(Fresco::Region_ptr);

@@ -72,11 +72,6 @@ bool EventManager::request_focus(Controller_ptr c, Input::Device d)
   return false;
 }
 
-bool EventManager::has_event()
-{
-  return Console::instance()->has_event();
-}
-
 void EventManager::next_event()
 {
   Trace trace("EventManager::next_event");

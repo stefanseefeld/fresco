@@ -110,9 +110,7 @@ public:
 
   //. FIXME: Missing documentation!
   virtual void device_info(std::ostream &) = 0;
-  //. If true, this is a promise not to block when next_event is called.
-  virtual bool has_event() = 0;
-  //. Wait until the next event comes from the input.
+  //. FIXME: Missing documentation!
   virtual Fresco::Input::Event *next_event() = 0;
   //. FIXME: Missing documentation!
   virtual void wakeup() = 0;

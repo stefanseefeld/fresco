@@ -55,7 +55,6 @@ public:
   Drawable *reference_to_servant(Fresco::Drawable_ptr);
 
   virtual void device_info(std::ostream &);
-  virtual bool has_event();
   virtual Fresco::Input::Event *next_event();
   virtual void wakeup();
   virtual void activate_autoplay() { _autoplay = true;}

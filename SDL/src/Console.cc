@@ -123,8 +123,6 @@ SDL::Console::Console(int &argc, char **argv,
   SDL_Init(SDL_INIT_VIDEO);
   SDL_ShowCursor(SDL_DISABLE);
   SDL_EnableUNICODE(SDL_ENABLE);
-
-  pipe(_wakeupPipe);
 }
 
 SDL::Console::~Console()
@@ -134,8 +132,6 @@ SDL::Console::~Console()
   for (dlist_t::iterator i = _drawables.begin();
        i != _drawables.end();
        i++) delete *i;
-  close(_wakeupPipe[0]);
-  close(_wakeupPipe[1]);
   SDL_Quit();
 }
 
@@ -189,20 +185,16 @@ void SDL::Console::device_info(std::ostream &os)
   os << "sorry, device info isn't available for SDL at this time" << std::endl;
 }
 
-// a true result is a promise that we won't block when next_event is next called
-bool SDL::Console::has_event()
-{
-  Prague::Trace trace("SDL::Console::next_event()");
-
-  return SDL_PeepEvents(0, 1, SDL_PEEKEVENT, 0);
-}
-
 Input::Event *SDL::Console::next_event()
 {
   Prague::Trace trace("SDL::Console::next_event()");
   
   SDL_Event event;
   SDL_WaitEvent(&event);
+  if (event.type == SDL_USEREVENT)
+  {
+    return 0;
+  }
   return synthesize(event);
 }
 
@@ -210,7 +202,12 @@ void SDL::Console::wakeup()
 {
   Prague::Trace trace("SDL::Console::wakeup()");
 
-  char c = 'z'; write(_wakeupPipe[1],&c,1);
+  SDL_Event event;
+  event.type = SDL_USEREVENT;
+  SDL_PushEvent(&event);
+  event.user.code = 0;
+  event.user.data1 = 0;
+  event.user.data2 = 0;
 }
 
 Input::Event *SDL::Console::synthesize(const SDL_Event &e)
@@ -350,7 +347,7 @@ void SDL::Console::highlight_screen(Fresco::Coord lx, Fresco::Coord ly,
 				    double blue)
 {
 #ifdef RMDEBUG
-  // I try to stay 'below' the Drawable where ever possible so that bugs in
+  // I try to stay 'below' the Drawable whereever possible so that bugs in
   // that code cannot influence the highlighting.
 
   if (is_gl()) {
