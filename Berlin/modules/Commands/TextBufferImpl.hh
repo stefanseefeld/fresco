@@ -2,6 +2,7 @@
  *
  * This source file is a part of the Berlin Project.
  * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
+ *               2001 Tobias Hunger <tobias@berlin-consortium.org>
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -46,6 +47,7 @@ class TextBufferImpl : public virtual POA_Warsaw::TextBuffer,
   virtual void insert_string(const Warsaw::Unistring &);
   virtual void remove_backward(CORBA::Long);
   virtual void remove_forward(CORBA::Long);
+  virtual void clear_buffer();
  private:
   GapBuffer<Warsaw::Unichar, 32> buffer;
   Prague::Mutex mutex;

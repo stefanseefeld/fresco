@@ -36,6 +36,9 @@ TextConverter::TextConverter(const std::string & file) {
 Babylon::String
 TextConverter::convert(const Babylon::String & pinyin) const {
     Babylon::String result;
+
+    if (pinyin.empty()) return result;
+
     size_t cur_start = 0;
     size_t cur_end = 0;
 

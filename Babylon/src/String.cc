@@ -229,7 +229,9 @@ Babylon::String Babylon::String::norm(Babylon::Norm norm) const {
     return tmp;
 }
 
+/*
 void Babylon::String::erase() {
     m_current_norm = Babylon::NORM_NONE;
     std::basic_string<Char>::erase();
 }
+*/

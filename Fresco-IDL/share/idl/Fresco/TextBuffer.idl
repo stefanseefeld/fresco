@@ -1,7 +1,8 @@
 /*$Id$
  *
  * This source file is a part of the Berlin Project.
- * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> 
+ * Copyright (C) 1999 Stefan Seefeld <stefan@berlin-consortium.org> ,
+ *               2001 Tobias Hunger <tobias@berlin-consortium.org>
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -30,7 +31,7 @@ module Warsaw
   interface TextBuffer : Subject
     {
       
-      enum ChangeType {insert, remove, cursor};
+      enum ChangeType {insert, remove, cursor, clear};
       
       struct Change
       {
@@ -50,6 +51,8 @@ module Warsaw
       void insert_string(in Unistring u);
       void remove_backward(in long d);
       void remove_forward(in long d);
+
+      void clear_buffer();
     };
 };
 

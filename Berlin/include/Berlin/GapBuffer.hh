@@ -150,7 +150,13 @@ public:
 	  gapbegin -= d, gapend -= d;
 	}
     }
+
   const value_type *get() { compact(); return begin();}
+
+  void clear_buffer() {
+      curs = 0; gapbegin = 0; gapend = 0;
+      clear();
+  }
 private:
   size_type curs, gapbegin, gapend;
 };

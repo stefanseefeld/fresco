@@ -56,13 +56,16 @@ public:
 					      select(s),
 					      output(o)
     {
+	cerr << "IO: creating";
 	Prague::Path path = RCManager::get_path("pinyindbpath");
 	string pinyinDB = path.lookup_file("pinyin.db");
 	converter = new TextConverter(pinyinDB);
+	cerr << " done" << endl;
     }
 	
 
     virtual void update(const CORBA::Any &any) {
+	cerr << "IO: update called" << endl;
 	Warsaw::TextBuffer::Change * change;
 
 	if (any >>= change) {
@@ -71,43 +74,51 @@ public:
 
 	    Babylon::Char last = bs[bs.length() - 1];
 	    if (last >= 'A' && last <= 'Z') {
+		cerr << "Last letter (" << last << ") of " << bs.length() << " is uppercase." << endl;
 		// select a chinese letter:
+		bs.erase(bs.length() - 1);
+		cerr << "  new bs: " << bs << endl;
+		Babylon::String select_from(converter->convert(bs));
+		cerr << "  select_from generated." << endl;
+		
+		if ((last.value() - 'A') < select_from.length()) {
+		    cerr << "  my letter is valid." << endl;
+		    select->clear_buffer();
 
-		// FIXME: substr does not work, so I have to use replace:-(
-		bs.replace(bs.length(), 1, Babylon::String(""));
+		    cerr << "  Inserting \"" << select_from[last.value() - 'A'] << "\" into output." << endl;
+		    
+		    output->insert_char(Unicode::to_CORBA(select_from[last.value() - 'A']));
+		    cerr << "  Done inserting char into output." << endl;
+		    input->clear_buffer();
+		    cerr << "  Input cleaned." << endl;
+		} else {
+		    // delete the uppercase char:
+		    cerr << "  no such character in select-String." << endl;
+
+		    input->remove_backward(1);
+		}
+	    } else {
+		cerr << "bs: \"" << bs << "\" (with first character = " << hex << bs[0].value()<< dec << ") ";
+
 		Babylon::String select_from(converter->convert(bs));
 		
-		if (size_t(last.value() - 'A') < size_t(select_from.length())) {
-		    select->remove_backward(26);
-		    // FIXME: Replace instead of substr again.
-		    select_from.replace(1, last.value() - 'A', Babylon::String(""));
-		    select_from.replace(2, select_from.length(), Babylon::String(""));
-
-		    cerr << "Inserting \"" << select_from << "\" into output (" << select_from.length() << " characters)." << endl;
-		    
-		    output->insert_string(Unicode::to_CORBA(select_from));
-		    input->remove_backward(26);
-		} else
-		    // delete the uppercase char:
-		    input->remove_backward(1);
-	    } else {
-		cerr << "bs: \"" << bs << "\" (with first " << hex << bs[0].value()<< dec << ") ";
-		Babylon::String select_from;
-		if (bs.empty())
-		    select_from = "";
-		else
-		    select_from = converter->convert(bs);
 		cerr << " results in " << select_from.length() << " answers." << endl;
-		select->remove_backward(26);
-		// FIXME: substr(26); doesen't work:-(
-		if(select_from.length() > 26)
-		    select_from.replace(26, select_from.length() - 26, Babylon::String(""));
+		select->clear_buffer();
+		cerr << "  select cleared!" << endl;
+
+		// FIXME: substr() is broken! So this is rather clumpsy.
+		if (select_from.length() > 26)
+		    select_from.erase(26, select_from.length());
+
+		cerr << "  new select_from shortened to " << select_from.length() << " answers." << endl;  
 
 		cerr << "Inserting \"" << select_from << "\" into selection (" << select_from.length() << " characters)." << endl;
 		select->insert_string(Unicode::to_CORBA(select_from));
 	    }
 	} else
 	    cerr << "How did I get here?" << endl;
+
+	cerr << "IO: update finished" << endl;
     }
     
 private:
@@ -133,12 +144,12 @@ int main(int argc, char ** argv) {
 	Berlin_Server server(argc, argv);
 
 	// Get Kits:
-	REGISTER_KIT(server,lk,LayoutKit,1.0);
-	REGISTER_KIT(server,tk,TextKit,1.0);
-	REGISTER_KIT(server,tlk,ToolKit,1.0);
-	REGISTER_KIT(server,dk,DesktopKit,1.0);
-	REGISTER_KIT(server,ck,CommandKit,1.0);
-	REGISTER_KIT(server,wk,WidgetKit,1.0);
+	REGISTER_KIT(server, lk, LayoutKit, 1.0);
+	REGISTER_KIT(server, tk, TextKit, 1.0);
+	REGISTER_KIT(server, tlk, ToolKit, 1.0);
+	REGISTER_KIT(server, dk, DesktopKit, 1.0);
+	REGISTER_KIT(server, ck, CommandKit, 1.0);
+	REGISTER_KIT(server, wk, WidgetKit, 1.0);
 
 	// Create Graphics:
 	Warsaw::TextBuffer_var input_buf = ck->text();

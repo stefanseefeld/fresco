@@ -84,7 +84,7 @@ namespace Babylon {
 	// OPERATORS:
     
 	// UTILITIES:
-	void erase();
+	// void erase();
 
 	// DESTRUCTOR:
 	~String(); // nothing special needed...

@@ -127,6 +127,8 @@ void TextBufferImpl::insert_char(Unichar u)
 
 void TextBufferImpl::insert_string(const Unistring &s)
 {
+  if (s.length() == 0) return;
+
   Warsaw::TextBuffer::Change ch;  
   ch.len = s.length();
   Unichar u[ch.len];
@@ -175,4 +177,17 @@ void TextBufferImpl::remove_forward(CORBA::Long n)
   CORBA::Any any;
   any <<= ch;
   notify(any);
+}
+
+void TextBufferImpl::clear_buffer() {
+    Warsaw::TextBuffer::Change ch;
+    ch.type = Warsaw::TextBuffer::clear;
+    {
+	Prague::Guard<Mutex> guard(mutex);
+	ch.len = buffer.size();
+	buffer.clear_buffer();
+    }
+    CORBA::Any any;
+    any <<= ch;
+    notify(any);
 }

@@ -74,12 +74,14 @@ public:
     }
     _parent->need_resize();
   }
+
   virtual void remove()
   {
     Trace trace("PolyGraphic::Iterator::remove");
     {
       Prague::Guard<Mutex> guard(_parent->_mutex);
       if (_cursor >= _parent->_children.size()) return;
+
       GraphicImpl::glist_t::iterator i = _parent->_children.begin() + _cursor;
       try
 	{
