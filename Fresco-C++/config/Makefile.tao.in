@@ -66,7 +66,8 @@ STATINT		:= RefCountBase.idl Identifiable.idl ClientContext.idl Server.idl \
 		   Widget.idl WidgetKit.idl GadgetKit.idl Raster.idl ImageKit.idl Figure.idl \
 		   Image.idl FigureKit.idl Command.idl CommandKit.idl \
 		   TextKit.idl Desktop.idl Window.idl DesktopKit.idl \
-		   DrawingKit3D.idl Primitive.idl PrimitiveKit.idl UnidrawKit.idl
+		   DrawingKit3D.idl Primitive.idl PrimitiveKit.idl UnidrawKit.idl \
+		   Font.idl FontKit.idl
 
 INT		:= $(DYNINT) $(STATINT)
 

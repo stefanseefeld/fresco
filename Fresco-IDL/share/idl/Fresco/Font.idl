@@ -1,0 +1,126 @@
+/*$Id$
+ *
+ * This source file is a part of the Fresco Project.
+ * Copyright (C) 2003 Nick Lewycky <nicholas@fresco.org>
+ * http://www.fresco.org
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
+ * MA 02139, USA.
+ */
+#ifndef _Fresco_Font_idl
+#define _Fresco_Font_idl
+
+#include <Fresco/Types.idl>
+#include <Fresco/RefCountBase.idl>
+#include <Fresco/Identifiable.idl>
+
+#pragma prefix "fresco.org"
+
+module Fresco
+{
+  interface Raster;
+  interface Transform;
+
+  struct FontMetrics
+    {
+      // bbox?
+      Coord ascent, descent;
+      Coord baseline; // baseline to baseline distance, vertically
+                      // for horizontally reading fonts, or
+                      // horizontally to the center line of vertical
+                      // fonts.
+      Coord font_ascent, font_descent;
+      Coord underline_offset, underline_width;
+    };
+
+
+  struct FontShapeSegment
+    {
+      Vertex to, control1, control2;
+      enum SegmentType { move, line, conic, cubic };
+    };
+  typedef sequence<FontShapeSegment> FontShape;
+
+#if 0
+  // impl supplied by caller, which would be the PSDrawingKit for
+  // example.
+   interface FontDecompose
+    {
+      void move(in Vertex to);
+      void line(in Vertex to);
+      void conic(in Vertex control, in Vertex to);
+      void cubic(in Vertex control1, in Vertex control2, in Vertex to);
+    };
+#endif
+
+  interface Glyph
+    {
+      Raster bitmap();
+      FontShape decompose();
+      void char_info(out FontMetrics fm);
+      void transformation(in Transform t);
+    };
+
+  struct GlyphMetrics
+    {
+      Vertex size;
+
+      Vertex hori_bearing;
+      Coord hori_advance;
+
+      Vertex vert_bearing;
+      Coord vert_advance;
+
+      //. "Italic correction" is the length of the kern that you want
+      //. to add when switching into a different font. It's not
+      //. restricted to italics, as a bold 'f' between single quotes
+      //. will need correction as well. This variable covers both cases.
+      Coord italic_correction;
+    };
+
+  interface Font : RefCountBase, Identifiable
+    {
+      // need option to pass in: FT_NO_BITMAP and/or
+      // FT_LOAD_IGNORE_GLOBAL_ADVANCE_WIDTH
+      Glyph glyph_char(in Unichar c);
+      // need glyph_something for composite characters.
+
+      //. Is the character available in the selected font? Note that
+      //. the Font will provide a Glyph for the character anyways,
+      //. even if has to use the fallback font.
+      boolean has_char(in Unichar c);
+      boolean can_display(in Unichar begin, in Unichar end);
+
+      Unistring encoding();
+      Unistring font_family();
+      void font_metrics(out FontMetrics fm);
+      Unistring font_style();
+      Unistring fullname();
+      //. font size
+      Coord height();
+
+      Vertex kerning(in Unichar first, //.< first in visual order
+                     in Unichar second); //.< second in visual order
+
+      float angle();
+      float caret_offset();
+
+      // we also want to query freetype for available ligature
+      // characters, but freetype doesn't support this yet,
+      // surprisingly.
+    };
+};
+
+#endif
