@@ -47,15 +47,15 @@ std::string Babylon::Char::convert(const std::string format) const
 
     // prepare output buffer
     // 16Byte should be more then enough to encode two characters;-)
-    std::auto_ptr<char> out_buf(new char[16]);
+    std::vector<char> out_buf(16);
     size_t out_bound(16);
 
     iconv_wrapper(Babylon::internal_format,
 		  reinterpret_cast<const char *>(&my_value), in_bound,
-		  format, out_buf.get(), out_bound);
+		  format, &out_buf[0], out_bound);
     
     // put result into a string
-    std::string result(out_buf.get(), 16 - out_bound);
+    std::string result(&out_buf[0], 16 - out_bound);
     
     return result;
 }
