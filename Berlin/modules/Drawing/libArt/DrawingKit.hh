@@ -104,7 +104,7 @@ public:
  private:
   ggi_visual_t memvis;
   ArtPixBuf *pb;
-  ArtDRect bbox;
+  ArtIRect bbox;
   const ggi_directbuffer * buf;
   GGI::Drawable *drawable;
   Mutex mutex;
