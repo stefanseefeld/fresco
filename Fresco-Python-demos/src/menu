@@ -10,7 +10,7 @@
 # Disclaimer: This is just an experiment :)
 
 import sys, string, os
-from omniORB import CORBA
+from omniORB import CORBA, PortableServer
 
 # Import Berlin module
 import berlin
@@ -23,37 +23,27 @@ import Warsaw__POA
 # Import Python client lib
 import pywarsaw
 
-Toggle_hover = 32L
-Toggle_active = 64L
-
-class MenuKit:
+class MenuKitImpl (Warsaw__POA.MenuKit):
     """Pretend kit that builds menu objects"""
     def menu_bar(self):
 	"""Returns a menubar object"""
-	return MenuBar()
-    def menu(self):
+	return MenuBar()._this()
+    def menu_popup(self):
 	"""Returns a menu object"""
-	return Menu()
+	return Menu()._this()
     def menu_item(self, label, callback):
-	return MenuItem(label, None, callback)
-    def menu_item_sub(self, label, submenu):
-	return MenuItem(label, submenu)
+	return MenuItem(label, None, callback)._this()
+    def submenu_item(self, label, submenu):
+	return MenuItem(label, submenu)._this()
 
-class MenuButton (pywarsaw.PyController):
-    """A button controller for menu items.
-    This implementation shows a button with no frame, except for when the
-    button is 'active' (mouse highlight) when it shows a frame.
-    """
-    def __init__(self, graphic):
-	pywarsaw.PyController.__init__(self, 1)
-	fspec = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.outset, 0.5)
-	self.outframe = kits.tool.frame(graphic, 10., fspec, 0)
-	fspec = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.none, 1.0)
-	self.flatframe = kits.tool.frame(graphic, 10., fspec, 0)
-	self._set_body(self.flatframe)
+def get_local(object_var, class_obj):
+    """Returns the local python object of 'object_var' if it is an instance of
+    class_obj, otherwise throws an exception"""
+    obj = PortableServer._rootPOA.reference_to_servant(object_var)
+    if not isinstance(obj, class_obj): raise TypeError, "Not local object"
+    return obj
 
-
-class MenuItem (pywarsaw.PyController):
+class MenuItem (Warsaw__POA.MenuItem, pywarsaw.PyController):
     """Encapsulates a Menu item with label and optional submenu and callback.
     TODO: provide api to close all parent popups once an item is selected."""
     def __init__(self, label, submenu=None, callback=None):
@@ -61,14 +51,16 @@ class MenuItem (pywarsaw.PyController):
 	self.label = label
 	self.submenu = submenu
 	self.callback = callback
-	if (self.submenu is not None):
+	if (self.submenu):
+	    # Submenu must be a local Menu object
+	    self.submenu = get_local(self.submenu, Menu)
 	    self.submenu.parent_item = self
 	self.callback_command = None
 	self.__parent_menu = None
 	self.__orientation = 0
 
 	# Construct the graphics to display this item
-	self.glabel = Label(self.label)
+	self.glabel = self.label #Label(self.label)
 	#self.label = kits.layout.hmargin_lr_flexible(label,
 	#    20., 0., 0., 20., 1000., 0.)
 	self.button = self.glabel
@@ -77,7 +69,7 @@ class MenuItem (pywarsaw.PyController):
 	fspec_out = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.outset, 0.5)
 	fspec_none = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.none, 1.0)
 	self.frame = kits.tool.dynamic(self.button, 10.,
-	    Toggle_hover, fspec_out, fspec_none, 
+	    Warsaw.MenuItem.hover, fspec_out, fspec_none, 
 	    0, self._this())
 	self._set_body(self.frame)
 
@@ -98,7 +90,7 @@ class MenuItem (pywarsaw.PyController):
 		fspec_focus = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.outset, 0.8)
 		fspec_none = Warsaw.ToolKit.FrameSpec(Warsaw.ToolKit.outset, 0.3)
 		tri = kits.tool.dynamic_triangle(None,
-		    10., Toggle_hover, fspec_focus, fspec_none,
+		    10., Warsaw.MenuItem.hover, fspec_focus, fspec_none,
 		    1, Warsaw.ToolKit.right, self._this())
 		tri = kits.layout.fixed_size(tri, 140., 140.)
 		tri = kits.layout.margin(tri, 30.)
@@ -119,12 +111,12 @@ class MenuItem (pywarsaw.PyController):
 	while item:
 	    menu = item._get_parent_menu()
 	    current_submenu = menu._current_submenu
-	    if current_submenu and current_submenu.test(Toggle_active):
+	    if current_submenu and current_submenu.test(Warsaw.MenuItem.active):
 		return 1
 	    item = menu.parent_item
 	return 0
     def receive_focus(self, focus):
-	self.set(Toggle_hover)
+	self.set(Warsaw.MenuItem.hover)
 	if self._should_open():
 	    # Steal active state from current menu
 	    self.show_submenu()
@@ -133,13 +125,12 @@ class MenuItem (pywarsaw.PyController):
 	    self.__parent_menu.set_active_submenu(self)
 	return pywarsaw.PyController.receive_focus(self, focus)
     def lose_focus(self, device):
-	if not self.test(Toggle_active): self.clear(Toggle_hover)
+	if not self.test(Warsaw.MenuItem.active): self.clear(Warsaw.MenuItem.hover)
 	pywarsaw.PyController.lose_focus(self, device)
     def press(self, traversal, event):
 	try:
 	    # Call callback
 	    if self.callback is not None:
-		print "callback:",self.callback
 		dir(self.callback)
 		self.callback.execute(nullAny)
 	    # Show submenu
@@ -162,7 +153,7 @@ class MenuItem (pywarsaw.PyController):
 
     def show_submenu(self):
 	region = self.get_alloc()
-	self.set(Toggle_active)
+	self.set(Warsaw.MenuItem.active)
 	sub = self.submenu.get_pulldown()
 	self.__parent_menu.set_active_submenu(self)
 	# Move to right place
@@ -177,20 +168,20 @@ class MenuItem (pywarsaw.PyController):
 	kits.desktop.map(sub, 1).execute(nullAny)
 
     def cascade_close_down(self):
-	if self.test(Toggle_active):
-	    self.clear(Toggle_active)
-	    self.clear(Toggle_hover)
+	if self.test(Warsaw.MenuItem.active):
+	    self.clear(Warsaw.MenuItem.active)
+	    self.clear(Warsaw.MenuItem.hover)
 	    self.submenu.cascade_close_down()
     def cascade_close_up(self):
 	self.cascade_close_down()
 	self._get_parent_menu().cascade_close_up()
 
-class Menu (pywarsaw.PyController):
+class Menu (Warsaw__POA.Menu, pywarsaw.PyController):
     """Encapsulates a vertical menu of MenuItems"""
-    def __init__(self, items = []):
+    def __init__(self):
 	"Creates menu from sequence of items"
 	pywarsaw.PyController.__init__(self, 1)
-	self.items = list(items)
+	self.items = []
 	self.graphic = None
 	self.pulldown = None
 	self.parent_item = None
@@ -202,7 +193,8 @@ class Menu (pywarsaw.PyController):
 	return pywarsaw.PyController.receive_focus(self, focus)
     def lose_focus(self, device):
 	pywarsaw.PyController.lose_focus(self, device)
-    def add_item(self, item):
+    def append_item(self, item):
+	item = get_local(item, MenuItem)
 	self.items.append(item)
 	self._add_item(item)
     def _add_item(self, item):
@@ -306,49 +298,51 @@ class RunApp(Warsaw__POA.Command):
 	if os.fork() == 0:
 	    os.execvp(self.command, self.args)
 	    print "Failed"
+	    sys.exit(0)
 
 class MenuApp (berlin.App):
     def run(self):
 	def add(menu, items): 
 	    for item in items: 
-		menu.add_item(item)
+		menu.append_item(item)
 	    return menu
-	kit = MenuKit()
+	kit = MenuKitImpl()._this()
+	
 	menu = add(kit.menu_bar(), [
-	    kit.menu_item_sub('Test', add(kit.menu(), [
-		kit.menu_item_sub('New', add(kit.menu(), [
-		    kit.menu_item('One', None),
-		    kit.menu_item('Two', None),
-		    kit.menu_item('Three', None),
+	    kit.submenu_item(Label('Test'), add(kit.menu_popup(), [
+		kit.submenu_item(Label('New'), add(kit.menu_popup(), [
+		    kit.menu_item(Label('One'), None),
+		    kit.menu_item(Label('Two'), None),
+		    kit.menu_item(Label('Three'), None),
 		])),
-		kit.menu_item_sub('Submenu', add(kit.menu(), [
-		    kit.menu_item('One', None),
-		    kit.menu_item('Two', None),
-		    kit.menu_item('Three', None),
+		kit.submenu_item(Label('Submenu'), add(kit.menu_popup(), [
+		    kit.menu_item(Label('One'), None),
+		    kit.menu_item(Label('Two'), None),
+		    kit.menu_item(Label('Three'), None),
 		])),
-		kit.menu_item('Open...', None),
-		kit.menu_item('Close', None),
-		kit.menu_item('Quit', Callback(self.exit)),
+		kit.menu_item(Label('Open...'), None),
+		kit.menu_item(Label('Close'), None),
+		kit.menu_item(Label('Quit'), Callback(self.exit)._this()),
 	    ])),
-	    kit.menu_item_sub('Clients', add(kit.menu(), [
-		kit.menu_item_sub('C++', add(kit.menu(), [
-		    kit.menu_item('demo', RunApp('demo')),
-		    kit.menu_item('canvas', RunApp('canvas','-r','ggi-dots')),
+	    kit.submenu_item(Label('Clients'), add(kit.menu_popup(), [
+		kit.submenu_item(Label('C++'), add(kit.menu_popup(), [
+		    kit.menu_item(Label('demo'), RunApp('demo')._this()),
+		    kit.menu_item(Label('canvas'), RunApp('canvas','-r','ggi-dots')._this()),
 		])),
-		kit.menu_item_sub('Python', add(kit.menu(), [
-		    kit.menu_item('demo', RunApp('demo.py')),
-		    kit.menu_item('transform', RunApp('transform.py')),
-		    kit.menu_item('clock', RunApp('graphictest')),
+		kit.submenu_item(Label('Python'), add(kit.menu_popup(), [
+		    kit.menu_item(Label('demo'), RunApp('demo.py')._this()),
+		    kit.menu_item(Label('transform'), RunApp('transform.py')._this()),
+		    kit.menu_item(Label('clock'), RunApp('graphictest')._this()),
 		])),
 	    ])),
-	    kit.menu_item_sub('Help', add(kit.menu(), [
-		kit.menu_item('Contents', None),
-		kit.menu_item('About', Callback(About().cb_show)),
+	    kit.submenu_item(Label('Help'), add(kit.menu_popup(), [
+		kit.menu_item(Label('Contents'), None),
+		kit.menu_item(Label('About'), Callback(About().cb_show)._this()),
 	    ])),
 	])
 
 	vbox = kits.layout.vbox()
-	vbox.append_graphic(menu._this())
+	vbox.append_graphic(menu)
 	contents = kits.figure.pixmap(kits.image.create("marble.png"))
 	grid = kits.layout.fixed_grid(Layout.Grid.Index(5,4))
 	for i in range(5*4):
