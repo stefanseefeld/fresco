@@ -227,8 +227,8 @@ void GLDrawingKit::draw_path(const Path &path)
 {
   if (_fs == Warsaw::DrawingKit::solid)
     {
-//       glBegin(GL_POLYGON);
-      glBegin(GL_LINE_LOOP);
+      glBegin(GL_POLYGON);
+//       glBegin(GL_LINE_LOOP);
       for (unsigned long i = 0; i < path.length(); i++) glVertex3f(path[i].x, path[i].y, path[i].z);
       glEnd();
     }

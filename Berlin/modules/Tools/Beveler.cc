@@ -44,7 +44,7 @@ void rect(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, con
   DrawingKit_var drawing = traversal->drawing();
   drawing->save();
   Path path;
-  path.length(7);
+  path.length(5);
   Vertex lower = {left, top, 0.};
   Vertex upper = {right, bottom, 0.};
 
@@ -58,37 +58,51 @@ void rect(DrawTraversal_ptr traversal, Coord thickness, const Color &medium, con
    * light (left and top) edges
    */
   drawing->foreground(light);
-  if (light.alpha == 1.) {
-    // fast path
-    lower.x = left; lower.y = top;
-    upper.x = lefti; upper.y = bottom;
-    drawing->draw_rectangle(lower,upper);    
-    lower.x = left; lower.y = top;
-    upper.x = right; upper.y = topi;
-    drawing->draw_rectangle(lower,upper);  
-  } else {
-    path[0].x = left, path[0].y = top, path[0].z = 0.;
-    path[1].x = left, path[1].y = bottom, path[1].z = 0.;
-    path[2].x = lefti, path[2].y = bottomi, path[2].z = 0.;
-    path[3].x = lefti, path[3].y = topi, path[3].z = 0.;
-    path[4].x = righti, path[4].y = topi, path[4].z = 0.;
-    path[5].x = right, path[5].y = top, path[5].z = 0.;
-    path[6].x = left, path[6].y = top, path[6].z = 0.;
-    drawing->draw_path(path);
-  }
+  if (light.alpha == 1.)
+    {
+      // fast path
+      lower.x = left; lower.y = top;
+      upper.x = lefti; upper.y = bottom;
+      drawing->draw_rectangle(lower,upper);    
+      lower.x = left; lower.y = top;
+      upper.x = right; upper.y = topi;
+      drawing->draw_rectangle(lower,upper);  
+    }
+  else
+    {
+      path[0].x = left, path[0].y = top, path[0].z = 0.;
+      path[1].x = left, path[1].y = bottom, path[1].z = 0.;
+      path[2].x = lefti, path[2].y = bottomi, path[2].z = 0.;
+      path[3].x = lefti, path[3].y = topi, path[3].z = 0.;
+      path[4].x = left, path[4].y = top, path[4].z = 0.;
+      drawing->draw_path(path);
 
+      path[0].x = lefti, path[0].y = topi, path[0].z = 0.;
+      path[1].x = righti, path[1].y = topi, path[1].z = 0.;
+      path[2].x = right, path[2].y = top, path[2].z = 0.;
+      path[3].x = left, path[3].y = top, path[3].z = 0.;
+      path[4].x = lefti, path[4].y = topi, path[4].z = 0.;
+      drawing->draw_path(path);
+    }
+  
   /*
    * right and top (dark) edges
    */
   drawing->foreground(dark);
   path[0].x = right, path[0].y = top, path[0].z = 0.;
   path[1].x = right, path[1].y = bottom, path[1].z = 0.;
-  path[2].x = left, path[2].y = bottom, path[2].z = 0.;
-  path[3].x = lefti, path[3].y = bottomi, path[3].z = 0.;
-  path[4].x = righti, path[4].y = bottomi, path[4].z = 0.;
-  path[5].x = righti, path[5].y = topi, path[5].z = 0.;
-  path[6].x = right, path[6].y = top, path[6].z = 0.;
+  path[2].x = righti, path[2].y = bottomi, path[2].z = 0.;
+  path[3].x = righti, path[3].y = topi, path[3].z = 0.;
+  path[4].x = right, path[4].y = top, path[4].z = 0.;
   drawing->draw_path(path);
+  
+  path[0].x = right, path[0].y = bottom, path[0].z = 0.;
+  path[1].x = left, path[1].y = bottom, path[1].z = 0.;
+  path[2].x = lefti, path[2].y = bottomi, path[2].z = 0.;
+  path[3].x = righti, path[3].y = bottomi, path[3].z = 0.;
+  path[4].x = right, path[4].y = bottom, path[4].z = 0.;
+  drawing->draw_path(path);
+
   drawing->restore();
 }
 
