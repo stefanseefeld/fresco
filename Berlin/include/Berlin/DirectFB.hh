@@ -115,7 +115,7 @@ public:
 	      Warsaw::PixelCoord,
 	      Warsaw::PixelCoord,
 	      Warsaw::PixelCoord);
-    void blit(const DirectFBDrawable *,
+    void blit(const DirectFBDrawable &,
 	      Warsaw::PixelCoord,
 	      Warsaw::PixelCoord,
 	      Warsaw::PixelCoord,
@@ -322,7 +322,7 @@ inline void DirectFBDrawable::blit(Warsaw::PixelCoord x1,
     m_surface->Blit(m_surface, m_surface, &rect, x2, y2);
 }
     
-inline void DirectFBDrawable::blit(const DirectFBDrawable * src,
+inline void DirectFBDrawable::blit(const DirectFBDrawable & src,
 				   Warsaw::PixelCoord x1,
 				   Warsaw::PixelCoord y1, 
 				   Warsaw::PixelCoord w,
@@ -331,7 +331,7 @@ inline void DirectFBDrawable::blit(const DirectFBDrawable * src,
 				   Warsaw::PixelCoord y2) {
     DFBRectangle rect;
     rect.x = x1; rect.y = y1; rect.w = w; rect.h = h;
-    m_surface->Blit(m_surface, src->surface(), &rect, x2, y2);
+    m_surface->Blit(m_surface, src.surface(), &rect, x2, y2);
 }
     
 inline void DirectFBDrawable::blit(Warsaw::Drawable_ptr d, 
