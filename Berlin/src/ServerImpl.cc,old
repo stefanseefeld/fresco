@@ -196,8 +196,14 @@ void ServerImpl::destroy_context(ServerContextImpl *context)
    * should this output go to Logger::log(Logger::corba) ?
    * -stefan
    */
-  catch (const CORBA::OBJECT_NOT_EXIST &) { cerr << "caught CORBA::OBJECT_NOT_EXIST while cleaning up ServerContext" << endl;}
-  catch (const CORBA::COMM_FAILURE &) { cerr << "caught CORBA::COMM_FAILURE while cleaning up ServerContext" << endl;}
-  catch(...) { cerr << "caught unknown exception while cleaning up ServerContext" << endl;}
+  catch (const CORBA::OBJECT_NOT_EXIST &) {
+    std::cerr << "caught CORBA::OBJECT_NOT_EXIST while cleaning up ServerContext" << std::endl;
+  } catch (const CORBA::COMM_FAILURE &) {
+    std::cerr << "caught CORBA::COMM_FAILURE while cleaning up ServerContext" << std::endl;
+  } catch (const std::exception& e) {
+    std::cerr << "Caught standard exception: " << e.what() << std::endl;
+  } catch(...) {
+    std::cerr << "caught unknown exception while cleaning up ServerContext" << std::endl;
+  }
   delete oid;
 }
