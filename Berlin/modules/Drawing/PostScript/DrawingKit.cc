@@ -2,6 +2,7 @@
  *
  * This source file is a part of the Berlin Project.
  * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
+ * Copyright (C) 2002 Nick Lewycky <nicholas@mxc.ca>
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -38,8 +39,6 @@ using namespace Warsaw;
 PSDrawingKit::PSDrawingKit(const std::string &id, const Warsaw::Kit::PropertySeq &p)
   : KitImpl(id, p)
 {
-  _lt.red = _lt.blue = _lt.green = 1.;
-  _fg.red = _fg.blue = _fg.green = 1.;
   _os.rdbuf(cout.rdbuf());
 }
 
@@ -58,20 +57,19 @@ void PSDrawingKit::init()
 {
   _os << "%!PS-Adobe-3.0 EPSF-3.0" << std::endl;
   _os << "%%BoundingBox: 0 -"
-      << Console::instance()->drawable()->width()/resolution(yaxis) << ' '
-      << Console::instance()->drawable()->height()/resolution(xaxis) << " 0" << std::endl;
+      << (int)(Console::instance()->drawable()->width()/resolution(yaxis)+1.) << ' '
+      << (int)(Console::instance()->drawable()->height()/resolution(xaxis)+1.) << " 0" << std::endl;
   _os << "%%LanguageLevel: 2" << std::endl;
   _os << "%%Creator: Berlin Consortium" << std::endl;
-  _os << "%%BeginDocument" << std::endl;
-  _os << "/Times-Roman findfont 200 scalefont setfont" << std::endl;
-  _os << "0 setgray" << std::endl;
+  _os << "/Times-Roman findfont 52 scalefont setfont" << std::endl;
+  _os << "0 0 0 setrgbcolor" << std::endl;
   _os << resolution(xaxis) << " " << -resolution(yaxis) << " scale" << std::endl;
   _os << std::endl;
 }
 
 void PSDrawingKit::finish()
 {
-  _os << "%%EndDocument" << std::endl;
+  _os << "%%EOF" << std::endl;
 }
 
 Warsaw::Unistring *PSDrawingKit::font_family() { return new Unistring(Unicode::to_CORBA(Babylon::String("Times Roman")));}
@@ -159,6 +157,13 @@ void PSDrawingKit::set_line_width(Coord w)
 void PSDrawingKit::set_line_endstyle(Warsaw::DrawingKit::Endstyle style)
 {
   _es = style;
+  switch (_es) {
+  case Warsaw::DrawingKit::butt:  _os << 0; break; //.< Butt
+  case Warsaw::DrawingKit::round: _os << 1; break; //.< Round
+  case Warsaw::DrawingKit::cap:   _os << 2; break; //.< Square
+  }
+  _os << " setlinecap" << std::endl;
+  _os << std::endl;
 }
 
 void PSDrawingKit::set_surface_fillstyle(Warsaw::DrawingKit::Fillstyle style)
@@ -174,28 +179,18 @@ void PSDrawingKit::draw_path(const Path &path)
 {
   _os << "%draw_path" << std::endl;
   _os << "newpath" << std::endl;
-  Vertex v = path[0];
-  _tr->transform_vertex(v);
-  _os << v.x << ' ' << v.y << " moveto" << std::endl;
+  Vertex v = path[path.length()-1];
+  vertex(v, " moveto");
   for (unsigned long i = 1; i < path.length(); i++) {
     v = path[i];
-    _tr->transform_vertex(v);
-    _os << v.x << ' ' << v.y << " lineto" << std::endl;
+    vertex(v, " lineto");
   }
-  v = path[0];
-  _tr->transform_vertex(v);
-  _os << v.x << ' ' << v.y << " lineto" << std::endl;
   _os << "closepath" << std::endl;
   if (_fs == Warsaw::DrawingKit::solid)
-    {
-      _os << "fill" << std::endl;
-      _os << std::endl;
-    }
+    _os << "fill" << std::endl;
   else
-    {
-      _os << "stroke" << std::endl;
-      _os << std::endl;
-  }
+    _os << "stroke" << std::endl;
+  _os << std::endl;
 }
 
 void PSDrawingKit::draw_rectangle(const Vertex &lower, const Vertex &upper)
@@ -204,31 +199,27 @@ void PSDrawingKit::draw_rectangle(const Vertex &lower, const Vertex &upper)
   _os << "newpath" << std::endl;
   Vertex v;
   v.x = lower.x; v.y = lower.y; v.z = 0;
-  _tr->transform_vertex(v);
-  _os << v.x << ' ' << v.y << " moveto" << std::endl;
+  vertex(v, " moveto");
   v.x = lower.x; v.y = upper.y; v.z = 0;
-  _tr->transform_vertex(v);
-  _os << v.x << ' ' << v.y << " lineto" << std::endl;
+  vertex(v, " lineto");
   v.x = upper.x; v.y = upper.y; v.z = 0;
-  _tr->transform_vertex(v);
-  _os << v.x << ' ' << v.y << " lineto" << std::endl;
+  vertex(v, " lineto");
   v.x = upper.x; v.y = lower.y; v.z = 0;
-  _tr->transform_vertex(v);
-  _os << v.x << ' ' << v.y << " lineto" << std::endl;
+  vertex(v, " lineto");
   v.x = lower.x; v.y = lower.y; v.z = 0;
-  _tr->transform_vertex(v);
-  _os << v.x << ' ' << v.y << " lineto" << std::endl;
+  vertex(v, " lineto");
   _os << "closepath" << std::endl;
   if (_fs == Warsaw::DrawingKit::solid)
-    {
-      _os << "fill" << std::endl;
-      _os << std::endl;
-    }
+    _os << "fill" << std::endl;
   else
-    {
-      _os << "stroke" << std::endl;
-      _os << std::endl;
-    }
+    _os << "stroke" << std::endl;
+  _os << std::endl;
+}
+
+inline void PSDrawingKit::vertex(const Vertex &x, char *c) {
+  Vertex v = x;
+  _tr->transform_vertex(v);
+  _os << v.x*resolution(xaxis) << ' ' << v.y*resolution(yaxis) << c << std::endl;
 }
 
 void PSDrawingKit::draw_quadric(const Warsaw::DrawingKit::Quadric, Warsaw::Coord, Warsaw::Coord)
@@ -246,7 +237,7 @@ void PSDrawingKit::draw_image(Raster_ptr raster)
 void PSDrawingKit::set_font_size(CORBA::ULong s)
 {
   _os << "%set_font_size" << std::endl;
-  _os << s << " scalefont" << std::endl;
+  _os << s*resolution(xaxis) << " scalefont" << std::endl;
   _os << std::endl;
 }
 
@@ -275,11 +266,11 @@ void PSDrawingKit::draw_char(Unichar c)
 {
   _os << "%draw_char" << std::endl;
   Vertex v; v.x = 0; v.y = 0; v.z = 0;
-  _tr->transform_vertex(v);
-  _os << v.x << " " << v.y << " moveto" << std::endl;
+  vertex(v, " moveto");
   _os << "1 -1 scale" << std::endl;
   _os << "(" << (char)c << ") show" << std::endl;
   _os << "1 -1 scale" << std::endl;
+  _os << std::endl;
 }
 
 void PSDrawingKit::copy_drawable(Drawable_ptr d, PixelCoord x, PixelCoord y, PixelCoord w, PixelCoord h) {}

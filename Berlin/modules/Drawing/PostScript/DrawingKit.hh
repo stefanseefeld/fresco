@@ -2,6 +2,7 @@
  *
  * This source file is a part of the Berlin Project.
  * Copyright (C) 2000 Stefan Seefeld <stefan@berlin-consortium.org> 
+ * Copyright (C) 2002 Nick Lewycky <nicholas@mxc.ca>
  * http://www.berlin-consortium.org
  *
  * This library is free software; you can redistribute it and/or
@@ -53,7 +54,7 @@ public:
   virtual Warsaw::DrawingKit::Fillstyle surface_fillstyle() { return _fs;}
   virtual Warsaw::Raster_ptr texture() { return Warsaw::Raster::_nil();}
 
-  virtual CORBA::ULong font_size() { return 20;}
+  virtual CORBA::ULong font_size() { return 12;}
   virtual CORBA::ULong font_weight() { return 1;}
   virtual Warsaw::Unistring *font_family();
   virtual Warsaw::Unistring *font_subfamily();
@@ -95,6 +96,7 @@ public:
   virtual void copy_drawable(Warsaw::Drawable_ptr, Warsaw::PixelCoord, Warsaw::PixelCoord, Warsaw::PixelCoord, Warsaw::PixelCoord);
   virtual void flush() {}
 private:
+  void vertex(const Warsaw::Vertex &, char *);
   Prague::Mutex                 _mutex;
   Warsaw::Transform_var         _tr;
   Warsaw::Region_var            _cl;
