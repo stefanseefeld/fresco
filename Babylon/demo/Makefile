@@ -46,7 +46,7 @@ TEX         =
 DVIPS       = 
 
 # Compilation and linking flags.
-CFLAGS	   	= -Wall -I../../../include -pthread
+CFLAGS	   	= -Wall -I../../../../NORM/include -pthread
 CXXFLAGS   	= -Wall -D__x86__ -I../../../include -pthread
 LDFLAGS    	= -L../../../../NORM/lib
 OPTFLAGS	= -O3
