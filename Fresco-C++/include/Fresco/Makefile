@@ -35,7 +35,7 @@ CXXFLAGS+= $(SOFLAGS)# $(ORBOPTFLAGS)
 LDFLAGS	= -shared -rdynamic
 LIBS	+= $(ORBLIBS)
 
-DYNINT	= Types.idl
+DYNINT	= Types.idl TextBuffer.idl
 STATINT	= ClientContext.idl ServerContext.idl Naming.idl \
 	  Transform.idl Region.idl Allocation.idl Traversal.idl PickTraversal.idl DrawTraversal.idl Graphic.idl Screen.idl \
 	  Input.idl Focus.idl \
@@ -43,7 +43,7 @@ STATINT	= ClientContext.idl ServerContext.idl Naming.idl \
 	  Grid.idl Viewport.idl Stage.idl \
 	  Command.idl \
 	  Subject.idl Controller.idl View.idl \
-	  Telltale.idl BoundedValue.idl BoundedRange.idl TextBuffer.idl StreamBuffer.idl \
+	  Telltale.idl BoundedValue.idl BoundedRange.idl StreamBuffer.idl \
 	  Button.idl \
 	  Metrics.idl \
 	  Raster.idl \

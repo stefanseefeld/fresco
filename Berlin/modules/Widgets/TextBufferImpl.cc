@@ -72,40 +72,67 @@ void TextBufferImpl::shift(CORBA::Long d)
 
 void TextBufferImpl::insertChar(Unichar u)
 {
+  TextBuffer::Change ch;  
   {
     MutexGuard guard(mutex);
+    ch.pos = buffer.position();
     buffer.insert(u);
   }
+  ch.len = 1;
+  ch.type = insert;
   CORBA::Any any;
+  any <<= ch;
   notify(any);
 }
 
 void TextBufferImpl::insertString(const Unistring &s)
 {
+  TextBuffer::Change ch;  
+  ch.len = s.length();
+  Unichar u[ch.len];
+  for (long i = 0; i < ch.len; i++) u[i] = s[i];
+
   {
     MutexGuard guard(mutex);
-    //   buffer.insert(s);
+    ch.pos = buffer.position();
+    buffer.insert(u,ch.len);
   }
+
+  ch.type = insert;
   CORBA::Any any;
+  any <<= ch;
   notify(any);
 }
 
 void TextBufferImpl::removeBackward(CORBA::Long n)
 {
+  TextBuffer::Change ch;  
+  ch.len = -n;
+
   {
     MutexGuard guard(mutex);
+    ch.pos = buffer.position();
     buffer.removeBackward(n);
   }
+
+  ch.type = remove;
   CORBA::Any any;
+  any <<= ch;
   notify(any);
 }
 
 void TextBufferImpl::removeForward(CORBA::Long n)
 {
+  TextBuffer::Change ch;  
+  ch.len = n;
+
   {
     MutexGuard guard(mutex);
+    ch.pos = buffer.position();
     buffer.removeForward(n);
   }
+  ch.type = remove;
   CORBA::Any any;
+  any <<= ch;
   notify(any);
 }

@@ -42,8 +42,7 @@ class TextViewer : implements(View), public virtual PolyGraphic {
 
     public:
 
-    TextViewer(TextBuffer_ptr txt, DrawingKit_ptr dk, Compositor *);
-    TextViewer(DrawingKit_ptr dk, Compositor *);
+    TextViewer(TextBuffer_ptr txt, TextKit_ptr tk DrawingKit_ptr dk, Compositor *);
     void draw(DrawTraversal_ptr dt);
     void update(Subject_ptr s, const CORBA::Any &a);
     virtual ~TextViewer();
@@ -51,11 +50,9 @@ class TextViewer : implements(View), public virtual PolyGraphic {
     protected:
 
     TextBuffer_var myTextBuffer;
+    TextKit_var myTextKit;
     DrawingKit_var myCanonicalDK;
     Compositor  *myCompositor;
-
-    GapBuffer<TextChunk *, 32> myGlyphs;
-    map<long, FontChange *> myFontSettings;
 
 };
 

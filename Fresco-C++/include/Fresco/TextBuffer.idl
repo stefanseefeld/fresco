@@ -27,6 +27,15 @@
 
 interface TextBuffer : Subject
 {
+
+  enum ChangeType {insert, remove, cursor};
+
+  struct Change {
+    ChangeType type;
+    long pos;
+    long len;
+  };
+  
   readonly attribute long size;
   readonly attribute Unistring value;
   attribute long position;
