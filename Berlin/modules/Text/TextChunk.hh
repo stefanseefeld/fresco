@@ -39,18 +39,19 @@
 declare_corba_ptr_type(DrawingKit)
 declare_corba_ptr_type(Font)
 
-class TextChunk : public virtual GraphicImpl {
-    public:
-    TextChunk(const Unicode::String & u, const Requisition & r);	    
-    virtual void draw(DrawTraversal_ptr dt);
-    virtual void request(Graphic::Requisition &);
-
-    void getText(Unicode::String &u); 
-    unsigned long getLength();
-    
-    protected:
-    Graphic::Requisition myCanonicalSize;
-    Unicode::String myText;
+class TextChunk : public virtual GraphicImpl
+{
+public:
+  TextChunk(const Unicode::String & u, const Requisition &);
+  virtual void draw(DrawTraversal_ptr dt);
+  virtual void request(Graphic::Requisition &);
+  
+  void getText(Unicode::String &u); 
+  unsigned long getLength();  
+protected:
+  Coord width, height;
+  Alignment xalign, yalign;
+  Unicode::String myText;
 };
 
 

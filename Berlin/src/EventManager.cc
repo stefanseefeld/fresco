@@ -78,24 +78,28 @@ void EventManager::nextEvent()
 	break;
       }
     case evPtrRelative:
-    case evPtrAbsolute:
       {
-	if (e.any.type == evPtrRelative)
-	  {
-	    if (ptrPositionX + e.pmove.x >= 0 &&
-		ptrPositionX + e.pmove.x < screen->width()) ptrPositionX += e.pmove.x;
-	    if (ptrPositionY + e.pmove.y >= 0 &&
-		ptrPositionY + e.pmove.y < screen->height()) ptrPositionY += e.pmove.y;	  
-	  }
-	else
-	  {
-	    ptrPositionX = e.pmove.x;
-	    ptrPositionY = e.pmove.y;
-	  }
+	if (ptrPositionX + e.pmove.x >= 0 &&
+	    ptrPositionX + e.pmove.x < screen->width()) ptrPositionX += e.pmove.x;
+	if (ptrPositionY + e.pmove.y >= 0 &&
+	    ptrPositionY + e.pmove.y < screen->height()) ptrPositionY += e.pmove.y;	  
 	Input::Position position;
 	position.x = ptrPositionX/drawable->resolution(xaxis);
 	position.y = ptrPositionY/drawable->resolution(yaxis);
-	position.z = 0; // time being we're using non-3d mice.
+	position.z = 0;
+	event.length(1);
+	event[0].dev = 1;
+	event[0].attr.location(position);
+	break;
+      }
+    case evPtrAbsolute:
+      {
+	ptrPositionX = e.pmove.x;
+	ptrPositionY = e.pmove.y;
+	Input::Position position;
+	position.x = ptrPositionX/drawable->resolution(xaxis);
+	position.y = ptrPositionY/drawable->resolution(yaxis);
+	position.z = 0;
 	event.length(1);
 	event[0].dev = 1;
 	event[0].attr.location(position);
@@ -104,16 +108,16 @@ void EventManager::nextEvent()
     case evPtrButtonPress:
     case evPtrButtonRelease:
       {
-	Input::Position position;
-	position.x = ptrPositionX/drawable->resolution(xaxis);
-	position.y = ptrPositionY/drawable->resolution(yaxis);
-	position.z = 0; // time being we're using non-3d mice.
 	Input::Toggle toggle;
 	if (e.any.type == evPtrButtonPress)
 	  toggle.actuation = Input::Toggle::press;
 	else
 	  toggle.actuation = Input::Toggle::release;
  	toggle.number = e.pbutton.button;	  
+	Input::Position position;
+	position.x = ptrPositionX/drawable->resolution(xaxis);
+	position.y = ptrPositionY/drawable->resolution(yaxis);
+	position.z = 0;
 	event.length(2);
 	event[0].dev = 1;
 	event[0].attr.kselection(toggle);

@@ -24,12 +24,13 @@
 #ifndef _ImageImpl_hh
 #define _ImageImpl_hh
 
-#include "Warsaw/config.hh"
-#include "Warsaw/Image.hh"
-#include "Warsaw/Raster.hh"
-#include "Berlin/GraphicImpl.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/Image.hh>
+#include <Warsaw/Raster.hh>
+#include <Berlin/GraphicImpl.hh>
+#include <Berlin/MonoGraphic.hh>
 
-class ImageImpl : implements(Image), public virtual GraphicImpl
+class ImageImpl : implements(Image), public GraphicImpl
 {
 public:
   ImageImpl(Raster_ptr);
@@ -39,10 +40,22 @@ public:
   virtual void data(Raster_ptr r) { raster = r;}
 
   virtual void request(Requisition &);
-  void draw(DrawTraversal_ptr); 
+  virtual void draw(DrawTraversal_ptr); 
 private:
   Raster_var raster;
   Coord width, height;
+};
+
+class Texture : public MonoGraphic
+{
+public:
+  Texture(Raster_ptr);
+  ~Texture();
+  virtual void traverse(Traversal_ptr);
+  virtual void draw(DrawTraversal_ptr);
+  virtual void pick(PickTraversal_ptr);
+private:
+  Raster_var raster;
 };
 
 #endif

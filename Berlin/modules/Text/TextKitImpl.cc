@@ -56,18 +56,20 @@ Text::FontDescriptorSeq* TextKitImpl::fonts() {
     return fdsq;
 }
 
-Graphic_ptr TextKitImpl::chunk(const Unistring &u, Text::Font_ptr f) {
-    GlyphComp::Key k = GlyphComp::Key(u,f);
-    if (glyphCache.find(k) == glyphCache.end() ) {
-	Graphic::Requisition r;
-	f->allocateText(u,r);
-	// cerr << " allocated space tor text: " << r.x.natural << "x"
-	//      << r.y.natural << endl;
-	TextChunk *t = new TextChunk(Unicode::toPrague(u), r);
-	t->_obj_is_ready(_boa());
-	glyphCache[k] = t->_this();
+Graphic_ptr TextKitImpl::chunk(const Unistring &u, Text::Font_ptr f)
+{
+  GlyphComp::Key k = GlyphComp::Key(u,f);
+  if (glyphCache.find(k) == glyphCache.end() )
+    {
+      Graphic::Requisition r;
+      f->allocateText(u,r);
+      // cerr << " allocated space tor text: " << r.x.natural << "x"
+      //      << r.y.natural << endl;
+      TextChunk *t = new TextChunk(Unicode::toPrague(u), r);
+      t->_obj_is_ready(_boa());
+      glyphCache[k] = t->_this();
     }
-    return glyphCache[k];
+  return glyphCache[k];
 }
 
 // Graphic_ptr TextKitImpl::fontChange(const Text::FontDescriptor &fd, const Style::Spec &s) {

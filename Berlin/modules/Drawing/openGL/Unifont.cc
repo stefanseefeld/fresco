@@ -75,17 +75,16 @@ void GLUnifont::drawText(const Unistring &u, const Vertex &p)
   glPixelStorei(GL_UNPACK_ALIGNMENT,1); // set to byte-aligned unpacking
   glRasterPos2i((int)(p.x),(int)(p.y));  // position pen
   
-  for (unsigned long idx = 0; idx < u.length(); idx++) {
-    
-    unsigned int stride = 33;
-    unsigned int base = stride * u[idx];
-    bool is_halfwidth = (glyphs[base] == (unsigned char)0xFF) ? 1 : 0;
-    unsigned char width = is_halfwidth ? 8 : 16; 
-    unsigned char height = 16;
-    base++;			// advance past the width marker
-    glBitmap(width, height, 0.0, 0.0, (float)width, 0.0, (const GLubyte *)(&(glyphs[base])));
-    
-  }
+  for (unsigned long idx = 0; idx < u.length(); idx++)
+    {
+      unsigned int stride = 33;
+      unsigned int base = stride * u[idx];
+      bool is_halfwidth = (glyphs[base] == (unsigned char)0xFF) ? 1 : 0;
+      unsigned char width = is_halfwidth ? 8 : 16; 
+      unsigned char height = 16;
+      base++;			// advance past the width marker
+      glBitmap(width, height, 0.0, 0.0, (float)width, 0.0, (const GLubyte *)(&(glyphs[base])));
+    }
 }
 
 
@@ -109,10 +108,10 @@ void GLUnifont::allocateText(const Unistring &u, Graphic::Requisition &r)
     width += is_halfwidth ? 8 : 16; 
   }
   
-  r.x.natural = r.x.minimum = r.x.maximum = width;
+  r.x.natural = r.x.minimum = r.x.maximum = width*10.;
   r.x.defined = true;
   r.x.align = 0.;
-  r.y.natural = r.y.minimum = r.y.maximum = height;
+  r.y.natural = r.y.minimum = r.y.maximum = height*10.;
   r.y.defined = true;
   r.y.align = 0.;
 }

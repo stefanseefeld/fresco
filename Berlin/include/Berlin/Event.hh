@@ -25,7 +25,7 @@
 namespace Input
 {
 
-bool position(const Event &event, Input::Position &position)
+inline bool getPosition(const Event &event, Input::Position &position)
 {
   Input::Device device = event[0].dev;
   for (size_t i = 0; i != event.length(); i++)

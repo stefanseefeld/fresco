@@ -88,10 +88,10 @@ class ControllerImpl : implements(Controller), public MonoGraphic, public Subjec
   virtual void updateState();
  private:
   Controller_var parent;
-  Controller_ptr next;
-  Controller_ptr prev;
-  Controller_ptr first;
-  Controller_ptr last;
+  Controller_var next;
+  Controller_var prev;
+  Controller_var first;
+  Controller_var last;
 //   clist_t controllers;
   unsigned long telltale;
   unsigned long focus;

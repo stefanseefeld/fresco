@@ -24,10 +24,10 @@
 #ifndef _ImageKitImpl_hh
 #define _ImageKitImpl_hh
 
-#include "Warsaw/config.hh"
-#include "Warsaw/ImageKit.hh"
-#include "Warsaw/Raster.hh"
-#include "Berlin/CloneableImpl.hh"
+#include <Warsaw/config.hh>
+#include <Warsaw/ImageKit.hh>
+#include <Warsaw/Raster.hh>
+#include <Berlin/CloneableImpl.hh>
 #include <vector>
 
 class RasterImpl;

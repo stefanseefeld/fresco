@@ -86,5 +86,6 @@ void NonPositionalFocus::dispatch(const Input::Event &event)
   MutexGuard guard(mutex);
   Prague::Profiler prf("NonPositionalFocus::dispatch");
   SectionLog section("NonPositionalFocus::dispatch");
-  controllers.back()->handleNonPositional(event);
+  if (controllers.size())
+    controllers.back()->handleNonPositional(event);
 }

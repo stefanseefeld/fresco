@@ -107,7 +107,7 @@ void PositionalFocus::dispatch(const Input::Event &event)
   Prague::Profiler prf("PositionalFocus::dispatch");
   SectionLog section("PositionalFocus::dispatch");
   Input::Position position;
-  if (!Input::position(event, position))
+  if (!Input::getPosition(event, position))
     {
       cerr << "PositionalFocus::dispatch error : non positional event" << endl;
       return;

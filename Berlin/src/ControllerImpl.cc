@@ -21,11 +21,13 @@
  */
 
 #include "Berlin/ControllerImpl.hh"
+#include "Warsaw/Input.hh"
 #include "Warsaw/Transform.hh"
 #include "Warsaw/Region.hh"
 #include "Warsaw/PickTraversal.hh"
 #include "Warsaw/Focus.hh"
 #include "Berlin/Logger.hh"
+#include "Berlin/Event.hh"
 
 using namespace Prague;
 
@@ -55,7 +57,7 @@ void ControllerImpl::appendController(Controller_ptr c)
 void ControllerImpl::prependController(Controller_ptr c)
 {
   if (!CORBA::is_nil(Controller_var(c->parentController()))) return;
-//   MutexGuard guard(mutex);
+  MutexGuard guard(mutex);
   Controller_ptr nc = Controller::_duplicate(c);
   nc->setControllerLinks(Controller_var(_this()), Controller_var(Controller::_nil()), first);
   first = nc;
@@ -92,24 +94,25 @@ void ControllerImpl::removeController()
   parent = Controller::_nil();
   prev = Controller::_nil();
   next = Controller::_nil();
-//   CORBA::release(Viewer_ptr(this));
 }
 
 void ControllerImpl::setControllerLinks(Controller_ptr pa, Controller_ptr pr, Controller_ptr ne)
 {
-  //   cout << CORBA::is_nil(pa) << ' ' << CORBA::is_nil(pr) << ' ' << CORBA::is_nil(ne) << endl;
   if (!CORBA::is_nil(pa))
     {
       parent = Controller::_duplicate(pa);
-      // 	style_->link_parent(StyleContext_var(parent->style()));
       prev = Controller::_duplicate(pr);
       if (!CORBA::is_nil(pr))
-	pr->setControllerLinks(Controller_var(Controller::_nil()),
-			       Controller_var(pr->prevController()), Controller_var(_this()));
+	{
+	  pr->setControllerLinks(Controller_var(Controller::_nil()),
+				 Controller_var(pr->prevController()), Controller_var(_this()));
+	}
       next = ne;
       if (!CORBA::is_nil(ne))
-	ne->setControllerLinks(Controller_var(Controller::_nil()),
-			       Controller_var(_this()), Controller_var(next->nextController()));
+	{
+	  ne->setControllerLinks(Controller_var(Controller::_nil()),
+				 Controller_var(_this()), Controller_var(next->nextController()));
+	}
     }
   else
     {
@@ -235,22 +238,24 @@ TelltaleConstraint_ptr ControllerImpl::constraint()
 CORBA::Boolean ControllerImpl::handlePositional(PickTraversal_ptr traversal, const Input::Event &event)
 {
   SectionLog section("ControllerImpl::handlePositional");
-//   Event::Pointer *pointer;
-//   if (any >>= pointer)
-//     {
-//       switch (pointer->whatHappened)
-// 	{
-// 	case Event::press: press(traversal, pointer); break;
-// 	case Event::release: release(traversal, pointer); break;
-// 	case Event::hold:
-// 	  if (test(Telltale::toggle)) drag(traversal, pointer);
-// 	  else move(traversal, pointer);
-// 	  break;
-// 	default: other(any); break;
-// 	}
-//       return true;
-//     }
-//   else return false;
+  Input::Position position;
+  if (!Input::getPosition(event, position))
+    {
+      cerr << "ControllerImpl::handlePositional fatal error : non positional event" << endl;
+      return false;
+    }
+  if (event[0].attr._d() == Input::button)
+    {
+      const Input::Toggle &toggle = event[0].attr.bselection();
+      if (toggle.actuation == Input::Toggle::press) press(traversal, event);
+      else if (toggle.actuation == Input::Toggle::release) release(traversal, event);
+    }
+  else if (event[0].attr._d() == Input::positional)
+    {
+      if (test(Telltale::toggle)) drag(traversal, event);
+      else move(traversal, event);
+    }
+  else other(event);
   return true;
 }
 

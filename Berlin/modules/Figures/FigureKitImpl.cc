@@ -134,6 +134,15 @@ Image_ptr FigureKitImpl::pixmap(Raster_ptr raster)
   return image->_this();
 }
 
+Graphic_ptr FigureKitImpl::texture(Graphic_ptr g, Raster_ptr raster)
+{
+  Texture *t = new Texture(raster);
+  t->_obj_is_ready(_boa());
+  t->body(g);
+//   figures.push_back(image);
+  return t->_this();
+}
+
 Transformator_ptr FigureKitImpl::projection(Graphic_ptr g)
 {
   TransformatorImpl *transformator = new TransformatorImpl;

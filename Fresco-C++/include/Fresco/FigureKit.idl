@@ -107,6 +107,7 @@ interface FigureKit : Cloneable
   //. stroked, or both.  The style parameter controls which
   //. brush and colors are used for drawing.
   Image   pixmap(in Raster r);
+  Graphic texture(in Graphic g, in Raster r);
   //. Return a figure that draws the raster.
   Transformator projection(in Graphic g);
 };

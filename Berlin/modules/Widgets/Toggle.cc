@@ -29,6 +29,7 @@ Toggle::~Toggle() {}
 
 void Toggle::press(PickTraversal_ptr traversal, const Input::Event &event)
 {
+  cout << "Toggle::press" << endl;
   SectionLog section("Toggle::press");
   ControllerImpl::press(traversal, event);
   if (test(Telltale::chosen)) clear(Telltale::chosen);
@@ -37,6 +38,7 @@ void Toggle::press(PickTraversal_ptr traversal, const Input::Event &event)
 
 void Toggle::release(PickTraversal_ptr traversal, const Input::Event &event)
 {
+  cout << "Toggle::release" << endl;
   SectionLog section("Toggle::release");
   ControllerImpl::release(traversal, event);
 }

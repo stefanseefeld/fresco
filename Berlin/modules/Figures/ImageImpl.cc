@@ -23,6 +23,7 @@
 
 #include "Warsaw/config.hh"
 #include "Warsaw/DrawTraversal.hh"
+#include "Warsaw/PickTraversal.hh"
 #include "Warsaw/DrawingKit.hh"
 #include "Berlin/Logger.hh"
 #include "Figure/ImageImpl.hh"
@@ -31,8 +32,8 @@ ImageImpl::ImageImpl(Raster_ptr r)
   : raster(Raster::_duplicate(r))
 {
   Raster::Info info = raster->header();
-  width = info.width;
-  height = info.height;
+  width = info.width*10.;
+  height = info.height*10.;
 }
 ImageImpl::~ImageImpl() {}
 
@@ -54,3 +55,23 @@ void ImageImpl::draw(DrawTraversal_ptr traversal)
   dk->drawImage(raster);
 }
 
+Texture::Texture(Raster_ptr r) : raster(Raster::_duplicate(r)) {}
+Texture::~Texture() {}
+void Texture::traverse(Traversal_ptr traversal) { traversal->visit(Graphic_var(_this()));}
+void Texture::draw(DrawTraversal_ptr traversal)
+{
+  Graphic_var g = body();
+  if (CORBA::is_nil(g)) return;
+  DrawingKit_var drawing = traversal->kit();
+  drawing->saveState();
+  drawing->texture(raster);
+  drawing->surfaceFillstyle(DrawingKit::textured);
+  g->traverse(traversal);
+  drawing->restoreState();
+}
+
+void Texture::pick(PickTraversal_ptr traversal)
+{
+  Graphic_var g = body();
+  if (!CORBA::is_nil(g)) g->traverse(traversal);
+}

@@ -52,6 +52,7 @@ class FigureKitImpl : lcimplements(FigureKit), virtual public CloneableImpl {
     Figures::Path_ptr polygon(const Figure::Vertices &);
 
     Image_ptr   pixmap(Raster_ptr);
+    Graphic_ptr texture(Graphic_ptr, Raster_ptr);
     Transformator_ptr projection(Graphic_ptr);
  protected:
     vector<Figure *> figures;

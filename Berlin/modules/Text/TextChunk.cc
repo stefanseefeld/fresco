@@ -28,30 +28,32 @@
 #include "Warsaw/Transform.hh"
 #include "Berlin/Logger.hh"
 
-TextChunk::TextChunk(const Unicode::String & u, const Requisition &r) : 
-    myCanonicalSize(r), myText(u)  {
+TextChunk::TextChunk(const Unicode::String & u, const Requisition &r)
+  : width(r.x.natural), height(r.y.natural), xalign(r.x.align), yalign(r.y.align), myText(u)
+{}
+
+void TextChunk::request(Graphic::Requisition &r)
+{
+  r.x.defined = true;
+  r.x.minimum = r.x.natural = r.x.maximum = width;
+  r.x.align   = xalign;
+  r.y.defined = true;
+  r.y.minimum = r.y.natural = r.y.maximum = height;
+  r.y.align   = yalign;
 }
 
-void TextChunk::request(Graphic::Requisition &r) {
-    r = myCanonicalSize;
-}
+void TextChunk::getText(Unicode::String &u) { myText = u;}
+unsigned long TextChunk::getLength() { return myText.length();}
 
-void TextChunk::getText(Unicode::String &u) {
-  myText = u;
-}
-
-unsigned long TextChunk::getLength() {
-    return myText.length();
-}
-
-void TextChunk::draw(DrawTraversal_ptr dt) {
-SectionLog section("TextChunk::draw");
-    Region_var allocation = dt->allocation();
-    DrawingKit_ptr dk = dt->kit();
+void TextChunk::draw(DrawTraversal_ptr dt)
+{
+  SectionLog section("TextChunk::draw");
+  Region_var allocation = dt->allocation();
+  DrawingKit_ptr dk = dt->kit();
 //     Text::Font_var f = dk->currentFont();
-    Vertex l,u;
-    allocation->bounds(l,u);
-    u.x = l.x;
+  Vertex l,u;
+  allocation->bounds(l,u);
+  u.x = l.x;
 //     Transform_var transform = dt->transformation();
 //     transform->transformVertex(u);
 //     f->drawText(Unicode::toCORBA(myText), u);

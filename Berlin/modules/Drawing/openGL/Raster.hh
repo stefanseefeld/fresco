@@ -32,7 +32,6 @@ class GLRaster
 public:
   GLRaster(Raster_var);
   ~GLRaster();
-  void draw();
   Raster_var remote;
   PixelCoord width;
   PixelCoord height;
@@ -40,7 +39,6 @@ public:
   GLfloat s, t;
 private:
   GLuint bind(GLint components, GLenum format, unsigned char *data);
-  void unbind();
 };
 
 #endif /* _GLRaster_hh */

@@ -127,9 +127,12 @@ void GLDrawingKit::setSurfaceFillstyle(DrawingKit::Fillstyle style)
 
 void GLDrawingKit::setTexture(Raster_ptr t)
 {
-  tx = t;
-  GLRaster *glraster = rasters.lookup(Raster::_duplicate(t));
-  glBindTexture(GL_TEXTURE_2D, glraster->texture);
+  tx = Raster::_duplicate(t);
+  if (!CORBA::is_nil(tx))
+    {
+      GLRaster *glraster = rasters.lookup(tx);
+      glBindTexture(GL_TEXTURE_2D, glraster->texture);
+    }
 }
 
 Text::Font_ptr GLDrawingKit::findFont(const Text::FontDescriptor &f)
@@ -150,7 +153,6 @@ Text::Font_ptr GLDrawingKit::font()
 
 void GLDrawingKit::drawPath(const Path &path)
 {
-//   myDrawable->makeCurrent();
   if (fs == solid || (fs == textured && CORBA::is_nil(tx)))
     {
       glBegin(GL_POLYGON);
@@ -210,7 +212,24 @@ void GLDrawingKit::drawEllipse(const Vertex &lower, const Vertex &upper)
 void GLDrawingKit::drawImage(Raster_ptr raster)
 {
   GLRaster *glraster = rasters.lookup(Raster::_duplicate(raster));
-  glraster->draw();
+  glEnable(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D, glraster->texture);
+  glColor4f(1., 1., 1., 1.);
+  glBegin(GL_POLYGON);
+  Path path;
+  path.length(4);
+  Coord width = glraster->width*10.;
+  Coord height = glraster->height*10.;
+  path[0].x = path[0].y = path[0].z = 0.;
+  path[1].x = width, path[1].y = path[1].z = 0.;
+  path[2].x = width, path[2].y = height, path[2].z = 0.;
+  path[3].x = 0, path[3].y = height, path[3].z = 0.;
+  glTexCoord2f(0., 0.); glVertex3f(path[3].x, path[3].y, path[3].z);
+  glTexCoord2f(glraster->s, 0.);          glVertex3f(path[2].x, path[2].y, path[2].z);
+  glTexCoord2f(glraster->s, glraster->t); glVertex3f(path[1].x, path[1].y, path[1].z);
+  glTexCoord2f(0., glraster->t);          glVertex3f(path[0].x, path[0].y, path[0].z);
+  glEnd();
+  glDisable(GL_TEXTURE_2D);
 }
 
 void GLDrawingKit::drawText(const Unistring &us)

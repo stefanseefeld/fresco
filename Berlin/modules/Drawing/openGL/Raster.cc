@@ -207,11 +207,11 @@ bool scaleImage(GLenum format,
  * openGL requires glTexImage2D to take width and height in the form 2^k
  * se we extract the exponent here and the residue
  */
-inline void logbase2(unsigned int n, int &v)//, float &r)
+inline void logbase2(unsigned int n, int &v)
 {
   unsigned int k;
   for (k = 0; n >>= 1; k++);
-  v = 1 << (k + 1);//, r = v - n;
+  v = 1 << (k + 1);
 }
 
 /*
@@ -296,14 +296,6 @@ GLuint GLRaster::bind(GLint components, GLenum format, unsigned char *data)
   bool done = false;
 
   if (w != width || h != height)
-#if 0
-    {
-      /* must rescale image to get "top" mipmap texture image */
-      image = new unsigned char [(w+4) * h * bpp];
-      bool error = scaleImage(format, width, height, data, w, h, image);
-      if (error) done = true;
-    }
-#else
     {
       /* just copy the raster into a larger image, adapting the texture coordinates */
       image = new unsigned char [(w+4) * h * bpp];
@@ -311,7 +303,6 @@ GLuint GLRaster::bind(GLint components, GLenum format, unsigned char *data)
       s = static_cast<GLfloat>(width)/w;
       t = static_cast<GLfloat>(height)/h;
     }
-#endif
   else image = data;
 
   level = 0;
@@ -353,11 +344,6 @@ GLuint GLRaster::bind(GLint components, GLenum format, unsigned char *data)
   return texture;
 }
 
-void GLRaster::unbind()
-{
-  glDeleteTextures(1, &texture);  
-}
-
 GLRaster::GLRaster(Raster_var r)
   : remote(r),
     s(1.), t(1.)
@@ -386,25 +372,5 @@ GLRaster::GLRaster(Raster_var r)
 
 GLRaster::~GLRaster()
 {
-  unbind();
-}
-
-void GLRaster::draw()
-{
-  glEnable(GL_TEXTURE_2D);
-  glBindTexture(GL_TEXTURE_2D, texture);
-  glColor4f(1., 1., 1., 1.);
-  glBegin(GL_POLYGON);
-  Path path;
-  path.length(4);
-  path[0].x = path[0].y = path[0].z = 0.;
-  path[1].x = width, path[1].y = path[1].z = 0.;
-  path[2].x = width, path[2].y = height, path[2].z = 0.;
-  path[3].x = 0, path[3].y = height, path[3].z = 0.;
-  glTexCoord2f(0., 0.); glVertex3f(path[3].x, path[3].y, path[3].z);
-  glTexCoord2f(s, 0.);  glVertex3f(path[2].x, path[2].y, path[2].z);
-  glTexCoord2f(s, t);   glVertex3f(path[1].x, path[1].y, path[1].z);
-  glTexCoord2f(0., t);  glVertex3f(path[0].x, path[0].y, path[0].z);
-  glEnd();
-  glDisable(GL_TEXTURE_2D);
+  glDeleteTextures(1, &texture);  
 }
