@@ -146,19 +146,16 @@ void Bevel::rect(DrawTraversal_ptr dt, Coord thickness, const Color &medium, con
   Coord bottomi = bottom - thickness;
   DrawingKit_var dk = dt->kit();
   dk->saveState();
-  dk->surfaceFillstyle(DrawingKit::solid);
   Path path;
   path.length(5);
   if (fill)
     {
+      Vertex lower = {left, top, 0.};
+      Vertex upper = {right, bottom, 0.};
       dk->foreground(medium);
-      path[0].x = left, path[0].y = top, path[0].z = 0.;
-      path[1].x = right, path[1].y = top, path[1].z = 0.;
-      path[2].x = right, path[2].y = bottom, path[2].z = 0.;
-      path[3].x = left, path[3].y = bottom, path[3].z = 0.;
-      path[4].x = left, path[4].y = top, path[4].z = 0.;
-      dk->drawPath(path);
+      dk->drawRect(lower, upper);
     }
+  dk->surfaceFillstyle(DrawingKit::solid);
   /*
    * light edges
    */

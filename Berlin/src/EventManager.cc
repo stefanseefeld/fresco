@@ -120,7 +120,7 @@ void EventManager::nextEvent()
 	position.z = 0;
 	event.length(2);
 	event[0].dev = 1;
-	event[0].attr.kselection(toggle);
+	event[0].attr.bselection(toggle);
 	event[1].dev = 1;
 	event[1].attr.location(position);	
 	break;

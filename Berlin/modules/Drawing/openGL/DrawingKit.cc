@@ -91,10 +91,14 @@ void GLDrawingKit::setTransformation(Transform_ptr t)
 void GLDrawingKit::setClipping(Region_ptr r)
 {
   cl->copy(r);
-  //...
+  PixelCoord x = static_cast<PixelCoord>(cl->lower.x*drawable->resolution(xaxis) + 0.5);
+  PixelCoord y = static_cast<PixelCoord>((drawable->height()/drawable->resolution(yaxis) - cl->upper.y)*drawable->resolution(yaxis) + 0.5);
+  PixelCoord w = static_cast<PixelCoord>((cl->upper.x - cl->lower.x)*drawable->resolution(xaxis) + 0.5);
+  PixelCoord h = static_cast<PixelCoord>((cl->upper.y - cl->lower.y)*drawable->resolution(yaxis) + 0.5);
+  glScissor(x, y, w, h);
 }
 
-void GLDrawingKit::setForeground(const Color &c)
+void GLDrawingKit::setForeground(Color c)
 {
   fg = c;
   unifont.setColor(c);
@@ -122,7 +126,9 @@ void GLDrawingKit::setLineEndstyle(DrawingKit::Endstyle style)
 
 void GLDrawingKit::setSurfaceFillstyle(DrawingKit::Fillstyle style)
 {
+  if (fs == textured) glDisable(GL_TEXTURE_2D);
   fs = style;
+  if (fs == textured) glEnable(GL_TEXTURE_2D);
 }
 
 void GLDrawingKit::setTexture(Raster_ptr t)

@@ -36,7 +36,7 @@ Dragger::~Dragger()
 void Dragger::press(PickTraversal_ptr traversal, const Input::Event &event)
 {
   ControllerImpl::press(traversal, event);
-  offset = event[0].attr.location();
+  offset = event[1].attr.location();
 }
 
 void Dragger::drag(PickTraversal_ptr traversal, const Input::Event &event)
