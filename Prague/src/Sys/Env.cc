@@ -61,7 +61,8 @@ bool Prague::putenv(const std::string & name, const std::string & value)
 bool Prague::putenv(const std::string & name)
 {
 #ifdef HAVE_UNSETENV
-  return unsetenv(name.c_str());
+   unsetenv(name.c_str());
+   return true;
 #elif HAVE_PUTENV
   char * env_var = new char[name.length() + 1];
   strncpy(env_var, name.c_str(), name.length());
