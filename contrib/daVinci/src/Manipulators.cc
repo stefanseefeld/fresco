@@ -122,9 +122,10 @@ CORBA::Boolean VertexManipulator::manipulate(PickTraversal_ptr traversal, const 
       Transform_var trafo = traversal->current_transformation();
       trafo->inverse_transform_vertex(current);
 
-      size_t i = _path->nodes.length();
-      _path->nodes[i - 1] = current;
-      _path->nodes.length(i + 1);
+      size_t i = _path->nodes.length() - 1;
+      _path->nodes.length(i + 2);
+      _path->nodes[i] = current;
+      _path->nodes[i + 1] = current;
       _figure->handles(_path);
       _figure->need_resize();
 
