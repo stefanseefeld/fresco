@@ -24,11 +24,11 @@ include IPC/IPC.mk
 include Filter/Filter.mk
 include Network/Network.mk
 include Unicode/Unicode.mk
+include SAX/SAX.mk
 
-vpath %.hh  $(ipath)/Prague/Sys $(ipath)/Prague/IPC $(ipath)/Prague/Filter $(ipath)/Prague/Network $(ipath)/Prague/Unicode
+vpath %.hh  $(ipath)/Prague/Sys $(ipath)/Prague/IPC $(ipath)/Prague/Filter $(ipath)/Prague/Network $(ipath)/Prague/Unicode $(ipath)/Prague/SAX
 
-SRC = $(SYS_SRC) $(IPC_SRC) $(FLT_SRC) $(NTW_SRC) $(UNI_SRC)
-OBJ = $(SYS_OBJ) $(IPC_OBJ) $(FLT_OBJ) $(NTW_OBJ) $(UNI_OBJ)
-GDB = $(SYS_GDB) $(IPC_GDB) $(FLT_GDB) $(NTW_GDB) $(UNI_GDB)
-DEP = $(SYS_DEP) $(IPC_DEP) $(FLT_DEP) $(NTW_DEP) $(UNI_DEP)
-YACC = $(SYS_YACC) $(IPC_YAC) $(FLT_YACC) $(NTW_YACC) $(UNI_YACC)
+SRC = $(SYS_SRC) $(IPC_SRC) $(FLT_SRC) $(NTW_SRC) $(UNI_SRC) $(SAX_SRC)
+OBJ = $(SYS_OBJ) $(IPC_OBJ) $(FLT_OBJ) $(NTW_OBJ) $(UNI_OBJ) $(SAX_OBJ)
+GDB = $(SYS_GDB) $(IPC_GDB) $(FLT_GDB) $(NTW_GDB) $(UNI_GDB) $(SAX_GDB)
+DEP = $(SYS_DEP) $(IPC_DEP) $(FLT_DEP) $(NTW_DEP) $(UNI_DEP) $(SAX_DEP)
