@@ -1,4 +1,4 @@
-world:	Timer DataType
+world:	Timer DataType Unicode
 
 Lock:		Lock.o
 		$(CXX) $(LDFLAGS) -o $@ $< $(LIBS)
@@ -13,6 +13,9 @@ Regex:		Regex.o
 		$(CXX) $(LDFLAGS) -o $@ $< $(LIBS)
 
 Logger:		Logger.o
+		$(CXX) $(LDFLAGS) -o $@ $< $(LIBS)
+
+Unicode:	Unicode.o
 		$(CXX) $(LDFLAGS) -o $@ $< $(LIBS)
 
 
