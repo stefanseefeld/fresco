@@ -34,7 +34,7 @@ template <class T>
 class Plugin : public DLL
 {
 public:
-  //. create a Plugin from the fiven file, using a factory with name loader
+  //. create a Plugin from the given file, using a factory with name loader
   //. to create the actual object
   Plugin(const std::string &file, const std::string &loader = "load") throw(std::runtime_error, std::logic_error)
     : DLL(file)
