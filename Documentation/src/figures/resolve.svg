@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20000802//EN"
+"http://www.w3.org/TR/2000/CR-SVG-20000802/DTD/svg-20000802.dtd">
+<!--<svg width="2.9583333333333335in" height="1.8020833333333333in" viewBox="365 120 284 173">-->
+<svg width="5in" height="3in" viewBox="620 200 284 173">
+	<rect x="660" y="300" width="99" height="23" 
+		style="fill:#ffffcc; stroke:#424242; stroke-width:1; stroke-dasharray:0 "/>
+	<text x="666" y="313" 
+		style="font-family:Verdana; font-weight:bold; text-decoration:underline; font-size:10; fill:#000000">display server</text>
+	<rect x="640" y="170" width="88" height="23" 
+		style="fill:#ffffcc; stroke:#424242; stroke-width:1; stroke-dasharray:0 "/>
+	<text x="646" y="183" 
+		style="font-family:Verdana; font-weight:bold; text-decoration:underline; font-size:10; fill:#000000">name server</text>
+	<rect x="500" y="240" width="46" height="23" 
+		style="fill:#ffffcc; stroke:#424242; stroke-width:1; stroke-dasharray:0 "/>
+	<text x="506" y="253" 
+		style="font-family:Verdana; font-weight:bold; text-decoration:underline; font-size:10; fill:#000000">client</text>
+	<line x1="675" y1="300" x2="546" y2="258" 
+		style="fill:none; stroke:#424242; stroke-width:1; stroke-dasharray:0 "/>
+	<line x1="638" y1="280" x2="602" y2="270" 
+		style="fill:none; stroke:#424242; stroke-width:1; stroke-dasharray:0 "/>
+	<line x1="638" y1="280" x2="633" y2="275" 
+		style="fill:none; stroke:#424242; stroke-width:1; stroke-dasharray:0 "/>
+	<line x1="638" y1="280" x2="631" y2="281" 
+		style="fill:none; stroke:#424242; stroke-width:1; stroke-dasharray:0 "/>
+	<text x="626" y="266" 
+		style="font-family:Verdana; font-size:10; fill:#000000">request</text>
+	<text x="610" y="266" 
+		style="font-family:Verdana; font-size:10; fill:#000000">3: </text>
+	<line x1="656" y1="193" x2="546" y2="241" 
+		style="fill:none; stroke:#424242; stroke-width:1; stroke-dasharray:0 "/>
+	<line x1="607" y1="208" x2="573" y2="222" 
+		style="fill:none; stroke:#424242; stroke-width:1; stroke-dasharray:0 "/>
+	<line x1="607" y1="208" x2="600" y2="208" 
+		style="fill:none; stroke:#424242; stroke-width:1; stroke-dasharray:0 "/>
+	<line x1="607" y1="208" x2="602" y2="214" 
+		style="fill:none; stroke:#424242; stroke-width:1; stroke-dasharray:0 "/>
+	<text x="556" y="206" 
+		style="font-family:Verdana; font-size:10; fill:#000000">resolve</text>
+	<text x="540" y="206" 
+		style="font-family:Verdana; font-size:10; fill:#000000">2: </text>
+	<line x1="707" y1="300" x2="686" y2="193" 
+		style="fill:none; stroke:#424242; stroke-width:1; stroke-dasharray:0 "/>
+	<line x1="697" y1="222" x2="703" y2="258" 
+		style="fill:none; stroke:#424242; stroke-width:1; stroke-dasharray:0 "/>
+	<line x1="697" y1="222" x2="695" y2="229" 
+		style="fill:none; stroke:#424242; stroke-width:1; stroke-dasharray:0 "/>
+	<line x1="697" y1="222" x2="701" y2="228" 
+		style="fill:none; stroke:#424242; stroke-width:1; stroke-dasharray:0 "/>
+	<text x="726" y="241" 
+		style="font-family:Verdana; font-size:10; fill:#000000">rebind</text>
+	<text x="710" y="241" 
+		style="font-family:Verdana; font-size:10; fill:#000000">1: </text>
+</svg>
