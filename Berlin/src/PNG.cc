@@ -129,11 +129,7 @@ inline void PNG::Encoder::write(png_structp png_ptr, png_bytep image,
 inline void PNG::Encoder::flush(png_structp png_ptr) 
 {
     std::streambuf *sbuf = static_cast<std::streambuf *>(png_ptr->io_ptr);
-#ifdef __GLIBCPP__
     sbuf->pubsync();
-#else
-    sbuf->sync();
-#endif
 }
 
 inline void PNG::Encoder::warning(png_structp, png_const_charp msg)

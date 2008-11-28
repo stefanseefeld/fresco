@@ -22,6 +22,8 @@
 #include "Prague/Sys/regex.hh"
 #include "Prague/Network/url.hh"
 #include <iostream>
+#include <sstream>
+#include <cstring>
 
 using namespace Prague;
 
@@ -67,7 +69,8 @@ void url::parse(const std::string &tt)
         {
             std::string portstr = nl.substr(i + 1);
             nl.erase(i, nl.length());
-            po = atoi(portstr.c_str());
+            std::istringstream iss(portstr);
+            iss >> po;
         }
         h = nl;
     }

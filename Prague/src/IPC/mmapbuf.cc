@@ -20,6 +20,7 @@
  * MA 02139, USA.
  */
 #include "Prague/IPC/mmapbuf.hh"
+#include <cstring>
 
 using namespace Prague;
 

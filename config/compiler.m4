@@ -20,7 +20,7 @@ dnl Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
 dnl MA 02139, USA.
 dnl
 
-AC_DEFUN(FRESCO_PROG_CC_CXX, [
+AC_DEFUN([FRESCO_PROG_CC_CXX], [
 	user_g_CFLAGS=""
 	user_O_CFLAGS=""
 	user_g_CXXFLAGS=""
@@ -78,7 +78,7 @@ AC_DEFUN(FRESCO_PROG_CC_CXX, [
 	fi
 ])
 
-AC_DEFUN(FRESCO_COMPILER_OPTION, [
+AC_DEFUN([FRESCO_COMPILER_OPTION], [
 	AC_CACHE_CHECK([whether compiler option(s) $2 work],
 		[fresco_cv_stat_compiler_option_$1],
 		[
@@ -95,7 +95,7 @@ AC_DEFUN(FRESCO_COMPILER_OPTION, [
 	fi
 ])
 	
-AC_DEFUN(FRESCO_CHECK_DEBUGGING, [
+AC_DEFUN([FRESCO_CHECK_DEBUGGING], [
 	AC_REQUIRE([AC_CANONICAL_HOST])
 
 	AC_ARG_ENABLE(debugging, AC_HELP_STRING([--enable-debugging], [build for debugging (default=no)]),
@@ -154,7 +154,7 @@ AC_DEFUN(FRESCO_CHECK_DEBUGGING, [
 	])
 ])
 
-AC_DEFUN(FRESCO_CHECK_OPTIMIZE, [
+AC_DEFUN([FRESCO_CHECK_OPTIMIZE], [
 	AC_REQUIRE([AC_CANONICAL_HOST])
 
 	AC_ARG_ENABLE(optimization, AC_HELP_STRING([--enable-optimization], [build with optimization (default=no)]),

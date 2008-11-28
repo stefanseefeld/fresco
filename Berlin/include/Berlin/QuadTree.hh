@@ -48,7 +48,7 @@ namespace Berlin
       move_down(QTNode<T, I> *n) : node(n) {}
       bool operator()(I i)
       {
-          QTNode<T, I>::index idx = node->where(i);
+          typename QTNode<T, I>::index idx = node->where(i);
           if (idx != QTNode<T, I>::fence)
           {
           node->my_quadrants[idx]->insert(i);
@@ -315,7 +315,7 @@ namespace Berlin
       else my_quadrants[idx]->remove(i);
       my_elements--;
       
-      if (my_boundingbox.touches(i->bbox(), epsilon))
+      if (my_boundingbox.touches(i->bbox(), Geometry::epsilon))
       {
       my_boundingbox.clear();
       bool first = true;

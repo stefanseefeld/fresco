@@ -659,13 +659,13 @@ int main(int argc, char** argv)
         {
             std::cerr << "Usage: " << argv[0]
                       << " [module_path] property" << std::endl;
-            exit(1);
+            return -1;
         }
         Property * p = get_property(property_str);
         if (!p)
         {
-            std::cout << "Unknown Property!" << std::endl;
-            exit(2);
+            std::cerr << "Unknown Property!" << std::endl;
+            return -1;
         }
 
         Char start(UC_NULL);
@@ -678,16 +678,12 @@ int main(int argc, char** argv)
     }
     catch(std::runtime_error &e)
     {
-        std::cout << "Caught an runtime exception: " << e.what()
+        std::cerr << "Caught an runtime exception: " << e.what()
                   << std::endl;
     }
     catch(std::exception &e)
     {
-        std::cout << "Caught an exception: " << e.what()
+        std::cerr << "Caught an exception: " << e.what()
                   << std::endl;
-    }
-    catch(...)
-    {
-        std::cout << "Some exception happened!" << std::endl;
     }
 }

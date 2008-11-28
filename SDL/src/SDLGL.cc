@@ -91,7 +91,7 @@ class SDL::GLContext::Initialize : public virtual GLContext::Callback
 {
     friend class SDL::GLContext;
   public:
-    Initialize::Initialize(Fresco::PixelCoord w, Fresco::PixelCoord h) :
+    Initialize(Fresco::PixelCoord w, Fresco::PixelCoord h) :
     my_width(w), my_height(h), complete(false)
     { }
     void operator()()
@@ -211,7 +211,7 @@ class SDL::GLContext::Flush : public virtual GLContext::Callback
 {
     friend class GLContext;
   public:
-    Flush::Flush(Fresco::PixelCoord width, Fresco::PixelCoord height) :
+    Flush(Fresco::PixelCoord width, Fresco::PixelCoord height) :
     my_width(width), my_height(height)
     { }
     void operator()()
@@ -313,10 +313,10 @@ class SDL::GLPointer::Save : public virtual GLContext::Callback
 {
     friend class SDL::GLPointer;
   public:
-    Save::Save(Fresco::PixelCoord x, Fresco::PixelCoord y,
-           Fresco::PixelCoord width, Fresco::PixelCoord height,
-           Fresco::Coord xscale, Fresco::Coord yscale,
-           std::vector<unsigned char> &buffer) :
+    Save(Fresco::PixelCoord x, Fresco::PixelCoord y,
+         Fresco::PixelCoord width, Fresco::PixelCoord height,
+         Fresco::Coord xscale, Fresco::Coord yscale,
+         std::vector<unsigned char> &buffer) :
     my_x(x), my_y(y),
     my_width(width), my_height(height),
     my_xscale(xscale), my_yscale(yscale),
@@ -366,10 +366,10 @@ class SDL::GLPointer::Restore : public virtual GLContext::Callback
 {
     friend class SDL::GLPointer;
   public:
-    Restore::Restore(Fresco::PixelCoord x, Fresco::PixelCoord y,
-             Fresco::PixelCoord width, Fresco::PixelCoord height,
-             Fresco::Coord xscale, Fresco::Coord yscale,
-             unsigned char *buffer) :
+    Restore(Fresco::PixelCoord x, Fresco::PixelCoord y,
+            Fresco::PixelCoord width, Fresco::PixelCoord height,
+            Fresco::Coord xscale, Fresco::Coord yscale,
+            unsigned char *buffer) :
     my_x(x), my_y(y),
     my_width(width), my_height(height),
     my_xscale(xscale), my_yscale(yscale),
@@ -424,10 +424,10 @@ class SDL::GLPointer::Draw : public virtual GLContext::Callback
 {
     friend class SDL::GLPointer;
   public:
-    Draw::Draw(Fresco::PixelCoord x, Fresco::PixelCoord y,
-           Fresco::PixelCoord width, Fresco::PixelCoord height,
-           Fresco::Coord xscale, Fresco::Coord yscale,
-           unsigned char *cursor) :
+    Draw(Fresco::PixelCoord x, Fresco::PixelCoord y,
+         Fresco::PixelCoord width, Fresco::PixelCoord height,
+         Fresco::Coord xscale, Fresco::Coord yscale,
+         unsigned char *cursor) :
     my_x(x), my_y(y),
     my_width(width), my_height(height),
     my_xscale(xscale), my_yscale(yscale),

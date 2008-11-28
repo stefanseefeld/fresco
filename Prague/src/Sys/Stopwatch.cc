@@ -21,11 +21,12 @@
  */
 #include "Prague/Sys/Stopwatch.hh"
 #include <iostream>
+#include <string>
 
 #include <sys/times.h>
 #include <unistd.h>
 #include <cerrno>
-#include <string>
+#include <cstring>
 
 using namespace Prague;
 

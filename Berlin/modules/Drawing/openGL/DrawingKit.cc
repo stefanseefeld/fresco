@@ -39,7 +39,7 @@ using namespace Berlin::DrawingKit;
 class openGL::DrawingKit::Light::Init : public virtual GLContext::Callback 
 {
 public:
-  Init::Init(int *max) : my_max(max) { }
+  Init(int *max) : my_max(max) { }
   void operator()() 
   {
     glGetIntegerv(GL_MAX_LIGHTS, my_max);  
@@ -102,7 +102,7 @@ void openGL::DrawingKit::save()
 class openGL::DrawingKit::Restore : public virtual GLContext::Callback
 {
   public:
-    Restore::Restore(openGL::DrawingKit::Light *light, int prev_light) :
+    Restore(openGL::DrawingKit::Light *light, int prev_light) :
     my_light(light), my_prev(prev_light)
     { }
   void operator()() {
@@ -178,7 +178,7 @@ class openGL::DrawingKit::ResetTrafo : public virtual GLContext::Callback
 class openGL::DrawingKit::SetTrafo : public virtual GLContext::Callback
 {
   public:
-    SetTrafo::SetTrafo(const Transform::Matrix &matrix)
+    SetTrafo(const Transform::Matrix &matrix)
     {
     // FIXME: There exists a GL extension to load transposed matrices.
     //        But, we must take a copy anyways.
@@ -220,8 +220,8 @@ void openGL::DrawingKit::set_transformation(Transform_ptr t)
 class openGL::DrawingKit::SetClipping : public virtual GLContext::Callback
 {
   public:
-    SetClipping::SetClipping(Fresco::PixelCoord x, Fresco::PixelCoord y,
-                 Fresco::PixelCoord w, Fresco::PixelCoord h) :
+    SetClipping(Fresco::PixelCoord x, Fresco::PixelCoord y,
+                Fresco::PixelCoord w, Fresco::PixelCoord h) :
     my_x(x), my_y(y), my_width(w), my_height(h)
     { }
     void operator()()
@@ -256,8 +256,8 @@ void openGL::DrawingKit::set_clipping(Region_ptr r)
 class openGL::DrawingKit::SetColor : public virtual GLContext::Callback
 {
   public:
-    SetColor::SetColor(const double red, const double green,
-               const double blue, const double alpha) :
+    SetColor(const double red, const double green,
+             const double blue, const double alpha) :
     my_red(red), my_green(green), my_blue(blue), my_alpha(alpha)
     { }
     void operator()()
@@ -290,7 +290,7 @@ void openGL::DrawingKit::set_lighting(const Color &c)
 class openGL::DrawingKit::SetPointSize : public virtual GLContext::Callback
 {
   public:
-    SetPointSize::SetPointSize(const Coord s) : my_size(s) { }
+    SetPointSize(const Coord s) : my_size(s) { }
     void operator()()
     {
     // FIXME: glPointSize uses pixel units !
@@ -310,7 +310,7 @@ void openGL::DrawingKit::set_point_size(Coord s)
 class openGL::DrawingKit::SetLineWidth : public virtual GLContext::Callback
 {
   public:
-    SetLineWidth::SetLineWidth(const Coord s) : my_size(s) { }
+    SetLineWidth(const Coord s) : my_size(s) { }
     void operator()()
     {
     //FIXME: glLineWidth uses pixel units !
@@ -337,7 +337,7 @@ openGL::DrawingKit::set_line_endstyle(Fresco::DrawingKit::Endstyle style)
 class openGL::DrawingKit::SetTexture : public virtual GLContext::Callback
 {
   public:
-    SetTexture::SetTexture(const bool on) : my_on(on) { }
+    SetTexture(const bool on) : my_on(on) { }
     void operator()()
     {
     if (my_on) glEnable(GL_TEXTURE_2D);
@@ -351,7 +351,7 @@ class openGL::DrawingKit::SetTexture : public virtual GLContext::Callback
 class openGL::DrawingKit::SetOutline : public virtual GLContext::Callback
 {
   public:
-    SetOutline::SetOutline(const bool on) : my_on(on) { }
+    SetOutline(const bool on) : my_on(on) { }
     void operator()()
     {
     if (my_on) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -386,7 +386,7 @@ void openGL::DrawingKit::set_texture(Raster_ptr t)
 class openGL::DrawingKit::DrawPath : public virtual GLContext::Callback
 {
   public:
-    DrawPath::DrawPath(const Fresco::Path &path) : my_path(path) { }
+    DrawPath(const Fresco::Path &path) : my_path(path) { }
     void operator()()
     {
     glEnable(GL_TEXTURE_GEN_S);
@@ -520,10 +520,10 @@ class openGL::DrawingKit::DirectionalLight :
     public virtual GLContext::Callback
 {
   public:
-    DirectionalLight::DirectionalLight(const Fresco::Color color,
-                       CORBA::Float intensity,
-                       const Fresco::Vertex direction,
-                       Light *light) :
+    DirectionalLight(const Fresco::Color color,
+                     CORBA::Float intensity,
+                     const Fresco::Vertex direction,
+                     Light *light) :
     my_color(color),
     my_intensity(intensity),
     my_direction(direction),
@@ -575,7 +575,7 @@ void openGL::DrawingKit::directional_light(const Color &color,
 class openGL::DrawingKit::PointLight : public virtual GLContext::Callback
 {
   public:
-    PointLight::PointLight(const Fresco::Color color,
+    PointLight(const Fresco::Color color,
                CORBA::Float intensity,
                const Fresco::Vertex position, Light *light) :
     my_color(color),
@@ -632,11 +632,11 @@ void openGL::DrawingKit::point_light(const Fresco::Color &color,
 class openGL::DrawingKit::SpotLight : public virtual GLContext::Callback
 {
   public:
-    SpotLight::SpotLight(const Color color, CORBA::Float intensity,
-             const Vertex position, const Vertex direction,
-             CORBA::Float dropoffrate,
-             CORBA::Float cutoffangle,
-             Light *light) :
+    SpotLight(const Color color, CORBA::Float intensity,
+              const Vertex position, const Vertex direction,
+              CORBA::Float dropoffrate,
+              CORBA::Float cutoffangle,
+              Light *light) :
     my_color(color),
     my_intensity(intensity),
     my_position(position),
@@ -721,7 +721,7 @@ void openGL::DrawingKit::draw_char(Unichar c)
 class openGL::DrawingKit::DrawMesh : public virtual GLContext::Callback
 {
   public:
-    DrawMesh::DrawMesh(const Fresco::Mesh &mesh) : my_mesh(mesh)
+    DrawMesh(const Fresco::Mesh &mesh) : my_mesh(mesh)
     { } // FIXME: we need to painters' algorithm sort here.
     void operator()()
     {

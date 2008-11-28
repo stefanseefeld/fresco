@@ -26,7 +26,7 @@
 #include <fstream>
 #include <unistd.h>
 #include <cstdlib>
-#include <cstdio>
+#include <cstring>
 #include <cerrno>
 #include <arpa/inet.h>
 

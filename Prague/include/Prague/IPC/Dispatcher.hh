@@ -71,7 +71,7 @@ namespace Prague
       void release(Agent *, int, repository_t::iterator, repository_t::iterator);
 
       void wait();
-      void notify() { char *c = "c"; write(my_wakeup[1], c, 1); }
+      void notify() { char const *c = "c"; write(my_wakeup[1], c, 1); }
       static void *run(void *);
       void dispatch(task *);
       void process(task *);

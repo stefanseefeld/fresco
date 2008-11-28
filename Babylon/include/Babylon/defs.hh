@@ -50,8 +50,8 @@ namespace Babylon
    */
   typedef char UCS1; // has to be char to make gcc happy...
                      // unsigned char will not work:-(
-  typedef u_int16_t UCS2;
-  typedef u_int32_t UCS4;
+  typedef uint16_t UCS2;
+  typedef uint32_t UCS4;
   
   const std::string UTF8_format("UTF-8");
   const std::string UTF16_format("UTF-16LE");

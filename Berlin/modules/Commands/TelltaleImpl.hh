@@ -57,7 +57,6 @@ namespace Berlin
     class TelltaleConstraintImpl : public virtual POA_Fresco::TelltaleConstraint,
                                    public virtual RefCountBaseImpl
     {
-        typedef std::vector<Fresco::Telltale_var> tlist_t;
       public:
         TelltaleConstraintImpl() {}
         virtual ~TelltaleConstraintImpl() {}
@@ -66,6 +65,8 @@ namespace Berlin
         virtual void trymodify(Fresco::Telltale_ptr, Fresco::Telltale::Mask,
                                CORBA::Boolean) = 0;
       protected:
+        typedef std::vector<Fresco::Telltale_var> tlist_t;
+
         Prague::Mutex my_mutex;
         tlist_t       my_telltales;
     };

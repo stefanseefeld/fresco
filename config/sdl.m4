@@ -8,7 +8,7 @@
 dnl FRESCO_SDL_CHECK([MINIMUM-VERSION])
 dnl Test for SDL, and define SDL_CPPFLAGS and SDL_LIBS
 dnl
-AC_DEFUN(FRESCO_SDL_CHECK,
+AC_DEFUN([FRESCO_SDL_CHECK],
 [dnl 
 dnl Get the cflags and libraries from the sdl-config script
 dnl

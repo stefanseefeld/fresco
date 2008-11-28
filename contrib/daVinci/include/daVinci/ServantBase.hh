@@ -29,7 +29,7 @@
 
 namespace daVinci
 {
-class ServantBase : public virtual PortableServer::RefCountServantBase
+class ServantBase : public virtual PortableServer::ServantBase
 {
 public:
   ServantBase() {}

@@ -22,7 +22,7 @@
 #include "Prague/IPC/PipeAgent.hh"
 #include "Prague/IPC/pipebuf.hh"
 #include <cerrno>
-#include <cstdio>
+#include <cstdlib>
 #include <unistd.h>
 
 using namespace Prague;

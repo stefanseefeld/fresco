@@ -32,6 +32,7 @@
 #include <iostream>
 #include <cerrno>
 #include <cstdio>
+#include <cstring>
 
 using namespace Prague;
 

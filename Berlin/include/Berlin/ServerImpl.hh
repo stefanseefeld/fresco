@@ -25,6 +25,7 @@
 
 #include <Fresco/config.hh>
 #include <Fresco/Server.hh>
+#include <Fresco/exception.hh>
 #include <Fresco/Graphic.hh>
 #include <Berlin/DefaultPOA.hh>
 #include <Berlin/KitImpl.hh>

@@ -43,7 +43,7 @@ namespace Berlin
     virtual ~LayoutManager();
     virtual LayoutManager *clone() = 0;
     
-    virtual char *name() = 0;
+    virtual std::string name() = 0;
 
     virtual void request(long, Fresco::Graphic::Requisition *,
                  Fresco::Graphic::Requisition &) = 0;
@@ -64,7 +64,7 @@ namespace Berlin
     virtual ~LayoutAlign();
     virtual LayoutManager *clone();
     
-    virtual char *name() { return "Align";}
+    virtual std::string name() { return "Align";}
 
     virtual void request(long, Fresco::Graphic::Requisition *,
                  Fresco::Graphic::Requisition &);
@@ -82,7 +82,7 @@ namespace Berlin
     LayoutCenter(Fresco::Axis, Fresco::Alignment a);
     virtual ~LayoutCenter();
 
-    virtual char *name() { return "Center"; }
+    virtual std::string name() { return "Center"; }
 
     virtual LayoutManager *clone();
     virtual void request(long, Fresco::Graphic::Requisition *,
@@ -102,7 +102,7 @@ namespace Berlin
     LayoutFixed(Fresco::Axis, Fresco::Coord);
     virtual ~LayoutFixed();
 
-    virtual char *name() { return "Fixed"; }
+    virtual std::string name() { return "Fixed"; }
 
     virtual LayoutManager *clone();
     virtual void request(long, Fresco::Graphic::Requisition *,
@@ -123,7 +123,7 @@ namespace Berlin
                Fresco::Coord shrink);
     virtual ~LayoutVariable();
 
-    virtual char *name() { return "Variable"; }
+    virtual std::string name() { return "Variable"; }
     
     virtual LayoutManager* clone();
     virtual void request(long, Fresco::Graphic::Requisition *,
@@ -144,7 +144,7 @@ namespace Berlin
     LayoutNatural(Fresco::Axis, Fresco::Coord);
     virtual ~LayoutNatural();
     
-    virtual char *name() { return "Natural"; }
+    virtual std::string name() { return "Natural"; }
     
     virtual LayoutManager *clone();
     virtual void request(long, Fresco::Graphic::Requisition *,
@@ -171,7 +171,7 @@ namespace Berlin
              Fresco::Coord, Fresco::Coord, Fresco::Coord);
     virtual ~LayoutMargin();
 
-    virtual char *name() { return "Margin"; }
+    virtual std::string name() { return "Margin"; }
 
     virtual LayoutManager *clone();
     virtual void request(long, Fresco::Graphic::Requisition *,
@@ -205,7 +205,7 @@ namespace Berlin
     virtual ~LayoutSuperpose();
     virtual LayoutManager *clone();
 
-    virtual char *name() { return my_name; }
+    virtual std::string name() { return my_name; }
 
     virtual void request(long, Fresco::Graphic::Requisition *,
                  Fresco::Graphic::Requisition &);
@@ -213,7 +213,7 @@ namespace Berlin
                   Fresco::Region_ptr,
                   LayoutManager::Allocations);
       private:
-    char          *my_name;
+    std::string    my_name;
     LayoutManager *my_first;
     LayoutManager *my_second;
     LayoutManager *my_third;
@@ -227,7 +227,7 @@ namespace Berlin
     virtual ~LayoutTile();
     virtual LayoutManager *clone();
 
-    virtual char *name() { return my_name; }
+    virtual std::string name() { return my_name; }
 
     virtual void request(long, Fresco::Graphic::Requisition *,
                  Fresco::Graphic::Requisition &);
@@ -251,7 +251,7 @@ namespace Berlin
     compute_squeeze(const Fresco::Graphic::Requirement &,
             Fresco::Coord);
       private:
-    char                        *my_name;
+    std::string                  my_name;
     Fresco::Axis                 my_axis;
     Fresco::Graphic::Requisition my_requisition;
     };
@@ -264,7 +264,7 @@ namespace Berlin
     virtual ~LayoutTileReversed();
     virtual LayoutManager *clone();
 
-    virtual char *name() { return "TileReversed"; }
+    virtual std::string name() { return "TileReversed"; }
 
     virtual void request(long, Fresco::Graphic::Requisition *,
                  Fresco::Graphic::Requisition &);
@@ -291,7 +291,7 @@ namespace Berlin
     virtual ~LayoutTileFirstAligned();
     virtual LayoutManager *clone();
     
-    virtual char *name() { return "TileFirstAligned"; }
+    virtual std::string name() { return "TileFirstAligned"; }
 
     virtual void request(long, Fresco::Graphic::Requisition *,
                  Fresco::Graphic::Requisition &);
@@ -316,7 +316,7 @@ namespace Berlin
     virtual ~LayoutTileReversedFirstAligned();
     virtual LayoutManager *clone();
     
-    virtual char *name() { return "TileReversedFirstAligned"; }
+    virtual std::string name() { return "TileReversedFirstAligned"; }
 
     virtual void request(long, Fresco::Graphic::Requisition *,
                  Fresco::Graphic::Requisition &);

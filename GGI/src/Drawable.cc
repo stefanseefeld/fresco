@@ -150,10 +150,10 @@ ggi_pixel GGI::Drawable::map(const Fresco::Color &c) const
     ggi_color c2;
     // GGI _appears_ to use 16 bit color + alpha throughout. *sigh*
     static double scale = 0xffff;
-    c2.r = static_cast<uint16>(c.red * scale);
-    c2.g = static_cast<uint16>(c.green * scale);
-    c2.b = static_cast<uint16>(c.blue * scale);
-    c2.a = static_cast<uint16>(c.alpha * scale);
+    c2.r = static_cast<uint16_t>(c.red * scale);
+    c2.g = static_cast<uint16_t>(c.green * scale);
+    c2.b = static_cast<uint16_t>(c.blue * scale);
+    c2.a = static_cast<uint16_t>(c.alpha * scale);
     return ggiMapColor(my_visual, &c2);
 }
 

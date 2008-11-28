@@ -34,7 +34,7 @@ AC_DEFUN([SYNOPSIS_CHECK],[
 
         MIN_SYN_MAYOR=`echo $MIN_SYN_VERSION | cut -d"." -f 1`
         MIN_SYN_MINOR=`echo $MIN_SYN_VERSION | cut -d"." -f 2`
-        SYN_VERSION=`$SYNOPSIS --version | sed -e "s/synopsis version //"`
+        SYN_VERSION=`$SYNOPSIS --version | sed -e "s/synopsis version //" -e "s/(.*)//"`
         SYN_MAYOR=`echo $SYN_VERSION | cut -d"." -f 1`
         SYN_MINOR=`echo $SYN_VERSION | cut -d"." -f 2`
 

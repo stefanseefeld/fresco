@@ -23,6 +23,7 @@
 #include "Fresco/Unicode.hh"
 #include <iostream>
 #include <string>
+#include <cstdlib>
 
 using namespace Fresco;
 

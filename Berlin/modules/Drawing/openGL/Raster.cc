@@ -282,7 +282,7 @@ inline void resize_image(GLenum format,
 class openGL::Texture::Activate : public virtual GLContext::Callback
 {
   public:
-    Activate::Activate(GLuint *tx, Fresco::PixelCoord *width,
+    Activate(GLuint *tx, Fresco::PixelCoord *width,
                Fresco::PixelCoord *height) :
     my_tx(tx),
     my_width(width),
@@ -315,7 +315,7 @@ class openGL::Texture::Activate : public virtual GLContext::Callback
 class openGL::Texture::Bind : public virtual GLContext::Callback 
 {
   public:
-    Bind::Bind(GLint c, GLenum f, unsigned char *d, Texture *t) :
+    Bind(GLint c, GLenum f, unsigned char *d, Texture *t) :
     my_components(c), 
     my_format(f),
     my_data(d),
@@ -421,7 +421,7 @@ class openGL::Texture::Bind : public virtual GLContext::Callback
 class openGL::Texture::Delete : public virtual GLContext::Callback
 {
   public:
-    Delete::Delete(GLuint *tx) : my_tx(tx) { }
+    Delete(GLuint *tx) : my_tx(tx) { }
     void operator()() { glDeleteTextures(1, my_tx); }
   private:
     GLuint *my_tx;
@@ -473,9 +473,9 @@ void openGL::Texture::activate(GLContext *glcontext)
 class openGL::Image::Activate : public virtual GLContext::Callback
 {
   public:
-    Activate::Activate(GLuint *tx,
-               Fresco::PixelCoord *width,
-               Fresco::PixelCoord *height, Fresco::PixelCoord *h2) :
+    Activate(GLuint *tx,
+             Fresco::PixelCoord *width,
+             Fresco::PixelCoord *height, Fresco::PixelCoord *h2) :
     my_tx(tx),
     my_width(width),
     my_height(height),
@@ -519,7 +519,7 @@ class openGL::Image::Activate : public virtual GLContext::Callback
 class openGL::Image::Bind : public virtual GLContext::Callback 
 {
   public:
-    Bind::Bind(GLint c, GLenum f, unsigned char *d, Image *i) :
+    Bind(GLint c, GLenum f, unsigned char *d, Image *i) :
     my_components(c),
     my_format(f),
     my_data(d),
@@ -630,7 +630,7 @@ class openGL::Image::Bind : public virtual GLContext::Callback
 class openGL::Image::Delete : public virtual GLContext::Callback
 {
   public:
-    Delete::Delete(GLuint *tx) : my_tx(tx) { }
+    Delete(GLuint *tx) : my_tx(tx) { }
     void operator()() {    glDeleteTextures(1, my_tx); }
   private:
     GLuint *my_tx;

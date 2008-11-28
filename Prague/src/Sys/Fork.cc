@@ -27,7 +27,7 @@
 #include <Prague/Sys/Fork.hh>
 #include <sys/wait.h>
 #include <cerrno>
-#include <cstdio>
+#include <cstdlib>
 #include <cstring> // for strsignal...
 
 using namespace Prague;

@@ -22,7 +22,7 @@ dnl
 
 dnl FRESCO_PACKAGE(PACKAGE, PACKAGE-VAR, MINIMUM-VERSION, BUILD-PATH)
 dnl
-AC_DEFUN(FRESCO_PACKAGE,
+AC_DEFUN([FRESCO_PACKAGE],
 [dnl 
 dnl Get the cppflags and libraries from the package-config script
 dnl
@@ -184,7 +184,7 @@ dnl
 dnl test for Fresco IDL interfaces and define FRESCO_IDL_PREFIX
 dnl accordingly
 dnl
-AC_DEFUN(FRESCO_IDL_PATH,
+AC_DEFUN([FRESCO_IDL_PATH],
 [dnl 
 
   AC_ARG_WITH(Fresco_IDL-prefix, AC_HELP_STRING([--with-Fresco_IDL-prefix],

@@ -97,7 +97,9 @@ std::char_traits<Babylon::Char>::not_eof(const int_type & i)
 }
 
 
-
+// The following specializations should be handled differently:
+// To be more robust, UCS2 et al. should be real types not aliases.
+#if 0
 void
 std::char_traits<Babylon::UCS2>::assign(char_type & c1,
                     const char_type & c2)
@@ -294,6 +296,7 @@ std::char_traits<Babylon::UCS4>::not_eof(const int_type & i)
     return(Babylon::UCS4(Babylon::UC_NOT_A_CHAR));
   return(i);
 }
+#endif // 0
 
 }; // namespace std
 

@@ -23,7 +23,7 @@
 #include "Prague/IPC/TTYAgent.hh"
 #include "Prague/Sys/Tracer.hh"
 #include <unistd.h>
-#include <cstdio>
+#include <cstdlib>
 
 using namespace Prague;
 

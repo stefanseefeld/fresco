@@ -114,7 +114,7 @@ int ipcbuf::sync()
     return 0;
 }
 
-int ipcbuf::showmanyc()
+std::streamsize ipcbuf::showmanyc()
 {
     if (gptr() && gptr() < egptr()) return egptr() - gptr();
     return 0;

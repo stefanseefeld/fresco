@@ -348,30 +348,21 @@ void LayoutNatural::allocate(long, Graphic::Requisition *,
 
 // class LayoutSuperpose
 LayoutSuperpose::LayoutSuperpose(LayoutManager *f, LayoutManager *s) :
-    my_first(f), my_second(s), my_third(0)
+  my_first(f), my_second(s), my_third(0),
+  my_name(f->name() + "/" + s->name())
 {
-    // Concatenate names to form this name
-    char* fn = f->name(), *sn = s->name();
-    std::ostringstream buf;
-    buf << fn << "/" << sn << std::ends;
-    my_name = strdup(buf.str().c_str());
 }
 LayoutSuperpose::LayoutSuperpose(LayoutManager *f, LayoutManager *s,
                  LayoutManager *t) : 
-    my_first(f), my_second(s), my_third(t)
+  my_first(f), my_second(s), my_third(t),
+  my_name(f->name() + "/" + s->name() + "/" + t->name())
 {
-    // Concatenate names to form this name
-    char* fn = f->name(), *sn = s->name(), *tn = t->name();
-    std::ostringstream buf;
-    buf << fn << "/" << sn << "/" << tn << std::ends;
-    my_name = strdup(buf.str().c_str());
 }
 LayoutSuperpose::~LayoutSuperpose()
 {
-    free(my_name); // strdup implies free, not delete
-    delete my_first;
-    delete my_second;
-    delete my_third;
+  delete my_first;
+  delete my_second;
+  delete my_third;
 }
 
 LayoutManager *LayoutSuperpose::clone()
@@ -399,14 +390,12 @@ void LayoutSuperpose::allocate(long n, Graphic::Requisition *requests,
 }
 
 // class LayoutTile
-LayoutTile::LayoutTile(Axis a) : my_axis(a)
+LayoutTile::LayoutTile(Axis a)
+  : my_axis(a),
+    my_name(std::string("Tile") + name_axis(a))
 {
-    // The name is Tile followed by the axis name (X, Y or Z)
-    std::ostringstream buf;
-    buf << "Tile" << name_axis(a) << std::ends;
-    my_name = strdup(buf.str().c_str());
 }
-LayoutTile::~LayoutTile() { free(my_name); }
+LayoutTile::~LayoutTile() {}
 LayoutManager *LayoutTile::clone() { return new LayoutTile(my_axis); }
 
 void LayoutTile::request(long n, Graphic::Requisition *requests,

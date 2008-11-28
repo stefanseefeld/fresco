@@ -1,8 +1,9 @@
-#include <iostream>
-
 #include "ResultsMap.hh"
 #include "TestCmd.hh"
 #include "TestCase.hh"
+#include <iostream>
+#include <cstdlib>
+#include <cstring>
 
 namespace SyUnit
 {

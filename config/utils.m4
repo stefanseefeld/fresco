@@ -64,7 +64,7 @@ fi
 
 dnl See whether we need a declaration for a function.
 dnl AC_NEED_DECLARATION(FUNCTION [, EXTRA-HEADER-FILES])
-AC_DEFUN(AC_NEED_DECLARATION,
+AC_DEFUN([AC_NEED_DECLARATION],
 [AC_MSG_CHECKING([whether $1 must be declared])
 AC_CACHE_VAL(ac_cv_decl_needed_$1,
 [AC_TRY_COMPILE([

@@ -78,7 +78,7 @@ namespace Prague
       //. flush the buffer
       virtual int sync();
       //. return the number of chars in the input sequence
-      virtual int showmanyc();
+      virtual std::streamsize showmanyc();
       //. if pbase () == 0, no write is allowed and thus return EOF.
       //. if c == EOF, we sync the output and return 0.
       //. if pptr () == epptr (), buffer is full and thus sync the output, insert c

@@ -21,7 +21,7 @@ dnl MA 02139, USA.
 dnl FRESCO_FREETYPE_CHECK([MINIMUM-VERSION, [ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 dnl Test for Freetype2, and define FREETYPE_CXXFLAGS and FREETYPE_LIBS
 dnl
-AC_DEFUN(FRESCO_FREETYPE_CHECK,
+AC_DEFUN([FRESCO_FREETYPE_CHECK],
 [dnl 
 dnl Get the cflags and libraries from the freetype-config script
 dnl

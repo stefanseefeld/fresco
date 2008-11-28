@@ -24,6 +24,7 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
+#include <cstdlib>
 
 using namespace Babylon;
 
@@ -105,7 +106,7 @@ int main(int argc, char** argv)
               << " norm-string-in-hex [override path]" << std::endl;
         std::cout << "- or -: " << argv[0]
               << " interactive [override-path]" << std::endl;
-        exit(1);
+        return 0;
     }
     if (argc >= 2)
         in = argv[1];

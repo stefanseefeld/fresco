@@ -28,13 +28,14 @@
 
 using namespace Prague;
 using namespace Fresco;
-using namespace Berlin;
 
 namespace
 {
   Mutex mutex;
 }
 
+namespace Berlin
+{
 ServantBase::ServantBase() :
     my_refcount(1), my_poa(_default_POA())
 {
@@ -134,3 +135,5 @@ void ServantBase::activate(ServantBase *servant)
     delete oid;
     servant->activate_composite();
 }
+
+} // namespace Berlin

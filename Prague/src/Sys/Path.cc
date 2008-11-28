@@ -22,6 +22,7 @@
 
 #include "Prague/Sys/Path.hh"
 #include "Prague/Sys/User.hh"
+#include <cstdlib>
 
 using namespace Prague;
 

@@ -56,9 +56,9 @@ namespace Berlin
       typedef typename rep_type::value_type value_type;
       typedef typename rep_type::iterator iterator;
       typedef unsigned int size_type;
-      iterator gbegin() { return begin() + my_gapbegin;}
-      iterator gend() { return begin() + my_gapend;}
-      iterator cursor() { return begin() + my_cursor;}
+      iterator gbegin() { return this->begin() + my_gapbegin;}
+      iterator gend() { return this->begin() + my_gapend;}
+      iterator cursor() { return this->begin() + my_cursor;}
       void newgap()
       {
       rep_type::insert(gbegin(), gapsize, value_type(0));
@@ -68,30 +68,30 @@ namespace Berlin
       {
       if (d > 0)
       {
-          if (gend() + d > end())
-          rep_type::insert(end(), size_type(gend() + d - end()),
+          if (gend() + d > this->end())
+          rep_type::insert(this->end(), size_type(gend() + d - this->end()),
                    value_type(0));
           copy(gend(), gend() + d, gbegin());
       }
       else
-          copy(rep_type::reverse_iterator(gbegin()),
-           rep_type::reverse_iterator(gbegin() + d),
-           rep_type::reverse_iterator(gend()));
+          copy(typename rep_type::reverse_iterator(gbegin()),
+               typename rep_type::reverse_iterator(gbegin() + d),
+               typename rep_type::reverse_iterator(gend()));
       my_gapbegin += d, my_gapend += d;
       }
       size_type gap() { return my_gapend - my_gapbegin; }
       void editing()
       { size_type d = my_cursor - my_gapbegin; if (d != 0) movegap(d); }
       void compact()
-      { size_type d = end() - gend(); if (d > 0) movegap(d); }
+      { size_type d = this->end() - gend(); if (d > 0) movegap(d); }
     public:
       GapBuffer() : my_cursor(0), my_gapbegin(0), my_gapend(0) {}
-      size_type size() { compact(); return gbegin() - begin(); }
+      size_type size() { compact(); return gbegin() - this->begin(); }
       void forward()
       {
-      if (my_cursor == my_gapbegin && gend() != end())
+      if (my_cursor == my_gapbegin && gend() != this->end())
           my_cursor += gap();
-      else if (cursor() < end()) my_cursor++;
+      else if (cursor() < this->end()) my_cursor++;
       }
       void backward()
       {
@@ -100,7 +100,7 @@ namespace Berlin
 		      my_cursor -= gap();
 	      else
 		      my_cursor--;
-      else if (cursor() > begin()) my_cursor--;
+      else if (cursor() > this->begin()) my_cursor--;
       }
       void shift(size_type d)
       {
@@ -153,7 +153,7 @@ namespace Berlin
       {
       if (my_cursor >= my_gapend)
       {
-          if (size_type(end() - cursor()) < n) n = end() - cursor();
+          if (size_type(this->end() - cursor()) < n) n = this->end() - cursor();
           erase(cursor(), cursor() + n);
       }
       else if (my_gapbegin - my_cursor > n)
@@ -169,7 +169,7 @@ namespace Berlin
           my_gapbegin -= d, my_gapend -= d;
       }
       }
-      const value_type *get() { compact(); return &*begin(); }
+      const value_type *get() { compact(); return &*this->begin(); }
       void clear_buffer()
       {
       position(0);

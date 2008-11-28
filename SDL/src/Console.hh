@@ -66,7 +66,7 @@ namespace SDL
   class PointerManagerT : public PointerManager
   {
     public:
-      PointerManagerT::PointerManagerT(GLContext *glcontext) :
+      PointerManagerT(GLContext *glcontext) :
       my_glcontext(glcontext)
       { }
       SDL::Pointer * create_pointer(Fresco::Raster_ptr raster)

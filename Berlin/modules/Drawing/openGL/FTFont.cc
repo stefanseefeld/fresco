@@ -167,7 +167,7 @@ inline float delta_magnitude(const Fresco::Vertex &a,
 class openGL::FTFont::DrawChar : public virtual GLContext::Callback
 {
   public:
-    DrawChar::DrawChar(Unichar uc, FTFont *that)
+    DrawChar(Unichar uc, FTFont *that)
     {
     Berlin::Console::Drawable *drawable =
         Berlin::Console::instance()->drawable();

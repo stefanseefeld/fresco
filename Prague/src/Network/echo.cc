@@ -24,6 +24,7 @@
 #include <Prague/Network/echo.hh>
 #include <Prague/Sys/Fork.hh>
 #include <cerrno>
+#include <cstdlib>
 
 using namespace Prague;
 
