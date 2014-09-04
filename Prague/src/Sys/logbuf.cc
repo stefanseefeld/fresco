@@ -23,6 +23,7 @@
 #include <Prague/Sys/logbuf.hh>
 #include <iostream>
 #include <ctype.h>
+#include <cstdio>
 
 using namespace Prague;
 

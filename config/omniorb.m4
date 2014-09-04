@@ -149,8 +149,8 @@ AC_DEFUN([FRESCO_OMNIORB],
     esac
   
     dnl Don't know if this is portable...
-    os_major_version=[`uname -r | cut -d '.' -f 1`]
-    AC_DEFINE_UNQUOTED(__OSVERSION__, $os_major_version, [Define the os version.])
+    #os_major_version=[`uname -r | cut -d '.' -f 1`]
+    #AC_DEFINE_UNQUOTED(__OSVERSION__, $os_major_version, [Define the os version.])
   
     dnl Check for omniORB includes
     CPPFLAGS="$CPPFLAGS $ORB_CPPFLAGS"

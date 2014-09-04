@@ -25,6 +25,7 @@
 #include <ios>
 #include <streambuf>
 #include <stdexcept>
+#include <cstdio>
 
 namespace Prague
 {

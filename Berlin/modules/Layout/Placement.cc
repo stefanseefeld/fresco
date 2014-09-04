@@ -41,7 +41,7 @@ Placement::Placement(LayoutManager *l) :
 
 Placement::~Placement() { delete my_layout; }
 
-void Placement::request(Fresco::Graphic::Requisition::Requisition &r)
+void Placement::request(Fresco::Graphic::Requisition &r)
 {
     MonoGraphic::request(r);
     my_layout->request(0, 0, r);

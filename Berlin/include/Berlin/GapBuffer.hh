@@ -132,19 +132,19 @@ namespace Berlin
       if (my_cursor <= my_gapbegin)
       {
           if (my_cursor < n) n = my_cursor;
-          erase(cursor() - n, cursor());
+          this->erase(cursor() - n, cursor());
           my_cursor -= n, my_gapbegin -= n, my_gapend -= n;
       }
       else if (my_cursor - my_gapend > n)
       {
-          erase(cursor() - n, cursor());
+	  this->erase(cursor() - n, cursor());
           my_cursor -= n;
       }
       else
       {
           size_type d = my_cursor - my_gapend;
-          erase(gbegin() - (n - d), gbegin());
-          erase(cursor() - d, cursor());
+          this->erase(gbegin() - (n - d), gbegin());
+          this->erase(cursor() - d, cursor());
           my_gapbegin -= n - d, my_gapend -= n - d;
           my_cursor -= n;
       }
@@ -154,18 +154,18 @@ namespace Berlin
       if (my_cursor >= my_gapend)
       {
           if (size_type(this->end() - cursor()) < n) n = this->end() - cursor();
-          erase(cursor(), cursor() + n);
+          this->erase(cursor(), cursor() + n);
       }
       else if (my_gapbegin - my_cursor > n)
       {
-          erase(cursor(), cursor() + n);
+          this->erase(cursor(), cursor() + n);
           my_gapbegin -= n, my_gapend -= n;
       }
       else
       {
           size_type d = my_gapbegin - my_cursor;
-          erase(gend(), gend() + (n - d));
-          erase(cursor(), cursor() + d);
+          this->erase(gend(), gend() + (n - d));
+          this->erase(cursor(), cursor() + d);
           my_gapbegin -= d, my_gapend -= d;
       }
       }

@@ -23,6 +23,7 @@
 #define _Prague_gzbuf_h
 
 #include <iostream>
+#include <cstdio>
 #include "zlib.h"
 
 namespace Prague
